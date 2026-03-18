@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  role      Role       @default(USER)
+  locale    String     @default("ja")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  adminLogs AdminLog[]
+  favorites Favorite[]
+  leads     Lead[]
+  listings  Listing[]  @relation("CreatedBy")
+
+  @@map("users")
+}
+
+model Listing {
+  id                   String               @id @default(cuid())
+  status               ListingStatus        @default(DRAFT)
+  propertyType         String?
+  price                BigInt?
+  priceCurrency        String               @default("JPY")
+  prefecture           String?
+  city                 String?
+  addressPublic        String?
+  addressPrivate       String?
+  addressBlocked       Boolean              @default(false)
+  addressFull          String?
+  latitude             Decimal?             @db.Decimal(10, 8)
+  longitude            Decimal?             @db.Decimal(11, 8)
+  stations             Json?
+  builtYear            Int?
+  builtMonth           Int?
+  currentStatus        String?
+  buildingArea         Decimal?             @db.Decimal(10, 2)
+  landArea             Decimal?             @db.Decimal(10, 2)
+  floorCount           Int?
+  unitCount            Int?
+  structure            String?
+  landRights           String?
+  zoning               String?
+  buildingCoverageRatio Decimal?            @db.Decimal(5, 2)
+  floorAreaRatio       Decimal?             @db.Decimal(5, 2)
+  yieldGross           Decimal?             @db.Decimal(5, 2)
+  yieldNet             Decimal?             @db.Decimal(5, 2)
+  annualIncome         BigInt?
+  annualExpenses       BigInt?
+  occupancyRate        Decimal?             @db.Decimal(5, 2)
+  vacantUnits          Int?
+  currentRentRoll      Json?
+  features             Json?
+  featuresEn           Json?
+  featuresZhTw         Json?
+  featuresZhCn         Json?
+  warnings             Json?
+  descriptionJa        String?              @db.Text
+  descriptionEn        String?              @db.Text
+  descriptionZhTw      String?              @db.Text
+  descriptionZhCn      String?              @db.Text
+  sourceUrl            String?
+  fetchedAt            DateTime?
+  createdById          String?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  publishedAt          DateTime?
+  viewCount            Int                  @default(0)
+  createdBy            User?                @relation("CreatedBy", fields: [createdById], references: [id])
+  evidences            ExtractionEvidence[]
+  favorites            Favorite[]
+  leads                Lead[]
+  media                Media[]
+
+  @@map("listings")
+}
+
+model Media {
+  id        String        @id @default(cuid())
+  listingId String
+  category  MediaCategory @default(OTHER)
+  source    MediaSource   @default(EXTRACTED)
+  url       String
+  caption   String?
+  sortOrder Int           @default(0)
+  isAdopted Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  listing   Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("media")
+}
+
+model ExtractionEvidence {
+  id          String   @id @default(cuid())
+  listingId   String
+  fieldName   String
+  rawText     String?
+  pageNumber  Int?
+  confidence  Decimal? @db.Decimal(3, 2)
+  needsReview Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("extraction_evidences")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@map("favorites")
+}
+
+model Lead {
+  id            String        @id @default(cuid())
+  userId        String
+  listingId     String
+  contactMethod ContactMethod
+  contactValue  String?
+  message       String?
+  status        LeadStatus    @default(NEW)
+  createdAt     DateTime      @default(now())
+  listing       Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("leads")
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  action     String
+  targetType String?
+  targetId   String?
+  detail     Json?
+  createdAt  DateTime @default(now())
+  admin      User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("admin_logs")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ListingStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  SOLD
+  ARCHIVED
+}
+
+enum MediaCategory {
+  EXTERIOR
+  INTERIOR
+  FLOORPLAN
+  MAP
+  DOCUMENT
+  OTHER
+}
+
+enum MediaSource {
+  EXTRACTED
+  MANUAL
+}
+
+enum ContactMethod {
+  EMAIL
+  PHONE
+  LINE
+}
+
+enum LeadStatus {
+  NEW
+  IN_PROGRESS
+  CONVERTED
+  CLOSED
+}
