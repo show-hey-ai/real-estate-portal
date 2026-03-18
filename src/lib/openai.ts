@@ -87,8 +87,8 @@ export const extractionSchema = {
         description: '現況（賃貸中、空室、居住中等）',
       },
       ad_allowed: {
-        type: ['boolean', 'null'],
-        description: '広告掲載可否。「広告可」「広告転載可」「広告掲載可」「AD可」等の記載があればtrue、「広告不可」「広告転載不可」「広告掲載不可」等があればfalse、記載なしはnull',
+        type: 'boolean',
+        description: '広告掲載可否。「広告可」「広告転載可」「広告掲載可」「AD可」「自社サイトのみ可」「suumo以外可能」等の広告許可の記載があればtrue。「広告不可」「広告転載不可」または記載なしの場合はfalse。許可が明示されていない限りfalseとする。',
       },
       yield_gross: {
         type: ['number', 'null'],

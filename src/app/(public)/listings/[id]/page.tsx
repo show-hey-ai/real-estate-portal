@@ -32,6 +32,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
     `)
     .eq('id', id)
     .eq('status', 'PUBLISHED')
+    .eq('adAllowed', true)
     .single()
 
   if (error || !listing) {

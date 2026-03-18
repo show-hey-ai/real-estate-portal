@@ -116,7 +116,7 @@ interface ExtractedData {
   structure?: string | null
   zoning?: string | null
   current_status?: string | null
-  ad_allowed?: boolean | null
+  ad_allowed?: boolean
   yield_gross?: number | null
   yield_net?: number | null
   description_ja?: string | null
@@ -264,12 +264,12 @@ export async function POST(request: NextRequest) {
       extractionResponse.choices[0]?.message?.content || '{}'
     )
 
-    // 広告不可の物件はスキップ
-    if (extractedData.ad_allowed === false) {
+    // 広告可の明示的な許可がない物件はスキップ
+    if (!extractedData.ad_allowed) {
       return NextResponse.json({
         success: false,
         skipped: true,
-        reason: '広告掲載不可の物件のためスキップしました',
+        reason: '広告掲載許可が確認できないためスキップしました',
         filename: file.name,
       }, { status: 200 })
     }

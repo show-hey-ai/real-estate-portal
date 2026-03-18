@@ -45,6 +45,7 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
       media (url, category)
     `, { count: 'exact' })
     .eq('status', 'PUBLISHED')
+    .eq('adAllowed', true)
 
   // Apply filters
   if (params.q) {

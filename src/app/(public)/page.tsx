@@ -53,6 +53,7 @@ export default async function HomePage() {
       media (url, category)
     `)
     .eq('status', 'PUBLISHED')
+    .eq('adAllowed', true)
     .order('publishedAt', { ascending: false })
     .limit(6)
 
