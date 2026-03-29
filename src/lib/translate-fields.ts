@@ -347,7 +347,6 @@ const stationNameMap: Record<string, string> = {
   '東大島': 'Higashi-Ojima',
   '住吉': 'Sumiyoshi',
   '森下': 'Morishita',
-  '両国': 'Ryogoku',
   '浅草': 'Asakusa',
   '蔵前': 'Kuramae',
   '浅草橋': 'Asakusabashi',
@@ -365,7 +364,6 @@ const stationNameMap: Record<string, string> = {
   '溜池山王': 'Tameike-Sanno',
   '虎ノ門': 'Toranomon',
   '新御茶ノ水': 'Shin-Ochanomizu',
-  '湯島': 'Yushima',
   '上野広小路': 'Ueno-Hirokoji',
   '仲御徒町': 'Naka-Okachimachi',
   '御徒町': 'Okachimachi',
@@ -397,7 +395,6 @@ const stationNameMap: Record<string, string> = {
   '牛込神楽坂': 'Ushigome-Kagurazaka',
   '神楽坂': 'Kagurazaka',
   '早稲田': 'Waseda',
-  '高田馬場': 'Takadanobaba',
   '西早稲田': 'Nishi-Waseda',
   '雑司が谷': 'Zoshigaya',
   '東池袋': 'Higashi-Ikebukuro',
@@ -494,7 +491,11 @@ export function translateRailwayLine(line: string | null | undefined, locale: st
 
 export function translateStationName(name: string | null | undefined, locale: string): string | null {
   if (!name || locale === 'ja') return name || null
+  // 直接一致
   if (stationNameMap[name]) return stationNameMap[name]
+  // 「駅」サフィックスを除いて再検索（例: "大森駅" → "大森"）
+  const nameWithoutSuffix = name.replace(/駅$/, '')
+  if (nameWithoutSuffix !== name && stationNameMap[nameWithoutSuffix]) return stationNameMap[nameWithoutSuffix]
   return name
 }
 
@@ -513,6 +514,12 @@ export function translateAddress(address: string | null | undefined, locale: str
         }
       }
       return en
+    }
+  }
+  // 都道府県なしのフォールバック（例: "港区港南3-7" → "Minato, Tokyo"）
+  for (const [jaCity, enCity] of Object.entries(cityMap)) {
+    if (result.includes(jaCity)) {
+      return `${enCity}, Tokyo`
     }
   }
   return address
