@@ -17,7 +17,6 @@ export default function RegisterPage() {
   const tCommon = useTranslations('common')
   const router = useRouter()
 
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -37,11 +36,7 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          name,
-        },
-      },
+
     })
 
     if (error) {
@@ -72,17 +67,7 @@ export default function RegisterPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">{t('name')}</Label>
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">{t('email')}</Label>
               <Input
