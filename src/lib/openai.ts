@@ -13,7 +13,7 @@ export function getOpenAI(): OpenAI {
 
 export const openai = new Proxy({} as OpenAI, {
   get(_, prop) {
-    return (getOpenAI() as Record<string, unknown>)[prop as string]
+    return Reflect.get(getOpenAI(), prop)
   },
 })
 
@@ -47,10 +47,11 @@ export const extractionSchema = {
           type: 'object',
           properties: {
             name: { type: 'string', description: '駅名（例: 渋谷駅）' },
+            name_en: { type: ['string', 'null'], description: '駅名の英語表記・ローマ字（例: Shibuya）' },
             line: { type: ['string', 'null'], description: '路線名（例: JR山手線）' },
             walk_minutes: { type: ['integer', 'null'], description: '徒歩分' },
           },
-          required: ['name', 'line', 'walk_minutes'],
+          required: ['name', 'name_en', 'line', 'walk_minutes'],
           additionalProperties: false,
         },
         description: '最寄駅リスト（複数可）',
@@ -86,9 +87,43 @@ export const extractionSchema = {
         type: ['string', 'null'],
         description: '現況（賃貸中、空室、居住中等）',
       },
+      info_registered_at: {
+        type: ['string', 'null'],
+        description: '物件情報の登録日（YYYY-MM-DD形式）。マイソクに「情報登録日」「登録日」「作成日」等の記載があれば抽出。なければnull',
+      },
+      info_updated_at: {
+        type: ['string', 'null'],
+        description: '物件情報の更新日（YYYY-MM-DD形式）。マイソクに「情報更新日」「更新日」「改定日」等の記載があれば抽出。なければnull',
+      },
+      conditions_expiry: {
+        type: ['string', 'null'],
+        description: '取引条件の有効期限（YYYY-MM-DD形式）。マイソクに「有効期限」「条件期限」「価格有効期限」等の記載があれば抽出。なければnull',
+      },
+      delivery_date: {
+        type: ['string', 'null'],
+        description: '引渡し可能時期。「即時」「相談」「2026年4月」等、記載のまま抽出。なければnull',
+      },
       ad_allowed: {
         type: 'boolean',
-        description: '広告掲載可否。「広告可」「広告転載可」「広告掲載可」「AD可」「自社サイトのみ可」「suumo以外可能」等の広告許可の記載があればtrue。「広告不可」「広告転載不可」または記載なしの場合はfalse。許可が明示されていない限りfalseとする。',
+        description: `広告掲載可否の判定ルール（厳密に従うこと）:
+
+【trueにするケース — 以下のいずれかが明記されている場合のみ】
+- 「広告可」「広告転載可」「広告掲載可」「AD可」
+- 「自社サイトのみ可」「自社HP可」「自社ホームページのみ掲載可能」→ true（自社ポータルに掲載するため）
+- 「ネット広告可」「ネット広告でお願い」
+- 「SUUMO以外可能」「楽待・健美家は不可」等、特定媒体のみ不可 → true（自社ポータルは該当しないため）
+
+【falseにするケース】
+- 「広告不可」「広告掲載不可」「広告NG」「広告転載不可」「全て不可」
+- 「ネット広告厳禁」「ネット広告一切厳禁」「広告一切不可」
+- 「広告掲載(HP含む)は不可」
+- 「承諾書が必要」「応相談」→ false（明確な許可ではない）
+- 広告可否について一切記載がない → false（許可が明示されていない限りfalse）
+
+【重要な注意点】
+- 「広告の料金に相当する額 相談」等は広告費の話であり、広告可否とは無関係 → 他に可の記載がなければfalse
+- 取引態様欄、備考欄、帯部分（ページ下部の不動産会社情報エリア）を必ず確認すること
+- 広告可否の記載は小さい文字で書かれていることが多いので注意深く探すこと`,
       },
       yield_gross: {
         type: ['number', 'null'],
@@ -153,6 +188,10 @@ export const extractionSchema = {
       'structure',
       'zoning',
       'current_status',
+      'info_registered_at',
+      'info_updated_at',
+      'conditions_expiry',
+      'delivery_date',
       'ad_allowed',
       'yield_gross',
       'yield_net',
@@ -178,7 +217,10 @@ export const extractionPrompt = `あなたは不動産情報抽出AIです。以
 7. 税金、ビザ、法規に関する記載がある場合、warnings に「税務・法務については専門家にご相談ください。」を追加。
 8. 価格が1億円未満で利回り20%超など異常値の場合、warnings に「数値に異常の可能性があります。要確認。」を追加。
 9. 各フィールドについて、抽出元テキストと信頼度、ページ番号を evidence に記録。
-10. 広告掲載可否（ad_allowed）: 「広告可」「広告転載可」「広告掲載可」「AD可」等の記載があればtrue。「広告不可」「広告転載不可」等があればfalse。記載が見つからなければnull。
+10. 物件情報の登録日・更新日（info_registered_at, info_updated_at）: マイソクに記載があればYYYY-MM-DD形式で抽出。「情報登録日」「登録日」「作成日」「情報更新日」「更新日」「改定日」等。
+11. 取引条件の有効期限（conditions_expiry）: 「有効期限」「条件期限」「価格有効期限」等の記載があればYYYY-MM-DD形式で抽出。
+12. 引渡し可能時期（delivery_date）: 「引渡し」「引き渡し」「引渡時期」等の記載があれば、「即時」「相談」「2026年4月」等そのまま抽出。
+13. 広告掲載可否（ad_allowed）: 「広告可」「広告転載可」「広告掲載可」「AD可」等の記載があればtrue。「楽待・健美家は不可」等、特定媒体のみ不可の場合もtrue（自社ポータルは該当しないため。warnings に媒体制限を記録）。「広告不可」「広告転載不可」「全て不可」等があればfalse。「承諾書が必要」「相談可」等の事前承諾必須の記載もfalse。記載が見つからなければfalse。
 
 【入力テキスト】`
 
