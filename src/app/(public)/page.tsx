@@ -2,9 +2,11 @@ import Link from 'next/link'
 import { getTranslations, getLocale } from 'next-intl/server'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Building2, Search, Globe, Shield, ArrowRight, Clock, CheckCircle2 } from 'lucide-react'
+import { Building2, Globe, Shield, ArrowRight, Clock, Lock, Camera, MessageCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/listing/listing-card'
+import { HomeSearchForm } from '@/components/listing/home-search-form'
+import { buildPublicSearchLocationIndex } from '@/lib/public-search'
 
 export default async function HomePage() {
   const t = await getTranslations()
@@ -69,6 +71,14 @@ export default async function HomePage() {
     yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
   }))
 
+  const { data: locationRows } = await supabase
+    .from('listings')
+    .select('city, stations')
+    .eq('status', 'PUBLISHED')
+    .eq('adAllowed', true)
+
+  const locationIndex = buildPublicSearchLocationIndex(locationRows || [])
+
   const isLoggedIn = !!authUser
 
   return (
@@ -79,75 +89,7 @@ export default async function HomePage() {
           <div className="container">
             {/* Quick Search Bar */}
             <div className="bg-background rounded-lg shadow-md border p-3 md:p-4">
-              <form action="/listings" method="get" className="space-y-2">
-                {/* 1行目: キーワード + 種別 + 価格 */}
-                <div className="flex flex-col md:flex-row gap-2">
-                  <input
-                    type="text"
-                    name="q"
-                    placeholder={t('search.keywordPlaceholder')}
-                    className="flex-1 h-10 px-3 rounded-md border border-input bg-background text-sm"
-                  />
-                  <select
-                    name="type"
-                    className="md:w-32 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.allTypes')}</option>
-                    <option value="区分マンション">{t('listing.types.mansion')}</option>
-                    <option value="一棟アパート">{t('listing.types.apartment')}</option>
-                    <option value="一棟マンション">{t('listing.types.building')}</option>
-                    <option value="戸建">{t('listing.types.house')}</option>
-                    <option value="土地">{t('listing.types.land')}</option>
-                  </select>
-                  <select
-                    name="priceMax"
-                    className="md:w-28 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.priceRange')}</option>
-                    <option value="30000000">{locale === 'en' ? '~¥30M' : '~3,000万'}</option>
-                    <option value="50000000">{locale === 'en' ? '~¥50M' : '~5,000万'}</option>
-                    <option value="100000000">{locale === 'en' ? '~¥100M' : '~1億'}</option>
-                    <option value="300000000">{locale === 'en' ? '~¥300M' : '~3億'}</option>
-                  </select>
-                </div>
-                {/* 2行目: エリア + 徒歩 + 面積 + 検索ボタン */}
-                <div className="flex flex-col md:flex-row gap-2">
-                  <select
-                    name="prefecture"
-                    className="md:w-28 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.allPrefectures')}</option>
-                    <option value="東京都">東京都</option>
-                    <option value="神奈川県">神奈川県</option>
-                    <option value="埼玉県">埼玉県</option>
-                    <option value="千葉県">千葉県</option>
-                    <option value="大阪府">大阪府</option>
-                  </select>
-                  <select
-                    name="walkMax"
-                    className="md:w-28 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.walkMinutesAll')}</option>
-                    <option value="5">{t('search.walkMinutes5')}</option>
-                    <option value="10">{t('search.walkMinutes10')}</option>
-                    <option value="15">{t('search.walkMinutes15')}</option>
-                  </select>
-                  <select
-                    name="areaMin"
-                    className="md:w-28 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.buildingAreaAll')}</option>
-                    <option value="20">20㎡+</option>
-                    <option value="50">50㎡+</option>
-                    <option value="100">100㎡+</option>
-                    <option value="200">200㎡+</option>
-                  </select>
-                  <Button type="submit" className="h-10 md:ml-auto">
-                    <Search className="mr-2 h-4 w-4" />
-                    {t('search.search')}
-                  </Button>
-                </div>
-              </form>
+              <HomeSearchForm compact locationIndex={locationIndex} />
             </div>
           </div>
         </section>
@@ -167,75 +109,7 @@ export default async function HomePage() {
 
             {/* Search Bar */}
             <div className="max-w-5xl mx-auto bg-background rounded-xl shadow-lg border p-4">
-              <form action="/listings" method="get" className="space-y-3">
-                {/* 1行目: キーワード + 種別 + 価格 */}
-                <div className="flex flex-col md:flex-row gap-2">
-                  <input
-                    type="text"
-                    name="q"
-                    placeholder={t('search.keywordPlaceholder')}
-                    className="flex-1 h-11 px-4 rounded-md border border-input bg-background"
-                  />
-                  <select
-                    name="type"
-                    className="md:w-36 h-11 px-3 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.allTypes')}</option>
-                    <option value="区分マンション">{t('listing.types.mansion')}</option>
-                    <option value="一棟アパート">{t('listing.types.apartment')}</option>
-                    <option value="一棟マンション">{t('listing.types.building')}</option>
-                    <option value="戸建">{t('listing.types.house')}</option>
-                    <option value="土地">{t('listing.types.land')}</option>
-                  </select>
-                  <select
-                    name="priceMax"
-                    className="md:w-32 h-11 px-3 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.priceRange')}</option>
-                    <option value="30000000">{locale === 'en' ? '~¥30M' : '~3,000万'}</option>
-                    <option value="50000000">{locale === 'en' ? '~¥50M' : '~5,000万'}</option>
-                    <option value="100000000">{locale === 'en' ? '~¥100M' : '~1億'}</option>
-                    <option value="300000000">{locale === 'en' ? '~¥300M' : '~3億'}</option>
-                  </select>
-                </div>
-                {/* 2行目: エリア + 徒歩 + 面積 + 検索ボタン */}
-                <div className="flex flex-col md:flex-row gap-2">
-                  <select
-                    name="prefecture"
-                    className="md:w-32 h-11 px-3 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.allPrefectures')}</option>
-                    <option value="東京都">東京都</option>
-                    <option value="神奈川県">神奈川県</option>
-                    <option value="埼玉県">埼玉県</option>
-                    <option value="千葉県">千葉県</option>
-                    <option value="大阪府">大阪府</option>
-                  </select>
-                  <select
-                    name="walkMax"
-                    className="md:w-32 h-11 px-3 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.walkMinutesAll')}</option>
-                    <option value="5">{t('search.walkMinutes5')}</option>
-                    <option value="10">{t('search.walkMinutes10')}</option>
-                    <option value="15">{t('search.walkMinutes15')}</option>
-                  </select>
-                  <select
-                    name="areaMin"
-                    className="md:w-28 h-11 px-3 rounded-md border border-input bg-background text-sm"
-                  >
-                    <option value="">{t('search.buildingAreaAll')}</option>
-                    <option value="20">20㎡+</option>
-                    <option value="50">50㎡+</option>
-                    <option value="100">100㎡+</option>
-                    <option value="200">200㎡+</option>
-                  </select>
-                  <Button type="submit" size="lg" className="h-11 md:ml-auto">
-                    <Search className="mr-2 h-4 w-4" />
-                    {t('search.search')}
-                  </Button>
-                </div>
-              </form>
+              <HomeSearchForm locationIndex={locationIndex} />
             </div>
 
             {/* Trust Indicators - コンパクト */}
@@ -285,6 +159,94 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* Exclusive Properties Banner */}
+      <section className="py-8 md:py-12 bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+        <div className="container">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Lock className="h-5 w-5 text-amber-400" />
+                <span className="text-amber-400 text-sm font-semibold tracking-wide uppercase">Exclusive</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">
+                {t('home.exclusiveBannerTitle')}
+              </h2>
+              <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                {t('home.exclusiveBannerDesc')}
+              </p>
+              <div className="flex flex-wrap gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                    <Lock className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">{t('home.exclusiveBannerStats1')}</p>
+                    <p className="text-sm font-semibold">{t('home.exclusiveBannerStats2')}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                    <Clock className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">{t('home.exclusiveBannerStats3')}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                    <Camera className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">
+                      {{ ja: '室内写真もご用意', en: 'Interior photos available', 'zh-TW': '提供室內照片', 'zh-CN': '提供室内照片' }[locale] ?? 'Interior photos available'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {isLoggedIn ? (
+                <Link href="/listings">
+                  <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold group">
+                    <MessageCircle className="mr-2 h-4 w-4" />
+                    {t('home.exclusiveBannerButton')}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/register">
+                  <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-black font-semibold group">
+                    {t('home.exclusiveBannerButton')}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+              )}
+            </div>
+            <div className="hidden md:grid grid-cols-2 gap-3 opacity-80">
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <p className="text-xs text-slate-400 mb-1">{{ ja: '例: 港区タワーマンション', en: 'e.g. Minato Tower Mansion', 'zh-TW': '例: 港區塔式公寓', 'zh-CN': '例: 港区塔式公寓' }[locale] ?? 'e.g. Minato Tower Mansion'}</p>
+                <p className="font-semibold">¥1.2{{ ja: '億', en: '00M', 'zh-TW': '億', 'zh-CN': '亿' }[locale] ?? '00M'}</p>
+                <p className="text-xs text-slate-400">85㎡ / 2LDK / 2019</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <p className="text-xs text-slate-400 mb-1">{{ ja: '例: 渋谷区一棟マンション', en: 'e.g. Shibuya Apartment Bldg', 'zh-TW': '例: 澀谷區整棟公寓', 'zh-CN': '例: 涩谷区整栋公寓' }[locale] ?? 'e.g. Shibuya Apartment Bldg'}</p>
+                <p className="font-semibold">¥3.5{{ ja: '億', en: '00M', 'zh-TW': '億', 'zh-CN': '亿' }[locale] ?? '00M'}</p>
+                <p className="text-xs text-slate-400">{{ ja: '利回り', en: 'Yield', 'zh-TW': '報酬率', 'zh-CN': '回报率' }[locale] ?? 'Yield'} 5.2%</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <p className="text-xs text-slate-400 mb-1">{{ ja: '例: 目黒区戸建', en: 'e.g. Meguro House', 'zh-TW': '例: 目黑區獨棟住宅', 'zh-CN': '例: 目黑区独栋住宅' }[locale] ?? 'e.g. Meguro House'}</p>
+                <p className="font-semibold">¥8,900{{ ja: '万', en: 'K', 'zh-TW': '萬', 'zh-CN': '万' }[locale] ?? 'K'}</p>
+                <p className="text-xs text-slate-400">120㎡ / 4LDK</p>
+              </div>
+              <div className="bg-white/5 rounded-lg p-4 border border-white/10 flex items-center justify-center">
+                <div className="text-center">
+                  <Lock className="h-6 w-6 text-amber-400 mx-auto mb-1" />
+                  <p className="text-xs text-slate-400">{{ ja: 'ほか多数', en: 'and many more', 'zh-TW': '還有更多', 'zh-CN': '还有更多' }[locale] ?? 'and many more'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Features Section - 信頼構築 (未ログイン時のみ) */}
       {!isLoggedIn && (

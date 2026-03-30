@@ -5,11 +5,18 @@ import { ListingCard } from '@/components/listing/listing-card'
 import { ListingFilters } from '@/components/listing/listing-filters'
 import { Pagination } from '@/components/common/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  buildPublicSearchLocationIndex,
+  matchesTransitFilters,
+} from '@/lib/public-search'
 
 interface ListingsPageProps {
   searchParams: Promise<{
     q?: string
     type?: string
+    ward?: string
+    line?: string
+    station?: string
     prefecture?: string
     priceMin?: string
     priceMax?: string
@@ -20,6 +27,26 @@ interface ListingsPageProps {
   }>
 }
 
+interface ListingRow {
+  id: string
+  propertyType: string | null
+  price: string | number | null
+  addressPublic: string | null
+  stations: {
+    name: string
+    name_en?: string | null
+    line?: string | null
+    line_en?: string | null
+    walk_minutes?: number | null
+  }[] | null
+  builtYear: number | null
+  buildingArea: string | number | null
+  yieldGross: string | number | null
+  viewCount: number | null
+  publishedAt: string | null
+  media: { url: string; category: string }[] | null
+}
+
 export default async function ListingsPage({ searchParams }: ListingsPageProps) {
   const params = await searchParams
   const t = await getTranslations()
@@ -28,10 +55,15 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   const page = Number(params.page) || 1
   const perPage = 12
 
-  // Build query
-  let query = supabase
+  const { data: locationRows } = await supabase
     .from('listings')
-    .select(`
+    .select('city, stations')
+    .eq('status', 'PUBLISHED')
+    .eq('adAllowed', true)
+
+  const locationIndex = buildPublicSearchLocationIndex(locationRows || [])
+
+  const selectFields = `
       id,
       propertyType,
       price,
@@ -43,7 +75,12 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
       viewCount,
       publishedAt,
       media (url, category)
-    `, { count: 'exact' })
+    `
+
+  // Build query
+  let query = supabase
+    .from('listings')
+    .select(selectFields, { count: 'exact' })
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
 
@@ -54,7 +91,9 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   if (params.type) {
     query = query.eq('propertyType', params.type)
   }
-  if (params.prefecture) {
+  if (params.ward) {
+    query = query.eq('city', params.ward)
+  } else if (params.prefecture) {
     query = query.eq('prefecture', params.prefecture)
   }
   if (params.priceMin) {
@@ -82,13 +121,47 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
       query = query.order('createdAt', { ascending: false })
   }
 
-  // Apply pagination
   const from = (page - 1) * perPage
   const to = from + perPage - 1
-  query = query.range(from, to)
 
-  const { data: listings, count } = await query
-  const total = count || 0
+  let listings: ListingRow[] = []
+  let total = 0
+
+  const requiresManualFiltering = Boolean(params.walkMax || params.line || params.station)
+
+  if (requiresManualFiltering) {
+    const { data } = await query
+    const maxWalk = params.walkMax ? Number(params.walkMax) : null
+    const filteredListings = (data || []).filter((listing) => {
+      const stations = listing.stations as {
+        name?: string | null
+        line?: string | null
+        walk_minutes?: number | null
+      }[] | null
+
+      if (!matchesTransitFilters(stations, params.line, params.station)) {
+        return false
+      }
+
+      if (!maxWalk) {
+        return true
+      }
+
+      if (!stations || stations.length === 0) {
+        return false
+      }
+
+      return stations.some((station) => station.walk_minutes != null && station.walk_minutes <= maxWalk)
+    })
+
+    total = filteredListings.length
+    listings = filteredListings.slice(from, to + 1)
+  } else {
+    const { data, count } = await query.range(from, to)
+    listings = data || []
+    total = count || 0
+  }
+
   const totalPages = Math.ceil(total / perPage)
 
   // Get authenticated user and their favorites
@@ -117,24 +190,13 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
     }
   }
 
-  // Filter by walkMax (post-query filtering for JSONB stations)
-  let filteredListings = listings || []
-  if (params.walkMax) {
-    const maxWalk = Number(params.walkMax)
-    filteredListings = filteredListings.filter(listing => {
-      const stations = listing.stations as { walk_minutes?: number | null }[] | null
-      if (!stations || stations.length === 0) return false
-      // Check if any station has walk_minutes <= maxWalk
-      return stations.some(s => s.walk_minutes != null && s.walk_minutes <= maxWalk)
-    })
-  }
-
   // Format listings for ListingCard component
-  const formattedListings = filteredListings.map(listing => ({
+  const formattedListings = (listings || []).map(listing => ({
     ...listing,
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
     yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
+    media: listing.media || [],
   }))
 
   return (
@@ -145,7 +207,7 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
         <aside className="lg:col-span-1">
           <div className="lg:sticky lg:top-20">
             <Suspense fallback={<Skeleton className="h-96" />}>
-              <ListingFilters />
+              <ListingFilters locationIndex={locationIndex} />
             </Suspense>
           </div>
         </aside>

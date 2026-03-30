@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
+import { Search, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -13,10 +15,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Search, ChevronDown, ChevronUp } from 'lucide-react'
+import {
+  getStationsForLine,
+  normalizeRailwayLine,
+  type PublicSearchLocationIndex,
+} from '@/lib/public-search'
+import {
+  translateCityName,
+  translateRailwayLine,
+  translateStationName,
+} from '@/lib/translate-fields'
 
-export function ListingFilters() {
+interface ListingFiltersProps {
+  locationIndex: PublicSearchLocationIndex
+}
+
+export function ListingFilters({ locationIndex }: ListingFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -24,7 +38,6 @@ export function ListingFilters() {
   const t = useTranslations('search')
   const tListing = useTranslations('listing')
 
-  // 物件種別（翻訳キーを使用）
   const propertyTypes = [
     { value: '区分マンション', labelKey: 'types.mansion' },
     { value: '一棟マンション', labelKey: 'types.building' },
@@ -32,15 +45,6 @@ export function ListingFilters() {
     { value: '戸建', labelKey: 'types.house' },
     { value: '土地', labelKey: 'types.land' },
     { value: '店舗・事務所', labelKey: 'types.commercial' },
-  ]
-
-  // 都道府県（値と表示が同じなのでそのまま）
-  const prefectures = [
-    '東京都',
-    '神奈川県',
-    '埼玉県',
-    '千葉県',
-    '大阪府',
   ]
 
   const walkMinutesOptions = [
@@ -57,11 +61,11 @@ export function ListingFilters() {
   ]
 
   const priceRangeValues = [10000000, 30000000, 50000000, 100000000, 300000000, 500000000, 1000000000]
-  const priceRanges = priceRangeValues.map(v => ({
-    value: String(v),
+  const priceRanges = priceRangeValues.map((value) => ({
+    value: String(value),
     label: locale === 'en'
-      ? (v >= 1_000_000_000 ? `¥${v / 1_000_000_000}B` : `¥${v / 1_000_000}M`)
-      : (v >= 100_000_000 ? `¥${v / 100_000_000}億` : `¥${(v / 10_000).toLocaleString()}万`),
+      ? (value >= 1_000_000_000 ? `¥${value / 1_000_000_000}B` : `¥${value / 1_000_000}M`)
+      : (value >= 100_000_000 ? `¥${value / 100_000_000}億` : `¥${(value / 10_000).toLocaleString()}万`),
   }))
 
   const sortOptions = [
@@ -71,13 +75,24 @@ export function ListingFilters() {
     { value: 'yield_desc', labelKey: 'sortYieldDesc' },
   ]
 
-  const updateFilter = (key: string, value: string) => {
+  const selectedLine = normalizeRailwayLine(searchParams.get('line'))
+  const stationOptions = getStationsForLine(locationIndex, selectedLine)
+
+  const updateFilters = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (value) {
-      params.set(key, value)
-    } else {
-      params.delete(key)
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value)
+      } else {
+        params.delete(key)
+      }
+    })
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'ward')) {
+      params.delete('prefecture')
     }
+
     params.delete('page')
     router.push(`/listings?${params.toString()}`)
   }
@@ -85,8 +100,7 @@ export function ListingFilters() {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const q = formData.get('q') as string
-    updateFilter('q', q)
+    updateFilters({ q: String(formData.get('q') || '') })
   }
 
   const clearFilters = () => {
@@ -129,15 +143,13 @@ export function ListingFilters() {
           <Label>{tListing('propertyType')}</Label>
           <Select
             value={searchParams.get('type') || 'all'}
-            onValueChange={(value) => updateFilter('type', value === 'all' ? '' : value)}
+            onValueChange={(value) => updateFilters({ type: value === 'all' ? '' : value })}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('allTypes')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">
-                {t('allTypes')}
-              </SelectItem>
+              <SelectItem value="all">{t('allTypes')}</SelectItem>
               {propertyTypes.map((type) => (
                 <SelectItem key={type.value} value={type.value}>
                   {tListing(type.labelKey)}
@@ -150,19 +162,63 @@ export function ListingFilters() {
         <div className="space-y-2">
           <Label>{t('area')}</Label>
           <Select
-            value={searchParams.get('prefecture') || 'all'}
-            onValueChange={(value) => updateFilter('prefecture', value === 'all' ? '' : value)}
+            value={searchParams.get('ward') || 'all'}
+            onValueChange={(value) => updateFilters({ ward: value === 'all' ? '' : value })}
           >
             <SelectTrigger>
-              <SelectValue placeholder={t('allAreas')} />
+              <SelectValue placeholder={t('allTokyo13Wards')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allTokyo13Wards')}</SelectItem>
+              {locationIndex.wards.map((ward) => (
+                <SelectItem key={ward} value={ward}>
+                  {translateCityName(ward, locale) || ward}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{t('line')}</Label>
+          <Select
+            value={selectedLine || 'all'}
+            onValueChange={(value) => updateFilters({
+              line: value === 'all' ? '' : normalizeRailwayLine(value),
+              station: '',
+            })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t('allLines')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allLines')}</SelectItem>
+              {locationIndex.lines.map((line) => (
+                <SelectItem key={line} value={line}>
+                  {translateRailwayLine(line, locale) || line}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>{t('station')}</Label>
+          <Select
+            value={searchParams.get('station') || 'all'}
+            onValueChange={(value) => updateFilters({ station: value === 'all' ? '' : value })}
+            disabled={!selectedLine}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={selectedLine ? t('allStations') : t('selectLineFirst')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">
-                {t('allAreas')}
+                {selectedLine ? t('allStations') : t('selectLineFirst')}
               </SelectItem>
-              {prefectures.map((pref) => (
-                <SelectItem key={pref} value={pref}>
-                  {pref}
+              {stationOptions.map((station) => (
+                <SelectItem key={station} value={station}>
+                  {translateStationName(station, locale) || station}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -173,7 +229,7 @@ export function ListingFilters() {
           <Label>{t('priceMin')}</Label>
           <Select
             value={searchParams.get('priceMin') || 'none'}
-            onValueChange={(value) => updateFilter('priceMin', value === 'none' ? '' : value)}
+            onValueChange={(value) => updateFilters({ priceMin: value === 'none' ? '' : value })}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('noMin')} />
@@ -193,7 +249,7 @@ export function ListingFilters() {
           <Label>{t('priceMax')}</Label>
           <Select
             value={searchParams.get('priceMax') || 'none'}
-            onValueChange={(value) => updateFilter('priceMax', value === 'none' ? '' : value)}
+            onValueChange={(value) => updateFilters({ priceMax: value === 'none' ? '' : value })}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('noMax')} />
@@ -213,7 +269,7 @@ export function ListingFilters() {
           <Label>{t('walkMinutes')}</Label>
           <Select
             value={searchParams.get('walkMax') || 'all'}
-            onValueChange={(value) => updateFilter('walkMax', value === 'all' ? '' : value)}
+            onValueChange={(value) => updateFilters({ walkMax: value === 'all' ? '' : value })}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('walkMinutesAll')} />
@@ -233,7 +289,7 @@ export function ListingFilters() {
           <Label>{t('buildingAreaMin')}</Label>
           <Select
             value={searchParams.get('areaMin') || 'all'}
-            onValueChange={(value) => updateFilter('areaMin', value === 'all' ? '' : value)}
+            onValueChange={(value) => updateFilters({ areaMin: value === 'all' ? '' : value })}
           >
             <SelectTrigger>
               <SelectValue placeholder={t('buildingAreaAll')} />
@@ -253,7 +309,7 @@ export function ListingFilters() {
           <Label>{t('sort')}</Label>
           <Select
             value={searchParams.get('sort') || 'newest'}
-            onValueChange={(value) => updateFilter('sort', value)}
+            onValueChange={(value) => updateFilters({ sort: value })}
           >
             <SelectTrigger>
               <SelectValue />

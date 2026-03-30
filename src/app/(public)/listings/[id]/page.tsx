@@ -11,6 +11,7 @@ import { formatPrice } from '@/lib/format'
 import { MapPin, Train, Info, Sparkles } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { ExclusiveCta } from '@/components/listing/exclusive-cta'
 import { translateAddress, translateRailwayLine, translateStationName } from '@/lib/translate-fields'
 
 interface ListingPageProps {
@@ -103,7 +104,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
     <div className="container py-8">
       <ViewTracker listingId={listing.id} />
       <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 min-w-0">
           <ListingGallery media={formattedListing.media} />
 
           <div className="mt-8">
@@ -192,13 +193,14 @@ export default async function ListingPage({ params }: ListingPageProps) {
           </div>
         </div>
 
-        <div className="lg:col-span-1">
-          <div className="sticky top-24">
+        <div className="lg:col-span-1 min-w-0">
+          <div className="sticky top-24 space-y-4">
             <InquiryButton
               listingId={formattedListing.id}
               userId={userId}
               listingTitle={translateAddress(formattedListing.addressPublic, locale) || formattedListing.addressPublic || t('property')}
             />
+            <ExclusiveCta listingId={formattedListing.id} userId={userId} />
           </div>
         </div>
       </div>

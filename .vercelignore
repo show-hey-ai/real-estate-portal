@@ -1,0 +1,10 @@
+.git
+.claude
+.next
+node_modules
+test-results
+tmp-split
+archive
+.DS_Store
+.tmp-portal-home.png
+*.log

@@ -497,7 +497,6 @@ const stationNameMap: Record<string, string> = {
   '旗の台': 'Hatanodai',
   '北品川': 'Kita-Shinagawa',
   '新馬場': 'Shimbanba',
-  '青物横丁': 'Aomono-Yokocho',
   '鮫洲': 'Samezu',
   '立会川': 'Tachiaigawa',
   '天王洲アイル': 'Tennozu Isle',
@@ -595,6 +594,11 @@ export function translateStationName(name: string | null | undefined, locale: st
   const nameWithoutSuffix = name.replace(/駅$/, '')
   if (nameWithoutSuffix !== name && stationNameMap[nameWithoutSuffix]) return stationNameMap[nameWithoutSuffix]
   return name
+}
+
+export function translateCityName(city: string | null | undefined, locale: string): string | null {
+  if (!city || locale === 'ja') return city || null
+  return cityMap[city] || city
 }
 
 export function translateAddress(address: string | null | undefined, locale: string): string | null {
