@@ -108,7 +108,7 @@ export default async function AdminDashboardPage() {
       title: t('stats.totalViews'),
       value: totalViews.toLocaleString(),
       icon: BarChart3,
-      href: '/admin/listings',
+      href: '/admin/analytics',
     },
   ]
 

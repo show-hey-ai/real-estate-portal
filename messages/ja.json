@@ -158,6 +158,7 @@
     "leads": "リード管理",
     "listingsNav": "物件一覧",
     "newListing": "物件登録",
+    "analyticsNav": "アクセス解析",
     "importNav": "PDF取り込み",
     "importButton": "インポート",
     "stats": {
@@ -236,6 +237,42 @@
       "contacted": "対応中",
       "closed": "完了",
       "notes": "対応メモ"
+    },
+    "analytics": {
+      "title": "アクセス解析",
+      "trackedSince": "計測開始: {date}",
+      "totalTrackedPageviews": "トラッキング済みPV {count}",
+      "cards": {
+        "pageviews7d": "直近7日PV",
+        "uniqueVisitors7d": "直近7日ユニーク訪問",
+        "listingViews7d": "直近7日物件詳細PV",
+        "leads7d": "直近7日リード"
+      },
+      "sections": {
+        "dailyTrend": "日別トレンド",
+        "dailyTrendDesc": "直近14日間のPVとユニーク訪問数",
+        "topReferrers": "流入元",
+        "topReferrersDesc": "直近30日間の参照元ホスト",
+        "topPages": "人気ページ",
+        "topPagesDesc": "直近30日間のページ別PV",
+        "topListings": "人気物件",
+        "topListingsDesc": "直近30日間の物件詳細ページPV",
+        "campaigns": "UTMキャンペーン",
+        "campaignsDesc": "広告・DM計測用のUTM流入"
+      },
+      "pageviewsAndVisitors": "{pageviews} PV / {visitors} 訪問",
+      "visitors": "{count} 訪問",
+      "direct": "直接 / 不明",
+      "empty": "まだアクセスデータがありません",
+      "noCampaigns": "UTM付きアクセスはまだありません",
+      "unknownListing": "物件情報なし",
+      "pageTypes": {
+        "home": "ホーム",
+        "listingIndex": "物件一覧",
+        "listingDetail": "物件詳細",
+        "favorites": "お気に入り",
+        "other": "その他"
+      }
     }
   },
   "warnings": {

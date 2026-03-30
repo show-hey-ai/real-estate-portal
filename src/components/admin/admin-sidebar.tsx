@@ -10,10 +10,35 @@ import {
   Users,
   FileUp,
   LogOut,
+  BarChart3,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-const navItems = [
+type AdminNavChild = {
+  href: string
+  labelKey: string
+}
+
+type AdminNavLeaf = {
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  labelKey: string
+}
+
+type AdminNavGroup = {
+  titleKey: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  children: AdminNavChild[]
+}
+
+type AdminNavItem = AdminNavLeaf | AdminNavGroup
+
+function isNavGroup(item: AdminNavItem): item is AdminNavGroup {
+  return 'children' in item
+}
+
+const navItems: AdminNavItem[] = [
   { href: '/admin', icon: LayoutDashboard, labelKey: 'admin.dashboard' },
   // The structure of this item has changed to support nested links.
   // The rendering logic in AdminSidebar will need to be updated to handle 'children'.
@@ -33,6 +58,7 @@ const navItems = [
     ],
   },
   { href: '/admin/leads', icon: Users, labelKey: 'admin.leads' },
+  { href: '/admin/analytics', icon: BarChart3, labelKey: 'admin.analyticsNav' },
   { href: '/admin/import', icon: FileUp, labelKey: 'admin.importNav' },
 ]
 
@@ -50,18 +76,18 @@ export function AdminSidebar() {
       </div>
 
       <nav className="px-4 space-y-1">
-        {navItems.map((item: any) => { // Using any temporarily to bypass strict type check for the mixed structure
-          if (item.children) {
+        {navItems.map((item) => {
+          if (isNavGroup(item)) {
             // Parent item with children
             return (
-              <div key={item.titleKey || item.labelKey} className="space-y-1">
+              <div key={item.titleKey} className="space-y-1">
                 <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground">
                   {item.icon && <item.icon className="h-4 w-4" />}
                   {/* Fallback to simple string if key not found (debugging) or use t() */}
                   {t(item.titleKey)}
                 </div>
                 <div className="pl-4 space-y-1">
-                  {item.children.map((child: any) => {
+                  {item.children.map((child) => {
                     const isActive = pathname === child.href
                     return (
                       <Link
@@ -74,7 +100,7 @@ export function AdminSidebar() {
                             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         )}
                       >
-                        {child.labelKey ? t(child.labelKey) : child.title}
+                        {t(child.labelKey)}
                       </Link>
                     )
                   })}

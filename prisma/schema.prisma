@@ -87,6 +87,7 @@ model Listing {
   favorites            Favorite[]
   leads                Lead[]
   media                Media[]
+  siteVisitEvents      SiteVisitEvent[]
 
   @@map("listings")
 }
@@ -126,6 +127,33 @@ model TransitStationMaster {
   @@index([lineId, sortOrder])
   @@index([ward])
   @@map("transit_station_master")
+}
+
+model SiteVisitEvent {
+  id           String   @id @default(cuid())
+  visitorId    String
+  pathname     String
+  queryString  String?
+  pageType     String
+  locale       String?
+  referrerUrl  String?
+  referrerHost String?
+  utmSource    String?
+  utmMedium    String?
+  utmCampaign  String?
+  utmTerm      String?
+  utmContent   String?
+  listingId    String?
+  occurredAt   DateTime @default(now())
+  listing      Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  @@index([occurredAt])
+  @@index([pageType, occurredAt])
+  @@index([pathname, occurredAt])
+  @@index([visitorId, occurredAt])
+  @@index([listingId, occurredAt])
+  @@index([referrerHost, occurredAt])
+  @@map("site_visit_events")
 }
 
 model Media {

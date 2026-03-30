@@ -1,5 +1,6 @@
 import { Header } from '@/components/common/header'
 import { Footer } from '@/components/common/footer'
+import { PublicPageviewTracker } from '@/components/analytics/public-pageview-tracker'
 import { createClient } from '@/lib/supabase/server'
 // import { prisma } from '@/lib/db' // Removed to bypass firewall
 
@@ -26,6 +27,7 @@ export default async function PublicLayout({
 
   return (
     <div className="flex min-h-screen flex-col">
+      <PublicPageviewTracker />
       <Header user={user} />
       <main className="flex-1">{children}</main>
       <Footer />

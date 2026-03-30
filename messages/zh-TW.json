@@ -158,6 +158,7 @@
     "leads": "客戶管理",
     "listingsNav": "物件列表",
     "newListing": "新增物件",
+    "analyticsNav": "流量分析",
     "importNav": "匯入PDF",
     "importButton": "匯入",
     "stats": {
@@ -236,6 +237,42 @@
       "contacted": "已聯繫",
       "closed": "已結案",
       "notes": "備註"
+    },
+    "analytics": {
+      "title": "流量分析",
+      "trackedSince": "開始追蹤: {date}",
+      "totalTrackedPageviews": "已追蹤 PV {count}",
+      "cards": {
+        "pageviews7d": "近 7 天 PV",
+        "uniqueVisitors7d": "近 7 天訪客",
+        "listingViews7d": "近 7 天物件詳情 PV",
+        "leads7d": "近 7 天客戶"
+      },
+      "sections": {
+        "dailyTrend": "每日趨勢",
+        "dailyTrendDesc": "近 14 天的 PV 與訪客數",
+        "topReferrers": "主要來源",
+        "topReferrersDesc": "近 30 天的來源網站",
+        "topPages": "熱門頁面",
+        "topPagesDesc": "近 30 天各頁面的 PV",
+        "topListings": "熱門物件",
+        "topListingsDesc": "近 30 天物件詳情頁 PV",
+        "campaigns": "UTM 活動",
+        "campaignsDesc": "帶有 UTM 參數的廣告與 DM 流量"
+      },
+      "pageviewsAndVisitors": "{pageviews} PV / {visitors} 訪客",
+      "visitors": "{count} 訪客",
+      "direct": "直接 / 不明",
+      "empty": "目前還沒有流量資料",
+      "noCampaigns": "目前還沒有帶 UTM 的流量",
+      "unknownListing": "沒有物件資訊",
+      "pageTypes": {
+        "home": "首頁",
+        "listingIndex": "物件列表",
+        "listingDetail": "物件詳情",
+        "favorites": "收藏",
+        "other": "其他"
+      }
     }
   },
   "warnings": {

@@ -158,6 +158,7 @@
     "leads": "Leads",
     "listingsNav": "Listing List",
     "newListing": "Add Listing",
+    "analyticsNav": "Analytics",
     "importNav": "Import PDF",
     "importButton": "Import",
     "stats": {
@@ -236,6 +237,42 @@
       "contacted": "Contacted",
       "closed": "Closed",
       "notes": "Notes"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "trackedSince": "Tracking since: {date}",
+      "totalTrackedPageviews": "Tracked pageviews {count}",
+      "cards": {
+        "pageviews7d": "Pageviews (7d)",
+        "uniqueVisitors7d": "Unique visitors (7d)",
+        "listingViews7d": "Listing detail views (7d)",
+        "leads7d": "Leads (7d)"
+      },
+      "sections": {
+        "dailyTrend": "Daily trend",
+        "dailyTrendDesc": "Pageviews and unique visitors for the last 14 days",
+        "topReferrers": "Top referrers",
+        "topReferrersDesc": "Referrer hosts over the last 30 days",
+        "topPages": "Top pages",
+        "topPagesDesc": "Pageviews by pathname over the last 30 days",
+        "topListings": "Top listings",
+        "topListingsDesc": "Listing detail pageviews over the last 30 days",
+        "campaigns": "UTM campaigns",
+        "campaignsDesc": "Tracked traffic tagged with UTM parameters"
+      },
+      "pageviewsAndVisitors": "{pageviews} PV / {visitors} visitors",
+      "visitors": "{count} visitors",
+      "direct": "Direct / Unknown",
+      "empty": "No analytics data yet",
+      "noCampaigns": "No UTM-tagged traffic yet",
+      "unknownListing": "Listing details unavailable",
+      "pageTypes": {
+        "home": "Home",
+        "listingIndex": "Listings",
+        "listingDetail": "Listing detail",
+        "favorites": "Favorites",
+        "other": "Other"
+      }
     }
   },
   "warnings": {

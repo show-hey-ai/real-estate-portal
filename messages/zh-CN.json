@@ -158,6 +158,7 @@
     "leads": "客户管理",
     "listingsNav": "房源列表",
     "newListing": "新增房源",
+    "analyticsNav": "流量分析",
     "importNav": "导入PDF",
     "importButton": "导入",
     "stats": {
@@ -236,6 +237,42 @@
       "contacted": "已联系",
       "closed": "已结案",
       "notes": "备注"
+    },
+    "analytics": {
+      "title": "流量分析",
+      "trackedSince": "开始追踪: {date}",
+      "totalTrackedPageviews": "已追踪 PV {count}",
+      "cards": {
+        "pageviews7d": "近 7 天 PV",
+        "uniqueVisitors7d": "近 7 天访客",
+        "listingViews7d": "近 7 天房源详情 PV",
+        "leads7d": "近 7 天客户"
+      },
+      "sections": {
+        "dailyTrend": "每日趋势",
+        "dailyTrendDesc": "近 14 天的 PV 与访客数",
+        "topReferrers": "主要来源",
+        "topReferrersDesc": "近 30 天的来源网站",
+        "topPages": "热门页面",
+        "topPagesDesc": "近 30 天各页面的 PV",
+        "topListings": "热门房源",
+        "topListingsDesc": "近 30 天房源详情页 PV",
+        "campaigns": "UTM 活动",
+        "campaignsDesc": "带有 UTM 参数的广告与 DM 流量"
+      },
+      "pageviewsAndVisitors": "{pageviews} PV / {visitors} 访客",
+      "visitors": "{count} 访客",
+      "direct": "直接 / 不明",
+      "empty": "目前还没有流量数据",
+      "noCampaigns": "目前还没有带 UTM 的流量",
+      "unknownListing": "没有房源信息",
+      "pageTypes": {
+        "home": "首页",
+        "listingIndex": "房源列表",
+        "listingDetail": "房源详情",
+        "favorites": "收藏",
+        "other": "其他"
+      }
     }
   },
   "warnings": {
