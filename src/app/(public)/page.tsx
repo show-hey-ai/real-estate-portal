@@ -6,7 +6,7 @@ import { Building2, Globe, Shield, ArrowRight, Clock, Lock, Camera, MessageCircl
 import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/listing/listing-card'
 import { HomeSearchForm } from '@/components/listing/home-search-form'
-import { buildPublicSearchLocationIndex } from '@/lib/public-search'
+import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
 
 export default async function HomePage() {
   const t = await getTranslations()
@@ -71,13 +71,7 @@ export default async function HomePage() {
     yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
   }))
 
-  const { data: locationRows } = await supabase
-    .from('listings')
-    .select('city, stations')
-    .eq('status', 'PUBLISHED')
-    .eq('adAllowed', true)
-
-  const locationIndex = buildPublicSearchLocationIndex(locationRows || [])
+  const locationIndex = await getPublicSearchLocationIndex()
 
   const isLoggedIn = !!authUser
 

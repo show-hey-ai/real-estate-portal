@@ -4,8 +4,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -74,6 +72,16 @@ model Listing {
   updatedAt            DateTime             @updatedAt
   publishedAt          DateTime?
   viewCount            Int                  @default(0)
+  infoRegisteredAt     DateTime?
+  infoUpdatedAt        DateTime?
+  conditionsExpiry     DateTime?
+  deliveryDate         String?
+  adAllowed            Boolean              @default(false)
+  extractionConfidence Decimal?             @db.Decimal(3, 2)
+  sourcePdfUrl         String?
+  sourcePdfPages       Int?
+  adminNotes           String?              @db.Text
+  managementId         String?              @unique
   createdBy            User?                @relation("CreatedBy", fields: [createdById], references: [id])
   evidences            ExtractionEvidence[]
   favorites            Favorite[]
@@ -81,6 +89,43 @@ model Listing {
   media                Media[]
 
   @@map("listings")
+}
+
+model TransitLineMaster {
+  id             String               @id
+  canonicalName  String               @unique
+  displayNameJa  String
+  operatorNameJa String?
+  sourceLineName String?
+  sourceDataset  String?
+  sortOrder      Int                  @default(0)
+  isActive       Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  stations       TransitStationMaster[]
+
+  @@map("transit_line_master")
+}
+
+model TransitStationMaster {
+  id                String            @id
+  lineId            String
+  canonicalName     String
+  displayNameJa     String
+  ward              String
+  sourceStationName String?
+  sourceStationCode String?
+  sourceGroupCode   String?
+  sortOrder         Int               @default(0)
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  line              TransitLineMaster @relation(fields: [lineId], references: [id], onDelete: Cascade)
+
+  @@unique([lineId, canonicalName])
+  @@index([lineId, sortOrder])
+  @@index([ward])
+  @@map("transit_station_master")
 }
 
 model Media {
@@ -132,7 +177,9 @@ model Lead {
   contactValue  String?
   message       String?
   status        LeadStatus    @default(NEW)
+  adminNotes    String?
   createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   listing       Listing       @relation(fields: [listingId], references: [id], onDelete: Cascade)
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -160,6 +207,7 @@ enum Role {
 enum ListingStatus {
   DRAFT
   IN_REVIEW
+  REVIEWED
   PUBLISHED
   SOLD
   ARCHIVED
@@ -171,6 +219,7 @@ enum MediaCategory {
   FLOORPLAN
   MAP
   DOCUMENT
+  TABLE
   OTHER
 }
 
@@ -183,11 +232,14 @@ enum ContactMethod {
   EMAIL
   PHONE
   LINE
+  WHATSAPP
+  WECHAT
 }
 
 enum LeadStatus {
   NEW
   IN_PROGRESS
+  CONTACTED
   CONVERTED
   CLOSED
 }

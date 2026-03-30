@@ -5,10 +5,8 @@ import { ListingCard } from '@/components/listing/listing-card'
 import { ListingFilters } from '@/components/listing/listing-filters'
 import { Pagination } from '@/components/common/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  buildPublicSearchLocationIndex,
-  matchesTransitFilters,
-} from '@/lib/public-search'
+import { matchesTransitFilters } from '@/lib/public-search'
+import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
 
 interface ListingsPageProps {
   searchParams: Promise<{
@@ -55,13 +53,7 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   const page = Number(params.page) || 1
   const perPage = 12
 
-  const { data: locationRows } = await supabase
-    .from('listings')
-    .select('city, stations')
-    .eq('status', 'PUBLISHED')
-    .eq('adAllowed', true)
-
-  const locationIndex = buildPublicSearchLocationIndex(locationRows || [])
+  const locationIndex = await getPublicSearchLocationIndex()
 
   const selectFields = `
       id,
