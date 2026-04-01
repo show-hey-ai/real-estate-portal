@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { openai, extractionSchema, createMultiPagePrompt, extractionPrompt, translateDescription } from '@/lib/openai'
 import { formatPublicAddress, extractPrefecture, extractCity } from '@/lib/address'
 import { randomUUID } from 'crypto'
 import { renderPdfPages, extractPhotosFromPage } from '@/lib/pdf-image'
+import { getAdminUserFromSession } from '@/lib/admin-auth'
+import { validateAdminImportFile } from '@/lib/admin-validation'
 
 // pdfjs-dist (pdf-parseが内部使用) のNode.js環境用ポリフィル
 if (typeof globalThis.DOMMatrix === 'undefined') {
@@ -116,6 +118,10 @@ interface ExtractedData {
   structure?: string | null
   zoning?: string | null
   current_status?: string | null
+  info_registered_at?: string | null
+  info_updated_at?: string | null
+  conditions_expiry?: string | null
+  delivery_date?: string | null
   ad_allowed?: boolean
   yield_gross?: number | null
   yield_net?: number | null
@@ -145,18 +151,8 @@ async function authenticateWithApiKey(request: NextRequest): Promise<{ userId: s
 
 // Supabase Cookie認証（ブラウザ用）
 async function authenticateWithSession(): Promise<{ userId: string } | null> {
-  const supabase = await createClient()
-  const { data: { user: authUser } } = await supabase.auth.getUser()
-  if (!authUser) return null
-
-  const { data: dbUser, error } = await supabase
-    .from('users')
-    .select('id, role')
-    .eq('email', authUser.email!)
-    .single()
-
-  if (error || !dbUser || dbUser.role !== 'ADMIN') return null
-  return { userId: dbUser.id }
+  const adminUser = await getAdminUserFromSession()
+  return adminUser ? { userId: adminUser.id } : null
 }
 
 export async function POST(request: NextRequest) {
@@ -172,10 +168,15 @@ export async function POST(request: NextRequest) {
 
     // ファイル取得
     const formData = await request.formData()
-    const file = formData.get('file') as File
+    const fileValue = formData.get('file')
+    const file = fileValue instanceof File ? fileValue : null
+    const validationError = validateAdminImportFile(file)
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+    if (validationError || !file) {
+      return NextResponse.json(
+        { error: validationError || 'No file provided' },
+        { status: 400 }
+      )
     }
 
     const buffer = Buffer.from(await file.arrayBuffer())
@@ -338,6 +339,10 @@ export async function POST(request: NextRequest) {
         structure: extractedData.structure,
         zoning: extractedData.zoning,
         currentStatus: extractedData.current_status,
+        infoRegisteredAt: extractedData.info_registered_at ? new Date(extractedData.info_registered_at).toISOString() : null,
+        infoUpdatedAt: extractedData.info_updated_at ? new Date(extractedData.info_updated_at).toISOString() : null,
+        conditionsExpiry: extractedData.conditions_expiry ? new Date(extractedData.conditions_expiry).toISOString() : null,
+        deliveryDate: extractedData.delivery_date || null,
         yieldGross: extractedData.yield_gross,
         yieldNet: extractedData.yield_net,
         warnings: extractedData.warnings,

@@ -7,39 +7,16 @@ import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/listing/listing-card'
 import { HomeSearchForm } from '@/components/listing/home-search-form'
 import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
+import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 
 export default async function HomePage() {
-  const t = await getTranslations()
-  const locale = await getLocale()
+  const [t, locale] = await Promise.all([getTranslations(), getLocale()])
   const supabase = await createClient()
-
-  const { data: { user: authUser } } = await supabase.auth.getUser()
-
-  let userId: string | null = null
-  let favoriteIds: Set<string> = new Set()
-
-  if (authUser) {
-    const { data: dbUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', authUser.email!)
-      .single()
-
-    if (dbUser) {
-      userId = dbUser.id
-      const { data: favorites } = await supabase
-        .from('favorites')
-        .select('listingId')
-        .eq('userId', dbUser.id)
-
-      if (favorites) {
-        favoriteIds = new Set(favorites.map(f => f.listingId))
-      }
-    }
-  }
+  const viewerPromise = getOptionalPublicViewer()
+  const locationIndexPromise = getPublicSearchLocationIndex()
 
   // 新着物件を取得（公開中のもののみ、最新6件）
-  const { data: listings, error: listingsError } = await supabase
+  const listingsPromise = supabase
     .from('listings')
     .select(`
       id,
@@ -59,6 +36,12 @@ export default async function HomePage() {
     .order('publishedAt', { ascending: false })
     .limit(6)
 
+  const [viewer, locationIndex, { data: listings, error: listingsError }] = await Promise.all([
+    viewerPromise,
+    locationIndexPromise,
+    listingsPromise,
+  ])
+
   if (listingsError) {
     console.error('Error fetching listings:', listingsError)
   }
@@ -71,9 +54,14 @@ export default async function HomePage() {
     yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
   }))
 
-  const locationIndex = await getPublicSearchLocationIndex()
-
-  const isLoggedIn = !!authUser
+  const userId = viewer?.id ?? null
+  const favoriteIds = viewer
+    ? await getFavoriteIdsForViewer(
+        viewer.id,
+        formattedListings.map((listing) => listing.id)
+      )
+    : new Set<string>()
+  const isLoggedIn = !!viewer
 
   return (
     <div>

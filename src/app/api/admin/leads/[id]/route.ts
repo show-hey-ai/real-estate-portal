@@ -1,36 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/db'
+import { requireAdminUser } from '@/lib/admin-auth'
+import { adminLeadUpdateSchema } from '@/lib/admin-validation'
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient()
-    const { data: { user: authUser } } = await supabase.auth.getUser()
-
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const dbUser = await prisma.user.findUnique({
-      where: { email: authUser.email! },
-    })
-
-    if (!dbUser || dbUser.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const auth = await requireAdminUser()
+    if (!auth.ok) return auth.response
 
     const { id } = await params
-    const body = await request.json()
-    const { status, adminNotes } = body
+    const existingLead = await prisma.lead.findUnique({
+      where: { id },
+      select: { id: true },
+    })
+
+    if (!existingLead) {
+      return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
+    }
+
+    const body = await request.json().catch(() => null)
+    const parsed = adminLeadUpdateSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message || 'Invalid request body' },
+        { status: 400 }
+      )
+    }
 
     const lead = await prisma.lead.update({
       where: { id },
       data: {
-        ...(status && { status }),
-        ...(adminNotes !== undefined && { adminNotes }),
+        ...(parsed.data.status !== undefined && { status: parsed.data.status }),
+        ...(parsed.data.adminNotes !== undefined && { adminNotes: parsed.data.adminNotes }),
       },
     })
 

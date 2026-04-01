@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { ContactMethod } from '@prisma/client'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/db'
+
+const leadRequestSchema = z.object({
+  listingId: z.string().trim().min(1),
+  contactMethod: z.nativeEnum(ContactMethod),
+  contactValue: z.string().trim().min(1),
+  message: z.string().trim().optional(),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,20 +28,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const body = await request.json()
-    const { listingId, contactMethod, contactValue, message } = body
+    const body = await request.json().catch(() => null)
+    const parsed = leadRequestSchema.safeParse(body)
 
-    if (!listingId || !contactMethod || !message) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid inquiry payload' }, { status: 400 })
+    }
+
+    const listing = await prisma.listing.findFirst({
+      where: {
+        id: parsed.data.listingId,
+        status: 'PUBLISHED',
+        adAllowed: true,
+      },
+      select: { id: true },
+    })
+
+    if (!listing) {
+      return NextResponse.json({ error: 'Listing not found' }, { status: 404 })
     }
 
     const lead = await prisma.lead.create({
       data: {
         userId: dbUser.id,
-        listingId,
-        contactMethod,
-        contactValue,
-        message,
+        listingId: parsed.data.listingId,
+        contactMethod: parsed.data.contactMethod,
+        contactValue: parsed.data.contactValue,
+        message: parsed.data.message || null,
       },
     })
 

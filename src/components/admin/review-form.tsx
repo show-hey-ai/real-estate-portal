@@ -65,6 +65,10 @@ interface ListingData {
   currentStatus: string | null
   yieldGross: string | null
   yieldNet: string | null
+  infoRegisteredAt: string | null
+  infoUpdatedAt: string | null
+  conditionsExpiry: string | null
+  deliveryDate: string | null
   warnings: string[] | null
   features: string[] | null
   descriptionJa: string | null
@@ -72,8 +76,10 @@ interface ListingData {
   descriptionZhTw: string | null
   descriptionZhCn: string | null
   extractionConfidence: string | null
+  adAllowed: boolean
   sourcePdfUrl: string | null
   sourcePdfPages: number | null
+  managementId: string | null
   media: Media[]
   evidences: Evidence[]
 }
@@ -115,10 +121,15 @@ export function ReviewForm({ listing }: ReviewFormProps) {
     currentStatus: listing.currentStatus || '',
     yieldGross: listing.yieldGross || '',
     yieldNet: listing.yieldNet || '',
+    infoRegisteredAt: listing.infoRegisteredAt ? listing.infoRegisteredAt.slice(0, 10) : '',
+    infoUpdatedAt: listing.infoUpdatedAt ? listing.infoUpdatedAt.slice(0, 10) : '',
+    conditionsExpiry: listing.conditionsExpiry ? listing.conditionsExpiry.slice(0, 10) : '',
+    deliveryDate: listing.deliveryDate || '',
     descriptionJa: listing.descriptionJa || '',
     descriptionEn: listing.descriptionEn || '',
     descriptionZhTw: listing.descriptionZhTw || '',
     descriptionZhCn: listing.descriptionZhCn || '',
+    adAllowed: listing.adAllowed,
   })
 
   const [stations, setStations] = useState<Station[]>(
@@ -225,7 +236,7 @@ export function ReviewForm({ listing }: ReviewFormProps) {
     {
       key: 'images',
       label: t('checks.images'),
-      passed: adoptedMedia.size >= 3,
+      passed: adoptedMedia.size >= 1,
     },
     {
       key: 'noFullAddress',
@@ -299,7 +310,14 @@ export function ReviewForm({ listing }: ReviewFormProps) {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">{t('title')}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold">{t('title')}</h1>
+            {listing.managementId && (
+              <span className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                {listing.managementId}
+              </span>
+            )}
+          </div>
           {listing.sourcePdfPages && listing.sourcePdfPages > 1 && (
             <p className="text-sm text-muted-foreground mt-1">
               PDF: {listing.sourcePdfPages}ページ
@@ -407,6 +425,24 @@ export function ReviewForm({ listing }: ReviewFormProps) {
                     <EvidenceDisplay evidences={evidenceByField['price']} />
                   )}
                 </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-md border bg-muted/30">
+                <Checkbox
+                  id="adAllowed"
+                  checked={formData.adAllowed}
+                  onCheckedChange={(checked) =>
+                    setFormData(prev => ({ ...prev, adAllowed: checked === true }))
+                  }
+                />
+                <Label htmlFor="adAllowed" className="cursor-pointer flex items-center gap-2">
+                  広告掲載可
+                  {formData.adAllowed ? (
+                    <Badge className="bg-emerald-500 text-white text-xs">可</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs text-muted-foreground">不可</Badge>
+                  )}
+                </Label>
               </div>
 
               <div className="space-y-2">
@@ -590,6 +626,59 @@ export function ReviewForm({ listing }: ReviewFormProps) {
                   {showEvidence && evidenceByField['yield_net'] && (
                     <EvidenceDisplay evidences={evidenceByField['yield_net']} />
                   )}
+                </div>
+              </div>
+
+              {/* 表示規約必須項目 */}
+              <div className="pt-4 border-t">
+                <Label className="text-sm font-semibold text-orange-700">表示規約必須項目（2022年改正）</Label>
+                <div className="grid grid-cols-2 gap-4 mt-3">
+                  <div className="space-y-2">
+                    <Label>情報登録日</Label>
+                    <Input
+                      type="date"
+                      value={formData.infoRegisteredAt}
+                      onChange={(e) => handleChange('infoRegisteredAt', e.target.value)}
+                    />
+                    {showEvidence && evidenceByField['info_registered_at'] && (
+                      <EvidenceDisplay evidences={evidenceByField['info_registered_at']} />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>情報更新日</Label>
+                    <Input
+                      type="date"
+                      value={formData.infoUpdatedAt}
+                      onChange={(e) => handleChange('infoUpdatedAt', e.target.value)}
+                    />
+                    {showEvidence && evidenceByField['info_updated_at'] && (
+                      <EvidenceDisplay evidences={evidenceByField['info_updated_at']} />
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mt-3">
+                  <div className="space-y-2">
+                    <Label>取引条件の有効期限</Label>
+                    <Input
+                      type="date"
+                      value={formData.conditionsExpiry}
+                      onChange={(e) => handleChange('conditionsExpiry', e.target.value)}
+                    />
+                    {showEvidence && evidenceByField['conditions_expiry'] && (
+                      <EvidenceDisplay evidences={evidenceByField['conditions_expiry']} />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>引渡し可能時期</Label>
+                    <Input
+                      value={formData.deliveryDate}
+                      onChange={(e) => handleChange('deliveryDate', e.target.value)}
+                      placeholder="即時、相談、2026年4月 等"
+                    />
+                    {showEvidence && evidenceByField['delivery_date'] && (
+                      <EvidenceDisplay evidences={evidenceByField['delivery_date']} />
+                    )}
+                  </div>
                 </div>
               </div>
             </CardContent>

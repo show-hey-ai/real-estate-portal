@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
 import { translateAddress, translateRailwayLine, translateStationName } from '@/lib/translate-fields'
+import { getIsFavoriteForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 
 interface ListingPageProps {
   params: Promise<{ id: string }>
@@ -20,9 +21,9 @@ interface ListingPageProps {
 
 export default async function ListingPage({ params }: ListingPageProps) {
   const { id } = await params
-  const t = await getTranslations('listing')
-  const locale = await getLocale()
+  const [t, locale] = await Promise.all([getTranslations('listing'), getLocale()])
   const supabase = await createClient()
+  const viewerPromise = getOptionalPublicViewer()
 
   // 物件情報を取得
   const { data: listing, error } = await supabase
@@ -45,30 +46,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
     .filter((m: { isAdopted: boolean }) => m.isAdopted)
     .sort((a: { sortOrder: number }, b: { sortOrder: number }) => (a.sortOrder || 0) - (b.sortOrder || 0))
 
-  const { data: { user: authUser } } = await supabase.auth.getUser()
-
-  let isFavorite = false
-  let userId: string | null = null
-
-  if (authUser) {
-    const { data: dbUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', authUser.email!)
-      .single()
-
-    if (dbUser) {
-      userId = dbUser.id
-      const { data: favorite } = await supabase
-        .from('favorites')
-        .select('id')
-        .eq('userId', dbUser.id)
-        .eq('listingId', id)
-        .single()
-
-      isFavorite = !!favorite
-    }
-  }
+  const viewer = await viewerPromise
+  const userId = viewer?.id ?? null
+  const isFavorite = viewer ? await getIsFavoriteForViewer(viewer.id, id) : false
 
   const warnings = (listing.warnings as string[]) || []
   const stations = (listing.stations as { name: string; name_en?: string | null; line?: string | null; line_en?: string | null; walk_minutes?: number | null }[]) || []

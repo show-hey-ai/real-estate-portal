@@ -2,23 +2,20 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { formatPrice } from '@/lib/format'
-import { Eye, Pencil, FileUp, FileText } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { AdminListingsTable } from '@/components/admin/admin-listings-table'
+import { FileUp, Search } from 'lucide-react'
 
-export default async function AdminListingsPage() {
+export default async function AdminListingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>
+}) {
   const t = await getTranslations('admin')
   const supabase = await createClient()
+  const { q } = await searchParams
 
-  const { data: listingsData, error } = await supabase
+  let query = supabase
     .from('listings')
     .select(`
       *,
@@ -28,6 +25,12 @@ export default async function AdminListingsPage() {
       )
     `)
     .order('createdAt', { ascending: false })
+
+  if (q) {
+    query = query.or(`managementId.ilike.%${q}%,addressPublic.ilike.%${q}%,addressPrivate.ilike.%${q}%`)
+  }
+
+  const { data: listingsData, error } = await query
 
   if (error) {
     console.error('Error fetching listings:', error)
@@ -39,36 +42,6 @@ export default async function AdminListingsPage() {
       ? l.media.filter((m: { isAdopted: boolean }) => m.isAdopted).slice(0, 1)
       : []
   }))
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'DRAFT':
-        return 'bg-gray-500'
-      case 'REVIEWED':
-        return 'bg-yellow-500'
-      case 'PUBLISHED':
-        return 'bg-green-500'
-      case 'ARCHIVED':
-        return 'bg-red-500'
-      default:
-        return 'bg-gray-500'
-    }
-  }
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'DRAFT':
-        return t('listingStatus.draft')
-      case 'REVIEWED':
-        return t('listingStatus.reviewed')
-      case 'PUBLISHED':
-        return t('listingStatus.published')
-      case 'ARCHIVED':
-        return t('listingStatus.archived')
-      default:
-        return status
-    }
-  }
 
   return (
     <div>
@@ -82,99 +55,43 @@ export default async function AdminListingsPage() {
         </Link>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('table.property')}</TableHead>
-              <TableHead>{t('table.price')}</TableHead>
-              <TableHead>{t('table.status')}</TableHead>
-              <TableHead className="text-center">{t('table.viewCount')}</TableHead>
-              <TableHead>{t('table.createdAt')}</TableHead>
-              <TableHead className="text-right">{t('table.actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {listings.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  {t('noListings')}
-                </TableCell>
-              </TableRow>
-            ) : (
-              listings.map((listing) => (
-                <TableRow key={listing.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="w-16 h-12 bg-muted rounded overflow-hidden">
-                        {listing.media[0] && (
-                          <img
-                            src={listing.media[0].url}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium">{listing.addressPublic || t('addressNotSet')}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {listing.propertyType || t('typeNotSet')}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {listing.price ? formatPrice(listing.price) : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(listing.status)}>
-                      {getStatusLabel(listing.status)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                      <span>{listing.viewCount || 0}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(listing.createdAt).toLocaleDateString('ja-JP')}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <div className="w-8">
-                        {listing.sourcePdfUrl && (
-                          <a href={listing.sourcePdfUrl} target="_blank" rel="noopener noreferrer">
-                            <Button variant="outline" size="sm" title="PDF">
-                              <FileText className="h-4 w-4" />
-                            </Button>
-                          </a>
-                        )}
-                      </div>
-                      <div className="w-8">
-                        <Link href={`/admin/listings/${listing.id}/review`}>
-                          <Button variant="outline" size="sm">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                      </div>
-                      <div className="w-8">
-                        {listing.status === 'PUBLISHED' && (
-                          <Link href={`/listings/${listing.id}`} target="_blank">
-                            <Button variant="outline" size="sm">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <form className="mb-4 flex gap-2" action="/admin/listings" method="GET">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            name="q"
+            placeholder="管理番号・住所で検索 (例: TP-0047)"
+            defaultValue={q || ''}
+            className="pl-9"
+          />
+        </div>
+        <Button type="submit" variant="outline">検索</Button>
+        {q && (
+          <Link href="/admin/listings">
+            <Button variant="ghost">クリア</Button>
+          </Link>
+        )}
+      </form>
+
+      <AdminListingsTable
+        listings={listings}
+        labels={{
+          property: t('table.property'),
+          price: t('table.price'),
+          status: t('table.status'),
+          viewCount: t('table.viewCount'),
+          createdAt: t('table.createdAt'),
+          actions: t('table.actions'),
+          noListings: t('noListings'),
+          addressNotSet: t('addressNotSet'),
+          typeNotSet: t('typeNotSet'),
+          statusDraft: t('listingStatus.draft'),
+          statusInReview: t('listingStatus.inReview'),
+          statusReviewed: t('listingStatus.reviewed'),
+          statusPublished: t('listingStatus.published'),
+          statusArchived: t('listingStatus.archived'),
+        }}
+      />
     </div>
   )
 }

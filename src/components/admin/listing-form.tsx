@@ -23,7 +23,7 @@ import { Plus, Trash2, Save, Upload, X } from 'lucide-react'
 const stationSchema = z.object({
     name: z.string().min(1, '駅名は必須です'),
     line: z.string().optional(),
-    walkMinutes: z.coerce.number().min(0).optional().nullable(),
+    walk_minutes: z.coerce.number().min(0).optional().nullable(),
 })
 
 const listingSchema = z.object({
@@ -44,6 +44,10 @@ const listingSchema = z.object({
     yieldGross: z.coerce.number().min(0).optional(),
     yieldNet: z.coerce.number().min(0).optional(),
     currentStatus: z.string().optional(),
+    infoRegisteredAt: z.string().optional(),
+    infoUpdatedAt: z.string().optional(),
+    conditionsExpiry: z.string().optional(),
+    deliveryDate: z.string().optional(),
     status: z.enum(['DRAFT', 'PUBLISHED', 'REVIEWED', 'ARCHIVED']).default('DRAFT'),
     images: z.array(z.string()).optional(),
 })
@@ -73,7 +77,7 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
 
     const defaultValues: Partial<ListingFormValues> = {
         status: 'DRAFT',
-        stations: [{ name: '', line: '', walkMinutes: null }],
+        stations: [{ name: '', line: '', walk_minutes: null }],
         images: [],
         ...initialData,
     }
@@ -284,6 +288,35 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* 表示規約必須項目 */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>表示規約必須項目</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>情報登録日</Label>
+                                    <Input type="date" {...form.register('infoRegisteredAt')} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>情報更新日</Label>
+                                    <Input type="date" {...form.register('infoUpdatedAt')} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>取引条件の有効期限</Label>
+                                    <Input type="date" {...form.register('conditionsExpiry')} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>引渡し可能時期</Label>
+                                    <Input {...form.register('deliveryDate')} placeholder="即時、相談、2026年4月 等" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 <div className="space-y-6">
@@ -292,7 +325,12 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
                         <CardHeader>
                             <CardTitle className="flex justify-between items-center">
                                 <span>最寄駅</span>
-                                <Button type="button" variant="outline" size="sm" onClick={() => appendStation({ name: '' })}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => appendStation({ name: '', line: '', walk_minutes: null })}
+                                >
                                     <Plus className="h-4 w-4" />
                                 </Button>
                             </CardTitle>
@@ -303,7 +341,7 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
                                     <Input {...form.register(`stations.${index}.name`)} placeholder="駅名 (例: 渋谷)" />
                                     <Input {...form.register(`stations.${index}.line`)} placeholder="路線名 (例: 山手線)" />
                                     <div className="flex gap-2">
-                                        <Input type="number" {...form.register(`stations.${index}.walkMinutes`)} placeholder="徒歩分" />
+                                        <Input type="number" {...form.register(`stations.${index}.walk_minutes`)} placeholder="徒歩分" />
                                         <Button type="button" variant="ghost" size="icon" onClick={() => removeStation(index)} className="shrink-0 text-red-500">
                                             <Trash2 className="h-4 w-4" />
                                         </Button>

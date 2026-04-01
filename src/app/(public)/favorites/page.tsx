@@ -44,7 +44,7 @@ export default async function FavoritesPage() {
 
   // Filter out non-published listings
   const publishedFavorites = favorites.filter(
-    (fav) => fav.listing.status === 'PUBLISHED'
+    (fav) => fav.listing.status === 'PUBLISHED' && fav.listing.adAllowed
   )
 
   return (

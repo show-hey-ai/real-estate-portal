@@ -78,7 +78,7 @@ export default async function AdminLeadsPage() {
               leads.map((lead) => (
                 <TableRow key={lead.id}>
                   <TableCell className="whitespace-nowrap">
-                    {new Date(lead.createdAt).toLocaleString('ja-JP')}
+                    {new Date(lead.createdAt + "Z").toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}
                   </TableCell>
                   <TableCell>
                     <div>

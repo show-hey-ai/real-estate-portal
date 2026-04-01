@@ -7,6 +7,7 @@ import { Pagination } from '@/components/common/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
 import { matchesTransitFilters } from '@/lib/public-search'
 import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
+import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 
 interface ListingsPageProps {
   searchParams: Promise<{
@@ -49,11 +50,11 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   const params = await searchParams
   const t = await getTranslations()
   const supabase = await createClient()
+  const viewerPromise = getOptionalPublicViewer()
+  const locationIndexPromise = getPublicSearchLocationIndex()
 
   const page = Number(params.page) || 1
   const perPage = 12
-
-  const locationIndex = await getPublicSearchLocationIndex()
 
   const selectFields = `
       id,
@@ -156,32 +157,6 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
 
   const totalPages = Math.ceil(total / perPage)
 
-  // Get authenticated user and their favorites
-  const { data: { user: authUser } } = await supabase.auth.getUser()
-
-  let userId: string | null = null
-  let favoriteIds: Set<string> = new Set()
-
-  if (authUser) {
-    const { data: dbUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', authUser.email!)
-      .single()
-
-    if (dbUser) {
-      userId = dbUser.id
-      const { data: favorites } = await supabase
-        .from('favorites')
-        .select('listingId')
-        .eq('userId', dbUser.id)
-
-      if (favorites) {
-        favoriteIds = new Set(favorites.map(f => f.listingId))
-      }
-    }
-  }
-
   // Format listings for ListingCard component
   const formattedListings = (listings || []).map(listing => ({
     ...listing,
@@ -190,6 +165,15 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
     yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
     media: listing.media || [],
   }))
+
+  const [locationIndex, viewer] = await Promise.all([locationIndexPromise, viewerPromise])
+  const userId = viewer?.id ?? null
+  const favoriteIds = viewer
+    ? await getFavoriteIdsForViewer(
+        viewer.id,
+        formattedListings.map((listing) => listing.id)
+      )
+    : new Set<string>()
 
   return (
     <div className="container py-8">

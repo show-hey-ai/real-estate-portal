@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/db'
+
+const favoriteRequestSchema = z.object({
+  listingId: z.string().trim().min(1),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,17 +24,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const body = await request.json()
-    const { listingId } = body
+    const body = await request.json().catch(() => null)
+    const parsed = favoriteRequestSchema.safeParse(body)
 
-    if (!listingId) {
-      return NextResponse.json({ error: 'Missing listingId' }, { status: 400 })
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid listingId' }, { status: 400 })
     }
 
-    const favorite = await prisma.favorite.create({
-      data: {
+    const listing = await prisma.listing.findFirst({
+      where: {
+        id: parsed.data.listingId,
+        status: 'PUBLISHED',
+        adAllowed: true,
+      },
+      select: { id: true },
+    })
+
+    if (!listing) {
+      return NextResponse.json({ error: 'Listing not found' }, { status: 404 })
+    }
+
+    const favorite = await prisma.favorite.upsert({
+      where: {
+        userId_listingId: {
+          userId: dbUser.id,
+          listingId: parsed.data.listingId,
+        },
+      },
+      update: {},
+      create: {
         userId: dbUser.id,
-        listingId,
+        listingId: parsed.data.listingId,
       },
     })
 
@@ -60,19 +85,17 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const body = await request.json()
-    const { listingId } = body
+    const body = await request.json().catch(() => null)
+    const parsed = favoriteRequestSchema.safeParse(body)
 
-    if (!listingId) {
-      return NextResponse.json({ error: 'Missing listingId' }, { status: 400 })
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid listingId' }, { status: 400 })
     }
 
-    await prisma.favorite.delete({
+    await prisma.favorite.deleteMany({
       where: {
-        userId_listingId: {
-          userId: dbUser.id,
-          listingId,
-        },
+        userId: dbUser.id,
+        listingId: parsed.data.listingId,
       },
     })
 

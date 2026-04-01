@@ -1,36 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { translateDescription } from '@/lib/openai'
+import { requireAdminUser } from '@/lib/admin-auth'
+import { adminTranslateRequestSchema } from '@/lib/admin-validation'
 
 export async function POST(request: NextRequest) {
   try {
-    // 認証チェック
-    const supabase = await createClient()
-    const { data: { user: authUser } } = await supabase.auth.getUser()
+    const auth = await requireAdminUser()
+    if (!auth.ok) return auth.response
 
-    if (!authUser) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const body = await request.json().catch(() => null)
+    const parsed = adminTranslateRequestSchema.safeParse(body)
+
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message || 'Invalid request body' },
+        { status: 400 }
+      )
     }
 
-    // Admin check
-    const { data: dbUser, error: dbUserError } = await supabase
-      .from('users')
-      .select('id, role')
-      .eq('email', authUser.email!)
-      .single()
-
-    if (dbUserError || !dbUser || dbUser.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
-
-    const body = await request.json()
-    const { text } = body
-
-    if (!text || typeof text !== 'string') {
-      return NextResponse.json({ error: 'Text is required' }, { status: 400 })
-    }
-
-    const translations = await translateDescription(text)
+    const translations = await translateDescription(parsed.data.text)
 
     return NextResponse.json(translations)
   } catch (error) {
