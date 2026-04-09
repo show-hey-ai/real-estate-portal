@@ -1,6 +1,12 @@
+import dns from 'node:dns'
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
+
+// Supabase free tier resolves to IPv6 only (no IPv4 A record).
+// Node.js defaults to preferring IPv4 which causes ENODATA → P1001.
+// 'verbatim' returns addresses in resolver order so IPv6 AAAA records are used.
+dns.setDefaultResultOrder('verbatim')
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
