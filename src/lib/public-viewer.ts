@@ -32,10 +32,15 @@ export async function getOptionalPublicViewer(): Promise<PublicViewer | null> {
     return null
   }
 
-  return prisma.user.findUnique({
-    where: { email: authUser.email },
-    select: { id: true, email: true, role: true },
-  })
+  try {
+    return await prisma.user.findUnique({
+      where: { email: authUser.email },
+      select: { id: true, email: true, role: true },
+    })
+  } catch (error) {
+    console.error('Failed to fetch viewer from DB:', error)
+    return null
+  }
 }
 
 export async function getFavoriteIdsForViewer(userId: string, listingIds: string[]) {
@@ -43,24 +48,34 @@ export async function getFavoriteIdsForViewer(userId: string, listingIds: string
     return new Set<string>()
   }
 
-  const favorites = await prisma.favorite.findMany({
-    where: {
-      userId,
-      listingId: { in: listingIds },
-    },
-    select: { listingId: true },
-  })
+  try {
+    const favorites = await prisma.favorite.findMany({
+      where: {
+        userId,
+        listingId: { in: listingIds },
+      },
+      select: { listingId: true },
+    })
 
-  return new Set(favorites.map((favorite) => favorite.listingId))
+    return new Set(favorites.map((favorite) => favorite.listingId))
+  } catch (error) {
+    console.error('Failed to fetch favorites from DB:', error)
+    return new Set<string>()
+  }
 }
 
 export async function getIsFavoriteForViewer(userId: string, listingId: string) {
-  const favoriteCount = await prisma.favorite.count({
-    where: {
-      userId,
-      listingId,
-    },
-  })
+  try {
+    const favoriteCount = await prisma.favorite.count({
+      where: {
+        userId,
+        listingId,
+      },
+    })
 
-  return favoriteCount > 0
+    return favoriteCount > 0
+  } catch (error) {
+    console.error('Failed to check favorite from DB:', error)
+    return false
+  }
 }
