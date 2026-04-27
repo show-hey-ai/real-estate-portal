@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tokyo Hotel Feasibility Review — Before You Buy | Ziyou Real Estate</title>
+<meta name="description" content="Planning a hotel in Tokyo? Get a free pre-acquisition risk check: licensing viability, zoning, fire code, cost factors, and next steps — before you commit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'Instrument Serif';font-style:normal;font-weight:400;src:local('Georgia')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:300 600;src:local('-apple-system'),local('Segoe UI')}
+</style>
+<style>
+:root{--ink:#1a1a18;--cream:#f5f1eb;--warmgray:#d4cec4;--accent:#c4572a;--accent-h:#a8461f;--gold:#b8975a;--paper:#faf8f5;--green:#2d8a4e;--serif:'Instrument Serif',Georgia,serif;--sans:'DM Sans',-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(26,26,24,0.85);backdrop-filter:blur(20px);transition:all .4s}
+nav.scrolled{padding:.7rem 3rem;box-shadow:0 2px 30px rgba(0,0,0,.15)}
+.nav-logo{font-family:var(--serif);font-size:1.3rem;color:var(--cream);text-decoration:none}
+.nav-logo span{color:var(--accent)}
+.nav-cta-btn{padding:.55rem 1.4rem;background:var(--accent);color:#fff;border-radius:3px;text-decoration:none;font-size:.78rem;font-weight:500;letter-spacing:.04em;transition:background .3s}
+.nav-cta-btn:hover{background:var(--accent-h)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:7rem 3rem 4rem;position:relative;background:#1a1a18}
+.hero-bg{position:absolute;inset:0;background-image:url('/hotel-lp/img/hero.jpg');background-size:cover;background-position:center 40%;opacity:.35}
+.hero-bg-fallback{position:absolute;inset:0;background:linear-gradient(135deg,#2a2520 0%,#1a1a18 40%,#2a2018 100%)}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.1fr .9fr;gap:3.5rem;align-items:center;position:relative;z-index:1}
+.hero-tag{display:inline-block;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:rgba(196,87,42,.15);padding:.4rem .9rem;border-radius:2px;margin-bottom:1.5rem}
+.hero h1{font-family:var(--serif);font-size:clamp(2.5rem,4.5vw,3.5rem);line-height:1.1;letter-spacing:-.025em;margin-bottom:1.2rem;color:var(--cream)}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hero-sub{font-size:1rem;line-height:1.75;color:rgba(255,255,255,.55);max-width:500px;margin-bottom:2rem;font-weight:300}
+.hero-proof{display:flex;gap:1.5rem;flex-wrap:wrap}
+.proof-item{font-size:.75rem;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:.4rem}
+.proof-item .ck{color:var(--green);font-weight:600}
+
+/* FORM CARD */
+.form-card{background:#fff;border-radius:8px;padding:2.2rem;box-shadow:0 20px 60px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08)}
+.form-card h2{font-family:var(--serif);font-size:1.4rem;margin-bottom:.35rem}
+.form-card .form-sub{font-size:.8rem;color:rgba(26,26,24,.5);margin-bottom:1.3rem;line-height:1.5}
+.form-group{margin-bottom:.85rem}
+.form-group label{display:block;font-size:.72rem;font-weight:500;letter-spacing:.03em;margin-bottom:.3rem;color:rgba(26,26,24,.65)}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.65rem .85rem;border:1px solid var(--warmgray);border-radius:4px;font-family:var(--sans);font-size:.84rem;color:var(--ink);background:var(--paper);transition:border .3s;outline:0}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.btn-submit{width:100%;padding:.85rem;background:var(--accent);color:#fff;border:0;border-radius:4px;font-family:var(--sans);font-size:.86rem;font-weight:600;cursor:pointer;transition:all .3s;margin-top:.3rem}
+.btn-submit:hover{background:var(--accent-h);transform:translateY(-1px)}
+.form-or{text-align:center;font-size:.7rem;color:rgba(26,26,24,.3);margin:.8rem 0;letter-spacing:.08em;text-transform:uppercase}
+.chat-buttons{display:flex;gap:.5rem}
+.chat-btn{flex:1;padding:.6rem;border:1px solid var(--warmgray);border-radius:4px;background:#fff;text-align:center;font-size:.76rem;font-weight:500;color:var(--ink);text-decoration:none;transition:all .3s}
+.chat-btn:hover{border-color:var(--ink);background:var(--cream)}
+.form-note{text-align:center;margin-top:.8rem;font-size:.66rem;color:rgba(26,26,24,.3)}
+
+/* PHOTO STRIP */
+.photo-strip{display:grid;gap:3px;overflow:hidden}
+.photo-strip.cols-3{grid-template-columns:1fr 1fr 1fr;height:260px}
+.photo-strip.cols-2{grid-template-columns:1fr 1fr;height:320px}
+.photo-slot{background-size:cover;background-position:center;position:relative;overflow:hidden;background-color:#35302a}
+.photo-slot::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(26,26,24,.5))}
+.photo-slot-label{position:absolute;bottom:1rem;left:1.2rem;z-index:2;font-size:.72rem;font-weight:500;color:#fff;letter-spacing:.05em;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+
+/* WHAT WE CHECK */
+.wyg{padding:5rem 3rem;background:var(--ink)}
+.wyg-inner{max-width:1000px;margin:0 auto}
+.wyg-title{font-family:var(--serif);font-size:clamp(1.7rem,3vw,2.3rem);color:var(--cream);line-height:1.15;margin-bottom:2.5rem;max-width:600px}
+.wyg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.wyg-item{padding:1.8rem;border:1px solid rgba(255,255,255,.08);border-radius:4px;background:rgba(255,255,255,.02)}
+.wyg-icon{width:44px;height:44px;border-radius:10px;background:rgba(196,87,42,.12);display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.wyg-icon svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wyg-item h3{font-size:.88rem;font-weight:500;color:var(--cream);margin-bottom:.4rem}
+.wyg-item p{font-size:.78rem;color:rgba(255,255,255,.4);line-height:1.6;font-weight:300}
+
+/* SECTION HELPERS */
+.sl{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem}
+.st{font-family:var(--serif);font-size:clamp(2rem,3.5vw,2.8rem);line-height:1.1;letter-spacing:-.02em;margin-bottom:.8rem;max-width:650px}
+.ss{font-size:1rem;color:rgba(26,26,24,.5);line-height:1.7;max-width:550px;margin-bottom:3rem;font-weight:300}
+
+/* WHO THIS IS FOR */
+.who{padding:6rem 3rem}
+.who-inner{max-width:1000px;margin:0 auto}
+.who-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:0}
+.who-card{border-radius:8px;padding:2rem;border:1px solid rgba(0,0,0,.06);background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.04)}
+.who-card h3{font-family:var(--serif);font-size:1.15rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+.who-card ul{list-style:none;padding:0}
+.who-card li{font-size:.84rem;color:rgba(26,26,24,.55);line-height:1.6;font-weight:300;padding:.3rem 0;padding-left:1.2rem;position:relative}
+.who-card li::before{content:'';position:absolute;left:0;top:.65rem;width:6px;height:6px;border-radius:50%}
+.who-card.yes li::before{background:var(--green)}
+.who-card.no li::before{background:var(--accent)}
+
+/* MISTAKES */
+.mistakes{padding:6rem 3rem;background:var(--cream)}
+.mistakes-inner{max-width:1000px;margin:0 auto}
+.mistake-list{display:flex;flex-direction:column;gap:1.1rem}
+.mistake-item{display:grid;grid-template-columns:3rem 1fr;gap:1.1rem;align-items:start;padding:1.4rem 1.6rem;background:#fff;border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.04)}
+.mistake-x{width:2.5rem;height:2.5rem;border-radius:50%;background:rgba(196,87,42,.08);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem}
+.mistake-item h3{font-size:.9rem;font-weight:500;margin-bottom:.25rem}
+.mistake-item p{font-size:.82rem;color:rgba(26,26,24,.5);line-height:1.6;font-weight:300}
+.solve-banner{margin-top:2.5rem;padding:1.5rem 2rem;background:var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.solve-banner p{font-family:var(--serif);font-size:1.15rem;color:var(--cream)}
+.solve-banner a{padding:.7rem 1.8rem;background:var(--accent);color:#fff;text-decoration:none;border-radius:3px;font-size:.82rem;font-weight:500;transition:background .3s;white-space:nowrap}
+.solve-banner a:hover{background:var(--accent-h)}
+
+/* SAMPLE ASSESSMENT */
+.sample{padding:6rem 3rem}
+.sample-inner{max-width:900px;margin:0 auto}
+.sample-preview{background:#fff;border-radius:8px;padding:2.5rem;box-shadow:0 4px 30px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.06);position:relative;overflow:hidden}
+.sample-preview::before{content:'SAMPLE';position:absolute;top:1rem;right:1.5rem;font-size:.65rem;font-weight:600;letter-spacing:.12em;color:var(--accent);background:rgba(196,87,42,.08);padding:.3rem .8rem;border-radius:2px}
+.sample-preview h3{font-family:var(--serif);font-size:1.2rem;margin-bottom:1.5rem;color:var(--ink)}
+.sample-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.sample-table th{text-align:left;font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(26,26,24,.4);padding:.5rem 0;border-bottom:2px solid var(--cream)}
+.sample-table td{padding:.65rem 0;border-bottom:1px solid var(--cream);color:rgba(26,26,24,.6);font-weight:300;vertical-align:top}
+.sample-table td:first-child{font-weight:500;color:var(--ink);width:35%}
+.sample-table .status-ok{color:var(--green);font-weight:500}
+.sample-table .status-warn{color:var(--accent);font-weight:500}
+.sample-table .status-check{color:var(--gold);font-weight:500}
+.sample-note{margin-top:1.5rem;padding:1rem;background:var(--cream);border-radius:4px;font-size:.76rem;color:rgba(26,26,24,.5);line-height:1.6;font-weight:300}
+
+/* TWO PATHS */
+.paths{padding:6rem 3rem;background:var(--cream)}
+.paths-inner{max-width:1100px;margin:0 auto}
+.paths-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:0}
+.path-card{border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.06);background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.04);transition:transform .4s,box-shadow .4s}
+.path-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.08)}
+.path-photo{height:220px;background-size:cover;background-position:center;position:relative;background-color:#3a3530}
+.path-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(26,26,24,.6))}
+.path-badge{position:absolute;top:1rem;left:1rem;z-index:2;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .75rem;border-radius:2px;color:#fff}
+.path-badge.reno{background:var(--accent)}
+.path-badge.new{background:var(--gold)}
+.path-photo-title{position:absolute;bottom:1rem;left:1.2rem;z-index:2;font-family:var(--serif);font-size:1.4rem;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.4)}
+.path-body{padding:1.8rem}
+.path-body p{font-size:.85rem;color:rgba(26,26,24,.55);line-height:1.65;font-weight:300;margin-bottom:1.2rem}
+.path-specs{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.path-spec{padding:.6rem .8rem;background:var(--cream);border-radius:3px}
+.path-spec-label{font-size:.62rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(26,26,24,.4);margin-bottom:.15rem}
+.path-spec-val{font-family:var(--serif);font-size:1.05rem;color:var(--ink)}
+.path-steps{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid rgba(0,0,0,.06)}
+.path-steps h4{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(26,26,24,.4);margin-bottom:.6rem}
+.path-step-list{display:flex;flex-direction:column;gap:.4rem}
+.ps{display:flex;gap:.6rem;align-items:baseline;font-size:.8rem;color:rgba(26,26,24,.6);line-height:1.5}
+.ps-num{font-family:var(--serif);font-size:.9rem;color:var(--accent);flex-shrink:0;width:1.2rem}
+
+/* PROCESS */
+.process{padding:6rem 3rem}
+.process-inner{max-width:1000px;margin:0 auto}
+.process-steps{display:flex;flex-direction:column;position:relative}
+.process-steps::before{content:'';position:absolute;left:27px;top:28px;bottom:28px;width:2px;background:var(--warmgray)}
+.p-step{display:grid;grid-template-columns:56px 1fr;gap:1.2rem;align-items:start;padding:1.1rem 0;position:relative}
+.p-num{width:56px;height:56px;border-radius:50%;background:var(--paper);border:2px solid var(--warmgray);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.15rem;color:var(--ink);position:relative;z-index:2;transition:all .4s}
+.p-step:hover .p-num{background:var(--accent);border-color:var(--accent);color:#fff}
+.p-step h3{font-size:.92rem;font-weight:500;margin-bottom:.25rem}
+.p-step p{font-size:.82rem;color:rgba(26,26,24,.5);line-height:1.6;font-weight:300}
+
+/* ABOUT SHOHEI */
+.about{padding:5rem 3rem;background:var(--cream);position:relative;overflow:hidden}
+.about-bg{position:absolute;inset:0;background-image:url('/hotel-lp/img/about-bg.jpg');background-size:cover;background-position:center;opacity:.06}
+.about-inner{max-width:800px;margin:0 auto;display:grid;grid-template-columns:160px 1fr;gap:2.5rem;align-items:center;position:relative;z-index:1}
+.about-photo{width:160px;height:160px;border-radius:50%;background:var(--warmgray);display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 4px 20px rgba(0,0,0,.06);overflow:hidden}
+.about-photo svg{opacity:.3}
+.about-text h2{font-family:var(--serif);font-size:1.5rem;margin-bottom:.5rem}
+.about-text p{font-size:.86rem;color:rgba(26,26,24,.55);line-height:1.7;font-weight:300;margin-bottom:1rem}
+.about-creds{display:flex;gap:.8rem;flex-wrap:wrap}
+.cred{font-size:.7rem;font-weight:500;letter-spacing:.04em;padding:.35rem .7rem;border:1px solid var(--warmgray);border-radius:2px;color:rgba(26,26,24,.55);background:#fff}
+
+/* SCOPE */
+.scope{padding:5rem 3rem;background:var(--ink)}
+.scope-inner{max-width:900px;margin:0 auto}
+.scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.scope-col h3{font-size:.82rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.scope-col ul{list-style:none;padding:0}
+.scope-col li{font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.6;font-weight:300;padding:.35rem 0;padding-left:1.2rem;position:relative}
+.scope-col li::before{content:'';position:absolute;left:0;top:.65rem;width:5px;height:5px;border-radius:50%}
+.scope-col.direct li::before{background:var(--green)}
+.scope-col.partner li::before{background:var(--gold)}
+
+/* MARKET — simplified */
+.market{padding:5rem 3rem}
+.market-inner{max-width:800px;margin:0 auto;text-align:center}
+.market-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
+.m-stat{padding:1.2rem;background:var(--cream);border-radius:4px}
+.m-stat-val{font-family:var(--serif);font-size:1.7rem;color:var(--accent)}
+.m-stat-label{font-size:.68rem;color:rgba(26,26,24,.4);margin-top:.2rem;line-height:1.4}
+.market-note{margin-top:1.5rem;font-size:.7rem;color:rgba(26,26,24,.3);font-style:italic}
+
+/* FAQ */
+.faq{padding:6rem 3rem;background:var(--cream)}
+.faq-inner{max-width:800px;margin:0 auto}
+.faq-list{margin-top:2rem}
+.faq-item{border-bottom:1px solid rgba(0,0,0,.06)}
+.faq-q{width:100%;padding:1.1rem 0;background:0;border:0;text-align:left;font-family:var(--sans);font-size:.9rem;font-weight:500;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.faq-q::after{content:'+';font-size:1.2rem;color:var(--accent);flex-shrink:0;transition:transform .3s}
+.faq-item.open .faq-q::after{content:'\2212'}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-item.open .faq-a{max-height:400px}
+.faq-a p{padding-bottom:1.1rem;font-size:.84rem;color:rgba(26,26,24,.55);line-height:1.7;font-weight:300}
+
+/* FINAL CTA */
+.final-cta{padding:6rem 3rem;text-align:center;position:relative;overflow:hidden;background:#1a1a18}
+.final-cta-bg{position:absolute;inset:0;background-image:url('/hotel-lp/img/cta-bg.jpg');background-size:cover;background-position:center;opacity:.2}
+.final-cta-inner{max-width:600px;margin:0 auto;position:relative;z-index:1}
+.final-cta h2{font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.3rem);color:var(--cream);margin-bottom:1rem;line-height:1.15}
+.final-cta p{font-size:.92rem;color:rgba(255,255,255,.45);line-height:1.7;margin-bottom:2rem;font-weight:300}
+.final-cta-buttons{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.btn-accent{padding:.85rem 2rem;background:var(--accent);color:#fff;text-decoration:none;border-radius:3px;font-size:.85rem;font-weight:500;transition:background .3s}
+.btn-accent:hover{background:var(--accent-h)}
+.btn-outline{padding:.85rem 2rem;background:0;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);text-decoration:none;border-radius:3px;font-size:.85rem;font-weight:500;transition:all .3s}
+.btn-outline:hover{border-color:rgba(255,255,255,.5);color:#fff}
+
+/* FOOTER */
+footer{padding:2rem 3rem;background:#111;text-align:center}
+.footer-text{font-size:.66rem;color:rgba(255,255,255,.2);line-height:1.8}
+
+/* ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(25px);transition:all .7s cubic-bezier(.16,1,.3,1)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.s1{transition-delay:.08s}.s2{transition-delay:.16s}.s3{transition-delay:.24s}.s4{transition-delay:.32s}.s5{transition-delay:.4s}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:.9rem 1.5rem}
+  .hero{padding:6rem 1.5rem 3rem}
+  .hero-inner{grid-template-columns:1fr;gap:2rem}
+  .form-row{grid-template-columns:1fr}
+  .wyg-grid{grid-template-columns:1fr}
+  .paths-grid{grid-template-columns:1fr}
+  .who-grid{grid-template-columns:1fr}
+  .scope-grid{grid-template-columns:1fr}
+  .about-inner{grid-template-columns:1fr;text-align:center}
+  .about-photo{margin:0 auto}
+  .about-creds{justify-content:center}
+  .market-stats{grid-template-columns:1fr 1fr}
+  .photo-strip.cols-3{grid-template-columns:1fr;height:auto}
+  .photo-strip.cols-3 .photo-slot{height:180px}
+  .photo-strip.cols-2{grid-template-columns:1fr;height:auto}
+  .photo-strip.cols-2 .photo-slot{height:220px}
+  section,.mistakes,.process,.market,.faq,.paths,.who,.sample{padding:4rem 1.5rem}
+  .wyg,.about,.final-cta,.scope{padding:4rem 1.5rem}
+  .solve-banner{flex-direction:column;text-align:center}
+}
+@media(max-width:500px){
+  .market-stats{grid-template-columns:1fr}
+  .chat-buttons{flex-direction:column}
+  .path-specs{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Ziyou<span>.</span></a>
+  <a href="#form" class="nav-cta-btn">Request Free Review</a>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-bg-fallback"></div>
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-tag fade-up">Free Pre-Acquisition Review</div>
+      <h1 class="fade-up s1">Before you buy a hotel in Tokyo,<br><em>check what could go wrong.</em></h1>
+      <p class="hero-sub fade-up s2">Tell us your target area and project type. Within 48 hours, we'll send you a practical first-pass review: licensing viability, zoning flags, fire code considerations, and what to verify next.</p>
+      <div class="hero-proof fade-up s3">
+        <span class="proof-item"><span class="ck">&#10003;</span> Licensed Tokyo broker</span>
+        <span class="proof-item"><span class="ck">&#10003;</span> EN / 中文 / 日本語</span>
+        <span class="proof-item"><span class="ck">&#10003;</span> No cost, no obligation</span>
+      </div>
+    </div>
+    <div class="form-card fade-up s2" id="form">
+      <h2>Request Your Free Review</h2>
+      <p class="form-sub">30 seconds. No obligation. Initial review within 48 hours.</p>
+      <form id="assessmentForm" onsubmit="event.preventDefault();document.getElementById('formSuccess').style.display='block';this.style.display='none';">
+        <div class="form-row">
+          <div class="form-group"><label>Your Name</label><input type="text" name="name" placeholder="e.g. John Chen" required></div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="you@example.com" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Preferred Area (or "not sure yet")</label>
+            <select name="area"><option value="" disabled selected>Select</option><option>Shinjuku / Shibuya</option><option>Taito / Sumida (Asakusa)</option><option>Minato / Chuo</option><option>Other Tokyo 23 wards</option><option>Outside Tokyo</option><option>Not sure yet</option></select>
+          </div>
+          <div class="form-group"><label>Project Stage</label>
+            <select name="stage"><option value="" disabled selected>Select</option><option>Exploring — no property yet</option><option>Have a specific property in mind</option><option>Already own a building</option><option>Looking for land to build new</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label>Anything else we should know? (optional)</label><input type="text" name="notes" placeholder="e.g. budget range, timeline, visa questions"></div>
+        <button type="submit" class="btn-submit">Request My Free Review →</button>
+      </form>
+      <div id="formSuccess" style="display:none;text-align:center;padding:2rem 1rem">
+        <div style="font-size:2rem;margin-bottom:.5rem">&#10003;</div>
+        <div style="font-family:var(--serif);font-size:1.3rem;margin-bottom:.5rem">Request Received</div>
+        <p style="font-size:.85rem;color:rgba(26,26,24,.5)">We'll review your situation and respond within 48 hours with initial findings.</p>
+      </div>
+      <div class="form-or">or message directly</div>
+      <div class="chat-buttons">
+        <a href="#" class="chat-btn">LINE</a>
+        <a href="#" class="chat-btn">WeChat</a>
+        <a href="https://wa.me/818084927068" class="chat-btn" target="_blank">WhatsApp</a>
+      </div>
+      <div class="form-note">Your information is kept confidential.</div>
+    </div>
+  </div>
+</section>
+
+<!-- (photo strip removed — fewer stock photos = more trust) -->
+
+<!-- ==================== WHAT WE CHECK ==================== -->
+<section class="wyg">
+  <div class="wyg-inner">
+    <div class="sl fade-up" style="color:var(--gold)">What We Check Before You Buy</div>
+    <div class="wyg-title fade-up s1">Your review covers the issues that catch foreign buyers off guard:</div>
+    <div class="wyg-grid">
+      <div class="wyg-item fade-up s1">
+        <div class="wyg-icon"><svg viewBox="0 0 24 24"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg></div>
+        <h3>Licensing &amp; Zoning</h3>
+        <p>Can this building (or land) legally become a hotel? We check zoning classification, building use category, neighborhood factors, and the path to a hotel business license.</p>
+      </div>
+      <div class="wyg-item fade-up s2">
+        <div class="wyg-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+        <h3>Fire Code &amp; Conversion Risk</h3>
+        <p>Fire safety upgrades are the #1 cost surprise. We flag sprinkler requirements, evacuation route issues, and structural factors that affect renovation scope and budget.</p>
+      </div>
+      <div class="wyg-item fade-up s3">
+        <div class="wyg-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <h3>Timeline &amp; Next Steps</h3>
+        <p>A realistic view of what happens after you decide to proceed — permits, renovation, licensing, and what you need to verify with specialists before committing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== WHO THIS IS FOR ==================== -->
+<section class="who">
+  <div class="who-inner">
+    <div class="sl fade-up">Is This For You?</div>
+    <div class="st fade-up s1">We help a specific type of buyer.</div>
+    <div class="ss fade-up s2">This service is designed for overseas buyers who want to reduce uncertainty before committing capital in Tokyo.</div>
+    <div class="who-grid">
+      <div class="who-card yes fade-up s1">
+        <h3><span style="font-size:1.1rem">&#10003;</span> Good Fit</h3>
+        <ul>
+          <li>Overseas investor exploring hotel acquisition in Tokyo</li>
+          <li>Already own a building — need licensing and conversion guidance</li>
+          <li>Considering land purchase + new hotel construction</li>
+          <li>Want one bilingual point of contact to coordinate the process</li>
+          <li>Prefer to understand risks before committing, not after</li>
+        </ul>
+      </div>
+      <div class="who-card no fade-up s2">
+        <h3><span style="font-size:1.1rem">&#10007;</span> Not the Right Fit</h3>
+        <ul>
+          <li>Looking for guaranteed returns or yield promises</li>
+          <li>Need someone to manage an already-operating hotel</li>
+          <li>Interested only in residential property investment</li>
+          <li>Looking for the cheapest possible service rather than reliable coordination</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MISTAKES ==================== -->
+<section class="mistakes">
+  <div class="mistakes-inner">
+    <div class="sl fade-up">Before You Buy</div>
+    <div class="st fade-up s1">5 risks that catch foreign<br>hotel buyers in Tokyo</div>
+    <div class="ss fade-up s2">Each one can cost months of delay or significant unexpected costs. Our review is designed to flag these early.</div>
+    <div class="mistake-list">
+      <div class="mistake-item fade-up s1"><div class="mistake-x">1</div><div><h3>Buying a building that can't legally become a hotel</h3><p>Not every building qualifies. Zoning classification, building use category (youto), and neighborhood agreements all affect hotel license eligibility. This needs to be checked before you sign anything.</p></div></div>
+      <div class="mistake-item fade-up s2"><div class="mistake-x">2</div><div><h3>Underestimating fire code and renovation costs</h3><p>Fire safety upgrades are the biggest budget surprise for foreign buyers. Sprinkler systems, emergency lighting, evacuation routes — costs vary dramatically by building age and structure.</p></div></div>
+      <div class="mistake-item fade-up s3"><div class="mistake-x">3</div><div><h3>Using fragmented vendors with no coordination</h3><p>Separate broker, lawyer, architect, contractor, and licensing consultant — with no one coordinating across them. Important details fall through the cracks, especially across language barriers.</p></div></div>
+      <div class="mistake-item fade-up s4"><div class="mistake-x">4</div><div><h3>Assuming visa eligibility is automatic</h3><p>A Business Manager Visa involves specific requirements around office setup, capital, business structure, and immigration review. Getting the structure wrong early can delay your entire project.</p></div></div>
+      <div class="mistake-item fade-up s5"><div class="mistake-x">5</div><div><h3>Relying on projected yields without local verification</h3><p>Returns vary widely by location, building condition, licensing path, and operating model. Numbers that look good on paper need to be stress-tested against local realities.</p></div></div>
+    </div>
+    <div class="solve-banner fade-up"><p>Our review checks for all five — before you commit.</p><a href="#form">Request Free Review →</a></div>
+  </div>
+</section>
+
+<!-- ==================== SAMPLE ASSESSMENT ==================== -->
+<section class="sample">
+  <div class="sample-inner">
+    <div class="sl fade-up">What You'll Receive</div>
+    <div class="st fade-up s1">Sample assessment preview.</div>
+    <div class="ss fade-up s2">Here's an example of what your initial review covers. Actual content is tailored to your specific situation.</div>
+    <div class="sample-preview fade-up s3">
+      <h3>Pre-Acquisition Review — Taito-ku (Asakusa area), 12-room renovation</h3>
+      <table class="sample-table">
+        <tr><th>Check Item</th><th>Finding</th><th>Status</th></tr>
+        <tr><td>Zoning (youto chiiki)</td><td>Commercial district — hotel use permitted</td><td class="status-ok">Clear</td></tr>
+        <tr><td>Building use category</td><td>Currently registered as office (jimusho). Use-change application required.</td><td class="status-warn">Action needed</td></tr>
+        <tr><td>Fire code (shoubou)</td><td>Building is 4F, pre-1990. Sprinkler system and emergency lighting upgrade likely required. Budget impact: significant.</td><td class="status-warn">Action needed</td></tr>
+        <tr><td>Hotel license path</td><td>Ryokan-gyoho (inn license) feasible for this scale. Front desk and minimum room size requirements apply.</td><td class="status-check">Review details</td></tr>
+        <tr><td>Neighborhood notification</td><td>Minpaku/hotel notification to neighboring residents required under ward rules.</td><td class="status-check">Review details</td></tr>
+        <tr><td>Estimated timeline</td><td>Acquisition through opening: approx. 10–14 months, assuming no major structural issues.</td><td class="status-ok">Typical</td></tr>
+      </table>
+      <div class="sample-note">
+        <strong>Note:</strong> This is an illustrative sample only. Your review will reflect your actual target area, property type, and project scope. Findings are based on publicly available zoning and regulatory information and are not a substitute for formal due diligence by licensed specialists.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- (photo strip removed) -->
+
+<!-- ==================== ABOUT SHOHEI ==================== -->
+<section class="about">
+  <div class="about-bg"></div>
+  <div class="about-inner fade-up">
+    <div class="about-photo"><svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="rgba(26,26,24,.15)" stroke-width="1.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    <div class="about-text">
+      <div class="sl">Your Point of Contact</div>
+      <h2>Shohei Fujita</h2>
+      <p>Founder of Ziyou Real Estate. I work as a licensed broker coordinating hotel acquisition projects for overseas buyers in Tokyo. My role is to be the bilingual bridge between you and the specialists you'll need — architects, administrative scriveners (gyoseishoshi), fire safety consultants, and contractors. One person accountable for keeping your project moving, in your language.</p>
+      <p>I don't promise to do everything myself. I coordinate the right people at the right stage and make sure nothing falls between the cracks.</p>
+      <div class="about-creds">
+        <span class="cred">Licensed Broker — Tokyo Gov. No. 108831</span>
+        <span class="cred">English</span>
+        <span class="cred">中文</span>
+        <span class="cred">日本語</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== WHAT WE DO / COORDINATE ==================== -->
+<section class="scope">
+  <div class="scope-inner">
+    <div class="sl fade-up" style="color:var(--gold)">What We Handle</div>
+    <div class="wyg-title fade-up s1">What we do directly vs. what we coordinate with specialist partners.</div>
+    <div class="scope-grid fade-up s2">
+      <div class="scope-col direct">
+        <h3><span style="color:var(--green)">&#9679;</span> We Handle Directly</h3>
+        <ul>
+          <li>Property and land sourcing via broker-only listing systems</li>
+          <li>Pre-acquisition feasibility review</li>
+          <li>Licensed brokerage for purchase transactions</li>
+          <li>Bilingual project coordination end-to-end</li>
+          <li>OTA listing setup and operations launch guidance</li>
+        </ul>
+      </div>
+      <div class="scope-col partner">
+        <h3><span style="color:var(--gold)">&#9679;</span> Coordinated with Specialists</h3>
+        <ul>
+          <li>Hotel license application (administrative scrivener)</li>
+          <li>Fire code compliance and safety inspections</li>
+          <li>Architectural design and construction</li>
+          <li>Company formation — GK/KK (judicial scrivener)</li>
+          <li>Visa strategy (immigration attorney)</li>
+          <li>Tax planning (licensed tax accountant)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PROCESS ==================== -->
+<section class="process">
+  <div class="process-inner">
+    <div class="sl fade-up">How It Works</div>
+    <div class="st fade-up s1">From initial review to opening day.<br>Here's the typical flow.</div>
+    <div class="ss fade-up s2">Every project is different. This is the general sequence — your review will outline what applies to your situation.</div>
+    <div class="process-steps">
+      <div class="p-step fade-up s1"><div class="p-num">1</div><div><h3>Free Pre-Acquisition Review</h3><p>You tell us your target area, budget range, and project type. We review licensing viability, zoning, and key risk factors — and send you an initial assessment within 48 hours.</p></div></div>
+      <div class="p-step fade-up s2"><div class="p-num">2</div><div><h3>Property / Land Sourcing</h3><p>As a licensed broker, we screen properties through broker-only listing systems and help you evaluate candidates against hotel licensing requirements before you commit.</p></div></div>
+      <div class="p-step fade-up s3"><div class="p-num">3</div><div><h3>Acquisition &amp; Legal Setup</h3><p>Licensed brokerage handles the purchase. Legal review, company formation (GK/KK), and visa strategy are coordinated with specialist partners.</p></div></div>
+      <div class="p-step fade-up s4"><div class="p-num">4</div><div><h3>Licensing &amp; Permits</h3><p>Hotel license application, zoning verification, fire safety compliance, health department requirements. Coordinated with an administrative scrivener and relevant authorities.</p></div></div>
+      <div class="p-step fade-up s5"><div class="p-num">5</div><div><h3>Renovation / Construction</h3><p>Contractor coordination for the build-out — whether converting an existing structure or building new. Architectural plans, interior design, and code compliance managed through our partner network.</p></div></div>
+      <div class="p-step fade-up"><div class="p-num">6</div><div><h3>Operations Launch</h3><p>OTA listings (Booking.com, Airbnb), booking system setup, staffing guidance, and launch support. Your hotel opens for business.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- (photo strip removed) -->
+
+<!-- ==================== TWO PATHS ==================== -->
+<section class="paths">
+  <div class="paths-inner">
+    <div class="sl fade-up">Two Approaches</div>
+    <div class="st fade-up s1">Renovate an existing building,<br>or build from the ground up.</div>
+    <div class="ss fade-up s2">Your path depends on budget, timeline, and vision. Both have trade-offs — here's how they compare.</div>
+
+    <div class="paths-grid">
+      <!-- PATH A: RENOVATION -->
+      <div class="path-card fade-up s1">
+        <div class="path-photo" style="background-image:url('/hotel-lp/img/reno-building.jpg')">
+          <div class="path-badge reno">Renovation</div>
+          <div class="path-photo-title">Buy &amp; Convert</div>
+        </div>
+        <div class="path-body">
+          <p>Purchase an existing building — apartment block, office, or old ryokan — and convert it into a hotel. Generally faster and lower total cost, but renovation scope depends heavily on the building's condition and fire code compliance.</p>
+          <div class="path-specs">
+            <div class="path-spec"><div class="path-spec-label">Typical Budget</div><div class="path-spec-val">¥80M – ¥500M</div></div>
+            <div class="path-spec"><div class="path-spec-label">Typical Timeline</div><div class="path-spec-val">8 – 14 months</div></div>
+            <div class="path-spec"><div class="path-spec-label">Scale</div><div class="path-spec-val">8 – 30 rooms</div></div>
+            <div class="path-spec"><div class="path-spec-label">Key Risk</div><div class="path-spec-val">Hidden reno costs</div></div>
+          </div>
+          <div class="path-steps">
+            <h4>Typical Flow</h4>
+            <div class="path-step-list">
+              <div class="ps"><span class="ps-num">1</span>Source building with hotel-eligible zoning</div>
+              <div class="ps"><span class="ps-num">2</span>Due diligence + acquisition</div>
+              <div class="ps"><span class="ps-num">3</span>Hotel license application</div>
+              <div class="ps"><span class="ps-num">4</span>Renovation (fire code, interior, facilities)</div>
+              <div class="ps"><span class="ps-num">5</span>Operations launch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATH B: NEW BUILD -->
+      <div class="path-card fade-up s2">
+        <div class="path-photo" style="background-image:url('/hotel-lp/img/new-build.jpg')">
+          <div class="path-badge new">New Build</div>
+          <div class="path-photo-title">Land + Construct</div>
+        </div>
+        <div class="path-body">
+          <p>Buy land in a target location and build a purpose-designed hotel from the ground up. Higher upfront investment, but you get the exact layout, capacity, and brand identity you want — with no structural compromises.</p>
+          <div class="path-specs">
+            <div class="path-spec"><div class="path-spec-label">Typical Budget</div><div class="path-spec-val">¥200M – ¥1B+</div></div>
+            <div class="path-spec"><div class="path-spec-label">Typical Timeline</div><div class="path-spec-val">18 – 30 months</div></div>
+            <div class="path-spec"><div class="path-spec-label">Scale</div><div class="path-spec-val">15 – 60+ rooms</div></div>
+            <div class="path-spec"><div class="path-spec-label">Key Risk</div><div class="path-spec-val">Longer commitment</div></div>
+          </div>
+          <div class="path-steps">
+            <h4>Typical Flow</h4>
+            <div class="path-step-list">
+              <div class="ps"><span class="ps-num">1</span>Source land with hotel-eligible zoning</div>
+              <div class="ps"><span class="ps-num">2</span>Land acquisition + company setup</div>
+              <div class="ps"><span class="ps-num">3</span>Architectural design + permit applications</div>
+              <div class="ps"><span class="ps-num">4</span>Construction + hotel license</div>
+              <div class="ps"><span class="ps-num">5</span>Interior fit-out + operations launch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MARKET (shortened) ==================== -->
+<section class="market">
+  <div class="market-inner">
+    <div class="sl fade-up">Tokyo Lodging Market</div>
+    <div class="st fade-up s1" style="max-width:100%">Context for your decision.</div>
+    <div class="ss fade-up s2" style="max-width:100%;margin-left:auto;margin-right:auto">Tokyo is one of Japan's strongest lodging markets. Here are three data points worth knowing — your review will include more context relevant to your specific target area.</div>
+    <div class="market-stats fade-up s2">
+      <div class="m-stat"><div class="m-stat-val">40.2M</div><div class="m-stat-label">Inbound visitors to Japan, 2025<br>(record year — JNTO provisional)</div></div>
+      <div class="m-stat"><div class="m-stat-val">60M</div><div class="m-stat-label">Gov. target for 2030<br>(Japan Tourism Agency)</div></div>
+      <div class="m-stat"><div class="m-stat-val">Varies</div><div class="m-stat-label">Hotel occupancy by district<br>and property type</div></div>
+    </div>
+    <div class="market-note fade-up">Sources: JNTO (2025 provisional figures), Japan Tourism Agency. Occupancy rates differ significantly by month, district, and segment. Your review will reference data relevant to your target area.</div>
+  </div>
+</section>
+
+<!-- (photo strip removed) -->
+
+<!-- ==================== FAQ ==================== -->
+<section class="faq">
+  <div class="faq-inner">
+    <div class="sl fade-up">Common Questions</div>
+    <div class="st fade-up s1">Before you reach out.</div>
+    <div class="faq-list fade-up s2">
+
+      <div class="faq-item"><button class="faq-q">Can foreigners own hotel property in Japan?</button><div class="faq-a"><p>Foreign nationals can own real estate in Japan. Residency is not generally required for ownership. However, financing, tax structure, visa eligibility, and operating structure are separate considerations that should be reviewed individually. Our assessment covers which of these apply to your situation.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">What does the free review actually include?</button><div class="faq-a"><p>A practical first-pass review of your target area and project type. We check hotel licensing viability, zoning classification, likely fire code considerations, estimated timeline, and key risk factors. It's not a full due diligence — it's designed to help you decide whether to proceed to that stage.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">What budget is realistic for a first project?</button><div class="faq-a"><p>For a renovation project (8–15 rooms): roughly ¥80M–¥300M total, depending on location, building condition, and scope. For a new build: ¥200M–¥800M+. These are general ranges — your review will include more specific context based on your target area.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">Can I get a Business Manager Visa through a hotel project?</button><div class="faq-a"><p>A hotel project may support a Business Manager Visa strategy, but eligibility depends on your office setup, business structure, capital, operational substance, and immigration review. We coordinate with immigration attorneys to assess your specific situation — but we cannot guarantee visa approval, as that is determined by immigration authorities.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">How long does the process typically take?</button><div class="faq-a"><p>Renovation path: typically 8–14 months from acquisition to opening. New build: 18–30 months. Actual timelines depend on building condition, permitting, and construction scope. We outline a realistic timeline in your review.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">Do I need to be in Japan during the process?</button><div class="faq-a"><p>Most steps can be handled remotely with power of attorney. You'll likely want to visit for property viewing and key decision points, but we manage day-to-day coordination in Tokyo on your behalf.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">What does Ziyou handle directly vs. through partners?</button><div class="faq-a"><p>We handle property sourcing, licensed brokerage, feasibility review, and project coordination directly. Hotel licensing, legal structuring, fire code compliance, architectural design, construction, and visa applications are coordinated through specialist partners. We act as your single point of contact throughout.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">What fees does Ziyou charge?</button><div class="faq-a"><p>Property brokerage follows the standard Japanese upper-limit formula (often summarized as 3% + ¥60,000, plus applicable tax, subject to statutory rules and exceptions). Hotel development coordination fees depend on scope and are discussed during consultation. The initial feasibility review is free.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">I've heard Japan may restrict foreign property purchases. Should I be concerned?</button><div class="faq-a"><p>Japan is discussing tighter oversight of certain foreign investment and land-related transactions. The exact scope and impact on future real estate acquisitions remains uncertain — no comprehensive restriction has been enacted as of this writing. We recommend making decisions based on your project fundamentals rather than regulatory speculation. If relevant changes occur, we'll flag them in your review.</p></div></div>
+
+      <div class="faq-item"><button class="faq-q">I'm not ready to buy yet — is the review still useful?</button><div class="faq-a"><p>Yes. The review is specifically designed for the "before you decide" stage. It helps you understand what's feasible, what's risky, and what to investigate further — with no obligation to proceed.</p></div></div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FINAL CTA ==================== -->
+<section class="final-cta">
+  <div class="final-cta-bg"></div>
+  <div class="final-cta-inner">
+    <div class="sl fade-up" style="color:var(--gold);text-align:center">Ready?</div>
+    <h2 class="fade-up s1">Get a practical feasibility review<br>before you commit.</h2>
+    <p class="fade-up s2">30 seconds to submit. 48 hours to receive your initial review. No cost, no obligation.</p>
+    <div class="final-cta-buttons fade-up s3">
+      <a href="#form" class="btn-accent">Request Free Review ↑</a>
+      <a href="https://wa.me/818084927068" class="btn-outline" target="_blank">WhatsApp Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-text">Ziyou Real Estate LLC / 自由不動産合同会社<br>Tokyo Governor License (1) No. 108831<br>&copy; 2026 Ziyou Real Estate LLC. Information on this page is for general reference only and does not constitute legal, tax, immigration, or investment advice.</div>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+// SCROLL ANIMATIONS
+var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.fade-up').forEach(function(el){obs.observe(el)});
+
+// NAV SCROLL
+window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',scrollY>50)});
+
+// SMOOTH SCROLL
+document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+
+// FAQ
+document.querySelectorAll('.faq-q').forEach(function(b){b.addEventListener('click',function(){var it=b.parentElement;document.querySelectorAll('.faq-item').forEach(function(i){if(i!==it)i.classList.remove('open')});it.classList.toggle('open')})});
+</script>
+</body>
+</html>
