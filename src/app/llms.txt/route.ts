@@ -45,7 +45,7 @@ export async function GET() {
     '',
     '> Multilingual Japan hospitality property portal for foreign investors acquiring hotels, ryokan, minpaku-ready buildings, and conversion candidates.',
     '',
-    `${listingSummary} Public listing pages focus on hospitality acquisition fit, train access, price, yield, building scale, and inquiry intent.`,
+    `${listingSummary} Public listing pages focus on hospitality acquisition fit, train access, price, building scale, and inquiry intent.`,
     'Addresses may be partially masked on public pages for privacy. Guides are informational and do not replace legal, tax, or licensing advice.',
     '',
     '## Main Pages',

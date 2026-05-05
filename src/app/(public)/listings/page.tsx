@@ -120,7 +120,6 @@ interface ListingRow {
   }[] | null
   builtYear: number | null
   buildingArea: string | number | null
-  yieldGross: string | number | null
   viewCount: number | null
   publishedAt: string | null
   media: { url: string; category: string }[] | null
@@ -145,7 +144,6 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
       stations,
       builtYear,
       buildingArea,
-      yieldGross,
       viewCount,
       publishedAt,
       media (url, category)
@@ -190,9 +188,6 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
       break
     case 'price_desc':
       query = query.order('price', { ascending: false })
-      break
-    case 'yield_desc':
-      query = query.order('yieldGross', { ascending: false, nullsFirst: false })
       break
     default:
       query = query.order('createdAt', { ascending: false })
@@ -246,7 +241,6 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
     ...listing,
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
-    yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
     media: listing.media || [],
   }))
 

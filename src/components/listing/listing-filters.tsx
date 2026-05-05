@@ -85,7 +85,6 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
     { value: 'newest', labelKey: 'sortNewest' },
     { value: 'price_asc', labelKey: 'sortPriceAsc' },
     { value: 'price_desc', labelKey: 'sortPriceDesc' },
-    { value: 'yield_desc', labelKey: 'sortYieldDesc' },
   ]
 
   const selectedLine = normalizeRailwayLine(searchParams.get('line'))

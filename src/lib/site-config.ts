@@ -209,8 +209,6 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
   const transit = formatTransitAccessLabel(transitStations[0], normalizedLocale)
   const price = toNumber(listing.price)
   const buildingArea = toNumber(listing.buildingArea)
-  const yieldGross = toNumber(listing.yieldGross)
-
   const fragments =
     normalizedLocale === 'ja'
       ? [
@@ -219,7 +217,6 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
           price != null ? `${formatPrice(price, normalizedLocale)}` : null,
           transit ? `${transit}` : null,
           buildingArea ? `建物面積 ${buildingArea.toFixed(0)}㎡` : null,
-          yieldGross ? `表面利回り ${yieldGross.toFixed(1)}%` : null,
         ]
       : normalizedLocale === 'en'
         ? [
@@ -228,7 +225,6 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
             price != null ? `${formatPrice(price, normalizedLocale)}` : null,
             transit ? transit : null,
             buildingArea ? `${buildingArea.toFixed(0)} sqm` : null,
-            yieldGross ? `yield ${yieldGross.toFixed(1)}%` : null,
           ]
         : normalizedLocale === 'zh-TW'
           ? [
@@ -237,7 +233,6 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
               price != null ? `${formatPrice(price, normalizedLocale)}` : null,
               transit ? transit : null,
               buildingArea ? `建物面積 ${buildingArea.toFixed(0)}㎡` : null,
-              yieldGross ? `表面投報率 ${yieldGross.toFixed(1)}%` : null,
             ]
           : [
               translatedType,
@@ -245,7 +240,6 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
               price != null ? `${formatPrice(price, normalizedLocale)}` : null,
               transit ? transit : null,
               buildingArea ? `建筑面积 ${buildingArea.toFixed(0)}㎡` : null,
-              yieldGross ? `表面收益率 ${yieldGross.toFixed(1)}%` : null,
             ]
 
   return fragments.filter(Boolean).join(' | ').slice(0, 160)

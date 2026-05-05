@@ -148,14 +148,15 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const description = getDescription()
 
   // Prisma互換の形式に変換
+  const { yieldGross, yieldNet, ...listingForDisplay } = listing
+  void yieldGross
+  void yieldNet
   const formattedListing = {
-    ...listing,
+    ...listingForDisplay,
     addressPublic: publicAddress,
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
     landArea: listing.landArea ? Number(listing.landArea) : null,
-    yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
-    yieldNet: listing.yieldNet ? Number(listing.yieldNet) : null,
     media: sortedMedia,
   }
   const listingJsonLd = {
@@ -200,13 +201,6 @@ export default async function ListingPage({ params }: ListingPageProps) {
               '@type': 'PropertyValue',
               name: 'Current status',
               value: formattedListing.currentStatus,
-            }
-          : null,
-        formattedListing.yieldGross != null
-          ? {
-              '@type': 'PropertyValue',
-              name: 'Yield',
-              value: `${formattedListing.yieldGross}%`,
             }
           : null,
       ].filter(Boolean),

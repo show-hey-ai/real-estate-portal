@@ -47,7 +47,7 @@ export async function GET() {
     'Ziyou Hospitality is a multilingual portal focused on hospitality property acquisition in Japan. The main audience is foreign investors, family offices, operators, and real estate buyers evaluating hotels, ryokan, minpaku-ready buildings, conversion candidates, and tourism development sites.',
     '',
     `${listingCountLine}. Only public listings with explicit ad approval are shown on listing pages.`,
-    'Public detail pages typically include price, masked address, transport access, building data, yield when available, image gallery, and inquiry CTA.',
+    'Public detail pages typically include price, masked address, transport access, building data, image gallery, and inquiry CTA.',
     'Guide pages are designed for high-intent search queries and explain acquisition, licensing, underwriting, ownership, and hospitality operation considerations for foreign buyers.',
     '',
     'Important interpretation notes:',

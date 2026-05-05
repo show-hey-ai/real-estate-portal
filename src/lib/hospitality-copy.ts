@@ -154,7 +154,7 @@ const homeCopy = {
     ],
     reviewTitle: 'Before we introduce a candidate, we look at whether it can work as hospitality',
     reviewDescription:
-      'Investors usually start with property search. Our difference is what happens before a candidate is recommended: we check the practical lodging-use issues behind the price, yield, and station distance.',
+      'Investors usually start with property search. Our difference is what happens before a candidate is recommended: we check the practical lodging-use issues behind the price, operating assumptions, and station distance.',
     checks: [
       { title: 'Zoning', desc: 'Whether lodging use is possible in the district' },
       { title: 'Fire code', desc: 'Equipment, egress, and retrofit cost signals' },
@@ -296,7 +296,7 @@ const cardCopy = {
     review: 'Hospitality-use check',
     license: 'License path check',
     opening: 'Opening PM available',
-    yield: 'Yield',
+    yield: 'Return',
     area: 'Building area',
   },
   'zh-TW': {

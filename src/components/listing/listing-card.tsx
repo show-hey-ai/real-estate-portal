@@ -12,7 +12,6 @@ import {
   MapPin,
   MessageCircle,
   Ruler,
-  ShieldCheck,
   Sparkles,
   Train,
 } from 'lucide-react'
@@ -51,7 +50,6 @@ interface ListingCardProps {
     stations?: Station[] | null
     builtYear: number | null
     buildingArea: number | null
-    yieldGross: number | null
     viewCount?: number | null
     favoriteCount?: number | null
     publishedAt?: Date | string | null
@@ -204,16 +202,7 @@ export function ListingCard({
           )}
         </div>
 
-        <div className="mt-4 grid grid-cols-3 overflow-hidden rounded-[8px] border border-[#e1dac8] bg-[#f7f3e9] text-xs">
-          <div className="border-r border-[#e1dac8] p-2">
-            <div className="flex items-center gap-1 text-[#7a837d]">
-              <ShieldCheck className="h-3 w-3" />
-              {cardCopy.yield}
-            </div>
-            <p className="mt-1 font-semibold text-[#19231f]">
-              {listing.yieldGross ? `${Number(listing.yieldGross).toFixed(1)}%` : '-'}
-            </p>
-          </div>
+        <div className="mt-4 grid grid-cols-2 overflow-hidden rounded-[8px] border border-[#e1dac8] bg-[#f7f3e9] text-xs">
           <div className="border-r border-[#e1dac8] p-2">
             <div className="flex items-center gap-1 text-[#7a837d]">
               <Ruler className="h-3 w-3" />

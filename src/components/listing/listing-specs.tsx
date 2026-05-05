@@ -16,8 +16,6 @@ interface ListingSpecsProps {
     buildingArea: { toString(): string } | null
     zoning: string | null
     currentStatus: string | null
-    yieldGross: { toString(): string } | null
-    yieldNet: { toString(): string } | null
   }
 }
 
@@ -56,16 +54,6 @@ export function ListingSpecs({ listing }: ListingSpecsProps) {
     { label: t('buildingArea'), value: listing.buildingArea ? formatArea(Number(listing.buildingArea)) : null },
     { label: t('zoning'), value: translateZoning(listing.zoning, locale) },
     { label: t('currentStatus'), value: translateCurrentStatus(listing.currentStatus, locale) },
-    {
-      label: t('yieldGross'),
-      value: listing.yieldGross ? `${Number(listing.yieldGross).toFixed(2)}%` : null,
-      highlight: true,
-    },
-    {
-      label: t('yieldNet'),
-      value: listing.yieldNet ? `${Number(listing.yieldNet).toFixed(2)}%` : null,
-      highlight: true,
-    },
   ].filter((spec) => spec.value)
 
   return (
@@ -78,9 +66,7 @@ export function ListingSpecs({ listing }: ListingSpecsProps) {
           {specs.map((spec) => (
             <div key={spec.label} className="space-y-1">
               <dt className="text-sm text-muted-foreground">{spec.label}</dt>
-              <dd className={spec.highlight ? 'font-semibold text-primary' : 'font-medium'}>
-                {spec.value}
-              </dd>
+              <dd className="font-medium">{spec.value}</dd>
             </div>
           ))}
         </dl>

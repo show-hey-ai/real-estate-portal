@@ -54,7 +54,6 @@ const getLatestPublishedListings = unstable_cache(
         stations,
         builtYear,
         buildingArea,
-        yieldGross,
         viewCount,
         publishedAt,
         media (url, category)
@@ -120,7 +119,6 @@ export default async function HomePage() {
     ...listing,
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
-    yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
   }))
 
   const userId = viewer?.id ?? null
@@ -253,6 +251,47 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="py-14 md:py-20">
+        <div className="container">
+          <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
+                {t('home.newListings')}
+              </h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#647069] md:text-base">
+                {t('home.newListingsDesc')}
+              </p>
+            </div>
+            <Link href="/listings">
+              <Button
+                variant="outline"
+                className="rounded-[8px] border-[#b7aa8d] bg-transparent text-[#1a2a24] hover:bg-[#ebe5d6]"
+              >
+                {t('home.viewAll')}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+
+          {formattedListings.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {formattedListings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  isFavorite={favoriteIds.has(listing.id)}
+                  userId={userId}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-[8px] border border-[#d9d2bd] bg-[#fffdf8] p-8 text-center text-sm text-[#647069]">
+              {t('home.noListings')}
+            </div>
+          )}
+        </div>
+      </section>
+
       <section className="relative py-14 md:py-20">
         <div className="container">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
@@ -339,47 +378,6 @@ export default async function HomePage() {
               })}
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="py-14 md:py-20">
-        <div className="container">
-          <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
-                {t('home.newListings')}
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#647069] md:text-base">
-                {t('home.newListingsDesc')}
-              </p>
-            </div>
-            <Link href="/listings">
-              <Button
-                variant="outline"
-                className="rounded-[8px] border-[#b7aa8d] bg-transparent text-[#1a2a24] hover:bg-[#ebe5d6]"
-              >
-                {t('home.viewAll')}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {formattedListings.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {formattedListings.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  isFavorite={favoriteIds.has(listing.id)}
-                  userId={userId}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[8px] border border-[#d9d2bd] bg-[#fffdf8] p-8 text-center text-sm text-[#647069]">
-              {t('home.noListings')}
-            </div>
-          )}
         </div>
       </section>
 

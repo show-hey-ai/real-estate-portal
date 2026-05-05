@@ -143,7 +143,7 @@ export const guideArticles: GuideArticle[] = [
         seoDescription:
           'Learn how overseas investors buy investment property in Japan, including timeline, paperwork, costs, and common execution mistakes.',
         intro:
-          'Foreign buyers can legally own property in Japan, but the real challenge is execution. The best deals usually go to buyers who can move quickly on diligence, documentation, and fund flow while staying disciplined on yield quality and exit risk.',
+          'Foreign buyers can legally own property in Japan, but the real challenge is execution. The best deals usually go to buyers who can move quickly on diligence, documentation, and fund flow while staying disciplined on return quality and exit risk.',
         keyTakeaways: [
           'Foreign ownership is permitted in Japan',
           'Execution speed matters as much as legal eligibility',
@@ -155,7 +155,7 @@ export const guideArticles: GuideArticle[] = [
             heading: 'Why Japan is attractive to overseas investors',
             paragraphs: [
               'Central Tokyo remains attractive because tenant demand, legal clarity, and resale liquidity are stronger than in many other markets. For first-time cross-border buyers, that makes underwriting more predictable.',
-              'That said, high advertised yields can hide leasing weakness, deferred repairs, or poor resale depth. Your first deal should optimize for repeatability, not for the most aggressive headline number.',
+              'That said, high advertised return figures can hide leasing weakness, deferred repairs, or poor resale depth. Your first deal should optimize for repeatability, not for the most aggressive headline number.',
             ],
           },
           {
@@ -166,7 +166,7 @@ export const guideArticles: GuideArticle[] = [
               'For income property, your first screen should focus on rent stability, repair history, tenant profile, management structure, seller motivation, and realistic exit assumptions.',
             ],
             bullets: [
-              'Set your target ward, budget, asset type, yield band, and hold period',
+              'Set your target ward, budget, asset type, return range, and hold period',
               'Check rent durability and capex risk before reacting to marketing copy',
               'Finalize purchasing entity and fund path before you bid',
             ],
@@ -176,7 +176,7 @@ export const guideArticles: GuideArticle[] = [
             heading: 'Costs investors often underestimate',
             paragraphs: [
               'Beyond the purchase price, acquisition costs include brokerage, registration, judicial scrivener fees, stamp tax, insurance, tax settlement, and sometimes immediate repair or leasing costs.',
-              'If you only look at headline yield and ignore entry costs, your projected return can be materially overstated.',
+              'If you only look at headline return and ignore entry costs, your projected result can be materially overstated.',
             ],
             bullets: [
               'Brokerage fees',
@@ -189,7 +189,7 @@ export const guideArticles: GuideArticle[] = [
             id: 'mistakes',
             heading: 'Where foreign investors usually lose time or money',
             paragraphs: [
-              'The most common mistake is choosing based on appearance or nominal yield without underwriting operating difficulty. Building age, repair history, tenant churn, special rights, and local leasing depth all matter.',
+              'The most common mistake is choosing based on appearance or nominal return without underwriting operating difficulty. Building age, repair history, tenant churn, special rights, and local leasing depth all matter.',
               'The second mistake is being administratively slow. Deals can move before buyers have clarified signatures, source of funds, remittance route, or ownership structure.',
             ],
           },
@@ -200,7 +200,7 @@ export const guideArticles: GuideArticle[] = [
               'Before you submit a purchase application, you should be able to explain the cash flow, downside case, hold strategy, and exit path in a few lines. If you cannot, the deal is not ready.',
             ],
             bullets: [
-              'Did you review realistic net yield rather than headline yield alone?',
+              'Did you review realistic net return rather than headline return alone?',
               'Do you understand the local tenant pool and reletting conditions?',
               'Are capex and management assumptions reflected in your model?',
               'Is your buying entity and remittance path already decided?',
@@ -226,7 +226,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: 'Browse live Tokyo investment listings',
         ctaDescription:
-          'Compare central Tokyo opportunities by price, station access, and yield before shortlisting your first candidates.',
+          'Compare central Tokyo opportunities by price, station access, and return assumptions before shortlisting your first candidates.',
       },
       'zh-TW': {
         category: '購買指南',
@@ -421,7 +421,7 @@ export const guideArticles: GuideArticle[] = [
     publishedAt: '2026-04-09',
     updatedAt: '2026-04-09',
     readMinutes: 6,
-    tags: ['yield', 'tokyo market', 'underwriting'],
+    tags: ['return', 'tokyo market', 'underwriting'],
     locales: {
       ja: {
         category: 'マーケット分析',
@@ -511,30 +511,30 @@ export const guideArticles: GuideArticle[] = [
       },
       en: {
         category: 'Market Analysis',
-        title: 'Tokyo Cap Rate Guide: What 4%, 5%, and 6% Yield Really Mean',
+        title: 'Tokyo Cap Rate Guide: What 4%, 5%, and 6% Return Numbers Mean',
         excerpt:
-          'A practical way to interpret yield in central Tokyo without confusing headline return with actual investment quality.',
+          'A practical way to interpret return numbers in central Tokyo without confusing headline figures with actual investment quality.',
         seoDescription:
-          'Understand what 4%, 5%, and 6% yield usually means for Tokyo investment property across central wards, age, liquidity, and risk.',
+          'Understand what 4%, 5%, and 6% return numbers usually mean for Tokyo investment property across central wards, age, liquidity, and risk.',
         intro:
-          'Yield is useful, but only when read in context. In Tokyo, a higher cap rate is often compensation for some combination of leasing risk, repair burden, structural weakness, or thinner resale demand.',
+          'Return figures are useful, but only when read in context. In Tokyo, a higher cap rate is often compensation for some combination of leasing risk, repair burden, structural weakness, or thinner resale demand.',
         keyTakeaways: [
-          'Yield is a screening input, not an investment decision',
-          'Lower yields in central Tokyo often trade on stability and exit liquidity',
-          'Higher yields require a clearer explanation before they deserve attention',
+          'Return figures are screening inputs, not investment decisions',
+          'Lower return figures in central Tokyo often trade on stability and exit liquidity',
+          'Higher return figures require a clearer explanation before they deserve attention',
         ],
         sections: [
           {
             id: 'gross-vs-real',
-            heading: 'Why yield is only the first number',
+            heading: 'Why the return number is only the first number',
             paragraphs: [
-              'Headline yield can ignore repairs, vacancy, leasing costs, insurance, tax, and asset management friction.',
-              'Two properties with the same 5% yield can produce very different real cash flow depending on tenant quality, capex timing, and reletting risk.',
+              'Headline return figures can ignore repairs, vacancy, leasing costs, insurance, tax, and asset management friction.',
+              'Two properties with the same 5% figure can produce very different real cash flow depending on tenant quality, capex timing, and reletting risk.',
             ],
           },
           {
             id: 'ranges',
-            heading: 'How to read yield bands in central Tokyo',
+            heading: 'How to read return ranges in central Tokyo',
             paragraphs: [
               'As a rough framing tool, 4% in central Tokyo often signals stability and exit strength, 5% can be a balanced underwriting range, and 6% or above usually requires a risk explanation.',
               'That explanation may be acceptable, but it should be explicit before you get excited by the number.',
@@ -547,17 +547,17 @@ export const guideArticles: GuideArticle[] = [
           },
           {
             id: 'risk',
-            heading: 'What usually sits behind high yield',
+            heading: 'What usually sits behind high return figures',
             paragraphs: [
-              'Long station walks, older buildings, deferred repairs, weak tenant depth, non-standard rights, micro-lot constraints, and uncertain resale can all push pricing lower and yield higher.',
+              'Long station walks, older buildings, deferred repairs, weak tenant depth, non-standard rights, micro-lot constraints, and uncertain resale can all push pricing lower and headline return figures higher.',
               'The key question is whether the issue is operationally fixable or structurally permanent.',
             ],
           },
           {
             id: 'metrics',
-            heading: 'The numbers that matter alongside yield',
+            heading: 'The numbers that matter alongside return figures',
             paragraphs: [
-              'You should review expected market rent, capital expenditure timing, tenant turnover risk, management quality, and realistic resale depth together with yield.',
+              'You should review expected market rent, capital expenditure timing, tenant turnover risk, management quality, and realistic resale depth together with headline return figures.',
             ],
             bullets: [
               'Reletting rent assumptions',
@@ -570,30 +570,30 @@ export const guideArticles: GuideArticle[] = [
             id: 'screening',
             heading: 'A better first-pass screening method',
             paragraphs: [
-              'For initial screening, combine yield, station access, building age, ward, price point, and repair condition. That is often enough to eliminate weak leads before deeper diligence.',
+              'For initial screening, combine return assumptions, station access, building age, ward, price point, and repair condition. That is often enough to eliminate weak leads before deeper diligence.',
             ],
           },
         ],
         faq: [
           {
-            question: 'Is 6% yield high for central Tokyo?',
+            question: 'Is a 6% return number high for central Tokyo?',
             answer:
-              'Yes, usually. That does not automatically make it bad, but it does mean you should identify the specific reason the market is pricing the asset at that yield.',
+              'Yes, usually. That does not automatically make it bad, but it does mean you should identify the specific reason the market is pricing the asset at that level.',
           },
           {
-            question: 'Can lower-yield assets still be attractive?',
+            question: 'Can lower-return assets still be attractive?',
             answer:
-              'Absolutely. Lower-yield assets can still perform well when liquidity, tenant demand, and downside protection are stronger.',
+              'Absolutely. Assets with lower return figures can still perform well when liquidity, tenant demand, and downside protection are stronger.',
           },
           {
             question: 'What number matters most beyond cap rate?',
             answer:
-              'A practical answer is not one number but a set: realistic net yield, reletting rent, capex timing, and probable exit pricing.',
+              'A practical answer is not one number but a set: realistic net return, reletting rent, capex timing, and probable exit pricing.',
           },
         ],
-        ctaTitle: 'Compare Tokyo listings by yield and station access',
+        ctaTitle: 'Compare Tokyo listings by return assumptions and station access',
         ctaDescription:
-          'Use live listings to compare yield in context instead of reacting to headline numbers alone.',
+          'Use live listings to compare return assumptions in context instead of reacting to headline numbers alone.',
       },
       'zh-TW': {
         category: '市場分析',
@@ -936,7 +936,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: 'Look at Tokyo listings that fit your target scale',
         ctaDescription:
-          'Review live opportunities by price, station access, and yield so you can match ownership structure to the kind of assets you actually plan to buy.',
+          'Review live opportunities by price, station access, and return assumptions so you can match ownership structure to the kind of assets you actually plan to buy.',
       },
       'zh-TW': {
         category: '投資架構',

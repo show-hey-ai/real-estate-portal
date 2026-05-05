@@ -68,17 +68,22 @@ export default async function FavoritesPage() {
 
       {publishedFavorites.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {publishedFavorites.map((fav) => (
-            <ListingCard
-              key={fav.id}
-              listing={{
-                ...fav.listing,
-                buildingArea: fav.listing.buildingArea ? Number(fav.listing.buildingArea) : null,
-                yieldGross: fav.listing.yieldGross ? Number(fav.listing.yieldGross) : null,
-                stations: fav.listing.stations as { name: string; line?: string | null; walk_minutes?: number | null }[] | null,
-              }}
-            />
-          ))}
+          {publishedFavorites.map((fav) => {
+            const { yieldGross, yieldNet, ...listing } = fav.listing
+            void yieldGross
+            void yieldNet
+
+            return (
+              <ListingCard
+                key={fav.id}
+                listing={{
+                  ...listing,
+                  buildingArea: fav.listing.buildingArea ? Number(fav.listing.buildingArea) : null,
+                  stations: fav.listing.stations as { name: string; line?: string | null; walk_minutes?: number | null }[] | null,
+                }}
+              />
+            )
+          })}
         </div>
       ) : (
         <div className="text-center py-16">

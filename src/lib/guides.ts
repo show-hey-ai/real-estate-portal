@@ -35,12 +35,12 @@ const guideUiCopy = {
     homeCrumb: 'Home',
     indexTitle: 'Japan Real Estate Guides for Overseas Investors',
     indexDescription:
-      'Practical multilingual guides for overseas buyers evaluating Japanese investment property, yield, ownership structure, and execution risk.',
+      'Practical multilingual guides for overseas buyers evaluating Japanese investment property, return assumptions, ownership structure, and execution risk.',
     indexLead:
       'These articles answer the practical questions overseas investors usually ask before they inquire.',
     indexPoints: [
       'How foreign buyers acquire income property in Japan',
-      'How to read yield numbers in Tokyo',
+      'How to read return assumptions in Tokyo',
       'When to buy personally vs through a company',
     ],
     browseListings: 'Browse live listings',
