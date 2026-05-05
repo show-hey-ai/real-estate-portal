@@ -94,35 +94,35 @@ const homeCopy = {
   ja: {
     heroTitle: '日本の宿泊業物件を、取得判断から開業まで',
     heroDescription:
-      'Ziyou Hospitalityは、外国人投資家のホテル・旅館・民泊対応物件取得に特化した東京の宅建業者です。物件探しだけでなく、用途地域・消防・建築・保健所の購入前診断、売買仲介、許認可準備、開業PMまで一気通貫で支援します。',
+      'Ziyou Hospitalityは、外国人投資家向けに日本のホテル・旅館・民泊向け物件を探し、紹介し、取得まで支援する東京の宅建業者です。ポータル掲載物件に加えて、希望条件に合わせた未公開候補の紹介、売買仲介、許認可準備、開業PMまで一気通貫で支援します。',
     primaryCta: '宿泊業物件を探す',
-    secondaryCta: '購入前診断を相談',
-    searchTitle: '宿泊事業として買える物件を探す',
-    searchDescription: 'エリア、駅、価格、建物規模から候補を絞り込みます。',
+    secondaryCta: '希望条件を送る',
+    searchTitle: '条件に合う宿泊業物件を探す',
+    searchDescription: 'エリア、駅、価格、建物規模から公開候補を絞り込みます。',
     proof: [
       { value: 'Hotel / Ryokan / Minpaku', label: '宿泊用途に特化' },
-      { value: 'Zoning / Fire / Hokenjo', label: '購入前に論点を確認' },
+      { value: 'Listed + Off-market', label: '公開・未公開候補を紹介' },
       { value: 'EN / JA / 中文', label: '外国人投資家対応' },
     ],
-    assetTitle: '掲載対象は、宿泊事業に転用・運営できる可能性がある物件です',
+    assetTitle: '掲載対象は、宿泊業として取得・運営を検討できる候補物件です',
     assetDescription:
-      'ホテル・旅館の既存運営物件だけでなく、民泊対応の一棟物件、簡易宿所への転用候補、観光地の開発用地まで、取得前に実務リスクを見ます。',
+      '既存ホテル・旅館だけでなく、民泊対応の一棟物件、簡易宿所への転用候補、観光地の開発用地まで、投資家の予算・エリア・運営方針に合わせて候補を整理します。',
     assetPaths: [
       { title: 'ホテル・旅館', desc: '営業中資産、改装前提、オペレーター引継ぎ' },
       { title: '民泊対応一棟', desc: '戸建、一棟アパート、駅近の小規模運用候補' },
       { title: '転用候補', desc: '店舗・事務所・住宅から宿泊用途への転用検討' },
       { title: '開発用地', desc: 'ホテル、簡易宿所、観光地向け小規模開発' },
     ],
-    reviewTitle: '物件を見る基準を、宿泊業の許認可基準に変える',
+    reviewTitle: '紹介する前に、宿泊業としての成立性を見ます',
     reviewDescription:
-      '利回りや駅距離だけでは判断しません。買ったあとに宿泊営業ができるかを、購入前に分解して確認します。',
+      '投資家にとっての入口は物件探しです。ただし、私たちは利回りや駅距離だけで候補を出しません。宿泊用途・消防・建築・保健所の論点を踏まえて、進める価値のある候補を紹介します。',
     checks: [
       { title: '用途地域', desc: '旅館業・民泊が成立する地域か' },
       { title: '消防', desc: '設備・避難・改修コストの初期確認' },
       { title: '建築', desc: '用途変更、階段、避難、構造の論点' },
       { title: '保健所', desc: '旅館業・簡易宿所・住宅宿泊事業の見通し' },
     ],
-    processTitle: '購入前の確認から開業準備まで支援します',
+    processTitle: '物件探しから取得・開業準備まで支援します',
     process: [
       { step: '01', title: '物件候補を探す', desc: 'エリア、規模、予算、宿泊用途で候補を整理' },
       { step: '02', title: '購入前に確認する', desc: '許認可・消防・建築の主要リスクを確認' },
@@ -133,38 +133,38 @@ const homeCopy = {
   en: {
     heroTitle: 'Japan hospitality property, from acquisition decision to opening day',
     heroDescription:
-      'Ziyou Hospitality is a Tokyo-licensed brokerage focused on hotels, ryokan, and minpaku-ready buildings for foreign investors. We support sourcing, pre-purchase feasibility, brokerage, licensing preparation, and opening PM in one engagement.',
+      'Ziyou Hospitality is a Tokyo-licensed brokerage that helps foreign investors find, evaluate, and acquire hotel, ryokan, and minpaku-ready properties in Japan. Browse listed candidates or send us your target criteria, and we can introduce both public and off-market opportunities.',
     primaryCta: 'Browse hospitality assets',
-    secondaryCta: 'Request pre-purchase review',
-    searchTitle: 'Search assets that can become lodging businesses',
-    searchDescription: 'Filter candidates by location, station access, budget, and building scale.',
+    secondaryCta: 'Send your criteria',
+    searchTitle: 'Search hospitality assets that fit your criteria',
+    searchDescription: 'Filter public candidates by location, station access, budget, and building scale.',
     proof: [
       { value: 'Hotel / Ryokan / Minpaku', label: 'Hospitality-only focus' },
-      { value: 'Zoning / Fire / Hokenjo', label: 'Feasibility before purchase' },
+      { value: 'Listed + Off-market', label: 'Public and private sourcing' },
       { value: 'EN / JA / 中文', label: 'Foreign investor desk' },
     ],
     assetTitle: 'Every listing is framed around hospitality acquisition potential',
     assetDescription:
-      'We look beyond ordinary income property. Operating hotels, minpaku-ready buildings, conversion candidates, and tourism land are reviewed through licensing, fire, building, and operator realities.',
+      'We look beyond ordinary income property. Operating hotels, minpaku-ready buildings, conversion candidates, and tourism land are organized around the investor’s budget, target area, operating plan, and acquisition path.',
     assetPaths: [
       { title: 'Hotels & ryokan', desc: 'Operating assets, renovation plays, operator handover' },
       { title: 'Minpaku-ready buildings', desc: 'Houses, small buildings, station-side lodging candidates' },
       { title: 'Conversion candidates', desc: 'Commercial, office, or residential assets with lodging potential' },
       { title: 'Development land', desc: 'Hotel, simple lodging, and destination development sites' },
     ],
-    reviewTitle: 'A property portal built around licensing reality',
+    reviewTitle: 'Before we introduce a candidate, we look at whether it can work as hospitality',
     reviewDescription:
-      'Yield and station distance are not enough. Before purchase, we break down whether the building can actually operate as lodging.',
+      'Investors usually start with property search. Our difference is what happens before a candidate is recommended: we check the practical lodging-use issues behind the price, yield, and station distance.',
     checks: [
       { title: 'Zoning', desc: 'Whether lodging use is possible in the district' },
       { title: 'Fire code', desc: 'Equipment, egress, and retrofit cost signals' },
       { title: 'Building code', desc: 'Use change, stairs, exits, and structure issues' },
       { title: 'Hokenjo', desc: 'Hotel, simple lodging, or minpaku license path' },
     ],
-    processTitle: 'Support from pre-purchase review to opening preparation',
+    processTitle: 'Support from property search to acquisition and opening preparation',
     process: [
       { step: '01', title: 'Source', desc: 'Filter by area, scale, budget, and hospitality use' },
-      { step: '02', title: 'Diagnose', desc: 'Check licensing, fire, and building-code risks' },
+      { step: '02', title: 'Shortlist', desc: 'Check licensing, fire, and building-code risks before recommendation' },
       { step: '03', title: 'Acquire', desc: 'Broker negotiation, due diligence, contract, and closing' },
       { step: '04', title: 'Open', desc: 'Coordinate licensing, design, contractors, and operator setup' },
     ],
@@ -172,14 +172,14 @@ const homeCopy = {
   'zh-TW': {
     heroTitle: '日本住宿業物件，從取得判斷到開業',
     heroDescription:
-      '自由不動產是東京持牌仲介，專注服務外國投資者取得飯店、旅館、民宿向物件。我們提供物件搜尋、購買前可行性診斷、買賣仲介、許可準備與開業PM。',
+      '自由不動產是東京持牌仲介，協助外國投資者尋找、介紹並取得日本飯店、旅館、民宿向物件。您可以先瀏覽公開物件，也可以告訴我們希望地區與預算，我們會介紹公開與未公開候選。',
     primaryCta: '瀏覽住宿業物件',
-    secondaryCta: '諮詢購買前診斷',
-    searchTitle: '搜尋可作為住宿事業的物件',
-    searchDescription: '依地區、車站、預算與建物規模篩選候選物件。',
+    secondaryCta: '傳送希望條件',
+    searchTitle: '搜尋符合條件的住宿業物件',
+    searchDescription: '依地區、車站、預算與建物規模篩選公開候選物件。',
     proof: [
       { value: 'Hotel / Ryokan / Minpaku', label: '專注住宿用途' },
-      { value: 'Zoning / Fire / Hokenjo', label: '購買前確認可行性' },
+      { value: 'Listed + Off-market', label: '公開與未公開候選介紹' },
       { value: 'EN / JA / 中文', label: '外國投資者服務' },
     ],
     assetTitle: '每個物件都以住宿業取得潛力來呈現',
@@ -191,18 +191,18 @@ const homeCopy = {
       { title: '轉用候選', desc: '店鋪、辦公、住宅轉住宿用途' },
       { title: '開發用地', desc: '飯店、簡易宿所、觀光地開發' },
     ],
-    reviewTitle: '以許可現實為核心的物件平台',
-    reviewDescription: '投報率與距離車站不夠。我們在購買前拆解是否真的能作為住宿業營運。',
+    reviewTitle: '介紹物件前，我們會先看住宿業成立性',
+    reviewDescription: '投資者的入口通常是找物件。我們的差異在於推薦前會確認住宿用途、消防、建築與保健所等實務論點。',
     checks: [
       { title: '用途地域', desc: '所在地是否能作住宿用途' },
       { title: '消防', desc: '設備、避難與改修成本初步確認' },
       { title: '建築', desc: '用途變更、樓梯、出口、結構問題' },
       { title: '保健所', desc: '旅館業、簡易宿所、民宿許可路徑' },
     ],
-    processTitle: '從購買前確認到開業準備的支援',
+    processTitle: '從物件搜尋到取得與開業準備的支援',
     process: [
       { step: '01', title: '篩選', desc: '依區域、規模、預算與住宿用途篩選' },
-      { step: '02', title: '診斷', desc: '確認許可、消防與建築風險' },
+      { step: '02', title: '篩選候選', desc: '推薦前確認許可、消防與建築風險' },
       { step: '03', title: '取得', desc: '條件談判、DD、契約與交割' },
       { step: '04', title: '開業', desc: '協調許可、設計、施工與營運體制' },
     ],
@@ -210,14 +210,14 @@ const homeCopy = {
   'zh-CN': {
     heroTitle: '日本住宿业物件，从取得判断到开业',
     heroDescription:
-      '自由不动产是东京持牌中介，专注服务外国投资者取得酒店、旅馆、民宿向物件。我们提供物件搜索、购买前可行性诊断、买卖仲介、许可准备与开业PM。',
+      '自由不动产是东京持牌中介，协助外国投资者寻找、介绍并取得日本酒店、旅馆、民宿向物件。您可以先浏览公开物件，也可以告诉我们希望地区与预算，我们会介绍公开与未公开候选。',
     primaryCta: '浏览住宿业物件',
-    secondaryCta: '咨询购买前诊断',
-    searchTitle: '搜索可作为住宿事业的物件',
-    searchDescription: '按区域、车站、预算与建筑规模筛选候选物件。',
+    secondaryCta: '发送希望条件',
+    searchTitle: '搜索符合条件的住宿业物件',
+    searchDescription: '按区域、车站、预算与建筑规模筛选公开候选物件。',
     proof: [
       { value: 'Hotel / Ryokan / Minpaku', label: '专注住宿用途' },
-      { value: 'Zoning / Fire / Hokenjo', label: '购买前确认可行性' },
+      { value: 'Listed + Off-market', label: '公开与未公开候选介绍' },
       { value: 'EN / JA / 中文', label: '外国投资者服务' },
     ],
     assetTitle: '每个物件都以住宿业取得潜力来呈现',
@@ -229,18 +229,18 @@ const homeCopy = {
       { title: '转用候选', desc: '店铺、办公、住宅转住宿用途' },
       { title: '开发用地', desc: '酒店、简易住宿、观光地开发' },
     ],
-    reviewTitle: '以许可现实为核心的物件平台',
-    reviewDescription: '收益率与距离车站不够。我们在购买前拆解是否真的能作为住宿业运营。',
+    reviewTitle: '介绍物件前，我们会先看住宿业成立性',
+    reviewDescription: '投资者的入口通常是找物件。我们的差异在于推荐前会确认住宿用途、消防、建筑与保健所等实务论点。',
     checks: [
       { title: '用途地域', desc: '所在地是否能做住宿用途' },
       { title: '消防', desc: '设备、避难与改修成本初步确认' },
       { title: '建筑', desc: '用途变更、楼梯、出口、结构问题' },
       { title: '保健所', desc: '旅馆业、简易住宿、民宿许可路径' },
     ],
-    processTitle: '从购买前确认到开业准备的支持',
+    processTitle: '从物件搜索到取得与开业准备的支持',
     process: [
       { step: '01', title: '筛选', desc: '按区域、规模、预算与住宿用途筛选' },
-      { step: '02', title: '诊断', desc: '确认许可、消防与建筑风险' },
+      { step: '02', title: '筛选候选', desc: '推荐前确认许可、消防与建筑风险' },
       { step: '03', title: '取得', desc: '条件谈判、DD、合同与交割' },
       { step: '04', title: '开业', desc: '协调许可、设计、施工与运营体制' },
     ],
@@ -251,7 +251,7 @@ const listingsCopy = {
   ja: {
     title: '宿泊業向け物件一覧',
     intro:
-      'ホテル・旅館・民泊対応物件、簡易宿所への転用候補、観光地の開発用地を検索できます。掲載物件は、取得前診断と組み合わせて検討する前提の候補リストです。',
+      'ホテル・旅館・民泊対応物件、簡易宿所への転用候補、観光地の開発用地を検索できます。気になる物件があればそのまま相談できます。条件に合う未公開候補の紹介も可能です。',
     resultPrefix: '公開中の候補',
     filtersTitle: '取得条件',
     filtersDescription: '宿泊用途・エリア・価格・建物規模で絞り込み',
@@ -259,7 +259,7 @@ const listingsCopy = {
   en: {
     title: 'Hospitality Property Listings',
     intro:
-      'Search hotels, ryokan, minpaku-ready buildings, conversion candidates, and tourism development sites. Listings are framed as acquisition candidates to be reviewed with pre-purchase feasibility.',
+      'Search hotels, ryokan, minpaku-ready buildings, conversion candidates, and tourism development sites. If a listing fits your direction, ask us about it; we can also introduce off-market candidates that match your criteria.',
     resultPrefix: 'Published candidates',
     filtersTitle: 'Acquisition criteria',
     filtersDescription: 'Filter by lodging use, location, budget, and building scale',
@@ -267,7 +267,7 @@ const listingsCopy = {
   'zh-TW': {
     title: '住宿業物件列表',
     intro:
-      '搜尋飯店、旅館、民宿整棟、轉用候選與觀光地開發用地。掲載物件皆以購買前可行性診斷為前提進行檢討。',
+      '搜尋飯店、旅館、民宿整棟、轉用候選與觀光地開發用地。如有感興趣的物件，可直接諮詢；我們也可以介紹符合條件的未公開候選。',
     resultPrefix: '公開候選',
     filtersTitle: '取得條件',
     filtersDescription: '依住宿用途、地區、預算與建物規模篩選',
@@ -275,7 +275,7 @@ const listingsCopy = {
   'zh-CN': {
     title: '住宿业物件列表',
     intro:
-      '搜索酒店、旅馆、民宿整栋、转用候选与观光地开发用地。掲載物件皆以购买前可行性诊断为前提进行评估。',
+      '搜索酒店、旅馆、民宿整栋、转用候选与观光地开发用地。如有感兴趣的物件，可直接咨询；我们也可以介绍符合条件的未公开候选。',
     resultPrefix: '公开候选',
     filtersTitle: '取得条件',
     filtersDescription: '按住宿用途、地区、预算与建筑规模筛选',
@@ -285,7 +285,7 @@ const listingsCopy = {
 const cardCopy = {
   ja: {
     candidate: '宿泊業取得候補',
-    review: '購入前診断対象',
+    review: '宿泊用途確認',
     license: '許認可確認',
     opening: '開業PM相談可',
     yield: '想定利回り',
@@ -293,7 +293,7 @@ const cardCopy = {
   },
   en: {
     candidate: 'Hospitality acquisition candidate',
-    review: 'Pre-purchase review',
+    review: 'Hospitality-use check',
     license: 'License path check',
     opening: 'Opening PM available',
     yield: 'Gross yield',
@@ -301,7 +301,7 @@ const cardCopy = {
   },
   'zh-TW': {
     candidate: '住宿業取得候選',
-    review: '購買前診斷',
+    review: '住宿用途確認',
     license: '許可路徑確認',
     opening: '開業PM諮詢',
     yield: '表面投報率',
@@ -309,7 +309,7 @@ const cardCopy = {
   },
   'zh-CN': {
     candidate: '住宿业取得候选',
-    review: '购买前诊断',
+    review: '住宿用途确认',
     license: '许可路径确认',
     opening: '开业PM咨询',
     yield: '表面收益率',

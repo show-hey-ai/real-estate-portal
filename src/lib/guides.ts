@@ -46,7 +46,7 @@ const guideUiCopy = {
     browseListings: 'Browse live listings',
     readArticle: 'Read article',
     viewAllGuides: 'View all guides',
-    homeTitle: 'Investor guides for pre-purchase review',
+    homeTitle: 'Investor guides for shortlisting Japan hospitality property',
     homeDescription:
       'We publish concise guides around acquisition, underwriting, and ownership so overseas buyers can move from research to shortlist faster.',
     publishedLabel: 'Published',

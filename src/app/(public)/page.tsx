@@ -75,6 +75,10 @@ const getLatestPublishedListings = unstable_cache(
   { revalidate: 300 }
 )
 
+const targetCriteriaWhatsappUrl = `https://wa.me/818084927068?text=${encodeURIComponent(
+  'I am looking for a hospitality property in Japan. My target area / budget / property type is:'
+)}`
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const siteCopy = getSiteCopy(locale)
@@ -202,7 +206,7 @@ export default async function HomePage() {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <a href="/hotel-lp.html#form">
+              <a href={targetCriteriaWhatsappUrl} target="_blank" rel="noreferrer">
                 <Button
                   size="lg"
                   variant="outline"
@@ -308,7 +312,7 @@ export default async function HomePage() {
               <p className="mt-5 text-base leading-8 text-white/70">
                 {homeCopy.reviewDescription}
               </p>
-              <a href="/hotel-lp.html#form" className="mt-8 inline-flex">
+              <a href={targetCriteriaWhatsappUrl} target="_blank" rel="noreferrer" className="mt-8 inline-flex">
                 <Button
                   size="lg"
                   className="h-12 rounded-[8px] bg-[#d8a64a] px-6 text-[#11231e] hover:bg-[#e6b65c]"

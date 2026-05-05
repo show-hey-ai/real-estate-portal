@@ -50,7 +50,7 @@ export async function GET() {
     '',
     '## Main Pages',
     '',
-    `- [Home](${absoluteUrl('/')}): Search-first hospitality acquisition page with latest candidates and pre-purchase review positioning.`,
+    `- [Home](${absoluteUrl('/')}): Search-first hospitality acquisition page with latest public candidates and off-market introduction positioning.`,
     `- [Listings](${absoluteUrl('/listings')}): Main pipeline page for live hospitality property candidates. Supports filters for ward, train line, station, price, walk time, and building area.`,
     `- [Guides](${absoluteUrl('/guides')}): Evergreen content for overseas buyers evaluating Japanese hospitality property and acquisition risk.`,
     '',

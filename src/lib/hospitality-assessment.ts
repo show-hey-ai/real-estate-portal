@@ -226,7 +226,7 @@ function inferConversionReason(input: HospitalityCandidateInput, recommendedUse:
     case '店舗・事務所':
       return `住宅以外の用途から宿泊用途への転用候補として、立地と用途地域次第で検討余地がある。`
     default:
-      return `宿泊事業化の可否を、用途地域・建築・消防・保健所の購入前診断で確認する候補。`
+      return `宿泊事業化の可否を、用途地域・建築・消防・保健所の主要論点から確認したい候補。`
   }
 }
 
