@@ -54,7 +54,7 @@ const siteCopy: Record<
       '外国人投資家向け 宿泊事業用不動産の物件探し・紹介・購入支援。自由不動産が、東京の旅館業・民泊・ホテル向け物件の紹介から売買仲介、許認可準備、開業PMまでを支援します。',
     listingsTitle: '宿泊業向け物件一覧',
     listingsDescription:
-      '東京23区の旅館業・民泊・ホテル向け物件、宿泊事業化が可能な戸建・一棟物件を、路線・駅・価格・利回りで検索できます。',
+      '東京23区の旅館業・民泊・ホテル向け物件、宿泊事業化が可能な戸建・一棟物件を検索。気になる物件の相談や、条件に合う未公開候補の紹介も可能です。',
   },
   en: {
     title: 'Japan Hospitality Property Portal for Foreign Investors',
@@ -62,7 +62,7 @@ const siteCopy: Record<
       'We help foreign investors find, acquire, and open hotel, ryokan, and minpaku-ready property in Japan — public listings, off-market introductions, brokerage, licensing preparation, and opening PM.',
     listingsTitle: 'Japan Hospitality Property Listings',
     listingsDescription:
-      'Browse Tokyo properties suitable for hotels, ryokan, simple lodging, and minpaku — searchable by ward, train line, station, price, and yield.',
+      'Browse Tokyo properties suitable for hotels, ryokan, simple lodging, and minpaku. Ask about listed candidates or send your criteria for matching off-market introductions.',
   },
   'zh-TW': {
     title: '日本住宿業物件專門平台｜自由不動產',
@@ -70,7 +70,7 @@ const siteCopy: Record<
       '面向外國投資者的日本住宿業不動產物件搜尋、介紹與取得支援。自由不動產協助您完成東京旅館、民宿、飯店的候選介紹、仲介與開業準備。',
     listingsTitle: '日本住宿業物件列表',
     listingsDescription:
-      '可依區域、路線、車站、價格與投報率，搜尋東京23區的旅館、民宿、飯店向物件，及可改造為住宿事業的戸建與整棟物件。',
+      '搜尋東京23區旅館、民宿、飯店向物件與可改造為住宿事業的候選。可諮詢公開物件，也可接收符合條件的未公開物件介紹。',
   },
   'zh-CN': {
     title: '日本住宿业物件专业平台｜自由不动产',
@@ -78,7 +78,7 @@ const siteCopy: Record<
       '面向外国投资者的日本住宿业不动产物件搜索、介绍与取得支持。自由不动产协助您完成东京旅馆、民宿、酒店的候选介绍、仲介与开业准备。',
     listingsTitle: '日本住宿业物件列表',
     listingsDescription:
-      '可按区域、线路、车站、价格和收益率搜索东京23区的旅馆、民宿、酒店向物件，及可改造为住宿事业的戸建与整栋物件。',
+      '搜索东京23区旅馆、民宿、酒店向物件与可改造为住宿事业的候选。可咨询公开物件，也可接收符合条件的未公开物件介绍。',
   },
 }
 
