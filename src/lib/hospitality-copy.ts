@@ -296,7 +296,7 @@ const cardCopy = {
     review: 'Hospitality-use check',
     license: 'License path check',
     opening: 'Opening PM available',
-    yield: 'Gross yield',
+    yield: 'Yield',
     area: 'Building area',
   },
   'zh-TW': {

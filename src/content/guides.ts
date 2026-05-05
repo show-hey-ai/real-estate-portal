@@ -176,7 +176,7 @@ export const guideArticles: GuideArticle[] = [
             heading: 'Costs investors often underestimate',
             paragraphs: [
               'Beyond the purchase price, acquisition costs include brokerage, registration, judicial scrivener fees, stamp tax, insurance, tax settlement, and sometimes immediate repair or leasing costs.',
-              'If you only look at gross yield and ignore entry costs, your projected return can be materially overstated.',
+              'If you only look at headline yield and ignore entry costs, your projected return can be materially overstated.',
             ],
             bullets: [
               'Brokerage fees',
@@ -200,7 +200,7 @@ export const guideArticles: GuideArticle[] = [
               'Before you submit a purchase application, you should be able to explain the cash flow, downside case, hold strategy, and exit path in a few lines. If you cannot, the deal is not ready.',
             ],
             bullets: [
-              'Did you review realistic net yield rather than gross yield alone?',
+              'Did you review realistic net yield rather than headline yield alone?',
               'Do you understand the local tenant pool and reletting conditions?',
               'Are capex and management assumptions reflected in your model?',
               'Is your buying entity and remittance path already decided?',
@@ -226,7 +226,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: 'Browse live Tokyo investment listings',
         ctaDescription:
-          'Compare central Tokyo opportunities by price, station access, and gross yield before shortlisting your first candidates.',
+          'Compare central Tokyo opportunities by price, station access, and yield before shortlisting your first candidates.',
       },
       'zh-TW': {
         category: '購買指南',
@@ -513,22 +513,22 @@ export const guideArticles: GuideArticle[] = [
         category: 'Market Analysis',
         title: 'Tokyo Cap Rate Guide: What 4%, 5%, and 6% Yield Really Mean',
         excerpt:
-          'A practical way to interpret gross yield in central Tokyo without confusing headline return with actual investment quality.',
+          'A practical way to interpret yield in central Tokyo without confusing headline return with actual investment quality.',
         seoDescription:
-          'Understand what 4%, 5%, and 6% gross yield usually mean for Tokyo investment property across central wards, age, liquidity, and risk.',
+          'Understand what 4%, 5%, and 6% yield usually means for Tokyo investment property across central wards, age, liquidity, and risk.',
         intro:
           'Yield is useful, but only when read in context. In Tokyo, a higher cap rate is often compensation for some combination of leasing risk, repair burden, structural weakness, or thinner resale demand.',
         keyTakeaways: [
-          'Gross yield is a screening input, not an investment decision',
+          'Yield is a screening input, not an investment decision',
           'Lower yields in central Tokyo often trade on stability and exit liquidity',
           'Higher yields require a clearer explanation before they deserve attention',
         ],
         sections: [
           {
             id: 'gross-vs-real',
-            heading: 'Why gross yield is only the first number',
+            heading: 'Why yield is only the first number',
             paragraphs: [
-              'Gross yield is simply annual rent divided by purchase price. It ignores repairs, vacancy, leasing costs, insurance, tax, and asset management friction.',
+              'Headline yield can ignore repairs, vacancy, leasing costs, insurance, tax, and asset management friction.',
               'Two properties with the same 5% yield can produce very different real cash flow depending on tenant quality, capex timing, and reletting risk.',
             ],
           },
@@ -557,7 +557,7 @@ export const guideArticles: GuideArticle[] = [
             id: 'metrics',
             heading: 'The numbers that matter alongside yield',
             paragraphs: [
-              'You should review expected market rent, capital expenditure timing, tenant turnover risk, management quality, and realistic resale depth together with gross yield.',
+              'You should review expected market rent, capital expenditure timing, tenant turnover risk, management quality, and realistic resale depth together with yield.',
             ],
             bullets: [
               'Reletting rent assumptions',
@@ -576,7 +576,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         faq: [
           {
-            question: 'Is 6% gross yield high for central Tokyo?',
+            question: 'Is 6% yield high for central Tokyo?',
             answer:
               'Yes, usually. That does not automatically make it bad, but it does mean you should identify the specific reason the market is pricing the asset at that yield.',
           },
@@ -593,7 +593,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: 'Compare Tokyo listings by yield and station access',
         ctaDescription:
-          'Use live listings to compare gross yield in context instead of reacting to headline numbers alone.',
+          'Use live listings to compare yield in context instead of reacting to headline numbers alone.',
       },
       'zh-TW': {
         category: '市場分析',

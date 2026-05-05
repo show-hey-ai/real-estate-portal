@@ -205,7 +205,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
         formattedListing.yieldGross != null
           ? {
               '@type': 'PropertyValue',
-              name: 'Gross yield',
+              name: 'Yield',
               value: `${formattedListing.yieldGross}%`,
             }
           : null,

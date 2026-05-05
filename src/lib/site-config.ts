@@ -228,7 +228,7 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
             price != null ? `${formatPrice(price, normalizedLocale)}` : null,
             transit ? transit : null,
             buildingArea ? `${buildingArea.toFixed(0)} sqm` : null,
-            yieldGross ? `gross yield ${yieldGross.toFixed(1)}%` : null,
+            yieldGross ? `yield ${yieldGross.toFixed(1)}%` : null,
           ]
         : normalizedLocale === 'zh-TW'
           ? [

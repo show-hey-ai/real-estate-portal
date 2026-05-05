@@ -42,7 +42,7 @@
     "floorCount": "Floors",
     "floorCountValue": "{count} floors",
     "currentStatus": "Current Status",
-    "yieldGross": "Gross Yield",
+    "yieldGross": "Yield",
     "yieldGrossValue": "Yield {value}%",
     "yieldNet": "Net Yield",
     "zoning": "Zoning",

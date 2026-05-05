@@ -40,7 +40,7 @@ const guideUiCopy = {
       'These articles answer the practical questions overseas investors usually ask before they inquire.',
     indexPoints: [
       'How foreign buyers acquire income property in Japan',
-      'How to interpret gross yield in Tokyo',
+      'How to read yield numbers in Tokyo',
       'When to buy personally vs through a company',
     ],
     browseListings: 'Browse live listings',
