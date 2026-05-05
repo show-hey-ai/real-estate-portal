@@ -175,9 +175,9 @@ export const inboxResponder: AgentConfig = {
 - 24時間以内の返信を目標
 
 【署名】
-Tokyo Property
-Email: info@tokyoproperty.jp
-Web: https://tokyoproperty.jp`,
+Ziyou Hospitality
+Email: admin@ziyou-fudosan.com
+Web: https://portal.ziyou-fudosan.com`,
   tools: ['Read', 'Bash'],
   mcpServers: {
     gmail: { command: 'npx', args: ['@anthropic-ai/claude-gmail-mcp@latest'] },
@@ -246,7 +246,7 @@ export const emailMarketer: AgentConfig = {
 4. Gmailでドラフト作成（一括送信前に管理者確認）
 
 【テンプレート構成】
-- ヘッダー: Tokyo Property ロゴ
+- ヘッダー: Ziyou Hospitality ロゴ
 - 物件概要（画像+テキスト）
 - 主要スペック表
 - CTA: 「詳細を見る」ボタン → ポータルURL

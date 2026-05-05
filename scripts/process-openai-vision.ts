@@ -1,7 +1,7 @@
 /**
  * マイソクPDFを処理
- * Step1: Claude Sonnet 4.6（文書分類 + 広告判定）
- * Step2: Claude Sonnet 4.6（詳細抽出 + 構造化JSON）
+ * Step1: OpenAI Vision（広告可否 + 自動掲載ゲート）
+ * Step2: OpenAI Vision（詳細抽出 + 構造化JSON）
  *
  * Usage:
  *   npx tsx scripts/process-openai-vision.ts <pdf-path>       # 1ファイル処理
@@ -16,7 +16,16 @@ import { config } from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
 import { randomUUID } from 'crypto'
 import sharp from 'sharp'
-import Anthropic from '@anthropic-ai/sdk'
+import { openai, extractionSchema, extractionPrompt, translateDescription, EXTRACT_MODEL } from '../src/lib/openai'
+import { sanitizeListingWarnings } from '../src/lib/listing-warnings'
+import { normalizeTransitStations } from '../src/lib/transit-normalization'
+import { formatPublicAddress } from '../src/lib/address'
+import { normalizePropertyType } from '../src/lib/property-type'
+import { prepareHospitalityCandidate, type HospitalityAssessment } from '../src/lib/hospitality-assessment'
+import {
+  analyzeMaisokuAdPolicyWithAI,
+  removeCompanyBannerWithAI,
+} from '../src/lib/maisoku-ai'
 
 config({ path: resolve(process.cwd(), '.env') })
 
@@ -24,7 +33,6 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const ADMIN_USER_ID = process.env.IMPORT_ADMIN_USER_ID!
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
 // CLI引数
 const ARGS = process.argv.slice(2)
@@ -73,35 +81,107 @@ function log(msg: string) {
   console.log(`[${new Date().toLocaleTimeString('ja-JP')}] ${msg}`)
 }
 
-// PDF 1ページを画像化
+interface ExtractedListingData {
+  property_type: string | null
+  price: number | null
+  address_full: string | null
+  prefecture: string | null
+  city: string | null
+  stations: {
+    name: string
+    name_en?: string | null
+    line?: string | null
+    walk_minutes?: number | null
+  }[]
+  land_area: number | null
+  building_area: number | null
+  floor_count: number | null
+  built_year: number | null
+  built_month: number | null
+  structure: string | null
+  zoning: string | null
+  current_status: string | null
+  delivery_date: string | null
+  ad_allowed: boolean
+  yield_gross: number | null
+  yield_net: number | null
+  description_ja: string | null
+  appeal_points: string[]
+  hospitality_assessment: HospitalityAssessment | null
+  warnings: string[]
+  confidence?: {
+    overall: number
+    price: number
+    address: number
+    area: number
+  }
+  evidence?: {
+    field: string
+    raw_text: string
+    confidence: number
+    page_number?: number | null
+  }[]
+}
+
+// PDF 1ページを画像化（Vision API向けに長辺2048pxへリサイズ）
 async function pdfPageToImage(pdfBuffer: Buffer): Promise<Buffer> {
   const { pdf } = await import('pdf-to-img')
   const doc = await pdf(pdfBuffer, { scale: 2.5 })
   for await (const page of doc) {
-    return Buffer.from(page)
+    const raw = Buffer.from(page)
+    // Vision APIの画像サイズ制限に収まるよう、長辺2048pxにリサイズ
+    const meta = await sharp(raw).metadata()
+    const maxDim = Math.max(meta.width ?? 0, meta.height ?? 0)
+    if (maxDim > 2048) {
+      return sharp(raw)
+        .resize({ width: meta.width! > meta.height! ? 2048 : undefined,
+                   height: meta.height! >= meta.width! ? 2048 : undefined,
+                   fit: 'inside' })
+        .png()
+        .toBuffer()
+    }
+    return raw
   }
   throw new Error('No pages')
 }
 
-// 帯除去（下部15%カット）
-async function removeBanner(imgBuffer: Buffer): Promise<Buffer> {
-  const meta = await sharp(imgBuffer).metadata()
-  const h = meta.height!
-  const w = meta.width!
-  return sharp(imgBuffer)
-    .extract({ left: 0, top: 0, width: w, height: Math.round(h * 0.85) })
-    .jpeg({ quality: 90 })
-    .toBuffer()
-}
+async function extractListingDataWithOpenAI(imgBuffer: Buffer): Promise<ExtractedListingData> {
+  const base64 = imgBuffer.toString('base64')
+  const response = await openai.chat.completions.create({
+    model: EXTRACT_MODEL,
+    messages: [
+      {
+        role: 'system',
+        content: `${extractionPrompt}
 
-// 住所整形
-function formatPublicAddress(addr: string | null): { publicAddress: string | null; isBlocked: boolean } {
-  if (!addr) return { publicAddress: null, isBlocked: false }
-  const m = addr.match(/^(.+?(?:\d+丁目|\d+-\d+))/u)
-  if (m) return { publicAddress: m[1], isBlocked: true }
-  const c = addr.match(/^(.+?[市区町村])/u)
-  if (c) return { publicAddress: c[1], isBlocked: true }
-  return { publicAddress: addr, isBlocked: false }
+【追加ルール】
+- 広告可否は前段の高精度AIゲートで判定済み。ここでは物件情報抽出を優先する。
+- ただし広告不可・要承諾が見えた場合は ad_allowed=false にする。
+- evidence は読めた範囲で必ず付ける。`,
+      },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'この売買マイソク画像から物件情報を抽出してください。' },
+          {
+            type: 'image_url',
+            image_url: {
+              url: `data:image/png;base64,${base64}`,
+              detail: 'high',
+            },
+          },
+        ],
+      },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: extractionSchema as Parameters<typeof openai.chat.completions.create>[0]['response_format'] extends { json_schema?: infer T } ? T : never,
+    },
+    max_tokens: 4096,
+    temperature: 0,
+  })
+
+  return JSON.parse(response.choices[0]?.message?.content || '{}') as ExtractedListingData
 }
 
 async function processPage(pdfBuffer: Buffer, fileName: string, pageNum: number) {
@@ -115,198 +195,98 @@ async function processPage(pdfBuffer: Buffer, fileName: string, pageNum: number)
     return { skipped: true, reason: `画像化失敗: ${e}` }
   }
 
-  const base64 = imgBuffer.toString('base64')
-
-  // --- Step 1: 文書分類 + 広告判定 (Claude Sonnet 4.6 — 日本語OCR精度重視) ---
-  const CLASSIFY_SYSTEM_PROMPT = `あなたは不動産書類の分類AIです。画像を見て文書タイプと広告掲載許可ステータスを判定してください。
-
-【文書タイプの定義】
-- "売買マイソク": 売買用の物件資料（販売図面）。物件名・価格・所在地・面積・構造・利回り等が1ページに記載された販売チラシ。物件概要書も含む。
-- "賃貸マイソク": 賃貸用の物件資料。「賃料」「管理費」「敷金」「礼金」等の賃貸条件が記載。
-- "物件一覧表": 複数物件が表形式でリストされたページ。
-- "目次・索引": 目次、インデックス、地図のみのページ。
-- "業者向け資料": FAX送付状、仲介手数料表、申込書、請求書。
-- "白紙・判読不能": 白紙、または文字がほぼ読めないページ。
-- "その他": 上記に該当しない。
-
-【広告掲載許可ステータス（ad_status）の判定】
-★★★ 必ずページ下部の帯（オビ）・バナー部分を重点的に確認すること ★★★
-小さい文字で「広告」に関する記載がある場合が多い。見落とし厳禁。
-
-- "allowed": 以下のいずれかの記載がある場合
-  ・「広告掲載：可」「広告掲載全媒介可」「承諾不要」
-  ・「自社HP掲載可」「自社HPは可」「御社ホームページのみ掲載可能」「自社媒体のみ広告可」
-  ・「紙媒体・自社HPは可」
-  ・「広告掲載申請（自社ホームページのみ）」
-  ※「SUUMO等ポータル厳禁」「SNS掲載不可」でも「自社HP可」なら "allowed"
-  ※「楽待不可」「健美家不可」等の特定媒体のみ不可 → "allowed"
-
-- "approval_needed": 以下のいずれかの記載がある場合
-  ・「広告承認」（帯に記載）
-  ・「物件確認・広告掲載はこちらから」等の広告申込窓口の案内
-  ・「承諾書なき広告は一切禁止」（＝承諾書取得で可能）
-  ・「広告両面協議はメールにて承諾書を」
-  ・「広告可 要連絡」「広告可（但し要連絡）」「広告可・要連絡」（要連絡＝事前承諾必要）
-  ・「広告転載不可（物件のご紹介のみ可）」（転載不可だがご紹介は可→確認が必要）
-
-- "denied": 以下のいずれかの記載がある場合
-  ・「広告転載不可」「広告掲載厳禁」「広告掲載一切不可」「広告不可」「広告：不可」
-
-- "not_mentioned": 上記いずれの記載もない
-
-【注意】
-- 「広告有効期限 YYYY/MM」はREINSの登録期限であり広告許可とは無関係 → 無視すること
-- 帯の中の小さい文字を見逃さないこと
-
-JSONのみで返してください（余計なテキスト不要）:
-{"document_type": "...", "is_sale_property": true/false, "ad_status": "allowed|approval_needed|denied|not_mentioned", "ad_evidence": "広告関連の原文を引用（なければnull）", "reason": "判定理由を20文字以内で"}`
-
-  // Claude API呼び出しヘルパー（リトライ付き）
-  async function callClaude(system: string, userText: string, imgBase64: string, maxTokens: number): Promise<string> {
-    const MAX_RETRIES = 2
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        const res = await anthropic.messages.create({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: maxTokens,
-          system,
-          messages: [
-            {
-              role: 'user',
-              content: [
-                { type: 'text', text: userText },
-                { type: 'image', source: { type: 'base64', media_type: 'image/png', data: imgBase64 } },
-              ],
-            },
-          ],
-        })
-        return res.content[0]?.type === 'text' ? res.content[0].text : ''
-      } catch (err) {
-        if (attempt < MAX_RETRIES) {
-          log(`  ⚠ Claude API失敗 (${attempt + 1}/${MAX_RETRIES}), リトライ中... ${err instanceof Error ? err.message.slice(0, 80) : err}`)
-          await new Promise(r => setTimeout(r, 3000 * (attempt + 1)))
-        } else {
-          throw err
-        }
-      }
-    }
-    throw new Error('unreachable')
-  }
-
-  log(`  Step1: 文書分類中...`)
-  let classifyRaw = ''
+  log(`  Step1: AI広告判定中...`)
+  let adAnalysis: Awaited<ReturnType<typeof analyzeMaisokuAdPolicyWithAI>>
   try {
-    classifyRaw = await callClaude(CLASSIFY_SYSTEM_PROMPT, 'この書類を分類してください。', base64, 256)
+    adAnalysis = await analyzeMaisokuAdPolicyWithAI(imgBuffer)
   } catch (err) {
-    return { skipped: true, reason: `分類API失敗: ${err instanceof Error ? err.message.slice(0, 100) : err}` }
-  }
-  const classifyMatch = classifyRaw.match(/\{[\s\S]*\}/)
-  if (!classifyMatch) return { skipped: true, reason: '分類JSON抽出失敗' }
-
-  let classifyData: { document_type: string; is_sale_property: boolean; ad_status: string; ad_evidence: string | null; reason: string }
-  try { classifyData = JSON.parse(classifyMatch[0]) } catch { return { skipped: true, reason: '分類JSONパース失敗' } }
-
-  log(`  分類結果: ${classifyData.document_type} / 広告=${classifyData.ad_status} (${classifyData.reason})`)
-
-  if (!classifyData.is_sale_property) {
-    return { skipped: true, reason: `非売買物件 [${classifyData.document_type}] ${classifyData.reason}` }
+    return { skipped: true, reason: `広告判定AI失敗: ${err instanceof Error ? err.message.slice(0, 160) : err}` }
   }
 
-  // 広告ステータスで早期スキップ（denied/not_mentioned → Step2不要）
-  if (classifyData.ad_status === 'denied') {
-    return { skipped: true, reason: `広告不可（明示）: ${classifyData.ad_evidence || ''}` }
-  }
-  if (classifyData.ad_status === 'not_mentioned') {
-    return { skipped: true, reason: '広告許可の記載なし' }
+  log(`  広告判定: ${adAnalysis.document_type} / ${adAnalysis.status} / publish=${adAnalysis.can_publish} / confidence=${adAnalysis.confidence.toFixed(2)}`)
+
+  if (!adAnalysis.is_sale_property) {
+    return { skipped: true, reason: `非売買物件 [${adAnalysis.document_type}] ${adAnalysis.reason}` }
   }
 
-  // --- Step 2: 詳細抽出 (Claude Sonnet 4.6 — allowed/approval_needed のみ) ---
-  const EXTRACT_SYSTEM_PROMPT = `あなたは不動産マイソク（販売図面）の情報抽出AIです。
+  // 人間レビューなし運用のため、AIが高信頼でALLOWEDと検証したページだけ通す
+  if (!adAnalysis.can_publish) {
+    const evidence = [...adAnalysis.blocking_evidence, ...adAnalysis.positive_evidence]
+      .filter(Boolean)
+      .slice(0, 3)
+      .join(' / ')
+    return { skipped: true, reason: `広告掲載不可または不確実 [${adAnalysis.status}]: ${evidence || adAnalysis.reason}` }
+  }
 
-【抽出ルール】
-- 不明な項目はnull。推測で埋めない。
-- 価格は円単位の整数。コンマは千位区切り記号であり小数点ではない。
-  例: 1億2000万円 → 120000000 / 11,980万円 → 119800000 / 5,800万円 → 58000000
-  ⚠ 「11,980万円」は11億9800万ではなく1億1980万円（119,800,000円）。万円単位のときは×10,000する。
-  例: 4億1,999万円 → 419990000 / 3億9,000万円 → 390000000 / 2億4,990万円 → 249900000
-  ⚠ 億+万の混在価格: 4億1,999万 = 4×100,000,000 + 1999×10,000 = 419,990,000円。億部分を絶対に落とさないこと。
-  ⚠ 億単位の価格を万に誤変換しない: 4.2億 = 420,000,000円（42,000,000ではない）
-- 築年は西暦（例: 平成5年 → 1993、昭和63年 → 1988）
-- ad_allowed判定（下部の帯・オビを重点確認）:
-  true: 「広告掲載：可」「広告掲載全媒介可」「承諾不要」「自社HP掲載可」「自社HPは可」「御社HP掲載可」「自社媒体のみ可」「紙媒体・自社HPは可」「広告掲載申請（自社HPのみ）」
-  true: 「SUUMO等ポータル厳禁」でも「自社HP可」なら true
-  true: 「楽待不可」「健美家不可」等の特定媒体のみ不可 → true（自社ポータルは該当しない）
-  false: 「広告転載不可」「広告掲載厳禁」「広告掲載一切不可」
-  false: 「広告可 要連絡」「広告可（但し要連絡）」「広告可・要連絡」 → false（要連絡＝事前承諾が必要）
-  false: 「広告転載不可（物件のご紹介のみ可）」→ false（承諾確認が必要）
-  false: 記載なし
-  ※「広告有効期限 YYYY/MM」はREINS登録期限で広告許可とは無関係 → 無視
-- description_ja: 投資家向けに150-300文字でまとめる（マイソクの情報から魅力・投資メリットを構成）
-- description_en / description_zh_tw / description_zh_cn: それぞれ自然な翻訳
-- 各フィールドの抽出元テキストをevidenceに記録
-
-以下のJSON形式のみで返してください（余計なテキスト不要）:
-{
-  "property_type": "区分マンション" | "一棟マンション" | "一棟アパート" | "戸建" | "土地" | "店舗・事務所" | "その他" | null,
-  "price": 整数(円) | null,
-  "address_full": "番地まで含む完全な住所" | null,
-  "prefecture": "都道府県" | null,
-  "city": "市区町村" | null,
-  "stations": [{"name": "駅名", "line": "路線名" | null, "walk_minutes": 整数 | null}],
-  "land_area": 数値(㎡) | null,
-  "building_area": 数値(㎡) | null,
-  "floor_count": 整数 | null,
-  "built_year": 整数(西暦) | null,
-  "built_month": 整数 | null,
-  "structure": "RC" | "SRC" | "S" | "木造" | "軽量鉄骨" | "その他" | null,
-  "zoning": "用途地域" | null,
-  "current_status": "現況" | null,
-  "delivery_date": "引渡日" | null,
-  "ad_allowed": true | false,
-  "yield_gross": 数値(%) | null,
-  "yield_net": 数値(%) | null,
-  "features": ["特徴1", ...],
-  "description_ja": "日本語説明文(150-300文字)",
-  "description_en": "English description",
-  "description_zh_tw": "繁體中文說明",
-  "description_zh_cn": "简体中文说明",
-  "warnings": ["注意点", ...],
-  "confidence": {"overall": 0.0-1.0, "price": 0.0-1.0, "address": 0.0-1.0, "area": 0.0-1.0},
-  "evidence": [{"field": "フィールド名", "raw_text": "原文", "confidence": 0.0-1.0}]
-}`
-
-  log(`  Step2: 詳細抽出中...`)
-  let extractRaw = ''
+  log(`  Step2: OpenAI詳細抽出中...`)
+  let data: ExtractedListingData
   try {
-    extractRaw = await callClaude(EXTRACT_SYSTEM_PROMPT, 'この売買マイソクから物件情報を抽出してください。', base64, 4096)
+    data = await extractListingDataWithOpenAI(imgBuffer)
   } catch (err) {
-    return { skipped: true, reason: `抽出API失敗: ${err instanceof Error ? err.message.slice(0, 100) : err}` }
+    return { skipped: true, reason: `詳細抽出AI失敗: ${err instanceof Error ? err.message.slice(0, 120) : err}` }
   }
 
-  const jsonMatch = extractRaw.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) return { skipped: true, reason: 'Step2 JSON抽出失敗' }
-
-  let data: Record<string, unknown>
-  try { data = JSON.parse(jsonMatch[0]) } catch { return { skipped: true, reason: 'Step2 JSONパース失敗' } }
-
-  // ad_statusはStep1で既にfilter済み（allowed or approval_needed のみ到達）
-  // Step1のad_statusを最終判定として使用（要連絡ルール含む）
-  const adStatus = classifyData.ad_status as 'allowed' | 'approval_needed'
-  // allowed → adAllowed=true / approval_needed → adAllowed=false（承諾必要アイコン表示）
-  const adAllowed = adStatus === 'allowed'
-  log(`  広告ステータス: ${adStatus} → adAllowed=${adAllowed}${adStatus === 'approval_needed' ? ' (承諾必要・要連絡)' : ''}`)
+  const adAllowed = true
+  log(`  広告ステータス: ${adAnalysis.status} → adAllowed=true`)
 
   const price = data.price ? Number(data.price) : null
   if (!price || price < 500_000 || price > 50_000_000_000) return { skipped: true, reason: `価格異常: ${price}` }
   if (!data.address_full && !data.prefecture) return { skipped: true, reason: '住所なし' }
+  const normalizedStations = normalizeTransitStations(data.stations)
+  const sanitizedWarnings = sanitizeListingWarnings(data.warnings)
+  const propertyType = normalizePropertyType(data.property_type, {
+    descriptionJa: data.description_ja,
+    features: data.appeal_points,
+    evidence: data.evidence,
+    buildingArea: data.building_area,
+    landArea: data.land_area,
+    floorCount: data.floor_count,
+  })
+
+  if (propertyType === '区分マンション') {
+    return { skipped: true, reason: '区分マンションは原則ポータル掲載対象外のためスキップ' }
+  }
+
+  const hospitalityCandidate = prepareHospitalityCandidate({
+    propertyType,
+    zoning: data.zoning,
+    currentStatus: data.current_status,
+    descriptionJa: data.description_ja,
+    features: data.appeal_points,
+    warnings: sanitizedWarnings,
+    evidence: data.evidence,
+    buildingArea: data.building_area,
+    landArea: data.land_area,
+    floorCount: data.floor_count,
+    builtYear: data.built_year,
+    structure: data.structure,
+    stations: normalizedStations,
+    assessment: data.hospitality_assessment,
+  })
+
+  let translations = {
+    descriptionEn: '',
+    descriptionZhTw: '',
+    descriptionZhCn: '',
+    featuresEn: [] as string[],
+    featuresZhTw: [] as string[],
+    featuresZhCn: [] as string[],
+  }
+  if (data.description_ja) {
+    try {
+      translations = await translateDescription(data.description_ja, hospitalityCandidate.features)
+    } catch (err) {
+      log(`  ⚠ 翻訳AI失敗。日本語のみ保存: ${err instanceof Error ? err.message.slice(0, 100) : err}`)
+    }
+  }
 
   // 都心13区フィルタ
-  if (!isInTokyo13ku(data.city as string | null, data.address_full as string | null)) {
+  if (!isInTokyo13ku(data.city, data.address_full)) {
     return { skipped: true, reason: `都心13区外: ${data.city || data.address_full}` }
   }
 
   // 重複チェック（住所+価格が一致する既存物件）
-  const addrFull = data.address_full as string || ''
+  const addrFull = data.address_full || ''
   if (addrFull && price) {
     const { data: existing } = await supabase
       .from('listings')
@@ -326,20 +306,24 @@ JSONのみで返してください（余計なテキスト不要）:
   const pdfUrl = upErr ? '' : supabase.storage.from('pdfs').getPublicUrl(safeName).data.publicUrl
 
   // 帯除去画像
-  log(`  画像処理（帯除去）...`)
+  log(`  AI画像処理（管理会社帯除去）...`)
   let croppedImg: Buffer | null = null
-  try { croppedImg = await removeBanner(imgBuffer) } catch {}
+  try {
+    croppedImg = await removeCompanyBannerWithAI(imgBuffer)
+  } catch (err) {
+    log(`  ⚠ 帯除去AI失敗。画像保存をスキップ: ${err instanceof Error ? err.message.slice(0, 120) : err}`)
+  }
 
   // ステータス決定: allowed のみ到達するので DRAFT
   const listingStatus = 'DRAFT'
 
   if (DRY_RUN) {
-    log(`  [DRY-RUN] 登録対象: ${data.property_type} | ${data.address_full} | ${(price/10000).toLocaleString()}万円 | ステータス: ${listingStatus}`)
+    log(`  [DRY-RUN] 登録対象: ${propertyType} / ${hospitalityCandidate.category} | score ${hospitalityCandidate.assessment.potential_score}/5 | ${data.address_full} | ${(price/10000).toLocaleString()}万円 | ステータス: ${listingStatus}`)
     return { success: true, listingId: 'DRY-RUN' }
   }
 
   // DB保存
-  const addrResult = formatPublicAddress(data.address_full as string | null)
+  const addrResult = formatPublicAddress(data.address_full)
   const managementId = await getNextManagementId()
   const listingId = randomUUID()
   const now = new Date().toISOString()
@@ -350,14 +334,15 @@ JSONのみで返してください（余計なテキスト不要）:
     managementId,
     status: listingStatus,
     adAllowed: adAllowed,
-    propertyType: data.property_type,
+    propertyType,
+    hospitalityCategory: hospitalityCandidate.category,
     price,
     addressPublic: addrResult.publicAddress,
     addressPrivate: data.address_full,
     addressBlocked: addrResult.isBlocked,
     prefecture: data.prefecture,
     city: data.city,
-    stations: data.stations || [],
+    stations: normalizedStations,
     landArea: data.land_area,
     buildingArea: data.building_area,
     floorCount: data.floor_count,
@@ -369,14 +354,19 @@ JSONのみで返してください（余計なテキスト不要）:
     deliveryDate: data.delivery_date || null,
     yieldGross: data.yield_gross,
     yieldNet: data.yield_net,
-    features: data.features || [],
+    features: hospitalityCandidate.features,
+    featuresEn: translations.featuresEn,
+    featuresZhTw: translations.featuresZhTw,
+    featuresZhCn: translations.featuresZhCn,
     descriptionJa: data.description_ja,
-    descriptionEn: data.description_en,
-    descriptionZhTw: data.description_zh_tw,
-    descriptionZhCn: data.description_zh_cn,
-    warnings: data.warnings || [],
+    descriptionEn: translations.descriptionEn,
+    descriptionZhTw: translations.descriptionZhTw,
+    descriptionZhCn: translations.descriptionZhCn,
+    extractionConfidence: data.confidence?.overall || null,
+    warnings: hospitalityCandidate.warnings,
     sourcePdfUrl: pdfUrl,
     sourcePdfPages: 1,
+    adminNotes: hospitalityCandidate.adminNotes,
     createdById: ADMIN_USER_ID,
     createdAt: now,
     updatedAt: now,
@@ -397,7 +387,7 @@ JSONのみで返してください（余計なテキスト不要）:
     }
   }
 
-  log(`  ✓ 登録完了: ${listingId} | ${data.property_type} | ${data.address_full} | ${price?.toLocaleString()}円 | ${listingStatus}`)
+  log(`  ✓ 登録完了: ${listingId} | ${propertyType} / ${hospitalityCandidate.category} | score ${hospitalityCandidate.assessment.potential_score}/5 | ${data.address_full} | ${price?.toLocaleString()}円 | ${listingStatus}`)
   return { success: true, listingId }
 }
 

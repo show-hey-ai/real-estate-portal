@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
     const listing = await prisma.listing.create({
       data: {
         propertyType: input.propertyType,
+        hospitalityCategory: input.hospitalityCategory ?? null,
         price: BigInt(Math.trunc(input.price)),
         addressPublic: addressResult.publicAddress || input.addressPublic,
         addressPrivate: input.addressPrivate,

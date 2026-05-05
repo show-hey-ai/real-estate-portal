@@ -1,6 +1,10 @@
 import OpenAI from 'openai'
+import { PROPERTY_TYPES } from '@/lib/property-type'
 
 let _openai: OpenAI | null = null
+export const OCR_MODEL = process.env.MAISOKU_OCR_MODEL || process.env.OPENAI_VISION_MODEL || 'gpt-4.1-mini'
+export const EXTRACT_MODEL = process.env.MAISOKU_EXTRACT_MODEL || process.env.OPENAI_VISION_MODEL || 'gpt-4.1-mini'
+export const TRANSLATE_MODEL = process.env.MAISOKU_TRANSLATE_MODEL || 'gpt-4.1-mini'
 
 export function getOpenAI(): OpenAI {
   if (!_openai) {
@@ -25,7 +29,7 @@ export const extractionSchema = {
     properties: {
       property_type: {
         type: ['string', 'null'],
-        enum: ['区分マンション', '一棟マンション', '一棟アパート', '戸建', '土地', '店舗・事務所', 'その他', null],
+        enum: [...PROPERTY_TYPES, null],
       },
       price: {
         type: ['integer', 'null'],
@@ -135,12 +139,42 @@ export const extractionSchema = {
       },
       description_ja: {
         type: ['string', 'null'],
-        description: '物件のアピールポイント・営業文（日本語、150-300文字程度）。マイソクから読み取れる魅力的な点、立地の良さ、投資メリット、物件の特徴を投資家向けにまとめる。',
+        description: '物件のアピールポイント・営業文（日本語、150-300文字程度）。単なる収益物件ではなく、宿泊事業向け物件としての取得候補であることを前提に、立地、建物規模、宿泊転用余地、購入前診断の論点を投資家向けにまとめる。',
       },
       appeal_points: {
         type: 'array',
         items: { type: 'string' },
-        description: '物件のセールスポイント（箇条書き）。例: 駅徒歩5分、表面利回り8%、新耐震基準、角部屋、オーナーチェンジ可など。',
+        description: '物件のセールスポイント（箇条書き）。宿泊転用理由、想定用途、買主ペルソナ、駅距離、建物規模、利回りなどを短く含める。',
+      },
+      hospitality_assessment: {
+        type: 'object',
+        description: '宿泊事業向け取得候補としての初期評価。断定ではなく、購入前診断で検証すべき仮説として出す。',
+        properties: {
+          potential_score: {
+            type: ['integer', 'null'],
+            description: '宿泊事業化の初期見込み。1=弱い、3=要調査、5=強い。資料から判断不能ならnull。',
+          },
+          recommended_use: {
+            type: ['string', 'null'],
+            enum: ['民泊', '簡易宿所', 'ホテル', '旅館', '社宅・マンスリー', '開発用地', '要調査', null],
+            description: '資料から見た最も自然な宿泊・運用用途。',
+          },
+          conversion_reason: {
+            type: ['string', 'null'],
+            description: 'なぜ宿泊事業向け候補になり得るか。80文字程度。',
+          },
+          primary_risks: {
+            type: 'array',
+            items: { type: 'string' },
+            description: '購入前に確認すべき宿泊事業リスク。用途地域、消防、建築、検査済証、保健所、既存賃貸借など。',
+          },
+          buyer_persona: {
+            type: ['string', 'null'],
+            description: '刺さりやすい買主像。例: 民泊運営会社、簡易宿所運営者、ホテル開発事業者、海外投資家。',
+          },
+        },
+        required: ['potential_score', 'recommended_use', 'conversion_reason', 'primary_risks', 'buyer_persona'],
+        additionalProperties: false,
       },
       confidence: {
         type: 'object',
@@ -156,7 +190,7 @@ export const extractionSchema = {
       warnings: {
         type: 'array',
         items: { type: 'string' },
-        description: '検出された警告（利回り記載あり、民泊関連記載等）',
+        description: '検出された警告。買主・投資家への注意事項のみを含める。広告掲載可否、広告承諾、REINS期限、媒体制限などの内部運用情報は含めない。',
       },
       evidence: {
         type: 'array',
@@ -197,6 +231,7 @@ export const extractionSchema = {
       'yield_net',
       'description_ja',
       'appeal_points',
+      'hospitality_assessment',
       'confidence',
       'warnings',
       'evidence'
@@ -220,7 +255,42 @@ export const extractionPrompt = `あなたは不動産情報抽出AIです。以
 10. 物件情報の登録日・更新日（info_registered_at, info_updated_at）: マイソクに記載があればYYYY-MM-DD形式で抽出。「情報登録日」「登録日」「作成日」「情報更新日」「更新日」「改定日」等。
 11. 取引条件の有効期限（conditions_expiry）: 「有効期限」「条件期限」「価格有効期限」等の記載があればYYYY-MM-DD形式で抽出。
 12. 引渡し可能時期（delivery_date）: 「引渡し」「引き渡し」「引渡時期」等の記載があれば、「即時」「相談」「2026年4月」等そのまま抽出。
-13. 広告掲載可否（ad_allowed）: 「広告可」「広告転載可」「広告掲載可」「AD可」等の記載があればtrue。「楽待・健美家は不可」等、特定媒体のみ不可の場合もtrue（自社ポータルは該当しないため。warnings に媒体制限を記録）。「広告不可」「広告転載不可」「全て不可」等があればfalse。「承諾書が必要」「相談可」等の事前承諾必須の記載もfalse。記載が見つからなければfalse。
+13. 広告掲載可否（ad_allowed）: 「広告可」「広告転載可」「広告掲載可」「AD可」等の記載があればtrue。「楽待・健美家は不可」等、特定媒体のみ不可の場合もtrue（自社ポータルは該当しないため）。「広告不可」「広告転載不可」「全て不可」等があればfalse。「承諾書が必要」「相談可」等の事前承諾必須の記載もfalse。記載が見つからなければfalse。
+14. warnings には、広告掲載可否・承諾要否・媒体制限・REINS関連などの内部メモを絶対に含めない。
+15. 物件種別（property_type）は必ず実態で判定する。REINSの「売マンション」は区分とは限らない。**判定は厳格に。** タイトル・ヘッダーだけで判断せず、本文の数値とキーワードを総合する。
+    一棟系の決定的サイン（1つでも該当すれば一棟）：
+    - 「一棟」「一棟売」「一棟物件」「売収益マンション」「収益ビル」「売ビル」「総戸数」（全戸数の記載）
+    - 全○室、総戸数○戸、レントロール（部屋ごとの賃料表）添付
+    - **建物面積（延床面積）が記載されており、専有面積の表記がない**
+    - 価格が ¥3億以上 + 用途「マンション」+ 専有面積記載なし → ほぼ確実に一棟
+    - 「現況利回り」「想定家賃」「想定年収」が建物全体に対して計算されている
+    - 元寮、寄宿舎、社員寮、シェアハウスとして使われていた建物全体
+
+    区分マンションの決定的サイン（1つでも該当すれば区分）：
+    - 「専有面積」+ 「所在階／階数」+ 「号室」（部屋番号）
+    - 「管理費」「修繕積立金」（毎月の費用、共有部の管理）
+    - 「○階部分」「○階号」「ルーフバルコニー」「専用庭」（個別住戸の特徴）
+    - 1住戸の間取り図のみ（建物全体の図面なし）
+    - 総戸数の記載があるが、価格と紐付くのは1住戸分
+
+    判定優先度：**「専有面積」+「号室」+「管理費」が揃えば必ず区分**。それ以外の高額物件で、専有面積記載なし＋建物全体の数値（延床面積、総戸数、満室想定家賃）があれば一棟。
+
+    ビル全体は「一棟ビル」、共同住宅全体は「一棟マンション」、アパート全体は「一棟アパート」。
+16. このポータルでは物件そのものも売り物だが、同時に「宿泊事業として買えるか」を購入前診断・取得・開業支援とセットで売る。description_ja / appeal_points / hospitality_assessment は、その営業前提で書く。
+17. hospitality_assessment は、断定ではなく初期仮説として作る。用途地域、消防、建築、検査済証、保健所、既存賃貸借の論点があれば primary_risks に入れる。
+18. appeal_points には、少なくとも「宿泊転用理由」「想定用途」「想定買主」に相当する短い要素を入れる。ただし資料から根拠が弱い場合は「要調査」と明記する。
+19. 既存物件をホテル・旅館・簡易宿所に用途変更する前提では、次を強く評価する:
+    - 既存ホテル・旅館・簡易宿所、既存営業権付き
+    - 元寮、寄宿舎、社員寮、共同住宅、シェアハウスなど宿泊用途に近い建物
+    - 検査済証、確認済証、確認申請図面、竣工図、消防設備関係書類がある
+    - 近隣商業、商業、準工業、第二種住居、準住居、第一種住居（規模要確認）
+20. 次はリスクとして重く見る:
+    - 検査済証なしの古い戸建、確認図面なし、未登記、増改築履歴不明、現況と登記・図面の不一致
+    - 旧耐震、特に1981年5月以前
+    - 木造3階建て
+    - 接道2m未満、43条ただし書き、私道権利不明、セットバック未了、再建築不可
+    - 第一種/第二種低層住居専用地域、第一種/第二種中高層住居専用地域、田園住居地域、工業系で宿泊用途に不向きな地域
+21. 200㎡以下は「安全」ではない。用途変更の確認申請が不要な場合があるだけで、建築基準法・消防法・旅館業法への適合確認は必要。primary_risks で誤解なく書く。
 
 【入力テキスト】`
 
@@ -290,7 +360,7 @@ export async function translateDescription(descriptionJa: string, featuresJa?: s
     : ''
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o',
+    model: TRANSLATE_MODEL,
     messages: [
       {
         role: 'system',

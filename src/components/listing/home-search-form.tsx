@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getHospitalityPropertyTypeOptions } from '@/lib/hospitality-copy'
 import { cn } from '@/lib/utils'
 import {
   getStationsForLine,
@@ -21,14 +22,6 @@ interface HomeSearchFormProps {
   locationIndex: PublicSearchLocationIndex
 }
 
-const propertyTypes = [
-  { value: '区分マンション', labelKey: 'types.mansion' },
-  { value: '一棟アパート', labelKey: 'types.apartment' },
-  { value: '一棟マンション', labelKey: 'types.building' },
-  { value: '戸建', labelKey: 'types.house' },
-  { value: '土地', labelKey: 'types.land' },
-]
-
 const areaOptions = ['20', '50', '100', '200']
 const priceOptions = ['30000000', '50000000', '100000000', '300000000']
 const walkOptions = ['5', '10', '15']
@@ -38,11 +31,12 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
   const locale = useLocale()
   const [line, setLine] = useState('')
   const [station, setStation] = useState('')
+  const propertyTypes = getHospitalityPropertyTypeOptions(locale)
 
   const stations = getStationsForLine(locationIndex, line)
 
   const fieldClassName = cn(
-    'rounded-md border border-input bg-background text-sm',
+    'rounded-[8px] border border-[#d6cdb8] bg-[#fffdf8] text-sm text-[#19231f] shadow-xs outline-none transition focus:border-[#2f6d58] focus:ring-2 focus:ring-[#2f6d58]/15',
     compact ? 'h-10 px-2 md:w-[150px]' : 'h-11 px-3 md:w-[160px]'
   )
 
@@ -54,7 +48,7 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
           name="q"
           placeholder={t('search.keywordPlaceholder')}
           className={cn(
-            'flex-1 rounded-md border border-input bg-background',
+            'flex-1 rounded-[8px] border border-[#d6cdb8] bg-[#fffdf8] text-[#19231f] shadow-xs outline-none transition placeholder:text-[#8a928d] focus:border-[#2f6d58] focus:ring-2 focus:ring-[#2f6d58]/15',
             compact ? 'h-10 px-3 text-sm' : 'h-11 px-4'
           )}
         />
@@ -62,7 +56,7 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
           <option value="">{t('search.allTypes')}</option>
           {propertyTypes.map((type) => (
             <option key={type.value} value={type.value}>
-              {t(`listing.${type.labelKey}`)}
+              {type.label}
             </option>
           ))}
         </select>
@@ -142,7 +136,10 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
         <Button
           type="submit"
           size={compact ? 'default' : 'lg'}
-          className={cn(compact ? 'h-10 md:ml-auto' : 'h-11 md:ml-auto')}
+          className={cn(
+            'rounded-[8px] bg-[#2f6d58] text-white hover:bg-[#265746]',
+            compact ? 'h-10 md:ml-auto' : 'h-11 md:ml-auto'
+          )}
         >
           <Search className="mr-2 h-4 w-4" />
           {t('search.search')}

@@ -18,7 +18,7 @@ const command = process.argv[2]
 function printUsage() {
   console.log(`
 ╔══════════════════════════════════════════════════════╗
-║     Tokyo Property エージェントチーム                ║
+║     Ziyou Hospitality エージェントチーム            ║
 ╠══════════════════════════════════════════════════════╣
 ║                                                      ║
 ║  物件パイプライン:                                   ║
@@ -52,7 +52,7 @@ async function main() {
 
   switch (command) {
     case 'pipeline': {
-      const { runPipeline } = await import('./pipeline')
+      await import('./pipeline')
       // pipeline.ts は自身で実行するため、import するだけでOK
       break
     }

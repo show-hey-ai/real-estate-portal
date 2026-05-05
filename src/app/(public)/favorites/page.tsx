@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
@@ -6,6 +7,13 @@ import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/listing/listing-card'
 import { Button } from '@/components/ui/button'
 import { Heart, Search } from 'lucide-react'
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default async function FavoritesPage() {
   const t = await getTranslations('favorites')

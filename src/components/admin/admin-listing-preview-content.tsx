@@ -12,9 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatPrice } from '@/lib/format'
 import {
+  formatTransitAccessLabel,
   translateAddress,
-  translateRailwayLine,
-  translateStationName,
 } from '@/lib/translate-fields'
 
 interface PreviewMedia {
@@ -144,15 +143,7 @@ export function AdminListingPreviewContent({
                         >
                           <Train className="h-4 w-4" />
                           <span>
-                            {station.line &&
-                              `${(locale !== 'ja' && station.line_en)
-                                ? station.line_en
-                                : translateRailwayLine(station.line, locale) ||
-                                  station.line} `}
-                            {(locale !== 'ja' && station.name_en)
-                              ? station.name_en
-                              : translateStationName(station.name, locale) ||
-                                station.name}
+                            {formatTransitAccessLabel(station, locale)}
                             {station.walk_minutes &&
                               ` ${t('walkMinutes', {
                                 minutes: station.walk_minutes,

@@ -27,16 +27,16 @@ async function fetchPublicSearchLocationIndex() {
   try {
     const { data: masterLines, error } = await supabase
       .from('transit_line_master')
-      .select('display_name_ja, stations:transit_station_master(display_name_ja)')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true })
-      .order('display_name_ja', { ascending: true })
+      .select('displayNameJa, stations:transit_station_master(displayNameJa)')
+      .eq('isActive', true)
+      .order('sortOrder', { ascending: true })
+      .order('displayNameJa', { ascending: true })
 
     if (!error && masterLines && masterLines.length > 0) {
-      const formatted = masterLines.map((line: { display_name_ja: string; stations: { display_name_ja: string }[] }) => ({
-        displayNameJa: line.display_name_ja,
-        stations: (line.stations || []).map((s: { display_name_ja: string }) => ({
-          displayNameJa: s.display_name_ja,
+      const formatted = masterLines.map((line: { displayNameJa: string; stations: { displayNameJa: string }[] }) => ({
+        displayNameJa: line.displayNameJa,
+        stations: (line.stations || []).map((s: { displayNameJa: string }) => ({
+          displayNameJa: s.displayNameJa,
         })),
       }))
       return buildPublicSearchLocationIndexFromMaster(formatted)

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { useState } from 'react'
@@ -77,6 +78,7 @@ interface ListingData {
   descriptionZhCn: string | null
   extractionConfidence: string | null
   adAllowed: boolean
+  adConsentRequired: boolean
   sourcePdfUrl: string | null
   sourcePdfPages: number | null
   managementId: string | null
@@ -92,6 +94,7 @@ const propertyTypes = [
   '区分マンション',
   '一棟マンション',
   '一棟アパート',
+  '一棟ビル',
   '戸建',
   '土地',
   '店舗・事務所',
@@ -130,6 +133,7 @@ export function ReviewForm({ listing }: ReviewFormProps) {
     descriptionZhTw: listing.descriptionZhTw || '',
     descriptionZhCn: listing.descriptionZhCn || '',
     adAllowed: listing.adAllowed,
+    adConsentRequired: listing.adConsentRequired,
   })
 
   const [stations, setStations] = useState<Station[]>(
@@ -429,18 +433,16 @@ export function ReviewForm({ listing }: ReviewFormProps) {
 
               <div className="flex items-center gap-3 p-3 rounded-md border bg-muted/30">
                 <Checkbox
-                  id="adAllowed"
-                  checked={formData.adAllowed}
+                  id="adConsentRequired"
+                  checked={formData.adConsentRequired}
                   onCheckedChange={(checked) =>
-                    setFormData(prev => ({ ...prev, adAllowed: checked === true }))
+                    setFormData(prev => ({ ...prev, adConsentRequired: checked === true }))
                   }
                 />
-                <Label htmlFor="adAllowed" className="cursor-pointer flex items-center gap-2">
-                  広告掲載可
-                  {formData.adAllowed ? (
-                    <Badge className="bg-emerald-500 text-white text-xs">可</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-xs text-muted-foreground">不可</Badge>
+                <Label htmlFor="adConsentRequired" className="cursor-pointer flex items-center gap-2">
+                  広告承諾必要
+                  {formData.adConsentRequired && (
+                    <Badge className="bg-amber-500 text-white text-xs">承諾必要</Badge>
                   )}
                 </Label>
               </div>

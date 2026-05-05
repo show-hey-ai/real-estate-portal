@@ -97,9 +97,28 @@ const optionalStringArray = z
   .preprocess((value) => value ?? undefined, z.array(z.string().trim().min(1)).max(50).optional())
   .transform((values) => (values ? Array.from(new Set(values)) : undefined))
 
+const HOSPITALITY_CATEGORY_VALUES = [
+  'EXISTING_HOTEL',
+  'LICENSED_PROPERTY',
+  'RENOVATION_TARGET',
+  'NEW_BUILD_LAND',
+  'CONVERSION_CANDIDATE',
+] as const
+
+const optionalHospitalityCategory = z.preprocess(
+  (value) => {
+    if (value === undefined) return undefined
+    if (value === null) return null
+    if (typeof value === 'string' && value.trim() === '') return null
+    return value
+  },
+  z.enum(HOSPITALITY_CATEGORY_VALUES).nullable().optional()
+)
+
 const listingBodySchema = z
   .object({
     propertyType: optionalShortText,
+    hospitalityCategory: optionalHospitalityCategory,
     price: optionalNonNegativeNumber,
     addressPublic: optionalShortText,
     addressPrivate: optionalShortText,
@@ -134,6 +153,7 @@ const listingBodySchema = z
       z.string().trim().max(5000).nullable().optional()
     ),
     adAllowed: z.boolean().optional(),
+    adConsentRequired: z.boolean().optional(),
     status: z.nativeEnum(ListingStatus).optional(),
     adoptedMediaIds: optionalStringArray,
     images: optionalStringArray,

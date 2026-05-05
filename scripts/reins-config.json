@@ -2,45 +2,121 @@
   "system": "東日本レインズ",
   "loginUrl": "https://system.reins.jp/",
   "downloadDir": "~/Downloads/maisoku",
-  "maxResults": 20,
+  "maxResults": 500,
+  "targetArea": {
+    "description": "都心13区（README.md の対象エリアと一致させること）",
+    "include": [
+      "千代田区", "中央区", "港区", "新宿区", "渋谷区",
+      "文京区", "目黒区", "品川区", "豊島区",
+      "台東区", "墨田区", "江東区", "大田区"
+    ],
+    "exclude": [
+      "足立区", "江戸川区", "葛飾区", "北区", "荒川区",
+      "板橋区", "練馬区", "杉並区", "世田谷区", "中野区"
+    ]
+  },
+  "excludeStatuses": ["申込あり", "申し込みあり"],
+  "reinsCategories": {
+    "description": "REINSの物件種別1→種目1の対応表。検索画面で使う値。",
+    "一棟マンション": { "種別1": "売外全(04)", "種目1": "マンション(08)" },
+    "一棟アパート": { "種別1": "売外全(04)", "種目1": "アパート(10)" },
+    "一棟ビル": { "種別1": "売外全(04)", "種目1": "ビル(06)" },
+    "区分マンション": { "種別1": "売マンション(03)", "種目1": "中古マンション(02)" },
+    "土地": { "種別1": "売土地(01)", "種目1": null }
+  },
+  "searchInput": {
+    "都道府県名": "東京都",
+    "所在地名1": "23区"
+  },
   "searchPatterns": [
     {
-      "name": "東京23区_一棟マンション",
+      "name": "都心13区_一棟マンション",
       "enabled": true,
       "conditions": {
         "propertyType": "一棟マンション",
+        "reins種別1": "04",
+        "reins種目1": "08",
         "area": "東京都",
-        "subArea": ["千代田区", "中央区", "港区", "新宿区", "渋谷区", "品川区", "目黒区", "大田区", "世田谷区", "中野区", "杉並区", "豊島区", "北区", "板橋区", "練馬区", "荒川区", "台東区", "墨田区", "江東区", "足立区", "葛飾区", "江戸川区", "文京区"],
+        "subArea": "23区",
         "priceMin": null,
         "priceMax": null,
         "yieldMin": null,
-        "registeredWithin": "1週間以内"
+        "registeredWithin": null
       }
     },
     {
-      "name": "東京23区_一棟ビル",
+      "name": "都心13区_一棟アパート",
+      "enabled": true,
+      "conditions": {
+        "propertyType": "一棟アパート",
+        "reins種別1": "04",
+        "reins種目1": "10",
+        "area": "東京都",
+        "subArea": "23区",
+        "priceMin": null,
+        "priceMax": null,
+        "yieldMin": null,
+        "registeredWithin": null
+      }
+    },
+    {
+      "name": "都心13区_区分マンション",
       "enabled": false,
+      "conditions": {
+        "propertyType": "区分マンション",
+        "reins種別1": "03",
+        "reins種目1": "02",
+        "area": "東京都",
+        "subArea": "23区",
+        "priceMin": null,
+        "priceMax": null,
+        "yieldMin": null,
+        "registeredWithin": null
+      }
+    },
+    {
+      "name": "都心13区_土地",
+      "enabled": true,
+      "conditions": {
+        "propertyType": "土地",
+        "reins種別1": "01",
+        "reins種目1": null,
+        "area": "東京都",
+        "subArea": "23区",
+        "priceMin": null,
+        "priceMax": null,
+        "yieldMin": null,
+        "registeredWithin": null
+      }
+    },
+    {
+      "name": "都心13区_一棟ビル",
+      "enabled": true,
       "conditions": {
         "propertyType": "一棟ビル",
+        "reins種別1": "04",
+        "reins種目1": "06",
         "area": "東京都",
-        "subArea": [],
+        "subArea": "23区",
         "priceMin": null,
         "priceMax": null,
         "yieldMin": null,
-        "registeredWithin": "1週間以内"
+        "registeredWithin": null
       }
     },
     {
-      "name": "神奈川_収益物件",
+      "name": "都心13区_店舗事務所",
       "enabled": false,
       "conditions": {
-        "propertyType": "一棟マンション",
-        "area": "神奈川県",
-        "subArea": [],
+        "propertyType": "店舗・事務所",
+        "reins種別1": "04",
+        "reins種目1": "05",
+        "area": "東京都",
+        "subArea": "23区",
         "priceMin": null,
-        "priceMax": 200000000,
-        "yieldMin": 6.0,
-        "registeredWithin": "3日以内"
+        "priceMax": null,
+        "yieldMin": null,
+        "registeredWithin": null
       }
     }
   ]

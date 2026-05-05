@@ -4,17 +4,24 @@
 
 // 番地パターン（公開NGとなるパターン）
 const BANCHI_PATTERNS = [
-  /\d+番地?(\d+号?)?/,        // 1番地、1番2号
-  /\d+-\d+(-\d+)?/,           // 1-2-3
-  /\d+丁目\d+/,               // 1丁目2（丁目の後に番地）
+  /[0-9０-９]+番地?([0-9０-９]+号?)?/,        // 1番地、1番2号
+  /[0-9０-９]+[-－−ー][0-9０-９]+([-－−ー][0-9０-９]+)?/, // 1-2-3
+  /[0-9０-９]+丁目[0-9０-９]+/,               // 1丁目2（丁目の後に番地）
   /[一二三四五六七八九十]+番地?/, // 漢数字番地
 ]
 
 // 丁目までのパターン
-const CHOME_PATTERN = /^(.+?[都道府県].+?[市区町村].+?(?:\d+丁目|[一二三四五六七八九十]+丁目))/
+const CHOME_PATTERN = /^(.+?(?:[0-9０-９]+丁目|[一二三四五六七八九十]+丁目))/
 
-// 町名までのパターン（丁目がない場合）
-const TOWN_PATTERN = /^(.+?[都道府県].+?[市区町村].+?[町村丁])/
+// 丁目がない住所は、最初のアラビア数字の直前までを町名として扱う
+const TOWN_BEFORE_NUMBER_PATTERN = /^(.+?)(?=[0-9０-９])/
+
+function normalizeAddressText(address: string): string {
+  return address
+    .trim()
+    .replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
+    .replace(/\s+/g, '')
+}
 
 export interface AddressResult {
   publicAddress: string | null  // 公開用住所（丁目まで）
@@ -36,7 +43,7 @@ export function formatPublicAddress(fullAddress: string | null | undefined): Add
     }
   }
 
-  const address = fullAddress.trim()
+  const address = normalizeAddressText(fullAddress)
 
   // 番地パターンが含まれているかチェック
   const hasBanchi = BANCHI_PATTERNS.some(pattern => pattern.test(address))
@@ -48,8 +55,8 @@ export function formatPublicAddress(fullAddress: string | null | undefined): Add
   if (chomeMatch) {
     publicAddress = chomeMatch[1]
   } else {
-    // 丁目がない場合は町名まで
-    const townMatch = address.match(TOWN_PATTERN)
+    // 丁目がない場合は町名まで（例: 東京都新宿区西早稲田1-8 → 東京都新宿区西早稲田）
+    const townMatch = address.match(TOWN_BEFORE_NUMBER_PATTERN)
     if (townMatch) {
       publicAddress = townMatch[1]
     }
@@ -58,7 +65,10 @@ export function formatPublicAddress(fullAddress: string | null | undefined): Add
   // 公開住所にも番地パターンが含まれていないか確認
   if (publicAddress && BANCHI_PATTERNS.some(pattern => pattern.test(publicAddress!))) {
     // 番地パターンを削除
-    publicAddress = publicAddress.replace(/\d+-\d+.*$/, '').replace(/\d+番.*$/, '').trim()
+    publicAddress = publicAddress
+      .replace(/[0-9]+[-－−ー][0-9]+.*$/, '')
+      .replace(/[0-9]+番.*$/, '')
+      .trim()
   }
 
   return {

@@ -8,7 +8,6 @@ import { AdminListingPreviewContent } from '@/components/admin/admin-listing-pre
 
 interface AdminListingPreviewButtonProps {
   listingId: string
-  addressPublic: string | null
 }
 
 interface PreviewResponse {
@@ -68,7 +67,6 @@ const NON_CLOSING_SELECTOR = [
 
 export function AdminListingPreviewButton({
   listingId,
-  addressPublic,
 }: AdminListingPreviewButtonProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)

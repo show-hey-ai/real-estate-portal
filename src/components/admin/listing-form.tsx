@@ -1,8 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
@@ -28,6 +29,16 @@ const stationSchema = z.object({
 
 const listingSchema = z.object({
     propertyType: z.string().min(1, '物件種別を選択してください'),
+    hospitalityCategory: z
+        .enum([
+            'EXISTING_HOTEL',
+            'LICENSED_PROPERTY',
+            'RENOVATION_TARGET',
+            'NEW_BUILD_LAND',
+            'CONVERSION_CANDIDATE',
+        ])
+        .optional()
+        .nullable(),
     price: z.coerce.number().min(0, '価格は0以上で入力してください'),
     addressPublic: z.string().min(1, '公開住所は必須です'),
     addressPrivate: z.string().min(1, '管理用住所は必須です'),
@@ -53,9 +64,10 @@ const listingSchema = z.object({
 })
 
 export type ListingFormValues = z.infer<typeof listingSchema>
+type ListingStatus = ListingFormValues['status']
 
 interface ListingFormProps {
-    initialData?: Partial<ListingFormValues>
+    initialData?: Partial<ListingFormValues> & { id?: string }
     mode?: 'create' | 'edit'
 }
 
@@ -63,11 +75,20 @@ const PROPERTY_TYPES = [
     '区分マンション',
     '一棟マンション',
     '一棟アパート',
+    '一棟ビル',
     '戸建',
     '土地',
     '店舗・事務所',
     'その他',
 ]
+
+const HOSPITALITY_CATEGORIES = [
+    { value: 'EXISTING_HOTEL', label: '既存ホテル・旅館買収' },
+    { value: 'LICENSED_PROPERTY', label: '既存営業権付き' },
+    { value: 'RENOVATION_TARGET', label: 'リフォーム再生対象' },
+    { value: 'NEW_BUILD_LAND', label: '新築前提宿泊用地' },
+    { value: 'CONVERSION_CANDIDATE', label: '転用候補（要審査）' },
+] as const
 
 const STRUCTURES = ['RC', 'SRC', 'S', '木造', '軽量鉄骨', 'その他']
 
@@ -83,7 +104,7 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
     }
 
     const form = useForm<ListingFormValues>({
-        resolver: zodResolver(listingSchema) as any, // Temporary casting to resolve strict type mismatch
+        resolver: zodResolver(listingSchema) as Resolver<ListingFormValues>,
         defaultValues,
     })
 
@@ -126,8 +147,13 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
     const onSubmit = async (data: ListingFormValues) => {
         setIsSubmitting(true)
         try {
-            const endpoint = mode === 'create' ? '/api/admin/listings' : `/api/admin/listings/${(initialData as any)?.id}`
+            const listingId = initialData?.id
+            const endpoint = mode === 'create' ? '/api/admin/listings' : `/api/admin/listings/${listingId}`
             const method = mode === 'create' ? 'POST' : 'PATCH'
+
+            if (mode === 'edit' && !listingId) {
+                throw new Error('Listing id is required for edit mode')
+            }
 
             const res = await fetch(endpoint, {
                 method,
@@ -192,6 +218,34 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
                                     {form.formState.errors.propertyType && (
                                         <p className="text-sm text-red-500">{form.formState.errors.propertyType.message}</p>
                                     )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>宿泊事業カテゴリ</Label>
+                                    <Select
+                                        onValueChange={(val) =>
+                                            form.setValue(
+                                                'hospitalityCategory',
+                                                val === '__NONE__' ? null : (val as ListingFormValues['hospitalityCategory']),
+                                            )
+                                        }
+                                        defaultValue={form.getValues('hospitalityCategory') ?? '__NONE__'}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="未分類" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="__NONE__">未分類</SelectItem>
+                                            {HOSPITALITY_CATEGORIES.map((cat) => (
+                                                <SelectItem key={cat.value} value={cat.value}>
+                                                    {cat.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-xs text-muted-foreground">
+                                        4本柱（新築前提／既存ホテル買収／リフォーム再生／既存営業権付き）＋転用候補
+                                    </p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -388,7 +442,7 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
                             <div className="space-y-2">
                                 <Label>ステータス</Label>
                                 <Select
-                                    onValueChange={(val: any) => form.setValue('status', val)}
+                                    onValueChange={(val: ListingStatus) => form.setValue('status', val)}
                                     defaultValue={form.getValues('status')}
                                 >
                                     <SelectTrigger>

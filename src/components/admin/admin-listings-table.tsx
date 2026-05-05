@@ -11,6 +11,7 @@ import { AdminListingPreviewButton } from '@/components/admin/admin-listing-prev
 import { AdminListingDeleteButton } from '@/components/admin/admin-listing-delete-button'
 import { AdminListingNotes } from '@/components/admin/admin-listing-notes'
 import { AdminBulkImagePreview } from '@/components/admin/admin-bulk-image-preview'
+import { getHospitalityCategoryLabel } from '@/lib/hospitality-copy'
 import {
   Table,
   TableBody,
@@ -20,7 +21,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { formatPrice } from '@/lib/format'
-import { Eye, Pencil, Trash2, ShieldAlert } from 'lucide-react'
+import { Eye, Pencil, Trash2, ShieldAlert, FileWarning } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface ListingMedia {
@@ -33,9 +34,11 @@ interface Listing {
   managementId: string | null
   addressPublic: string | null
   propertyType: string | null
+  hospitalityCategory: string | null
   price: number | null
   status: string
   adAllowed: boolean
+  adConsentRequired: boolean
   viewCount: number | null
   createdAt: string
   sourcePdfUrl: string | null
@@ -189,7 +192,10 @@ export function AdminListingsTable({ listings, labels }: AdminListingsTableProps
                 </TableCell>
               </TableRow>
             ) : (
-              listings.map((listing) => (
+              listings.map((listing) => {
+                const hospitalityCategoryLabel = getHospitalityCategoryLabel(listing.hospitalityCategory, 'ja')
+
+                return (
                 <TableRow key={listing.id} className={selected.has(listing.id) ? 'bg-muted/50' : ''}>
                   <TableCell>
                     <Checkbox
@@ -198,21 +204,27 @@ export function AdminListingsTable({ listings, labels }: AdminListingsTableProps
                     />
                   </TableCell>
                   <TableCell>
-                    <AdminListingSourcePreviewTrigger
-                      sourceUrl={listing.sourcePdfUrl}
-                      thumbnailUrl={listing.media[0]?.url || null}
-                      managementId={listing.managementId}
-                      addressPublic={listing.addressPublic}
-                      propertyType={listing.propertyType}
-                      addressNotSetLabel={labels.addressNotSet}
-                      typeNotSetLabel={labels.typeNotSet}
-                    />
+                    <div className="space-y-2">
+                      <AdminListingSourcePreviewTrigger
+                        sourceUrl={listing.sourcePdfUrl}
+                        thumbnailUrl={listing.media[0]?.url || null}
+                        managementId={listing.managementId}
+                        addressPublic={listing.addressPublic}
+                        propertyType={listing.propertyType}
+                        addressNotSetLabel={labels.addressNotSet}
+                        typeNotSetLabel={labels.typeNotSet}
+                      />
+                      {hospitalityCategoryLabel && (
+                        <Badge variant="outline" className="rounded-[6px] text-[11px]">
+                          {hospitalityCategoryLabel}
+                        </Badge>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <AdminListingPreviewButton
                         listingId={listing.id}
-                        addressPublic={listing.addressPublic}
                       />
                       <Link href={`/admin/listings/${listing.id}/review`}>
                         <Button variant="outline" size="sm">
@@ -241,11 +253,18 @@ export function AdminListingsTable({ listings, labels }: AdminListingsTableProps
                     </Badge>
                   </TableCell>
                   <TableCell className="text-center">
-                    {!listing.adAllowed && (
-                      <span title="広告承諾必要">
-                        <ShieldAlert className="h-4 w-4 text-destructive mx-auto" />
-                      </span>
-                    )}
+                    <div className="flex items-center justify-center gap-1">
+                      {!listing.adAllowed && (
+                        <span title="広告不可">
+                          <ShieldAlert className="h-4 w-4 text-destructive" />
+                        </span>
+                      )}
+                      {listing.adConsentRequired && (
+                        <span title="広告承諾必要">
+                          <FileWarning className="h-4 w-4 text-amber-500" />
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1">
@@ -257,13 +276,23 @@ export function AdminListingsTable({ listings, labels }: AdminListingsTableProps
                     {new Date(listing.createdAt + "Z").toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                   </TableCell>
                   <TableCell>
-                    <AdminListingNotes
-                      listingId={listing.id}
-                      initialNotes={listing.adminNotes}
-                    />
+                    <div className="space-y-1">
+                      {(listing.adConsentRequired || !listing.adAllowed) && (
+                        <p className="text-xs text-muted-foreground whitespace-nowrap">
+                          {!listing.adAllowed
+                            ? '【広告】不可'
+                            : '【広告】可・要承諾 — 掲載前に売主承諾必要'}
+                        </p>
+                      )}
+                      <AdminListingNotes
+                        listingId={listing.id}
+                        initialNotes={listing.adminNotes}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))
+                )
+              })
             )}
           </TableBody>
         </Table>

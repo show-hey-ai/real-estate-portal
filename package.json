@@ -3,15 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "prisma generate && next dev --webpack",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint src scripts agents e2e eslint.config.mjs next.config.ts prisma.config.ts --cache --max-warnings=0",
     "transit:sync": "npx tsx scripts/sync-transit-master.ts",
     "reins:download": "npx tsx scripts/reins-download.ts",
     "reins:auto": "npx tsx scripts/reins-auto.ts",
     "maisoku": "npx tsx scripts/process-openai-vision.ts",
-    "maisoku:all": "npx tsx scripts/process-openai-vision.ts --all"
+    "maisoku:all": "npx tsx scripts/process-openai-vision.ts --all",
+    "hospitality:fix": "npx tsx scripts/fix-hospitality-candidates.ts",
+    "ad:recheck": "npx tsx scripts/recheck-published-ad-policy.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.77",

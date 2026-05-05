@@ -1,19 +1,36 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { unstable_cache } from 'next/cache'
-import { getTranslations, getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
+import {
+  ArrowRight,
+  BedDouble,
+  Building2,
+  CheckCircle2,
+  ClipboardCheck,
+  Compass,
+  FileCheck,
+  Flame,
+  Globe,
+  Hotel,
+  KeyRound,
+  Landmark,
+  MapPin,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { GuideCard } from '@/components/guides/guide-card'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Building2, Globe, Shield, ArrowRight, Clock, Lock, MapPin, Flame, FileCheck } from 'lucide-react'
-import { getGuideArticles } from '@/content/guides'
-import { createServiceClient } from '@/lib/supabase/server'
-import { ListingCard } from '@/components/listing/listing-card'
 import { HomeSearchForm } from '@/components/listing/home-search-form'
+import { ListingCard } from '@/components/listing/listing-card'
+import { Button } from '@/components/ui/button'
+import { getGuideArticles } from '@/content/guides'
 import { getGuideUiCopy, normalizeGuideLocale } from '@/lib/guides'
+import { getHospitalityHomeCopy } from '@/lib/hospitality-copy'
 import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
 import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
+import { createServiceClient } from '@/lib/supabase/server'
 import {
   absoluteUrl,
   buildListingDescription,
@@ -23,57 +40,6 @@ import {
   getSiteCopy,
 } from '@/lib/site-config'
 
-const homeSeoContent = {
-  ja: {
-    heading: '日本で宿泊事業を始めたい外国人投資家へ — 物件購入から開業まで、まとめて支援します',
-    intro:
-      '自由不動産は、外国人投資家が日本で民泊・旅館・小規模ホテルを始めるための、購入前診断・売買仲介・開業PMまでを一気通貫で提供する宿泊事業特化の不動産事業です。',
-    points: [
-      '購入前に「この物件で宿泊事業ができるか」を確認（用途地域・消防・建築・保健所）',
-      '旅館業・民泊・小規模ホテル向け物件に特化',
-      '英語・繁体字・簡体字・日本語で全行程を対応',
-    ],
-    detail:
-      '物件探しから許認可・開業準備まで、行政書士・建築士・消防・施工とのチームを組んで進めます。買う前に詰まるポイントを洗い出すので、買ってから困る投資家を出しません。',
-  },
-  en: {
-    heading: 'For foreign investors who want to open a hotel, ryokan, or Airbnb in Japan — from property purchase to opening day, in one engagement',
-    intro:
-      'Ziyou Real Estate is a Tokyo-licensed brokerage focused entirely on hospitality property — pre-purchase feasibility, acquisition, licensing, and opening PM, all under one roof.',
-    points: [
-      'Pre-purchase check: zoning, fire code, building code, and hokenjo feasibility',
-      'Specialized in ryokan, minpaku, simple lodging, and boutique hotel properties',
-      'End-to-end support in English, Traditional Chinese, Simplified Chinese, and Japanese',
-    ],
-    detail:
-      'From sourcing to licensing and opening, we coordinate with administrative scriveners, architects, fire authorities, and contractors. We find the deal-breakers before you commit, so you never buy a building you cannot operate.',
-  },
-  'zh-TW': {
-    heading: '為想在日本經營住宿事業的外國投資者 — 從購買物件到開業，一次到位',
-    intro:
-      '自由不動產是專門服務外國投資者的東京持牌不動產業者，提供住宿業物件的購買前診斷、仲介、許可申請與開業PM全流程支援。',
-    points: [
-      '購買前確認：用途地域、消防、建築、保健所是否能通過',
-      '專注旅館、民宿、簡易宿所、精品飯店向物件',
-      '提供英文、繁體中文、簡體中文與日文的全程對應',
-    ],
-    detail:
-      '從選址、購買到許可申請與開業準備，我們與行政書士、建築師、消防、施工方組成團隊推進。在您購買前先排查所有可能卡關的點，避免您買到無法經營的物件。',
-  },
-  'zh-CN': {
-    heading: '为想在日本经营住宿业务的外国投资者 — 从买物件到开业，一站式完成',
-    intro:
-      '自由不动产是专门服务外国投资者的东京持牌不动产业者，提供住宿业物件的购买前诊断、仲介、许可申请与开业PM全流程支持。',
-    points: [
-      '购买前确认：用途地域、消防、建筑、保健所是否能通过',
-      '专注旅馆、民宿、简易住宿所、精品酒店向物件',
-      '提供英文、繁体中文、简体中文和日文的全程对应',
-    ],
-    detail:
-      '从选址、购买到许可申请与开业准备，我们与行政书士、建筑师、消防、施工方组成团队推进。在您购买前先排查所有可能卡关的点，避免您买到无法经营的物件。',
-  },
-} as const
-
 const getLatestPublishedListings = unstable_cache(
   async () => {
     const supabase = createServiceClient()
@@ -82,6 +48,7 @@ const getLatestPublishedListings = unstable_cache(
       .select(`
         id,
         propertyType,
+        hospitalityCategory,
         price,
         addressPublic,
         stations,
@@ -145,8 +112,7 @@ export default async function HomePage() {
     listingsPromise,
   ])
 
-  // Prisma互換の形式に変換
-  const formattedListings = (listings || []).map(listing => ({
+  const formattedListings = (listings || []).map((listing) => ({
     ...listing,
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
@@ -161,7 +127,23 @@ export default async function HomePage() {
       )
     : new Set<string>()
   const isLoggedIn = !!viewer
-  const seoContent = homeSeoContent[locale as keyof typeof homeSeoContent] ?? homeSeoContent.ja
+  const homeCopy = getHospitalityHomeCopy(locale)
+  const proofIcons = [Hotel, ShieldCheck, Globe]
+  const assetIcons = [Hotel, BedDouble, Building2, Landmark]
+  const checkIcons = [MapPin, Flame, Building2, FileCheck]
+  const processIcons = [Compass, ClipboardCheck, KeyRound, Sparkles]
+  const heroTitleDelimiter = homeCopy.heroTitle.includes('、')
+    ? '、'
+    : homeCopy.heroTitle.includes('，')
+      ? '，'
+      : null
+  const heroTitleLines = heroTitleDelimiter
+    ? (() => {
+        const [first, ...rest] = homeCopy.heroTitle.split(heroTitleDelimiter)
+        const secondLine = rest.join(heroTitleDelimiter)
+        return secondLine ? [`${first}${heroTitleDelimiter}`, secondLine] : [homeCopy.heroTitle]
+      })()
+    : [homeCopy.heroTitle]
   const collectionJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -183,72 +165,203 @@ export default async function HomePage() {
   }
 
   return (
-    <div>
+    <div className="bg-[#f7f5ed] text-[#19231f]">
       <JsonLd data={collectionJsonLd} />
-      {/* Hero Section - コンパクト版（ログイン時） */}
-      {isLoggedIn ? (
-        <section className="py-4 md:py-6 bg-gradient-to-b from-primary/5 to-background">
-          <div className="container">
-            {/* Quick Search Bar */}
-            <div className="bg-background rounded-lg shadow-md border p-3 md:p-4">
-              <HomeSearchForm compact locationIndex={locationIndex} />
-            </div>
-          </div>
-        </section>
-      ) : (
-        /* Hero Section - コンパクト版（未ログイン時）- 検索バー付き */
-        <section className="relative py-10 md:py-16 bg-gradient-to-b from-primary/5 to-background overflow-hidden">
-          <div className="container relative z-10">
-            <div className="max-w-3xl mx-auto text-center mb-6">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
-                {t('home.heroTitle')}
-                {t('home.heroTitleLine2')}
-              </h1>
-              <p className="text-muted-foreground">
-                {t('home.heroDescription')}
-              </p>
-            </div>
 
-            {/* Search Bar */}
-            <div className="max-w-5xl mx-auto bg-background rounded-xl shadow-lg border p-4">
-              <HomeSearchForm locationIndex={locationIndex} />
-            </div>
+      <section className="relative overflow-hidden bg-[#10231e] text-white">
+        <Image
+          src="/hotel-lp/img/hero.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-45"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(8,24,20,0.94)_0%,rgba(8,24,20,0.78)_48%,rgba(8,24,20,0.38)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,rgba(247,245,237,0)_0%,#f7f5ed_100%)]" />
 
-            {/* Trust Indicators - コンパクト */}
-            <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-xs text-muted-foreground mt-4">
-              <div className="flex items-center gap-1.5">
-                <Globe className="h-4 w-4 text-primary" />
-                <span>{t('home.languages4')}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-4 w-4 text-primary" />
-                <span>{t('trust.responseTime', { hours: 24 })}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Shield className="h-4 w-4 text-primary" />
-                <span>{t('home.freeRegistration')}</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* New Listings Section */}
-      {formattedListings.length > 0 && (
-        <section className="py-8 md:py-12">
-          <div className="container">
-            <div className="flex items-center justify-between mb-4 md:mb-6">
-              <h2 className="text-xl md:text-2xl font-bold">
-                {t('home.newListings')}
-              </h2>
+        <div className="container relative py-12 md:py-16 lg:py-20">
+          <div className="max-w-5xl">
+            <h1 className="max-w-4xl text-4xl font-semibold leading-[1.04] tracking-normal md:text-6xl lg:text-7xl">
+              {heroTitleLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </h1>
+            <p className="mt-6 max-w-3xl text-base leading-8 text-white/80 md:text-lg">
+              {homeCopy.heroDescription}
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/listings">
-                <Button variant="ghost" size="sm" className="gap-1 group">
-                  {t('home.viewAll')}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <Button
+                  size="lg"
+                  className="h-12 rounded-[8px] bg-[#d8a64a] px-6 text-sm font-semibold text-[#13201c] hover:bg-[#e6b65c]"
+                >
+                  {homeCopy.primaryCta}
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
+              <a href="/hotel-lp.html#form">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 rounded-[8px] border-white/30 bg-white/[0.08] px-6 text-sm font-semibold text-white hover:bg-white/[0.16] hover:text-white"
+                >
+                  {homeCopy.secondaryCta}
+                </Button>
+              </a>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          </div>
+
+          <div className="mt-12 grid gap-5 lg:grid-cols-[1fr_0.95fr] lg:items-stretch">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {homeCopy.proof.map((item, index) => {
+                const Icon = proofIcons[index]
+                return (
+                  <div
+                    key={item.label}
+                    className="rounded-[8px] border border-white/15 bg-white/10 p-4 backdrop-blur-md"
+                  >
+                    <Icon className="mb-4 h-5 w-5 text-[#d8a64a]" />
+                    <p className="text-sm font-semibold text-white">{item.value}</p>
+                    <p className="mt-1 text-xs leading-5 text-white/65">{item.label}</p>
+                  </div>
+                )
+              })}
+            </div>
+
+            <div className="rounded-[8px] border border-white/20 bg-[#fffdf8]/95 p-4 text-[#19231f] shadow-2xl shadow-black/30 backdrop-blur-md md:p-5">
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold tracking-normal">
+                    {homeCopy.searchTitle}
+                  </h2>
+                  <p className="mt-1 text-sm leading-6 text-[#5f6b65]">
+                    {homeCopy.searchDescription}
+                  </p>
+                </div>
+                <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#2f6d58]" />
+              </div>
+              <HomeSearchForm compact={isLoggedIn} locationIndex={locationIndex} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative py-14 md:py-20">
+        <div className="container">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div className="max-w-xl">
+              <h2 className="text-3xl font-semibold leading-tight tracking-normal md:text-5xl">
+                {homeCopy.assetTitle}
+              </h2>
+              <p className="mt-5 text-base leading-8 text-[#5d6963]">
+                {homeCopy.assetDescription}
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                ['/hotel-lp/img/lobby.jpg', 'Hotel lobby'],
+                ['/hotel-lp/img/traditional.jpg', 'Ryokan room'],
+                ['/hotel-lp/img/reno-building.jpg', 'Renovation building'],
+                ['/hotel-lp/img/skyline.jpg', 'Tokyo skyline'],
+              ].map(([src, alt]) => (
+                <div key={src} className="relative aspect-[4/3] overflow-hidden rounded-[8px]">
+                  <Image
+                    src={src}
+                    alt={alt}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 320px"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {homeCopy.assetPaths.map((asset, index) => {
+              const Icon = assetIcons[index]
+              return (
+                <div
+                  key={asset.title}
+                  className="rounded-[8px] border border-[#d9d2bd] bg-[#fffdf8] p-5 shadow-sm"
+                >
+                  <Icon className="h-5 w-5 text-[#2f6d58]" />
+                  <h3 className="mt-5 text-base font-semibold">{asset.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#647069]">{asset.desc}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#112821] py-14 text-white md:py-20">
+        <div className="container">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+            <div>
+              <h2 className="text-3xl font-semibold leading-tight tracking-normal md:text-5xl">
+                {homeCopy.reviewTitle}
+              </h2>
+              <p className="mt-5 text-base leading-8 text-white/70">
+                {homeCopy.reviewDescription}
+              </p>
+              <a href="/hotel-lp.html#form" className="mt-8 inline-flex">
+                <Button
+                  size="lg"
+                  className="h-12 rounded-[8px] bg-[#d8a64a] px-6 text-[#11231e] hover:bg-[#e6b65c]"
+                >
+                  {homeCopy.secondaryCta}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </a>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {homeCopy.checks.map((check, index) => {
+                const Icon = checkIcons[index]
+                return (
+                  <div
+                    key={check.title}
+                    className="rounded-[8px] border border-white/10 bg-white/[0.06] p-5"
+                  >
+                    <Icon className="h-5 w-5 text-[#d8a64a]" />
+                    <h3 className="mt-5 font-semibold">{check.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-white/65">{check.desc}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14 md:py-20">
+        <div className="container">
+          <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
+                {t('home.newListings')}
+              </h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#647069] md:text-base">
+                {t('home.newListingsDesc')}
+              </p>
+            </div>
+            <Link href="/listings">
+              <Button
+                variant="outline"
+                className="rounded-[8px] border-[#b7aa8d] bg-transparent text-[#1a2a24] hover:bg-[#ebe5d6]"
+              >
+                {t('home.viewAll')}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+
+          {formattedListings.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {formattedListings.map((listing) => (
                 <ListingCard
                   key={listing.id}
@@ -258,195 +371,65 @@ export default async function HomePage() {
                 />
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            <div className="rounded-[8px] border border-[#d9d2bd] bg-[#fffdf8] p-8 text-center text-sm text-[#647069]">
+              {t('home.noListings')}
+            </div>
+          )}
+        </div>
+      </section>
 
-      {/* Pre-Purchase Review CTA Banner — links to /hotel-lp.html */}
-      <section className="py-10 md:py-14 bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+      <section className="border-y border-[#ded6c4] bg-[#fffdf8] py-14 md:py-20">
         <div className="container">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Lock className="h-5 w-5 text-amber-400" />
-                <span className="text-amber-400 text-sm font-semibold tracking-wide uppercase">
-                  Pre-Purchase Review
-                </span>
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                {t('home.exclusiveBannerTitle')}
-              </h2>
-              <p className="text-slate-300 text-sm leading-relaxed mb-6">
-                {t('home.exclusiveBannerDesc')}
-              </p>
-              <div className="flex flex-wrap gap-4 mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                    <Lock className="h-4 w-4 text-amber-400" />
+          <div className="mb-9 max-w-3xl">
+            <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
+              {homeCopy.processTitle}
+            </h2>
+          </div>
+          <div className="grid gap-3 md:grid-cols-4">
+            {homeCopy.process.map((item, index) => {
+              const Icon = processIcons[index]
+              return (
+                <div key={item.step} className="rounded-[8px] border border-[#d9d2bd] p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm font-semibold text-[#a17426]">{item.step}</span>
+                    <Icon className="h-5 w-5 text-[#2f6d58]" />
                   </div>
-                  <div>
-                    <p className="text-xs text-slate-400">{t('home.exclusiveBannerStats1')}</p>
-                    <p className="text-sm font-semibold">{t('home.exclusiveBannerStats2')}</p>
-                  </div>
+                  <h3 className="mt-8 font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#647069]">{item.desc}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                    <Clock className="h-4 w-4 text-amber-400" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400">{t('home.exclusiveBannerStats3')}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                <a href="/hotel-lp.html#form">
-                  <Button
-                    size="lg"
-                    className="bg-amber-500 hover:bg-amber-600 text-black font-semibold group"
-                  >
-                    {t('home.exclusiveBannerButton')}
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </a>
-                <a
-                  href="/hotel-lp.html"
-                  className="text-sm text-slate-300 hover:text-amber-300 underline-offset-4 hover:underline"
-                >
-                  {t('home.exclusiveBannerCtaSecondary')} →
-                </a>
-              </div>
-              {locale !== 'en' && (
-                <p className="text-xs text-slate-500 mt-3">
-                  {t('home.exclusiveBannerLpNote')}
-                </p>
-              )}
-            </div>
-            <div className="hidden md:block">
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-400 mb-4">
-                {t('home.exclusiveBannerCheckHeading')}
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <div className="flex items-center gap-2 mb-1">
-                    <MapPin className="h-4 w-4 text-amber-400" />
-                    <p className="font-semibold text-sm">
-                      {t('home.exclusiveBannerCheck1Label')}
-                    </p>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {t('home.exclusiveBannerCheck1Desc')}
-                  </p>
-                </div>
-                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Flame className="h-4 w-4 text-amber-400" />
-                    <p className="font-semibold text-sm">
-                      {t('home.exclusiveBannerCheck2Label')}
-                    </p>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {t('home.exclusiveBannerCheck2Desc')}
-                  </p>
-                </div>
-                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Building2 className="h-4 w-4 text-amber-400" />
-                    <p className="font-semibold text-sm">
-                      {t('home.exclusiveBannerCheck3Label')}
-                    </p>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {t('home.exclusiveBannerCheck3Desc')}
-                  </p>
-                </div>
-                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <div className="flex items-center gap-2 mb-1">
-                    <FileCheck className="h-4 w-4 text-amber-400" />
-                    <p className="font-semibold text-sm">
-                      {t('home.exclusiveBannerCheck4Label')}
-                    </p>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {t('home.exclusiveBannerCheck4Desc')}
-                  </p>
-                </div>
-              </div>
-            </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* Features Section - 信頼構築 (未ログイン時のみ) */}
-      {!isLoggedIn && (
-        <section className="py-10 md:py-16 bg-muted/30">
-          <div className="container">
-            <h2 className="text-xl md:text-2xl font-bold text-center mb-6">
-              {t('home.features')}
-            </h2>
-            <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-              <Card className="group hover:shadow-md transition-all duration-200">
-                <CardContent className="pt-5 pb-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                    <Building2 className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-1">{t('home.feature1Title')}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {t('home.feature1Desc')}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="group hover:shadow-md transition-all duration-200">
-                <CardContent className="pt-5 pb-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                    <Globe className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-1">{t('home.feature2Title')}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {t('home.feature2Desc')}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="group hover:shadow-md transition-all duration-200">
-                <CardContent className="pt-5 pb-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-                    <Shield className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="font-semibold mb-1">{t('home.feature3Title')}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {t('home.feature3Desc')}
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-      )}
-
-      <section className="py-10 md:py-14 border-t bg-muted/20">
+      <section className="py-14 md:py-20">
         <div className="container">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl space-y-2">
-              <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary/80">
+            <div className="max-w-2xl space-y-3">
+              <p className="text-sm font-semibold text-[#a17426]">
                 {guideCopy.navLabel}
               </p>
-              <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+              <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
                 {guideCopy.homeTitle}
               </h2>
-              <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
+              <p className="text-sm leading-relaxed text-[#647069] md:text-base">
                 {guideCopy.homeDescription}
               </p>
             </div>
             <Link href="/guides">
-              <Button variant="outline" className="group whitespace-nowrap">
+              <Button
+                variant="outline"
+                className="rounded-[8px] border-[#b7aa8d] bg-transparent text-[#1a2a24] hover:bg-[#ebe5d6]"
+              >
                 {guideCopy.viewAllGuides}
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-3">
+          <div className="mt-7 grid gap-5 lg:grid-cols-3">
             {featuredGuides.map((article) => (
               <GuideCard
                 key={article.slug}
@@ -459,49 +442,33 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="py-10 md:py-14 border-t">
-        <div className="container">
-          <div className="max-w-4xl space-y-4">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-              {seoContent.heading}
-            </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              {seoContent.intro}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {seoContent.points.map((point) => (
-                <span
-                  key={point}
-                  className="rounded-full border bg-background px-3 py-1 text-sm text-muted-foreground"
-                >
-                  {point}
-                </span>
-              ))}
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {seoContent.detail}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section - 行動喚起 (未ログイン時のみ表示) */}
       {!isLoggedIn && (
-        <section className="py-10 md:py-14 bg-primary text-primary-foreground">
-          <div className="container">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="text-center md:text-left">
-                <h2 className="text-xl md:text-2xl font-bold">
+        <section className="relative overflow-hidden bg-[#10231e] py-14 text-white md:py-16">
+          <Image
+            src="/hotel-lp/img/cta-bg.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover opacity-25"
+          />
+          <div className="absolute inset-0 bg-[#10231e]/85" />
+          <div className="container relative">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="max-w-2xl">
+                <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
                   {t('home.ctaTitle')}
                 </h2>
-                <p className="opacity-90 text-sm mt-1">
+                <p className="mt-3 text-sm leading-7 text-white/70 md:text-base">
                   {t('home.ctaDescription')}
                 </p>
               </div>
               <Link href="/register">
-                <Button size="lg" variant="secondary" className="group whitespace-nowrap">
+                <Button
+                  size="lg"
+                  className="h-12 rounded-[8px] bg-[#d8a64a] px-6 text-[#13201c] hover:bg-[#e6b65c]"
+                >
                   {t('home.ctaButton')}
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
             </div>

@@ -21,6 +21,8 @@ type StationSeed = {
   name?: string | null
 }
 
+const railwayLineSplitRegex = /\s*[・/／,，、･+＋]\s*/u
+
 export interface PublicSearchSeedRow {
   city: string | null
   stations: StationSeed[] | null
@@ -46,8 +48,14 @@ const railwayLineAliases: Record<string, string> = {
   京葉線: 'JR京葉線',
   総武線: 'JR総武線',
   'JR中央・総武線': 'JR総武線',
+  JR総武: 'JR総武線',
+  JR中央: 'JR中央線',
+  JR中央本線: 'JR中央線',
+  JR総武中央線: 'JR総武線',
   総武中央線: 'JR総武線',
+  '総武・中央線': 'JR総武線',
   中央線: 'JR中央線',
+  中央線行線: 'JR中央線',
   京浜東北線: 'JR京浜東北線',
   東海道線: 'JR東海道線',
   横須賀線: 'JR横須賀線',
@@ -85,6 +93,16 @@ const railwayLineAliases: Record<string, string> = {
   京浜急行線: '京急本線',
   京浜急行: '京急本線',
   つくばEX: 'つくばエクスプレス',
+  東京都大江戸線: '都営大江戸線',
+  東京地下鉄有楽町線: '東京メトロ有楽町線',
+  東京地下鉄丸ノ内線: '東京メトロ丸ノ内線',
+  東京地下鉄副都心線: '東京メトロ副都心線',
+  東京地下鉄日比谷線: '東京メトロ日比谷線',
+  東京地下鉄東西線: '東京メトロ東西線',
+  東京地下鉄銀座線: '東京メトロ銀座線',
+  東京メトロ下半東西線: '東京メトロ東西線',
+  ゆりかもめ線: 'ゆりかもめ',
+  新交通ゆりかもめ: 'ゆりかもめ',
 }
 
 const stationNameAliases: Record<string, string> = {
@@ -93,12 +111,35 @@ const stationNameAliases: Record<string, string> = {
   雑司ヶ谷: '雑司が谷',
   市ヶ谷: '市ケ谷',
   都電雑司ヶ谷: '都電雑司が谷',
+  椎名: '椎名町',
+}
+
+function normalizeRailwayLineSegment(line: string | null | undefined): string {
+  if (!line) return ''
+
+  const trimmed = line
+    .trim()
+    .replace(/[「」"']/g, '')
+    .replace(/行線$/, '線')
+    .replace(/^東京都/, '都営')
+    .replace(/^東京地下鉄/, '東京メトロ')
+
+  return railwayLineAliases[trimmed] ?? trimmed
+}
+
+export function splitNormalizedRailwayLines(line: string | null | undefined): string[] {
+  if (!line) return []
+
+  const segments = line
+    .split(railwayLineSplitRegex)
+    .map((segment) => normalizeRailwayLineSegment(segment))
+    .filter(Boolean)
+
+  return [...new Set(segments)]
 }
 
 export function normalizeRailwayLine(line: string | null | undefined): string {
-  if (!line) return ''
-  const trimmed = line.trim()
-  return railwayLineAliases[trimmed] ?? trimmed
+  return splitNormalizedRailwayLines(line)[0] ?? ''
 }
 
 export function normalizeStationName(name: string | null | undefined): string {
@@ -111,13 +152,18 @@ function isRelevantWard(city: string | null | undefined): city is Tokyo13Ward {
   return !!city && tokyo13WardSet.has(city)
 }
 
-function isValidStationSeed(station: StationSeed): boolean {
-  const line = normalizeRailwayLine(station.line)
+function isValidStationSeed(
+  station: StationSeed,
+  options?: { requireLine?: boolean }
+): boolean {
+  const requireLine = options?.requireLine ?? true
+  const lines = splitNormalizedRailwayLines(station.line)
   const name = normalizeStationName(station.name)
 
-  if (!line || !name) return false
+  if (!name) return false
+  if (requireLine && lines.length === 0) return false
   if (name.endsWith('線')) return false
-  if (normalizeRailwayLine(name) === line) return false
+  if (lines.some((line) => normalizeRailwayLine(name) === line)) return false
 
   return true
 }
@@ -133,14 +179,16 @@ export function buildPublicSearchLocationIndex(rows: PublicSearchSeedRow[]): Pub
     for (const station of stations) {
       if (!isValidStationSeed(station)) continue
 
-      const line = normalizeRailwayLine(station.line)
       const name = normalizeStationName(station.name)
+      const stationLines = splitNormalizedRailwayLines(station.line)
 
-      lines.add(line)
-      if (!stationsByLine.has(line)) {
-        stationsByLine.set(line, new Set())
+      for (const line of stationLines) {
+        lines.add(line)
+        if (!stationsByLine.has(line)) {
+          stationsByLine.set(line, new Set())
+        }
+        stationsByLine.get(line)?.add(name)
       }
-      stationsByLine.get(line)?.add(name)
     }
   }
 
@@ -211,13 +259,13 @@ export function matchesTransitFilters(
 
   const stationList = Array.isArray(stations) ? stations : []
   return stationList.some((item) => {
-    if (!isValidStationSeed(item)) return false
+    if (!isValidStationSeed(item, { requireLine: false })) return false
 
-    const itemLine = normalizeRailwayLine(item?.line)
+    const itemLines = splitNormalizedRailwayLines(item?.line)
     const itemStation = normalizeStationName(item?.name)
 
-    if (!itemLine || !itemStation) return false
-    if (normalizedLine && itemLine !== normalizedLine) return false
+    if (!itemStation) return false
+    if (normalizedLine && !itemLines.includes(normalizedLine)) return false
     if (normalizedStation && itemStation !== normalizedStation) return false
 
     return true

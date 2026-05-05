@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Tokyo Property",
+    "appName": "Ziyou Hospitality",
     "login": "ログイン",
     "logout": "ログアウト",
     "register": "新規登録",
@@ -17,13 +17,13 @@
     "loading": "読み込み中...",
     "error": "エラーが発生しました",
     "success": "成功しました",
-    "copyright": "© {year} Tokyo Property. All rights reserved.",
+    "copyright": "© {year} Ziyou Hospitality. All rights reserved.",
     "privacyPolicy": "プライバシーポリシー",
     "termsOfService": "利用規約",
     "contact": "お問い合わせ"
   },
   "nav": {
-    "listings": "物件一覧",
+    "listings": "宿泊業物件",
     "guides": "ガイド",
     "favorites": "お気に入り",
     "admin": "管理画面"
@@ -62,12 +62,12 @@
     "requestPhotos": "追加写真をリクエスト",
     "morePhotosMessage": "この物件の追加写真（室内・共用部・周辺環境）を希望します。",
     "types": {
-      "mansion": "区分マンション",
-      "building": "一棟マンション",
-      "apartment": "一棟アパート",
-      "house": "戸建",
-      "land": "土地",
-      "commercial": "店舗・事務所",
+      "mansion": "区分・運用検討",
+      "building": "一棟ビル・簡易宿所候補",
+      "apartment": "一棟アパート・民泊候補",
+      "house": "戸建・小規模宿泊候補",
+      "land": "ホテル開発用地",
+      "commercial": "店舗/事務所・転用候補",
       "other": "その他"
     },
     "structures": {
@@ -81,7 +81,7 @@
   },
   "search": {
     "keyword": "キーワード",
-    "keywordPlaceholder": "エリア、駅名、物件タイプ...",
+    "keywordPlaceholder": "エリア、駅名、ホテル、旅館、民泊...",
     "priceMin": "価格下限",
     "priceMax": "価格上限",
     "priceRange": "価格帯",
@@ -90,7 +90,7 @@
     "search": "検索",
     "area": "エリア",
     "station": "駅",
-    "allTypes": "すべての種別",
+    "allTypes": "すべての宿泊用途候補",
     "allAreas": "すべてのエリア",
     "allTokyo13Wards": "都心13区すべて",
     "filter": "絞り込み",
@@ -286,7 +286,7 @@
   "home": {
     "heroTitle": "日本で宿泊事業を始めたい外国人投資家へ。",
     "heroTitleLine2": "物件購入から開業まで、まとめて支援します",
-    "heroDescription": "自由不動産は、外国人投資家向け 宿泊事業用不動産の購入・開業支援に特化した東京の持牌仲介です。購入前診断・売買仲介・開業PMを一気通貫で提供します。",
+    "heroDescription": "Ziyou Hospitalityは、外国人投資家向け宿泊事業用不動産の購入・開業支援に特化した東京の宅建業者です。購入前診断・売買仲介・開業PMを一気通貫で提供します。",
     "welcomeBack": "おかえりなさい",
     "welcomeBackDesc": "新着物件をチェックしましょう",
     "viewListings": "物件一覧を見る",
@@ -310,8 +310,8 @@
     "languages4": "4言語対応",
     "freeRegistration": "登録無料",
     "registrationFee": "登録料",
-    "ctaTitle": "お探しの物件はありますか？",
-    "ctaDescription": "無料会員登録で、お気に入り機能や物件へのお問い合わせが可能になります",
+    "ctaTitle": "宿泊業物件の取得候補を探していますか？",
+    "ctaDescription": "無料会員登録で、候補保存・購入前診断の相談・未公開物件の紹介依頼ができます",
     "ctaButton": "無料で会員登録する",
     "ctaSubtext": "登録は無料・30秒で完了",
     "newListings": "宿泊事業向け 候補物件",

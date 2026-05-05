@@ -34,7 +34,7 @@ async function runInboxResponder() {
   log('=== Inbox Responder 起動 ===')
 
   for await (const message of query({
-    prompt: `あなたは不動産ポータル「Tokyo Property」の問い合わせ対応エージェントです。
+    prompt: `あなたは宿泊業物件専門ポータル「Ziyou Hospitality」の問い合わせ対応エージェントです。
 
 以下のタスクを実行してください:
 
@@ -56,8 +56,8 @@ curl -s "${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/listings?city=eq.中央
 \`\`\`
 
 署名:
-Tokyo Property
-Email: info@tokyoproperty.jp`,
+Ziyou Hospitality
+Email: admin@ziyou-fudosan.com`,
     options: {
       cwd: process.cwd(),
       allowedTools: ['Read', 'Bash', 'Grep'],
@@ -82,7 +82,7 @@ async function runAdManager() {
   log('=== Ad Manager 起動 ===')
 
   for await (const message of query({
-    prompt: `あなたは不動産ポータル「Tokyo Property」のSNSマーケティングエージェントです。
+    prompt: `あなたは宿泊業物件専門ポータル「Ziyou Hospitality」のSNSマーケティングエージェントです。
 
 以下のタスクを実行してください:
 
@@ -97,13 +97,13 @@ curl -s "${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/listings?status=eq.PUBL
 
 **X（Twitter）日本語版:**
 🏠 [エリア] [物件種別] ¥[価格]億 / [面積]㎡ / [最寄駅]徒歩[分]分
-詳細: ${process.env.NEXT_PUBLIC_APP_URL || 'https://tokyoproperty.jp'}/listings/[id]
-#東京不動産 #投資物件 #Tokyo
+詳細: ${process.env.NEXT_PUBLIC_APP_URL || 'https://portal.ziyou-fudosan.com'}/listings/[id]
+#宿泊業物件 #旅館業 #民泊物件 #Tokyo
 
 **X（Twitter）英語版:**
 🏠 [Area] [Type] ¥[Price]M / [Area]㎡ / [min] from [Station]
-Details: ${process.env.NEXT_PUBLIC_APP_URL || 'https://tokyoproperty.jp'}/en/listings/[id]
-#TokyoRealEstate #JapanProperty #Investment
+Details: ${process.env.NEXT_PUBLIC_APP_URL || 'https://portal.ziyou-fudosan.com'}/en/listings/[id]
+#JapanHospitality #HotelAcquisition #Minpaku #Tokyo
 
 **Instagram:**
 物件の魅力を200-300文字で紹介（日英バイリンガル）
@@ -137,7 +137,7 @@ async function runEmailMarketer() {
   log('=== Email Marketer 起動 ===')
 
   for await (const message of query({
-    prompt: `あなたは不動産ポータル「Tokyo Property」のメールマーケティングエージェントです。
+    prompt: `あなたは宿泊業物件専門ポータル「Ziyou Hospitality」のメールマーケティングエージェントです。
 
 以下のタスクを実行してください:
 
@@ -150,13 +150,14 @@ curl -s "${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/listings?status=eq.PUBL
 
 2. Supabase DBからアクティブなリードを取得:
 \`\`\`bash
-curl -s "${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/leads?status=in.(NEW,IN_PROGRESS)&select=id,email,name,preferredLocale,notes" \\
+curl -s "${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/leads?status=in.(NEW,IN_PROGRESS)&select=id,contactMethod,contactValue,userId,users!leads_userId_fkey(email,name,locale)" \\
   -H "apikey: ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}" \\
   -H "Authorization: Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}"
 \`\`\`
 
 3. 各リードに対して、興味エリアに合った物件のメールドラフトを作成:
-   - リードの言語設定に合わせた文面（ja/en/zh-TW/zh-CN）
+   - users.locale に合わせた文面（ja/en/zh-TW/zh-CN）
+   - users.email が送信先。contactMethod が EMAIL 以外でも、会員メールアドレス宛の案内として扱う
    - 件名: 🏠 新着物件のご案内 - [エリア] [物件種別]
    - 本文: 物件概要 + スペック + ポータルリンク
    - Gmail MCPでドラフト保存

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Tokyo Property",
+    "appName": "Ziyou Hospitality",
     "login": "登录",
     "logout": "登出",
     "register": "注册",
@@ -17,13 +17,13 @@
     "loading": "加载中...",
     "error": "发生错误",
     "success": "成功",
-    "copyright": "© {year} Tokyo Property. 版权所有。",
+    "copyright": "© {year} Ziyou Hospitality. 版权所有。",
     "privacyPolicy": "隐私政策",
     "termsOfService": "服务条款",
     "contact": "联系我们"
   },
   "nav": {
-    "listings": "房源列表",
+    "listings": "住宿业物件",
     "guides": "指南",
     "favorites": "收藏",
     "admin": "管理后台"
@@ -62,12 +62,12 @@
     "requestPhotos": "索取更多照片",
     "morePhotosMessage": "我想索取这个房源的更多照片（室内、公共区域、周边环境）。",
     "types": {
-      "mansion": "公寓",
-      "building": "整栋大厦",
-      "apartment": "整栋公寓",
-      "house": "独栋住宅",
-      "land": "土地",
-      "commercial": "店铺・办公室",
+      "mansion": "区分物件 / 运营评估",
+      "building": "整栋大楼 / 简易住宿候选",
+      "apartment": "整栋公寓 / 民宿候选",
+      "house": "独栋 / 小型住宿候选",
+      "land": "酒店开发用地",
+      "commercial": "店铺办公 / 转用候选",
       "other": "其他"
     },
     "structures": {
@@ -81,7 +81,7 @@
   },
   "search": {
     "keyword": "关键字",
-    "keywordPlaceholder": "地区、车站、房源类型...",
+    "keywordPlaceholder": "地区、车站、酒店、旅馆、民宿...",
     "priceMin": "最低价格",
     "priceMax": "最高价格",
     "priceRange": "价格范围",
@@ -90,7 +90,7 @@
     "search": "搜索",
     "area": "地区",
     "station": "车站",
-    "allTypes": "所有类型",
+    "allTypes": "所有住宿候选",
     "allAreas": "所有地区",
     "allTokyo13Wards": "都心13区全部",
     "filter": "筛选条件",
@@ -310,8 +310,8 @@
     "languages4": "4种语言",
     "freeRegistration": "免费注册",
     "registrationFee": "注册费",
-    "ctaTitle": "在寻找房源吗？",
-    "ctaDescription": "免费注册即可使用收藏功能和房源咨询",
+    "ctaTitle": "正在寻找住宿业取得候选吗？",
+    "ctaDescription": "免费注册即可收藏物件、咨询购买前诊断，并接收未公开物件介绍",
     "ctaButton": "免费注册",
     "ctaSubtext": "免费注册，30秒完成",
     "newListings": "住宿业向候选物件",

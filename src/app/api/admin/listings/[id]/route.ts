@@ -82,6 +82,7 @@ export async function PATCH(
         where: { id },
         data: {
           propertyType: hasField('propertyType') ? input.propertyType ?? null : undefined,
+          hospitalityCategory: hasField('hospitalityCategory') ? input.hospitalityCategory ?? null : undefined,
           price: hasField('price')
             ? (input.price !== undefined ? BigInt(Math.trunc(input.price)) : null)
             : undefined,
@@ -117,6 +118,7 @@ export async function PATCH(
           descriptionZhCn: hasField('descriptionZhCn') ? input.descriptionZhCn ?? null : undefined,
           adminNotes: hasField('adminNotes') ? input.adminNotes ?? null : undefined,
           adAllowed: hasField('adAllowed') ? input.adAllowed ?? false : undefined,
+          adConsentRequired: hasField('adConsentRequired') ? input.adConsentRequired ?? false : undefined,
           status: input.status || undefined,
           publishedAt: input.status === 'PUBLISHED' && existingListing.status !== 'PUBLISHED'
             ? new Date()

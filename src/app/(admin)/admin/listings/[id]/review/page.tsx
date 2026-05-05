@@ -6,6 +6,15 @@ interface ReviewPageProps {
   params: Promise<{ id: string }>
 }
 
+interface ListingEvidence {
+  id: string
+  fieldName: string
+  rawText: string | null
+  pageNumber: number | null
+  confidence: string | number | null
+  needsReview: boolean
+}
+
 export default async function ReviewPage({ params }: ReviewPageProps) {
   const { id } = await params
   const supabase = await createClient()
@@ -40,7 +49,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
     descriptionZhTw: listing.descriptionZhTw || null,
     descriptionZhCn: listing.descriptionZhCn || null,
     stations: listing.stations as { name: string; line?: string | null; walk_minutes?: number | null }[] | null,
-    evidences: (listing.evidences || []).map((e: any) => ({
+    evidences: ((listing.evidences || []) as ListingEvidence[]).map((e) => ({
       ...e,
       confidence: e.confidence ? e.confidence.toString() : null,
     })),

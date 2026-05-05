@@ -77,11 +77,13 @@ model Listing {
   conditionsExpiry     DateTime?
   deliveryDate         String?
   adAllowed            Boolean              @default(false)
+  adConsentRequired    Boolean              @default(false)
   extractionConfidence Decimal?             @db.Decimal(3, 2)
   sourcePdfUrl         String?
   sourcePdfPages       Int?
   adminNotes           String?              @db.Text
   managementId         String?              @unique
+  hospitalityCategory  String?              // EXISTING_HOTEL | LICENSED_PROPERTY | RENOVATION_TARGET | NEW_BUILD_LAND | CONVERSION_CANDIDATE
   createdBy            User?                @relation("CreatedBy", fields: [createdById], references: [id])
   evidences            ExtractionEvidence[]
   favorites            Favorite[]

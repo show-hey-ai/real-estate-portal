@@ -16,6 +16,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
+  getHospitalityCategoryOptions,
+  getHospitalityListingsCopy,
+  getHospitalityPropertyTypeOptions,
+} from '@/lib/hospitality-copy'
+import {
   getStationsForLine,
   normalizeRailwayLine,
   type PublicSearchLocationIndex,
@@ -37,15 +42,23 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
   const locale = useLocale()
   const t = useTranslations('search')
   const tListing = useTranslations('listing')
-
-  const propertyTypes = [
-    { value: '区分マンション', labelKey: 'types.mansion' },
-    { value: '一棟マンション', labelKey: 'types.building' },
-    { value: '一棟アパート', labelKey: 'types.apartment' },
-    { value: '戸建', labelKey: 'types.house' },
-    { value: '土地', labelKey: 'types.land' },
-    { value: '店舗・事務所', labelKey: 'types.commercial' },
-  ]
+  const copy = getHospitalityListingsCopy(locale)
+  const propertyTypes = getHospitalityPropertyTypeOptions(locale)
+  const hospitalityCategories = getHospitalityCategoryOptions(locale)
+  const categoryFilterLabels: Record<string, string> = {
+    ja: '宿泊事業カテゴリ',
+    en: 'Hospitality category',
+    'zh-TW': '住宿業類別',
+    'zh-CN': '住宿业类别',
+  }
+  const categoryAllLabels: Record<string, string> = {
+    ja: '全カテゴリ',
+    en: 'All categories',
+    'zh-TW': '全部類別',
+    'zh-CN': '全部类别',
+  }
+  const categoryFilterLabel = categoryFilterLabels[locale] ?? categoryFilterLabels.en
+  const categoryAllLabel = categoryAllLabels[locale] ?? categoryAllLabels.en
 
   const walkMinutesOptions = [
     { value: '5', labelKey: 'walkMinutes5' },
@@ -108,14 +121,14 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
   }
 
   return (
-    <Card>
+    <Card className="rounded-[8px] border-[#d9d2bd] bg-[#fffdf8] shadow-sm">
       <CardHeader className="pb-3">
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center justify-between w-full md:cursor-default"
         >
-          <CardTitle className="text-lg">{t('filter')}</CardTitle>
+          <CardTitle className="text-lg">{copy.filtersTitle}</CardTitle>
           <span className="md:hidden">
             {isExpanded ? (
               <ChevronUp className="h-5 w-5 text-muted-foreground" />
@@ -124,6 +137,9 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
             )}
           </span>
         </button>
+        <p className="text-sm leading-6 text-muted-foreground">
+          {copy.filtersDescription}
+        </p>
       </CardHeader>
       <CardContent className={`space-y-4 ${!isExpanded ? 'hidden md:block' : ''}`}>
         <form onSubmit={handleSearch}>
@@ -132,12 +148,33 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
               name="q"
               placeholder={t('keyword')}
               defaultValue={searchParams.get('q') || ''}
+              className="rounded-[8px]"
             />
-            <Button type="submit" size="icon">
+            <Button type="submit" size="icon" className="rounded-[8px]">
               <Search className="h-4 w-4" />
             </Button>
           </div>
         </form>
+
+        <div className="space-y-2">
+          <Label>{categoryFilterLabel}</Label>
+          <Select
+            value={searchParams.get('category') || 'all'}
+            onValueChange={(value) => updateFilters({ category: value === 'all' ? '' : value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={categoryAllLabel} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{categoryAllLabel}</SelectItem>
+              {hospitalityCategories.map((cat) => (
+                <SelectItem key={cat.value} value={cat.value}>
+                  {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="space-y-2">
           <Label>{tListing('propertyType')}</Label>
@@ -152,7 +189,7 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
               <SelectItem value="all">{t('allTypes')}</SelectItem>
               {propertyTypes.map((type) => (
                 <SelectItem key={type.value} value={type.value}>
-                  {tListing(type.labelKey)}
+                  {type.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -324,7 +361,7 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
           </Select>
         </div>
 
-        <Button variant="outline" className="w-full" onClick={clearFilters}>
+        <Button variant="outline" className="w-full rounded-[8px]" onClick={clearFilters}>
           {t('clearFilters')}
         </Button>
       </CardContent>

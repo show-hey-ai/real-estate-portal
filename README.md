@@ -1,8 +1,8 @@
-# Ziyou Real Estate Portal
+# Ziyou Hospitality Portal
 
-自由不動産の物件ポータルサイト。Next.js + Supabase + Prisma。
+宿泊業物件に特化した自由不動産の物件ポータルサイト。Next.js + Supabase + Prisma。
 
-## 現状（2026-03-30）
+## 現状（2026-04-07）
 
 - 本番公開先: `https://portal.ziyou-fudosan.com`
 - 公開側は 4言語対応（日 / 英 / 繁中 / 簡中）
@@ -10,12 +10,14 @@
 - 路線・駅候補は `transit_line_master` / `transit_station_master` を正として参照
 - 2026-03-30 の同期時点で、交通マスタは `46路線 / 447駅`
 - 管理画面 `/admin/analytics` で PV・流入元・UTM・人気ページ / 物件を確認可能
+- 管理画面 `/admin/leads` でリード（問合せ）管理
+- プレビュー `/preview/listings/[id]` で非公開物件の内部確認
 
 ## 技術スタック
 
 - **フロントエンド:** Next.js 16 (App Router) + Tailwind CSS + shadcn/ui
 - **DB:** Supabase (PostgreSQL) + Prisma ORM 7 + `@prisma/adapter-pg`
-- **AI:** Claude Sonnet 4.6 (Step1: 分類・広告判定, Step2: 詳細抽出) / Claude Agent SDK (エージェント処理)
+- **AI:** OpenAI Vision + Structured Outputs（広告判定・帯切り取り・詳細抽出・翻訳）
 - **ストレージ:** Supabase Storage (PDFs: `pdfs/`, 画像: `media/`)
 - **デプロイ:** Vercel
 
@@ -33,10 +35,10 @@ portal/
 │   └── sync-transit-master.ts   ← 都心13区の路線・駅マスタ同期
 ├── src/
 │   ├── app/
-│   │   ├── (admin)/     ← 管理画面 (/admin/listings)
-│   │   ├── (auth)/      ← 認証
-│   │   ├── (public)/    ← 公開ページ
-│   │   └── api/         ← API Routes
+│   │   ├── (admin)/     ← 管理画面 (/admin/listings, /admin/leads, /admin/analytics)
+│   │   ├── (auth)/      ← 認証 (/login, /register)
+│   │   ├── (public)/    ← 公開ページ (/, /listings, /favorites, /preview)
+│   │   └── api/         ← API Routes (auth, admin, listings, leads, analytics)
 │   ├── components/
 │   │   ├── admin/       ← 管理画面UI
 │   │   └── listing/     ← 公開検索・一覧・詳細UI
@@ -64,20 +66,17 @@ REINS DL（ reins-scraper）
   ↓
 scripts/process-openai-vision.ts
   ↓
-Step1: Claude Sonnet 4.6 — 文書分類 + 広告ステータス判定
+Step1: OpenAI Vision — 広告文言抽出 + 掲載可否判定 + 反証チェック
   ├─ 非売買物件 → スキップ
-  ├─ ad_status: "denied"（広告不可明示）→ スキップ
-  ├─ ad_status: "not_mentioned"（記載なし）→ スキップ
-  ├─ ad_status: "allowed" → Step2へ
-  └─ ad_status: "approval_needed" → Step2へ
+  ├─ DENIED / APPROVAL_NEEDED / NOT_MENTIONED / AMBIGUOUS → スキップ
+  └─ ALLOWED（高信頼 + 反証なし）→ Step2へ
   ↓
-Step2: Claude Sonnet 4.6 — 詳細抽出（25+フィールド）
+Step2: OpenAI Vision — 詳細抽出（25+フィールド）
   ↓
 バリデーション: 価格範囲 → 住所有無 → 都心13区フィルタ
   ↓
 DB保存 + Storage（PDF・画像）
-  ├─ allowed → ステータス DRAFT（通常レビューフロー）
-  └─ approval_needed → ステータス IN_REVIEW（承認掲載枠 🟠）
+  └─ ALLOWEDのみ → ステータス DRAFT
   ↓
 管理画面 /admin/listings で確認 → REVIEWED → PUBLISHED
 ```
@@ -112,9 +111,27 @@ npm run reins:auto -- --headless
 # ダウンロード済みPDFだけ再処理
 npm run reins:auto -- --skip-reins --dry-run --max=5
 
+# 既存公開物件の広告可否をAI再チェック（既定はDB変更なし）
+npm run ad:recheck -- --max=10
+
+# 危険判定のPUBLISHED物件をARCHIVEDへ自動変更
+npm run ad:recheck -- --apply
+
 # 管理画面で確認 → DRAFTをPUBLISHEDに変更
 open http://localhost:3000/admin/listings
 ```
+
+### AIモデル設定
+
+人間レビューなし運用のため、広告判定は保守的に判定する。`ALLOWED` と高信頼で検証された物件だけDB保存し、それ以外（広告不可、要承諾、記載なし、矛盾、読みにくい）は自動スキップ。
+
+| 処理 | 環境変数 | 既定 |
+|---|---|---|
+| 広告文言抽出・可否判定・反証チェック | `MAISOKU_AD_MODEL` | `gpt-4.1` |
+| 管理会社帯の切り取り | `MAISOKU_BANNER_MODEL` | `gpt-4.1` |
+| OCR補助 | `MAISOKU_OCR_MODEL` | `gpt-4.1-mini` |
+| 物件詳細抽出 | `MAISOKU_EXTRACT_MODEL` | `gpt-4.1-mini` |
+| 翻訳 | `MAISOKU_TRANSLATE_MODEL` | `gpt-4.1-mini` |
 
 ### 広告掲載許可の判定パターン（帯・オビを重点確認）
 
@@ -124,9 +141,11 @@ open http://localhost:3000/admin/listings
 |---|---|---|
 | 「広告掲載：可」「広告掲載全媒介可」「承諾不要」 | ✅ allowed | true |
 | 「自社HP掲載可」「御社HP掲載可」「自社媒体のみ可」 | ✅ allowed | true |
+| 「1社HPのみ掲載可能」「1社HP可」 | ✅ allowed | true |
 | 「紙媒体・自社HPは可」「広告掲載申請（自社HPのみ）」 | ✅ allowed | true |
 | 「SUUMO等厳禁」でも「自社HP可」→ 自社ポータル該当 | ✅ allowed | true |
 | 「楽待不可」「健美家不可」等の特定媒体のみ不可 | ✅ allowed | true |
+| 「広告掲載不可」+「※1社HPのみ掲載可能」→ 例外優先 | ✅ allowed | true |
 | 「広告承認」（帯に記載） | ⏸ approval_needed | false |
 | 「広告掲載はこちらから」（申込窓口あり） | ⏸ approval_needed | false |
 | 「承諾書なき広告禁止」「承諾書をいただきますよう」 | ⏸ approval_needed | false |
@@ -134,7 +153,7 @@ open http://localhost:3000/admin/listings
 | 何も書いてない | ❌ not_mentioned | false |
 | 「広告有効期限 YYYY/MM」→ REINS登録期限で無関係 | 無視 | — |
 
-正のファイル: `scripts/process-openai-vision.ts` → Step1プロンプト
+正のファイル: `src/lib/maisoku-ai.ts`（広告判定・帯切り取り） / `src/lib/openai.ts`（詳細抽出・翻訳）
 
 ### 管理画面のステータス
 
@@ -184,10 +203,13 @@ npm run build
 | `sync-transit-master.ts` | 都心13区の路線・駅マスタ同期 |
 | `reins-download.ts` | REINS自動ダウンロード |
 | `reins-auto.ts` | REINS取得→解析→DB/Storage登録 |
+| `recheck-published-ad-policy.ts` | 公開済み物件の広告可否AI再チェック |
 | `reins-debug.ts` | REINSデバッグ |
 | `fix-missing-images.ts` | 画像なし物件の修復 |
 | `check-no-img.ts` | 画像なし物件チェック |
 | `check-schema.js` | DB/型の簡易確認 |
+| `check_prices.ts` | 物件価格一覧確認 |
+| `list-ad-allowed.ts` | adAllowed=true物件一覧 |
 | `seed-listings.ts` | テスト用シードデータ |
 
 ## 開発
@@ -208,9 +230,9 @@ npm run dev            # http://localhost:3000
 | ルール | ファイル |
 |---|---|
 | 抽出スキーマ（フィールド定義） | `src/lib/openai.ts` → `extractionSchema` |
-| 広告判定（Step1プロンプト） | `scripts/process-openai-vision.ts` → `CLASSIFY_SYSTEM_PROMPT` |
-| 広告判定（Step2 ad_allowed） | `scripts/process-openai-vision.ts` → Step2 system prompt |
+| 広告判定（掲載ゲート） | `src/lib/maisoku-ai.ts` |
+| 管理会社帯切り取り | `src/lib/maisoku-ai.ts` |
 | 住所プライバシー（番地マスク） | `src/lib/address.ts` → `formatPublicAddress()` |
 | DBスキーマ | `prisma/schema.prisma` |
 | 都心13区フィルタ | `scripts/process-openai-vision.ts` → `TOKYO_13KU` |
-| API構成 | Step1・Step2ともに Claude Sonnet 4.6（リトライ2回付き） |
+| API構成 | 広告判定・帯切り取りは `gpt-4.1`、詳細抽出・翻訳は `gpt-4.1-mini` |

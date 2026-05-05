@@ -436,6 +436,7 @@ const stationNameMap: Record<string, string> = {
   '桜台': 'Sakuradai',
   '江古田': 'Ekoda',
   '椎名町': 'Shiinamachi',
+  '椎名': 'Shiinamachi',
   // 追加: DB実データから
   'たまプラーザ': 'Tama-Plaza',
   'とうきょうスカイツリー駅': 'Tokyo Skytree',
@@ -591,15 +592,73 @@ const stationNameMap: Record<string, string> = {
   '台場': 'Daiba',
 }
 
+type TransitStationLike = {
+  line?: string | null
+  line_en?: string | null
+  name?: string | null
+  name_en?: string | null
+}
+
+const lineDelimiterRegex = /\s*[・/／,，･+＋]\s*/
+
+function normalizeRailwayLineLabel(line: string): string {
+  return line
+    .trim()
+    .replace(/^東京地下鉄/, '東京メトロ')
+    .replace(/^東京都/, '都営')
+}
+
+function translateRailwayLineSegment(segment: string): string {
+  const normalizedSegment = normalizeRailwayLineLabel(segment)
+  if (!normalizedSegment) return ''
+
+  if (railwayLineMap[normalizedSegment]) {
+    return railwayLineMap[normalizedSegment]
+  }
+
+  for (const [ja, en] of Object.entries(railwayLineMap)) {
+    if (
+      normalizedSegment === ja ||
+      normalizedSegment.includes(ja) ||
+      ja.includes(normalizedSegment)
+    ) {
+      return en
+    }
+  }
+
+  return normalizedSegment
+}
+
 export function translateRailwayLine(line: string | null | undefined, locale: string): string | null {
   if (!line || locale === 'ja') return line || null
-  // 完全一致
-  if (railwayLineMap[line]) return railwayLineMap[line]
-  // 部分一致
-  for (const [ja, en] of Object.entries(railwayLineMap)) {
-    if (line.includes(ja)) return en
+
+  const normalizedLine = normalizeRailwayLineLabel(line)
+  if (railwayLineMap[normalizedLine]) {
+    return railwayLineMap[normalizedLine]
   }
-  return line
+
+  if (lineDelimiterRegex.test(normalizedLine)) {
+    const translatedSegments = normalizedLine
+      .split(lineDelimiterRegex)
+      .map(translateRailwayLineSegment)
+      .filter(Boolean)
+
+    if (translatedSegments.length > 0) {
+      return translatedSegments.join(' / ')
+    }
+  }
+
+  for (const [ja, en] of Object.entries(railwayLineMap)) {
+    if (
+      normalizedLine === ja ||
+      normalizedLine.includes(ja) ||
+      ja.includes(normalizedLine)
+    ) {
+      return en
+    }
+  }
+
+  return normalizedLine
 }
 
 export function translateStationName(name: string | null | undefined, locale: string): string | null {
@@ -641,4 +700,26 @@ export function translateAddress(address: string | null | undefined, locale: str
     }
   }
   return address
+}
+
+export function formatTransitAccessLabel(
+  station: TransitStationLike | null | undefined,
+  locale: string
+): string | null {
+  if (!station) return null
+
+  const lineLabel =
+    locale !== 'ja'
+      ? station.line_en || translateRailwayLine(station.line, locale)
+      : station.line || null
+  const stationLabel =
+    locale !== 'ja'
+      ? station.name_en || translateStationName(station.name, locale)
+      : station.name || null
+
+  if (lineLabel && stationLabel) {
+    return `${lineLabel} / ${stationLabel}`
+  }
+
+  return stationLabel || lineLabel || null
 }

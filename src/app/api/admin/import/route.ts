@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { openai, extractionSchema, createMultiPagePrompt, extractionPrompt, translateDescription } from '@/lib/openai'
+import { openai, extractionSchema, createMultiPagePrompt, extractionPrompt, translateDescription, OCR_MODEL, EXTRACT_MODEL } from '@/lib/openai'
 import { formatPublicAddress, extractPrefecture, extractCity } from '@/lib/address'
+import { sanitizeListingWarnings } from '@/lib/listing-warnings'
+import { normalizeTransitStations } from '@/lib/transit-normalization'
+import { analyzeMaisokuAdPolicyWithAI } from '@/lib/maisoku-ai'
+import { normalizePropertyType } from '@/lib/property-type'
+import { prepareHospitalityCandidate, type HospitalityAssessment } from '@/lib/hospitality-assessment'
 import { randomUUID } from 'crypto'
 import { renderPdfPages, extractPhotosFromPage } from '@/lib/pdf-image'
 import { getAdminUserFromSession } from '@/lib/admin-auth'
@@ -63,7 +68,7 @@ async function extractTextWithVision(buffer: Buffer, mimeType: string, pageNumbe
   const base64 = buffer.toString('base64')
 
   const visionResponse = await openai.chat.completions.create({
-    model: 'gpt-4o',
+    model: OCR_MODEL,
     messages: [
       {
         role: 'user',
@@ -92,7 +97,9 @@ async function extractTextWithVision(buffer: Buffer, mimeType: string, pageNumbe
 
 interface Station {
   name: string
+  name_en?: string | null
   line?: string | null
+  line_en?: string | null
   walk_minutes?: number | null
 }
 
@@ -127,6 +134,7 @@ interface ExtractedData {
   yield_net?: number | null
   description_ja?: string | null
   appeal_points?: string[]
+  hospitality_assessment?: HospitalityAssessment | null
   confidence?: {
     overall: number
     price: number
@@ -183,6 +191,8 @@ export async function POST(request: NextRequest) {
     let pageContents: PageContent[] = []
     let totalPages = 1
     let pdfUrl = ''
+    let pageImages: { pageNumber: number; buffer: Buffer }[] = []
+    let adAnalysisForImport: Awaited<ReturnType<typeof analyzeMaisokuAdPolicyWithAI>> | null = null
 
     // ファイルをSupabase Storageにアップロード（service roleを使用）
     const serviceClient = createServiceClient()
@@ -220,7 +230,7 @@ export async function POST(request: NextRequest) {
       if (file.type === 'application/pdf') {
         // PDFの場合はページ画像をレンダリングしてVision OCR
         try {
-          const pageImages = await renderPdfPages(buffer, { scale: 2.0 })
+          pageImages = await renderPdfPages(buffer, { scale: 2.0 })
           const ocrPages: PageContent[] = []
           for (const pageImage of pageImages) {
             const ocrResult = await extractTextWithVision(pageImage.buffer, 'image/png', pageImage.pageNumber)
@@ -238,13 +248,55 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // AI広告判定。人間レビューなし運用のため、ALLOWEDとして検証済みのページだけDB保存する。
+    try {
+      if (file.type === 'application/pdf') {
+        if (pageImages.length === 0) {
+          pageImages = await renderPdfPages(buffer, { scale: 3.0 })
+        }
+      } else {
+        pageImages = [{ pageNumber: 1, buffer }]
+      }
+
+      const adImage = pageImages[0]?.buffer || buffer
+      const adAnalysis = await analyzeMaisokuAdPolicyWithAI(adImage)
+      adAnalysisForImport = adAnalysis
+
+      if (!adAnalysis.is_sale_property) {
+        return NextResponse.json({
+          success: false,
+          skipped: true,
+          reason: `売買マイソクではないためスキップしました [${adAnalysis.document_type}]`,
+          filename: file.name,
+          adAnalysis,
+        }, { status: 200 })
+      }
+
+      if (!adAnalysis.can_publish) {
+        return NextResponse.json({
+          success: false,
+          skipped: true,
+          reason: `広告掲載不可または不確実のためスキップしました [${adAnalysis.status}]`,
+          filename: file.name,
+          adAnalysis,
+        }, { status: 200 })
+      }
+    } catch (adError) {
+      return NextResponse.json({
+        success: false,
+        skipped: true,
+        reason: `広告判定AIに失敗したためスキップしました: ${adError instanceof Error ? adError.message : String(adError)}`,
+        filename: file.name,
+      }, { status: 200 })
+    }
+
     // LLMで情報抽出
     const prompt = pageContents.length > 1
       ? createMultiPagePrompt(pageContents)
       : `${extractionPrompt}\n\n${pageContents[0]?.text || ''}`
 
     const extractionResponse = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: EXTRACT_MODEL,
       messages: [
         {
           role: 'system',
@@ -265,16 +317,6 @@ export async function POST(request: NextRequest) {
       extractionResponse.choices[0]?.message?.content || '{}'
     )
 
-    // 広告可の明示的な許可がない物件はスキップ
-    if (!extractedData.ad_allowed) {
-      return NextResponse.json({
-        success: false,
-        skipped: true,
-        reason: '広告掲載許可が確認できないためスキップしました',
-        filename: file.name,
-      }, { status: 200 })
-    }
-
     // 価格が取れない場合はスキップ（目次・空ページ等）
     if (!extractedData.price) {
       return NextResponse.json({
@@ -287,6 +329,42 @@ export async function POST(request: NextRequest) {
 
     // 住所を自動整形
     const addressResult = formatPublicAddress(extractedData.address_full)
+    const normalizedStations = normalizeTransitStations(extractedData.stations)
+    const sanitizedWarnings = sanitizeListingWarnings(extractedData.warnings)
+    const propertyType = normalizePropertyType(extractedData.property_type, {
+      descriptionJa: extractedData.description_ja,
+      features: extractedData.appeal_points,
+      evidence: extractedData.evidence,
+      buildingArea: extractedData.building_area,
+      landArea: extractedData.land_area,
+      floorCount: extractedData.floor_count,
+    })
+
+    if (propertyType === '区分マンション') {
+      return NextResponse.json({
+        success: false,
+        skipped: true,
+        reason: '区分マンションは原則ポータル掲載対象外のためスキップしました',
+        filename: file.name,
+      }, { status: 200 })
+    }
+
+    const hospitalityCandidate = prepareHospitalityCandidate({
+      propertyType,
+      zoning: extractedData.zoning,
+      currentStatus: extractedData.current_status,
+      descriptionJa: extractedData.description_ja,
+      features: extractedData.appeal_points,
+      warnings: sanitizedWarnings,
+      evidence: extractedData.evidence,
+      buildingArea: extractedData.building_area,
+      landArea: extractedData.land_area,
+      floorCount: extractedData.floor_count,
+      builtYear: extractedData.built_year,
+      structure: extractedData.structure,
+      stations: normalizedStations,
+      assessment: extractedData.hospitality_assessment,
+    })
 
     // 都道府県・市区町村を抽出（GPTの結果がない場合）
     const prefecture = extractedData.prefecture || extractPrefecture(extractedData.address_full)
@@ -296,19 +374,13 @@ export async function POST(request: NextRequest) {
     let descriptionEn = null
     let descriptionZhTw = null
     let descriptionZhCn = null
-    let featuresEn: string[] | null = null
-    let featuresZhTw: string[] | null = null
-    let featuresZhCn: string[] | null = null
 
     if (extractedData.description_ja) {
       try {
-        const translations = await translateDescription(extractedData.description_ja, extractedData.appeal_points)
+        const translations = await translateDescription(extractedData.description_ja, hospitalityCandidate.features)
         descriptionEn = translations.descriptionEn
         descriptionZhTw = translations.descriptionZhTw
         descriptionZhCn = translations.descriptionZhCn
-        featuresEn = translations.featuresEn
-        featuresZhTw = translations.featuresZhTw
-        featuresZhCn = translations.featuresZhCn
       } catch (translationError) {
         console.error('Translation error:', translationError)
         // 翻訳に失敗しても処理は続行
@@ -323,14 +395,16 @@ export async function POST(request: NextRequest) {
       .insert({
         id: listingId,
         status: 'DRAFT',
-        propertyType: extractedData.property_type,
+        adAllowed: true,
+        propertyType,
+        hospitalityCategory: hospitalityCandidate.category,
         price: extractedData.price,
         addressPublic: addressResult.publicAddress,
         addressPrivate: extractedData.address_full,
         addressBlocked: addressResult.isBlocked,
         prefecture,
         city,
-        stations: extractedData.stations,
+        stations: normalizedStations,
         landArea: extractedData.land_area,
         buildingArea: extractedData.building_area,
         floorCount: extractedData.floor_count,
@@ -345,8 +419,8 @@ export async function POST(request: NextRequest) {
         deliveryDate: extractedData.delivery_date || null,
         yieldGross: extractedData.yield_gross,
         yieldNet: extractedData.yield_net,
-        warnings: extractedData.warnings,
-        features: extractedData.appeal_points,
+        warnings: hospitalityCandidate.warnings,
+        features: hospitalityCandidate.features,
         // featuresEn, featuresZhTw, featuresZhCn は DBカラム追加後に有効化
         // featuresEn,
         // featuresZhTw,
@@ -356,6 +430,7 @@ export async function POST(request: NextRequest) {
         descriptionZhTw,
         descriptionZhCn,
         extractionConfidence: extractedData.confidence?.overall || null,
+        adminNotes: hospitalityCandidate.adminNotes,
         sourcePdfUrl: pdfUrl,
         sourcePdfPages: totalPages,
         createdById: adminUserId,
@@ -373,7 +448,9 @@ export async function POST(request: NextRequest) {
     // === PDF 1ページ目をトップ画像として保存（管理会社の帯を除去） ===
     if (file.type === 'application/pdf' && buffer.length > 0) {
       try {
-        const pageImages = await renderPdfPages(buffer, { scale: 3.0 })
+        if (pageImages.length === 0) {
+          pageImages = await renderPdfPages(buffer, { scale: 3.0 })
+        }
 
         if (pageImages.length > 0) {
           // 1ページ目のみをトップ画像として使用
@@ -445,7 +522,12 @@ export async function POST(request: NextRequest) {
         action: 'IMPORT_PDF',
         targetType: 'listing',
         targetId: listing.id,
-        detail: { filename: file.name },
+        detail: {
+          filename: file.name,
+          adStatus: adAnalysisForImport?.status,
+          adConfidence: adAnalysisForImport?.confidence,
+          adEvidence: adAnalysisForImport?.positive_evidence,
+        },
         adminId: adminUserId,
       })
 

@@ -67,7 +67,7 @@ export function AdminSidebar() {
   const t = useTranslations()
 
   return (
-    <aside className="w-64 border-r bg-muted/30 min-h-screen">
+    <aside className="w-64 border-r bg-muted/30 min-h-screen flex flex-col">
       <div className="p-6">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
           <Building2 className="h-6 w-6" />
@@ -75,7 +75,7 @@ export function AdminSidebar() {
         </Link>
       </div>
 
-      <nav className="px-4 space-y-1">
+      <nav className="px-4 space-y-1 flex-1">
         {navItems.map((item) => {
           if (isNavGroup(item)) {
             // Parent item with children
@@ -130,7 +130,7 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      <div className="absolute bottom-0 left-0 w-64 p-4 border-t">
+      <div className="p-4 border-t mt-auto">
         <form action="/api/auth/logout" method="POST">
           <Button variant="ghost" className="w-full justify-start" type="submit">
             <LogOut className="h-4 w-4 mr-2" />
