@@ -288,7 +288,6 @@ const cardCopy = {
     review: '宿泊用途確認',
     license: '許認可確認',
     opening: '開業PM相談可',
-    yield: '想定利回り',
     area: '建物面積',
   },
   en: {
@@ -296,7 +295,6 @@ const cardCopy = {
     review: 'Hospitality-use check',
     license: 'License path check',
     opening: 'Opening PM available',
-    yield: 'Return',
     area: 'Building area',
   },
   'zh-TW': {
@@ -304,7 +302,6 @@ const cardCopy = {
     review: '住宿用途確認',
     license: '許可路徑確認',
     opening: '開業PM諮詢',
-    yield: '表面投報率',
     area: '建物面積',
   },
   'zh-CN': {
@@ -312,7 +309,6 @@ const cardCopy = {
     review: '住宿用途确认',
     license: '许可路径确认',
     opening: '开业PM咨询',
-    yield: '表面收益率',
     area: '建筑面积',
   },
 } as const
