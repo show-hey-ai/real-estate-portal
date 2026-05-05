@@ -37,6 +37,7 @@ type SeoListingLike = {
 }
 
 const DEFAULT_SITE_URL = 'https://portal.ziyou-fudosan.com'
+const VERCEL_PREVIEW_HOST_SUFFIX = '.vercel.app'
 
 const siteCopy: Record<
   Locale,
@@ -112,7 +113,22 @@ function getLocalizedListingDescription(listing: SeoListingLike, locale: Locale)
 }
 
 export function getSiteUrl(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL || DEFAULT_SITE_URL).replace(/\/+$/, '')
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL
+
+  if (!configuredUrl) {
+    return DEFAULT_SITE_URL
+  }
+
+  try {
+    const url = new URL(configuredUrl)
+    if (url.hostname.endsWith(VERCEL_PREVIEW_HOST_SUFFIX)) {
+      return DEFAULT_SITE_URL
+    }
+
+    return url.origin.replace(/\/+$/, '')
+  } catch {
+    return DEFAULT_SITE_URL
+  }
 }
 
 export function absoluteUrl(pathname: string = '/'): string {
