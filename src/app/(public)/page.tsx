@@ -58,7 +58,7 @@ export default async function HomePage() {
     <section className="container grid gap-10 pb-10 pt-12 md:gap-12 md:pb-16 md:pt-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
       <div className="relative z-10 max-w-[620px]">
         <p className="flex items-center gap-3 text-xs font-bold tracking-[0.2em] text-[#3f638d] uppercase"><span className="h-px w-7 bg-current" />{copy.eyebrow}</p>
-        <h1 className={`mt-8 font-medium leading-[1.18] tracking-[-0.055em] text-[#142337] ${locale === 'en' ? 'text-[clamp(2.8rem,5vw,5.4rem)]' : 'text-[clamp(2.6rem,3.5vw,4rem)]'}`}>{copy.heroTitle}</h1>
+        <h1 className={`mt-8 text-balance font-medium leading-[1.18] tracking-[-0.055em] text-[#142337] ${locale === 'en' ? 'text-[clamp(2.8rem,5vw,5.4rem)]' : 'text-[clamp(2.6rem,3.5vw,4rem)]'}`}>{copy.heroTitle}</h1>
         <p className="mt-7 max-w-[540px] text-base leading-8 text-[#536274] md:text-lg">{copy.heroDescription}</p>
         <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
           <Link href="/listings" className="inline-flex min-h-12 items-center gap-3 rounded-[4px] bg-[#274d7d] px-6 font-semibold text-white transition-colors hover:bg-[#18375f]">{copy.browse}<ArrowUpRight className="h-4 w-4" /></Link>
