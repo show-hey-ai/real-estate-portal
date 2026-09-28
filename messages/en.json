@@ -23,7 +23,7 @@
     "contact": "Contact"
   },
   "nav": {
-    "listings": "Homes for Sale",
+    "listings": "Properties for Sale",
     "guides": "Buying Guide",
     "favorites": "Favorites",
     "admin": "Admin",
@@ -59,7 +59,7 @@
     "morePhotosDesc": "Ask us to check whether additional photos are available for this property.",
     "exclusiveTitle": "Search for property with us",
     "exclusiveDesc": "Tell us your area, budget, and timing. We can check properties that may fit.",
-    "registerForMore": "Plan my home search",
+    "registerForMore": "Plan my property search",
     "requestPhotos": "Request more photos",
     "morePhotosMessage": "I would like to see additional photos of this property (interior, common areas, neighborhood).",
     "types": {
@@ -91,7 +91,7 @@
     "search": "Search",
     "area": "Area",
     "station": "Station",
-    "allTypes": "All home types",
+    "allTypes": "All property types",
     "allAreas": "All Areas",
     "filter": "Filter",
     "sort": "Sort by",
@@ -297,10 +297,10 @@
   "home": {
     "heroTitle": "For foreign investors starting a hospitality business in Japan.",
     "heroTitleLine2": "From property acquisition to opening — we handle it all.",
-    "heroDescription": "Explore and buy a home in Tokyo with support in Japanese, English, and Chinese.",
+    "heroDescription": "Explore investment property, homes, and land in Tokyo with support in Japanese, English, and Chinese.",
     "welcomeBack": "Welcome back",
     "welcomeBackDesc": "Check out the latest properties",
-    "viewListings": "Homes for Sale",
+    "viewListings": "Properties for Sale",
     "features": "Three Strengths Built for Hospitality Property",
     "featuresDesc": "When a foreign investor wants to open a hotel, ryokan, or minpaku in Japan, what does it actually take? We don't stop at listing properties — we help all the way to opening day.",
     "feature1Title": "Hospitality Property Sourcing",
