@@ -3,25 +3,33 @@ export function formatPrice(price: bigint | number, locale: string = 'ja'): stri
 
   if (locale === 'en') {
     if (num >= 1_000_000_000) {
-      const b = num / 1_000_000_000
-      return `¥${b.toFixed(b % 1 === 0 ? 0 : 1)}B`
+      if (num % 1_000_000 === 0) {
+        return `¥${(num / 1_000_000_000).toLocaleString('en', { maximumFractionDigits: 3 })}B`
+      }
+      return `¥${num.toLocaleString('en')}`
     }
     if (num >= 1_000_000) {
-      const m = num / 1_000_000
-      return `¥${m.toFixed(m % 1 === 0 ? 0 : 1)}M`
+      if (num % 1_000 === 0) {
+        return `¥${(num / 1_000_000).toLocaleString('en', { maximumFractionDigits: 3 })}M`
+      }
+      return `¥${num.toLocaleString('en')}`
     }
     return `¥${num.toLocaleString('en')}`
   }
 
-  // ja, zh-TW, zh-CN all use 億/万
+  // ja, zh-TW, zh-CN all use 億/万 without rounding the advertised price.
   if (num >= 100000000) {
-    const oku = num / 100000000
-    return `¥${oku.toFixed(oku % 1 === 0 ? 0 : 1)}億`
+    const oku = Math.floor(num / 100000000)
+    const remainder = num % 100000000
+    const man = Math.floor(remainder / 10000)
+    const yen = remainder % 10000
+    return `¥${oku}億${man ? `${man.toLocaleString()}万` : ''}${yen ? `${yen.toLocaleString()}円` : ''}`
   }
 
   if (num >= 10000) {
-    const man = num / 10000
-    return `¥${man.toLocaleString()}万`
+    const man = Math.floor(num / 10000)
+    const yen = num % 10000
+    return `¥${man.toLocaleString()}万${yen ? `${yen.toLocaleString()}円` : ''}`
   }
 
   return `¥${num.toLocaleString()}`
