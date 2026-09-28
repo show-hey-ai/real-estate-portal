@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/listing/listing-card'
 import { Button } from '@/components/ui/button'
 import { Heart, Search } from 'lucide-react'
+import { isPublicPropertyType } from '@/lib/market-category'
 
 export const metadata: Metadata = {
   robots: {
@@ -52,7 +53,9 @@ export default async function FavoritesPage() {
 
   // Filter out non-published listings
   const publishedFavorites = favorites.filter(
-    (fav) => fav.listing.status === 'PUBLISHED' && fav.listing.adAllowed
+    (fav) => fav.listing.status === 'PUBLISHED' && fav.listing.adAllowed &&
+      fav.listing.hospitalityCategory === null &&
+      isPublicPropertyType(fav.listing.propertyType)
   )
 
   return (
@@ -69,8 +72,7 @@ export default async function FavoritesPage() {
       {publishedFavorites.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {publishedFavorites.map((fav) => {
-            const { yieldGross, yieldNet, ...listing } = fav.listing
-            void yieldGross
+            const { yieldNet, ...listing } = fav.listing
             void yieldNet
 
             return (
@@ -79,6 +81,8 @@ export default async function FavoritesPage() {
                 listing={{
                   ...listing,
                   buildingArea: fav.listing.buildingArea ? Number(fav.listing.buildingArea) : null,
+                  landArea: fav.listing.landArea ? Number(fav.listing.landArea) : null,
+                  yieldGross: fav.listing.yieldGross ? Number(fav.listing.yieldGross) : null,
                   stations: fav.listing.stations as { name: string; line?: string | null; walk_minutes?: number | null }[] | null,
                 }}
               />

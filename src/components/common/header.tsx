@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { LocaleSwitcher } from './locale-switcher'
@@ -12,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { Heart, Hotel, Menu } from 'lucide-react'
+import { Heart, Menu } from 'lucide-react'
 
 interface HeaderProps {
   user?: {
@@ -23,33 +24,33 @@ interface HeaderProps {
 
 export function Header({ user }: HeaderProps) {
   const t = useTranslations()
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
 
   const closeMenu = () => setIsOpen(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#ded6c4] bg-[#fffdf8]/92 backdrop-blur supports-[backdrop-filter]:bg-[#fffdf8]/78">
-      <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2 text-xl font-semibold text-[#16251f]">
-            <span className="flex h-9 w-9 items-center justify-center rounded-[8px] bg-[#10231e] text-[#d8a64a]">
-              <Hotel className="h-5 w-5" />
-            </span>
-            <span className="hidden sm:inline">{t('common.appName')}</span>
+    <header data-testid="public-header" className="sticky top-0 z-50 w-full border-b border-[#dbe2e9] bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
+      <div className="container flex h-[74px] items-center justify-between">
+        <div className="flex items-center gap-10">
+          <Link href="/" className="group flex items-center gap-3 text-[#142337]">
+            <span className="text-[1.55rem] font-semibold tracking-[0.12em]">ZIYOU</span>
+            <span className="hidden border-l border-[#cbd5df] pl-3 text-[11px] font-medium leading-4 tracking-[0.08em] text-[#64778b] sm:block">{t('common.appName')}<br />REAL ESTATE</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-4">
+          <nav aria-label="Primary" className="hidden items-center gap-7 md:flex">
             <Link
               href="/listings"
-              className="text-sm font-medium text-[#5f6b65] transition-colors hover:text-[#16251f]"
+              className={`border-b-2 py-2 text-sm font-medium transition-colors ${pathname.startsWith('/listings') ? 'border-[#274d7d] text-[#142337]' : 'border-transparent text-[#647487] hover:text-[#142337]'}`}
             >
               {t('nav.listings')}
             </Link>
             <Link
-              href="/guides"
-              className="text-sm font-medium text-[#5f6b65] transition-colors hover:text-[#16251f]"
+              href="/buying-guide"
+              className={`border-b-2 py-2 text-sm font-medium transition-colors ${pathname.startsWith('/buying-guide') ? 'border-[#274d7d] text-[#142337]' : 'border-transparent text-[#647487] hover:text-[#142337]'}`}
             >
               {t('nav.guides')}
             </Link>
+            <Link href="/match" className={`border-b-2 py-2 text-sm font-medium transition-colors ${pathname.startsWith('/match') ? 'border-[#274d7d] text-[#142337]' : 'border-transparent text-[#647487] hover:text-[#142337]'}`}>{t('nav.match')}</Link>
           </nav>
         </div>
 
@@ -60,7 +61,7 @@ export function Header({ user }: HeaderProps) {
           {user ? (
             <>
               <Link href="/favorites">
-                <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" aria-label={t('nav.favorites')}>
                   <Heart className="h-5 w-5" />
                 </Button>
               </Link>
@@ -85,7 +86,7 @@ export function Header({ user }: HeaderProps) {
                 </Button>
               </Link>
               <Link href="/register">
-                  <Button size="sm" className="rounded-[8px] bg-[#2f6d58] hover:bg-[#265746]">
+                  <Button size="sm" className="rounded-[4px] bg-[#274d7d] hover:bg-[#18375f]">
                   {t('common.register')}
                 </Button>
               </Link>
@@ -105,8 +106,7 @@ export function Header({ user }: HeaderProps) {
             <SheetContent side="right" className="w-[280px]">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
-                  <Hotel className="h-5 w-5" />
-                  {t('common.appName')}
+                  ZIYOU <span className="text-xs font-normal text-[#647487]">{t('common.appName')}</span>
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-4 mt-8">
@@ -118,12 +118,13 @@ export function Header({ user }: HeaderProps) {
                   {t('nav.listings')}
                 </Link>
                 <Link
-                  href="/guides"
+                  href="/buying-guide"
                   onClick={closeMenu}
                   className="text-lg font-medium hover:text-primary transition-colors"
                 >
                   {t('nav.guides')}
                 </Link>
+                <Link href="/match" onClick={closeMenu} className="text-lg font-medium hover:text-primary transition-colors">{t('nav.match')}</Link>
 
                 {user ? (
                   <>

@@ -7,6 +7,7 @@ import {
   buildPublicSearchLocationIndex,
   buildPublicSearchLocationIndexFromMaster,
 } from '@/lib/public-search'
+import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 
 /**
  * Use Supabase REST API (HTTPS/IPv4) instead of direct PostgreSQL (IPv6-only).
@@ -55,6 +56,8 @@ async function fetchPublicSearchLocationIndex() {
       .select('city, stations')
       .eq('status', 'PUBLISHED')
       .eq('adAllowed', true)
+      .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
+      .is('hospitalityCategory', null)
 
     if (error) {
       console.error('Failed to query listings via REST:', error.message)

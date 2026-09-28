@@ -1,73 +1,27 @@
-import { guideArticles } from '@/content/guides'
 import { createServiceClient } from '@/lib/supabase/server'
 import { absoluteUrl } from '@/lib/site-config'
-
-async function getPublishedListingCount() {
-  try {
-    const supabase = createServiceClient()
-    const { count, error } = await supabase
-      .from('listings')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'PUBLISHED')
-      .eq('adAllowed', true)
-
-    if (error) {
-      console.error('Failed to count published listings for llms.txt:', error.message)
-      return null
-    }
-
-    return count ?? null
-  } catch (error) {
-    console.error('Failed to generate llms.txt listing count:', error)
-    return null
-  }
-}
-
-function buildResponse(markdown: string) {
-  return new Response(markdown, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-    },
-  })
-}
+import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 
 export async function GET() {
-  const publishedListingCount = await getPublishedListingCount()
-  const featuredGuides = guideArticles.slice(0, 3)
-  const listingSummary =
-    publishedListingCount != null
-      ? `The portal currently exposes ${publishedListingCount} published, ad-approved hospitality property candidates.`
-      : 'The portal exposes live, ad-approved hospitality property candidates.'
+  let count: number | null = null
+  try {
+    const result = await createServiceClient().from('listings').select('*', { count: 'exact', head: true })
+      .eq('status', 'PUBLISHED').eq('adAllowed', true)
+      .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
+    if (!result.error) count = result.count
+  } catch { /* Inventory count can be unavailable without affecting the page. */ }
 
   const markdown = [
-    '# Ziyou Hospitality',
-    '',
-    '> Multilingual Japan hospitality property portal for foreign investors acquiring hotels, ryokan, minpaku-ready buildings, and conversion candidates.',
-    '',
-    `${listingSummary} Public listing pages focus on hospitality acquisition fit, train access, price, building scale, and inquiry intent.`,
-    'Addresses may be partially masked on public pages for privacy. Guides are informational and do not replace legal, tax, or licensing advice.',
-    '',
-    '## Main Pages',
-    '',
-    `- [Home](${absoluteUrl('/')}): Search-first hospitality acquisition page with latest public candidates and off-market introduction positioning.`,
-    `- [Listings](${absoluteUrl('/listings')}): Main pipeline page for live hospitality property candidates. Supports filters for ward, train line, station, price, walk time, and building area.`,
-    `- [Guides](${absoluteUrl('/guides')}): Evergreen content for overseas buyers evaluating Japanese hospitality property and acquisition risk.`,
-    '',
-    '## Key Guides',
-    '',
-    ...featuredGuides.map((article) => {
-      const content = article.locales.en
-      return `- [${content.title}](${absoluteUrl(`/guides/${article.slug}`)}): ${content.seoDescription}`
-    }),
-    '',
-    '## Optional',
-    '',
-    `- [LLMS full context](${absoluteUrl('/llms-full.txt')}): Expanded site summary with usage notes, guide inventory, and content interpretation hints.`,
-    `- [Sitemap](${absoluteUrl('/sitemap.xml')}): Full index of canonical public URLs.`,
-    `- [Robots](${absoluteUrl('/robots.txt')}): Crawl policy for search and AI crawlers.`,
-    '',
+    '# Ziyou Real Estate', '',
+    '> Multilingual portal for buying investment property, a home, or land in Tokyo, Japan.', '',
+    count == null ? 'See the live listings page for current properties.' : `Currently published properties: ${count}.`,
+    'Only listings with advertising permission are shown. Availability may change; ask the brokerage to confirm.', '',
+    '## Main pages', '',
+    `- [Home](${absoluteUrl('/')}): Tokyo property purchase overview and search.`,
+    `- [Properties for sale](${absoluteUrl('/listings')}): Published investment, residential, and land listings.`,
+    `- [Buying guide](${absoluteUrl('/buying-guide')}): The basic process from criteria to closing.`,
+    `- [Discuss your search](${absoluteUrl('/match')}): Share purchase purpose, area, budget, property type, and timing with Ziyou.`, '',
+    `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
   ].join('\n')
-
-  return buildResponse(markdown)
+  return new Response(markdown, { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600' } })
 }

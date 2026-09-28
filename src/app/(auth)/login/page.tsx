@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Building2, Loader2 } from 'lucide-react'
+import { AuthBrandPanel } from '@/components/auth/auth-brand-panel'
 
 export default function LoginPage() {
   const t = useTranslations('auth')
@@ -44,8 +45,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div data-testid="auth-page" className="min-h-screen bg-[#f7f5ed] lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(440px,0.78fr)]">
+      <AuthBrandPanel />
+      <div className="flex min-h-screen items-center justify-center p-5 sm:p-8">
+      <Card className="portal-surface w-full max-w-md rounded-[12px] border-[#d9d2bd] py-2">
         <CardHeader className="text-center">
           <Link href="/" className="flex items-center justify-center gap-2 mb-4">
             <Building2 className="h-8 w-8" />
@@ -96,6 +99,7 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

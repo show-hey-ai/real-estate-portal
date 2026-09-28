@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Camera, Lock, ArrowRight } from 'lucide-react'
+import { Camera, House, ArrowRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -11,7 +11,7 @@ interface ExclusiveCtaProps {
   userId: string | null
 }
 
-export function ExclusiveCta({ listingId, userId }: ExclusiveCtaProps) {
+export function ExclusiveCta({ userId }: ExclusiveCtaProps) {
   const t = useTranslations('listing')
 
   const handleRequestPhotos = () => {
@@ -41,7 +41,7 @@ export function ExclusiveCta({ listingId, userId }: ExclusiveCtaProps) {
         </p>
         <div className="border-t pt-3 mt-2">
           <div className="flex items-center gap-2">
-            <Lock className="h-5 w-5 text-primary" />
+            <House className="h-5 w-5 text-primary" />
             <p className="font-semibold text-sm">{t('exclusiveTitle')}</p>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed mt-1">
@@ -49,7 +49,7 @@ export function ExclusiveCta({ listingId, userId }: ExclusiveCtaProps) {
           </p>
         </div>
         {!userId ? (
-          <Link href={`/register?redirect=/listings/${listingId}`}>
+          <Link href="/match">
             <Button variant="outline" size="sm" className="w-full mt-2 group">
               {t('registerForMore')}
               <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />

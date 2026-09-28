@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { Search } from 'lucide-react'
+import { ChevronDown, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getHospitalityPropertyTypeOptions } from '@/lib/hospitality-copy'
+import { getPortalHomeCopy, getPortalPropertyTypes } from '@/lib/portal-copy'
 import { cn } from '@/lib/utils'
 import {
   getStationsForLine,
@@ -31,33 +31,40 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
   const locale = useLocale()
   const [line, setLine] = useState('')
   const [station, setStation] = useState('')
-  const propertyTypes = getHospitalityPropertyTypeOptions(locale)
+  const propertyTypes = getPortalPropertyTypes(locale)
+  const copy = getPortalHomeCopy(locale)
 
   const stations = getStationsForLine(locationIndex, line)
 
   const fieldClassName = cn(
-    'rounded-[8px] border border-[#d6cdb8] bg-[#fffdf8] text-sm text-[#19231f] shadow-xs outline-none transition focus:border-[#2f6d58] focus:ring-2 focus:ring-[#2f6d58]/15',
+    'rounded-[4px] border border-[#cbd5df] bg-white text-sm text-[#1b293a] outline-none transition focus:border-[#274d7d] focus:ring-2 focus:ring-[#274d7d]/15',
     compact ? 'h-10 px-2 md:w-[150px]' : 'h-11 px-3 md:w-[160px]'
   )
 
   return (
-    <form action="/listings" method="get" className={compact ? 'space-y-2' : 'space-y-3'}>
+    <form data-testid="home-search-form" action="/listings" method="get" className={compact ? 'space-y-2' : 'space-y-4'}>
       <div className="flex flex-col md:flex-row gap-2">
         <input
           type="text"
           name="q"
           placeholder={t('search.keywordPlaceholder')}
           className={cn(
-            'flex-1 rounded-[8px] border border-[#d6cdb8] bg-[#fffdf8] text-[#19231f] shadow-xs outline-none transition placeholder:text-[#8a928d] focus:border-[#2f6d58] focus:ring-2 focus:ring-[#2f6d58]/15',
+            'flex-1 rounded-[4px] border border-[#cbd5df] bg-white text-[#1b293a] outline-none transition placeholder:text-[#8b98a6] focus:border-[#274d7d] focus:ring-2 focus:ring-[#274d7d]/15',
             compact ? 'h-10 px-3 text-sm' : 'h-11 px-4'
           )}
         />
-        <select name="type" className={cn(fieldClassName, compact ? 'md:w-32' : 'md:w-36')}>
-          <option value="">{t('search.allTypes')}</option>
-          {propertyTypes.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label}
+        <select name="ward" className={fieldClassName}>
+          <option value="">{t('search.allTokyo23Wards')}</option>
+          {locationIndex.wards.map((ward) => (
+            <option key={ward} value={ward}>
+              {translateCityName(ward, locale) || ward}
             </option>
+          ))}
+        </select>
+        <select name="category" aria-label={copy.categoryTitle} className={cn(fieldClassName, compact ? 'md:w-32' : 'md:w-36')}>
+          <option value="">{copy.categoryAll}</option>
+          {copy.categories.map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
           ))}
         </select>
         <select name="priceMax" className={cn(fieldClassName, compact ? 'md:w-28' : 'md:w-32')}>
@@ -71,18 +78,25 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
             </option>
           ))}
         </select>
+        <Button
+          type="submit"
+          size={compact ? 'default' : 'lg'}
+          className={cn(
+            'rounded-[4px] bg-[#274d7d] text-white hover:bg-[#18375f]',
+            compact ? 'h-10' : 'h-11'
+          )}
+        >
+          <Search className="mr-2 h-4 w-4" />
+          {t('search.search')}
+        </Button>
       </div>
-
-      <div className="flex flex-col md:flex-row md:flex-wrap gap-2">
-        <select name="ward" className={fieldClassName}>
-          <option value="">{t('search.allTokyo13Wards')}</option>
-          {locationIndex.wards.map((ward) => (
-            <option key={ward} value={ward}>
-              {translateCityName(ward, locale) || ward}
-            </option>
-          ))}
+      <details className="group">
+        <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-sm font-medium text-[#46698e] [&::-webkit-details-marker]:hidden">{copy.moreFilters}<ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></summary>
+        <div className="mt-4 flex flex-col gap-2 md:flex-row md:flex-wrap">
+        <select name="type" className={fieldClassName}>
+          <option value="">{t('search.allTypes')}</option>
+          {propertyTypes.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
         </select>
-
         <select
           name="line"
           value={line}
@@ -133,18 +147,8 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
           ))}
         </select>
 
-        <Button
-          type="submit"
-          size={compact ? 'default' : 'lg'}
-          className={cn(
-            'rounded-[8px] bg-[#2f6d58] text-white hover:bg-[#265746]',
-            compact ? 'h-10 md:ml-auto' : 'h-11 md:ml-auto'
-          )}
-        >
-          <Search className="mr-2 h-4 w-4" />
-          {t('search.search')}
-        </Button>
-      </div>
+        </div>
+      </details>
     </form>
   )
 }

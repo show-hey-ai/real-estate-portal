@@ -1,13 +1,16 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Suspense } from 'react'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { ArrowRight, SearchX } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/listing/listing-card'
 import { ListingFilters } from '@/components/listing/listing-filters'
 import { Pagination } from '@/components/common/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getHospitalityCategoryLabel, getHospitalityListingsCopy } from '@/lib/hospitality-copy'
+import { getPortalCategoryLabel, getPortalListingsCopy } from '@/lib/portal-copy'
+import { getMarketCategory, isMarketCategory, isPublicPropertyType, PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { matchesTransitFilters } from '@/lib/public-search'
 import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
 import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
@@ -63,12 +66,10 @@ export async function generateMetadata({
   const [params, locale] = await Promise.all([searchParams, getLocale()])
   const siteCopy = getSiteCopy(locale)
   const activeFilters = hasActiveSearchFilters(params)
-  const filterLabel = params.ward
+  const filterLabel = isMarketCategory(params.category) ? getPortalCategoryLabel(locale, params.category) : params.ward
     ? translateCityName(params.ward, locale) || params.ward
     : params.line
       ? translateRailwayLine(params.line, locale) || params.line
-      : params.category
-        ? getHospitalityCategoryLabel(params.category, locale) || params.category
       : params.type
         ? translatePropertyType(params.type, locale) || params.type
         : null
@@ -81,7 +82,7 @@ export async function generateMetadata({
     : siteCopy.listingsDescription
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: {
       canonical: absoluteUrl('/listings'),
@@ -120,6 +121,10 @@ interface ListingRow {
   }[] | null
   builtYear: number | null
   buildingArea: string | number | null
+  landArea: string | number | null
+  zoning: string | null
+  currentStatus: string | null
+  yieldGross: string | number | null
   viewCount: number | null
   publishedAt: string | null
   media: { url: string; category: string }[] | null
@@ -132,8 +137,9 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   const viewerPromise = getOptionalPublicViewer()
   const locationIndexPromise = getPublicSearchLocationIndex()
 
-  const page = Number(params.page) || 1
+  const page = Math.max(1, Number.parseInt(params.page || '1', 10) || 1)
   const perPage = 12
+  const category = isMarketCategory(params.category) ? params.category : null
 
   const selectFields = `
       id,
@@ -144,6 +150,10 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
       stations,
       builtYear,
       buildingArea,
+      landArea,
+      zoning,
+      currentStatus,
+      yieldGross,
       viewCount,
       publishedAt,
       media (url, category)
@@ -155,30 +165,30 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
     .select(selectFields, { count: 'exact' })
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
+    .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
+    .is('hospitalityCategory', null)
 
   // Apply filters
-  if (params.q) {
-    query = query.or(`addressPublic.ilike.%${params.q}%,city.ilike.%${params.q}%`)
+  const safeKeyword = params.q?.replace(/[^\p{L}\p{N}\s\-]/gu, '').trim().slice(0, 80)
+  if (safeKeyword) {
+    query = query.or(`addressPublic.ilike.%${safeKeyword}%,city.ilike.%${safeKeyword}%`)
   }
-  if (params.type) {
+  if (isPublicPropertyType(params.type)) {
     query = query.eq('propertyType', params.type)
-  }
-  if (params.category) {
-    query = query.eq('hospitalityCategory', params.category)
   }
   if (params.ward) {
     query = query.eq('city', params.ward)
   } else if (params.prefecture) {
     query = query.eq('prefecture', params.prefecture)
   }
-  if (params.priceMin) {
+  if (params.priceMin && /^\d{1,12}$/u.test(params.priceMin)) {
     query = query.gte('price', params.priceMin)
   }
-  if (params.priceMax) {
+  if (params.priceMax && /^\d{1,12}$/u.test(params.priceMax)) {
     query = query.lte('price', params.priceMax)
   }
-  if (params.areaMin) {
-    query = query.gte('buildingArea', params.areaMin)
+  if (params.areaMin && /^\d{1,6}$/u.test(params.areaMin) && (isPublicPropertyType(params.type) || category === 'land')) {
+    query = query.gte(params.type === '土地' || category === 'land' ? 'landArea' : 'buildingArea', params.areaMin)
   }
 
   // Apply sorting
@@ -199,12 +209,22 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   let listings: ListingRow[] = []
   let total = 0
 
-  const requiresManualFiltering = Boolean(params.walkMax || params.line || params.station)
+  const requiresManualFiltering = Boolean(category || params.walkMax || params.line || params.station || (params.areaMin && !params.type))
 
   if (requiresManualFiltering) {
-    const { data } = await query
+    const candidates: ListingRow[] = []
+    const batchSize = 500
+    for (let start = 0; ; start += batchSize) {
+      const { data, error } = await query.range(start, start + batchSize - 1)
+      if (error) { console.error('Failed to load filtered listings:', error); break }
+      candidates.push(...(data || []))
+      if (!data || data.length < batchSize) break
+    }
     const maxWalk = params.walkMax ? Number(params.walkMax) : null
-    const filteredListings = (data || []).filter((listing) => {
+    const minArea = params.areaMin ? Number(params.areaMin) : null
+    const filteredListings = candidates.filter((listing) => {
+      if (category && getMarketCategory(listing) !== category) return false
+      if (minArea && Number(listing.propertyType === '土地' ? listing.landArea : listing.buildingArea) < minArea) return false
       const stations = listing.stations as {
         name?: string | null
         line?: string | null
@@ -241,11 +261,13 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
     ...listing,
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
+    landArea: listing.landArea ? Number(listing.landArea) : null,
+    yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
     media: listing.media || [],
   }))
 
   const [locationIndex, viewer] = await Promise.all([locationIndexPromise, viewerPromise])
-  const copy = getHospitalityListingsCopy(locale)
+  const copy = getPortalListingsCopy(locale)
   const userId = viewer?.id ?? null
   const favoriteIds = viewer
     ? await getFavoriteIdsForViewer(
@@ -275,38 +297,25 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
   }
 
   return (
-    <div className="bg-[#f7f5ed]">
+    <div data-testid="listings-page" className="bg-white text-[#1b293a]">
       <JsonLd data={itemListJsonLd} />
-      <section className="border-b border-[#ded6c4] bg-[#10231e] py-10 text-white md:py-14">
+      <section className="border-b border-[#dbe2e9] bg-[#f5f7f9] py-12 md:py-16">
         <div className="container">
           <div className="max-w-4xl">
-            <h1 className="text-4xl font-semibold tracking-normal md:text-5xl">
+            <p className="mb-4 text-xs font-bold tracking-[0.18em] text-[#57769b] uppercase">ZIYOU / PROPERTIES</p>
+            <h1 className="text-4xl font-medium tracking-tight md:text-5xl">
               {copy.title}
             </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-white/70 md:text-base">
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-[#657487] md:text-base">
               {copy.intro}
             </p>
-          </div>
-          <div className="mt-7 flex flex-wrap gap-2 text-xs text-white/75">
-            <span className="rounded-[6px] border border-white/15 bg-white/[0.08] px-3 py-1.5">
-              Hotel / Ryokan
-            </span>
-            <span className="rounded-[6px] border border-white/15 bg-white/[0.08] px-3 py-1.5">
-              Minpaku-ready
-            </span>
-            <span className="rounded-[6px] border border-white/15 bg-white/[0.08] px-3 py-1.5">
-              Conversion candidate
-            </span>
-            <span className="rounded-[6px] border border-white/15 bg-white/[0.08] px-3 py-1.5">
-              Development land
-            </span>
           </div>
         </div>
       </section>
 
       <div className="container py-8 md:py-10">
         <div className="grid gap-8 lg:grid-cols-4">
-          <aside className="lg:col-span-1">
+          <aside data-testid="listing-filters" className="lg:col-span-1">
             <div className="lg:sticky lg:top-20">
               <Suspense fallback={<Skeleton className="h-96 rounded-[8px]" />}>
                 <ListingFilters locationIndex={locationIndex} />
@@ -314,27 +323,41 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
             </div>
           </aside>
 
-          <div className="lg:col-span-3">
+          <div data-testid="listings-results" className="lg:col-span-3">
             <div className="mb-5 flex items-center justify-between">
-              <p className="text-sm font-medium text-[#5f6b65]">
+              <p className="text-sm font-medium text-[#657487]">
                 {copy.resultPrefix}: {t('search.resultsCount', { count: total })}
               </p>
             </div>
 
             {formattedListings.length > 0 ? (
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {formattedListings.map((listing) => (
+                {formattedListings.map((listing, index) => (
                   <ListingCard
                     key={listing.id}
                     listing={listing}
                     isFavorite={favoriteIds.has(listing.id)}
                     userId={userId}
+                    imagePriority={index === 0}
                   />
                 ))}
               </div>
             ) : (
-              <div className="rounded-[8px] border border-[#d9d2bd] bg-[#fffdf8] py-12 text-center text-[#647069]">
-                {t('search.noResults')}
+              <div data-testid="listings-empty-state" className="border-y border-[#dbe2e9] bg-white px-6 py-16 text-center text-[#657487]">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center bg-[#e9f0f7] text-[#274d7d]">
+                  <SearchX className="h-5 w-5" />
+                </div>
+                <h2 className="mt-5 text-lg font-medium text-[#1b293a]">{copy.emptyTitle}</h2>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6">{copy.emptyDescription}</p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                  <Link href="/listings" className="inline-flex h-10 items-center gap-2 rounded-[4px] border border-[#cbd5df] px-4 text-sm font-semibold text-[#1b293a] transition-colors hover:bg-[#f5f7f9]">
+                    {t('search.clearFilters')}
+                  </Link>
+                  <Link href={category ? `/match?purpose=${category}` : '/match'} className="inline-flex h-10 items-center gap-2 rounded-[4px] bg-[#274d7d] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#18375f]">
+                    {copy.emptyCta}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
             )}
 

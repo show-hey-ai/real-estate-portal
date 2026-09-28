@@ -1,0 +1,178 @@
+import { defaultLocale, locales, type Locale } from '@/i18n/config'
+import type { MarketCategory } from '@/lib/market-category'
+
+function normalizeLocale(locale: string | null | undefined): Locale {
+  return locale && locales.includes(locale as Locale) ? locale as Locale : defaultLocale
+}
+
+const portalCopy = {
+  ja: {
+    eyebrow: '東京の不動産を、目的から探す',
+    heroTitle: '東京の物件を、目的から探す。',
+    heroDescription: '投資用、居住用、土地。自由不動産は、目的に合う東京の物件探しと購入を、日本語・英語・中国語でお手伝いします。',
+    browse: '物件を探す',
+    consult: '購入条件を相談する',
+    searchTitle: '東京の売買物件を探す',
+    searchDescription: '目的、エリア、価格から公開中の物件を探せます。',
+    categoryTitle: '目的から探す',
+    categoryAll: 'すべての目的',
+    categories: [
+      ['investment', '投資用', '一棟収益物件、賃貸中の区分、事業用物件。'],
+      ['residential', '居住用', '自宅として住むマンションや戸建て。'],
+      ['land', '土地', '住宅・事業の計画に合わせて選ぶ土地。'],
+    ],
+    moreFilters: '路線・駅・広さなどで絞る',
+    imageNote: 'イメージ画像',
+    trust: ['東京の宅建業者', '日本語・英語・中国語', '目的に合う物件をご提案'],
+    availableTitle: '公開中の物件',
+    availableDescription: '掲載可能な物件を随時追加します。目的に合う物件がない場合も、条件をお送りください。',
+    emptyTitle: '現在、公開中の物件はありません',
+    emptyDescription: 'エリア、予算、購入時期を教えてください。公開物件以外も含め、紹介可能な候補を確認します。',
+    stepsTitle: '購入までの進め方',
+    steps: [
+      ['01', '希望条件を整理', '購入目的、エリア、予算、時期を確認します。'],
+      ['02', '候補を比較', '立地、建物、収益性や土地条件を目的に合わせて確認します。'],
+      ['03', '購入手続きを進める', '重要事項、契約条件、決済まで日本側で調整します。'],
+    ],
+    matchTitle: '条件がまだ決まっていなくても大丈夫です',
+    matchDescription: '投資用・居住用・土地の希望、エリア、予算、購入時期を整理して送れます。',
+    matchCta: '購入条件を整理する',
+    contactTitle: 'まずは希望を聞かせてください',
+    contactDescription: '掲載物件がなくても、投資・居住・土地の目的と予算からご相談いただけます。',
+    guideTitle: '東京の不動産購入ガイド',
+    guideDescription: '物件探し、費用、契約の流れを短くまとめました。',
+    guideCta: '購入ガイドを読む',
+  },
+  en: {
+    eyebrow: 'Find Tokyo property by purpose',
+    heroTitle: 'Find the right property in Tokyo.',
+    heroDescription: 'Investment property, a place to live, or land. Ziyou Real Estate helps you search and buy in Tokyo in Japanese, English, or Chinese.',
+    browse: 'Browse properties',
+    consult: 'Discuss my criteria',
+    searchTitle: 'Search Tokyo properties',
+    searchDescription: 'Browse available properties by purpose, area, and price.',
+    categoryTitle: 'Explore by purpose',
+    categoryAll: 'All purposes',
+    categories: [
+      ['investment', 'Investment', 'Income buildings, tenanted units, and commercial property.'],
+      ['residential', 'Residential', 'Condominiums and houses to live in.'],
+      ['land', 'Land', 'Sites for residential or business plans.'],
+    ],
+    moreFilters: 'More filters: train, walk, size',
+    imageNote: 'Illustrative image',
+    trust: ['Tokyo-licensed brokerage', 'Japanese, English & Chinese', 'Search based on your purpose'],
+    availableTitle: 'Properties for sale',
+    availableDescription: 'We add properties we are able to advertise. Send us your criteria if you do not see a suitable property.',
+    emptyTitle: 'No properties are currently published',
+    emptyDescription: 'Tell us your preferred area, budget, and timing. We can check other properties that may fit.',
+    stepsTitle: 'Your path to purchase',
+    steps: [
+      ['01', 'Set your criteria', 'Tell us your purpose, area, budget, and timing.'],
+      ['02', 'Compare candidates', 'Review location, building, income, or land conditions as relevant.'],
+      ['03', 'Complete the purchase', 'We coordinate property checks, contract terms, and closing in Japan.'],
+    ],
+    matchTitle: 'Still working out what you need?',
+    matchDescription: 'Share whether you seek an investment, a home, or land, with your area, budget, and timing.',
+    matchCta: 'Plan my property search',
+    contactTitle: 'Tell us what you are looking for',
+    contactDescription: 'You can ask us about investment, residential property, or land before a matching listing appears here.',
+    guideTitle: 'Buying property in Tokyo',
+    guideDescription: 'A short guide to the search, costs, and purchase process.',
+    guideCta: 'Read the buying guide',
+  },
+  'zh-TW': {
+    eyebrow: '依目的尋找東京不動產',
+    heroTitle: '在東京，找到適合的物件。',
+    heroDescription: '投資用、居住用或土地。自由不動產以日語、英語和中文協助您在東京尋找並購買物件。',
+    browse: '尋找物件',
+    consult: '諮詢購屋條件',
+    searchTitle: '搜尋東京待售物件',
+    searchDescription: '依目的、地區與價格查看公開中的物件。',
+    categoryTitle: '依目的尋找',
+    categoryAll: '所有用途',
+    categories: [
+      ['investment', '投資用', '整棟收益物件、出租中的單位與商業物件。'],
+      ['residential', '居住用', '自住公寓與獨棟住宅。'],
+      ['land', '土地', '適合住宅或事業規劃的土地。'],
+    ],
+    moreFilters: '更多條件：路線、車站、面積',
+    imageNote: '示意圖片',
+    trust: ['東京都持牌房地產仲介', '日語・英語・中文', '依目的尋找物件'],
+    availableTitle: '公開中的物件',
+    availableDescription: '我們會持續加入可公開刊登的物件。若暫時沒有合適物件，也歡迎傳送您的需求。',
+    emptyTitle: '目前沒有公開中的物件',
+    emptyDescription: '請告訴我們希望地區、預算與購買時間，我們可以另外確認符合條件的候選物件。',
+    stepsTitle: '購屋流程',
+    steps: [
+      ['01', '整理需求', '確認購買目的、地區、預算與時間。'],
+      ['02', '比較物件', '依目的檢視地點、建物、收益或土地條件。'],
+      ['03', '完成買賣', '協調物件確認、契約條件與日本的交屋程序。'],
+    ],
+    matchTitle: '還在整理購屋條件嗎？',
+    matchDescription: '整理投資用、居住用或土地的需求，以及地區、預算與購買時間。',
+    matchCta: '整理購屋條件',
+    contactTitle: '告訴我們您想找的物件',
+    contactDescription: '即使目前沒有符合條件的公開物件，也可以先諮詢投資、居住或土地購買。',
+    guideTitle: '東京不動產購買指南',
+    guideDescription: '簡要說明找房、費用與簽約流程。',
+    guideCta: '閱讀購屋指南',
+  },
+  'zh-CN': {
+    eyebrow: '按目的寻找东京房产',
+    heroTitle: '在东京，找到合适的房产。',
+    heroDescription: '投资用、居住用或土地。自由不动产以日语、英语和中文协助您在东京寻找并购买房产。',
+    browse: '寻找房产',
+    consult: '咨询购房条件',
+    searchTitle: '搜索东京待售房产',
+    searchDescription: '按目的、地区和价格查看公开中的房产。',
+    categoryTitle: '按目的寻找',
+    categoryAll: '所有用途',
+    categories: [
+      ['investment', '投资用', '整栋收益物业、出租中的单元及商业物业。'],
+      ['residential', '居住用', '自住公寓与独栋住宅。'],
+      ['land', '土地', '适合住宅或事业规划的土地。'],
+    ],
+    moreFilters: '更多条件：线路、车站、面积',
+    imageNote: '示意图片',
+    trust: ['东京都持牌房地产中介', '日语・英语・中文', '按目的寻找房源'],
+    availableTitle: '公开中的房产',
+    availableDescription: '我们会持续加入可公开刊登的房源。如果暂时没有合适房产，也欢迎发送您的需求。',
+    emptyTitle: '目前没有公开中的房产',
+    emptyDescription: '请告诉我们意向地区、预算和购买时间，我们可以另外确认符合条件的候选房源。',
+    stepsTitle: '购房流程',
+    steps: [
+      ['01', '整理需求', '确认购买目的、地区、预算与时间。'],
+      ['02', '比较房源', '按目的查看位置、建筑、收益或土地条件。'],
+      ['03', '完成买卖', '协调房源核查、合同条件和日本的交房手续。'],
+    ],
+    matchTitle: '还在整理购房条件吗？',
+    matchDescription: '整理投资用、居住用或土地的需求，以及地区、预算与购买时间。',
+    matchCta: '整理购房条件',
+    contactTitle: '告诉我们您想找的房产',
+    contactDescription: '即使目前没有符合条件的公开房源，也可以先咨询投资、居住或土地购买。',
+    guideTitle: '东京房产购买指南',
+    guideDescription: '简要介绍找房、费用和签约流程。',
+    guideCta: '阅读购房指南',
+  },
+} as const
+
+const listingsCopy = {
+  ja: { title: '東京の売買物件を探す', intro: '投資用・居住用・土地から目的に合う物件を探せます。公開中の候補がない場合も、希望条件からご相談いただけます。', filtersTitle: '検索条件', filtersDescription: '目的・エリア・価格などで絞り込み', resultPrefix: '公開物件', emptyTitle: '条件に合う物件が見つかりません', emptyDescription: '条件を広げるか、希望条件をお送りください。紹介可能な候補を確認します。', emptyCta: '希望条件を送る' },
+  en: { title: 'Tokyo properties for sale', intro: 'Explore investment, residential, and land listings. If no published property fits, share your criteria and we can search with you.', filtersTitle: 'Search criteria', filtersDescription: 'Filter by purpose, area, price, and size', resultPrefix: 'Published properties', emptyTitle: 'No properties match this search', emptyDescription: 'Broaden your filters or send us your criteria so we can check other candidates.', emptyCta: 'Send your criteria' },
+  'zh-TW': { title: '搜尋東京待售物件', intro: '依投資用、居住用或土地搜尋物件。若沒有合適的公開物件，也可以傳送需求。', filtersTitle: '搜尋條件', filtersDescription: '依目的、地區、價格與面積篩選', resultPrefix: '公開物件', emptyTitle: '找不到符合條件的物件', emptyDescription: '可以放寬條件，或告訴我們您的需求，以便確認其他候選物件。', emptyCta: '傳送購買條件' },
+  'zh-CN': { title: '搜索东京待售房产', intro: '按投资用、居住用或土地搜索房产。如没有合适的公开房源，也可以发送需求。', filtersTitle: '搜索条件', filtersDescription: '按目的、地区、价格和面积筛选', resultPrefix: '公开房源', emptyTitle: '没有符合条件的房产', emptyDescription: '可以放宽条件，或告诉我们您的需求，以便确认其他候选房源。', emptyCta: '发送购买条件' },
+} as const
+
+const propertyTypes = {
+  ja: [{ value: '区分マンション', label: '区分マンション' }, { value: '戸建', label: '戸建て' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '一棟マンション' }, { value: '一棟アパート', label: '一棟アパート' }, { value: '一棟ビル', label: '一棟ビル' }, { value: '店舗・事務所', label: '店舗・事務所' }],
+  en: [{ value: '区分マンション', label: 'Condominium' }, { value: '戸建', label: 'House' }, { value: '土地', label: 'Land' }, { value: '一棟マンション', label: 'Apartment building' }, { value: '一棟アパート', label: 'Rental apartment building' }, { value: '一棟ビル', label: 'Commercial building' }, { value: '店舗・事務所', label: 'Commercial / office unit' }],
+  'zh-TW': [{ value: '区分マンション', label: '區分公寓' }, { value: '戸建', label: '獨棟住宅' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '整棟公寓' }, { value: '一棟アパート', label: '整棟出租公寓' }, { value: '一棟ビル', label: '整棟商業大樓' }, { value: '店舗・事務所', label: '店鋪・辦公室' }],
+  'zh-CN': [{ value: '区分マンション', label: '区分公寓' }, { value: '戸建', label: '独栋住宅' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '整栋公寓' }, { value: '一棟アパート', label: '整栋出租公寓' }, { value: '一棟ビル', label: '整栋商业楼' }, { value: '店舗・事務所', label: '商铺・办公室' }],
+} as const
+
+export function getPortalHomeCopy(locale: string) { return portalCopy[normalizeLocale(locale)] }
+export function getPortalListingsCopy(locale: string) { return listingsCopy[normalizeLocale(locale)] }
+export function getPortalPropertyTypes(locale: string) { return propertyTypes[normalizeLocale(locale)] }
+export function getPortalCategoryLabel(locale: string, category: MarketCategory): string {
+  return getPortalHomeCopy(locale).categories.find(([value]) => value === category)?.[1] || category
+}

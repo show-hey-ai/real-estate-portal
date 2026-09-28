@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
-import { guideArticles } from '@/content/guides'
 import { absoluteUrl } from '@/lib/site-config'
+import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 
 function getLatestDate(values: Array<string | Date | null | undefined>) {
   const timestamps = values
@@ -16,35 +16,23 @@ function getLatestDate(values: Array<string | Date | null | undefined>) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const latestGuideModifiedAt = getLatestDate(
-    guideArticles.flatMap((article) => [article.publishedAt, article.updatedAt])
-  )
+  const portalLaunchAt = new Date('2026-09-29T00:00:00+09:00')
 
   const staticEntries: MetadataRoute.Sitemap = [
     {
       url: absoluteUrl('/'),
-      lastModified: latestGuideModifiedAt,
+      lastModified: portalLaunchAt,
       changeFrequency: 'daily',
       priority: 1,
     },
     {
       url: absoluteUrl('/listings'),
-      lastModified: latestGuideModifiedAt,
+      lastModified: portalLaunchAt,
       changeFrequency: 'daily',
       priority: 0.9,
     },
-    {
-      url: absoluteUrl('/guides'),
-      lastModified: latestGuideModifiedAt,
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    ...guideArticles.map((article) => ({
-      url: absoluteUrl(`/guides/${article.slug}`),
-      lastModified: article.updatedAt || article.publishedAt,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    })),
+    { url: absoluteUrl('/buying-guide'), lastModified: new Date('2026-09-29T00:00:00+09:00'), changeFrequency: 'monthly', priority: 0.85 },
+    { url: absoluteUrl('/match'), lastModified: new Date('2026-09-29T00:00:00+09:00'), changeFrequency: 'monthly', priority: 0.8 },
   ]
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -60,6 +48,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select('id, updatedAt, publishedAt')
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
+    .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
+    .is('hospitalityCategory', null)
     .order('updatedAt', { ascending: false })
 
   if (error) {
@@ -70,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latestListingModifiedAt = getLatestDate(
     (data || []).flatMap((listing) => [listing.updatedAt, listing.publishedAt])
   )
-  const staticLastModified = getLatestDate([latestGuideModifiedAt, latestListingModifiedAt])
+  const staticLastModified = getLatestDate([portalLaunchAt, latestListingModifiedAt])
   const adjustedStaticEntries = staticEntries.map((entry) => ({
     ...entry,
     lastModified: staticLastModified,

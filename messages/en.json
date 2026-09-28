@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Ziyou Hospitality",
+    "appName": "Ziyou Real Estate",
     "login": "Login",
     "logout": "Logout",
     "register": "Register",
@@ -17,16 +17,17 @@
     "loading": "Loading...",
     "error": "An error occurred",
     "success": "Success",
-    "copyright": "© {year} Ziyou Hospitality. All rights reserved.",
+    "copyright": "© {year} Ziyou Real Estate. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "contact": "Contact"
   },
   "nav": {
-    "listings": "Hospitality Assets",
-    "guides": "Guides",
+    "listings": "Homes for Sale",
+    "guides": "Buying Guide",
     "favorites": "Favorites",
-    "admin": "Admin"
+    "admin": "Admin",
+    "match": "Plan My Search"
   },
   "listing": {
     "price": "Price",
@@ -55,18 +56,18 @@
     "error": "An error occurred",
     "addressPrivacyNote": "Address shown to district level for privacy. Contact us for details",
     "morePhotosTitle": "Want more photos?",
-    "morePhotosDesc": "We can provide additional photos including interior, common areas, and neighborhood views. Feel free to inquire.",
-    "exclusiveTitle": "Off-market properties",
-    "exclusiveDesc": "We have many unlisted properties not shown on this site. Tell us your preferred area and budget, and we'll introduce matching off-market opportunities.",
-    "registerForMore": "Register free to see off-market listings",
+    "morePhotosDesc": "Ask us to check whether additional photos are available for this property.",
+    "exclusiveTitle": "Search for property with us",
+    "exclusiveDesc": "Tell us your area, budget, and timing. We can check properties that may fit.",
+    "registerForMore": "Plan my home search",
     "requestPhotos": "Request more photos",
     "morePhotosMessage": "I would like to see additional photos of this property (interior, common areas, neighborhood).",
     "types": {
-      "mansion": "Unit / operation review",
+      "mansion": "Condominium",
       "building": "Whole building / lodging conversion",
       "apartment": "Apartment building / minpaku candidate",
-      "house": "House / small lodging candidate",
-      "land": "Hotel development land",
+      "house": "House",
+      "land": "Residential land",
       "commercial": "Commercial / conversion candidate",
       "other": "Other"
     },
@@ -81,7 +82,7 @@
   },
   "search": {
     "keyword": "Keyword",
-    "keywordPlaceholder": "Area, station, hotel, ryokan, minpaku...",
+    "keywordPlaceholder": "Area, station, or keyword",
     "priceMin": "Min Price",
     "priceMax": "Max Price",
     "priceRange": "Price Range",
@@ -90,9 +91,8 @@
     "search": "Search",
     "area": "Area",
     "station": "Station",
-    "allTypes": "All Asset Forms",
+    "allTypes": "All home types",
     "allAreas": "All Areas",
-    "allTokyo13Wards": "All Tokyo 13 Wards",
     "filter": "Filter",
     "sort": "Sort by",
     "sortNewest": "Newest",
@@ -117,7 +117,8 @@
     "prefecture": "Prefecture",
     "allPrefectures": "All Japan",
     "line": "Train Line",
-    "allLines": "All Lines"
+    "allLines": "All Lines",
+    "allTokyo23Wards": "All 23 Tokyo wards"
   },
   "inquiry": {
     "title": "Ask about this property",
@@ -151,7 +152,15 @@
     "hasAccount": "Already have an account?",
     "loginRequired": "Login required to use this feature",
     "passwordMismatch": "Passwords do not match",
-    "registrationSuccess": "Registration complete. Please check your email."
+    "registrationSuccess": "Registration complete. Please check your email.",
+    "brandEyebrow": "Tokyo home buying",
+    "brandTitle": "Find a property that fits.",
+    "brandDescription": "Save homes and organize your criteria while planning a Tokyo purchase.",
+    "brandBenefits": {
+      "checks": "Buying Guide",
+      "sourcing": "Homes for Sale",
+      "focus": "Plan My Search"
+    }
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -247,7 +256,8 @@
         "pageviews7d": "Pageviews (7d)",
         "uniqueVisitors7d": "Unique visitors (7d)",
         "listingViews7d": "Listing detail views (7d)",
-        "leads7d": "Leads (7d)"
+        "leads7d": "Leads (7d)",
+        "contactClicks7d": "WhatsApp opens (7d)"
       },
       "sections": {
         "dailyTrend": "Daily trend",
@@ -269,6 +279,7 @@
       "unknownListing": "Listing details unavailable",
       "pageTypes": {
         "home": "Home",
+        "youtubeLanding": "YouTube landing",
         "listingIndex": "Listings",
         "listingDetail": "Listing detail",
         "favorites": "Favorites",
@@ -286,10 +297,10 @@
   "home": {
     "heroTitle": "For foreign investors starting a hospitality business in Japan.",
     "heroTitleLine2": "From property acquisition to opening — we handle it all.",
-    "heroDescription": "Ziyou Hospitality is a licensed Tokyo brokerage that helps foreign investors find, acquire, and open hotel, ryokan, and minpaku-ready properties in Japan. Browse public listings or send us your target criteria for matching introductions.",
+    "heroDescription": "Explore and buy a home in Tokyo with support in Japanese, English, and Chinese.",
     "welcomeBack": "Welcome back",
     "welcomeBackDesc": "Check out the latest properties",
-    "viewListings": "View Listings",
+    "viewListings": "Homes for Sale",
     "features": "Three Strengths Built for Hospitality Property",
     "featuresDesc": "When a foreign investor wants to open a hotel, ryokan, or minpaku in Japan, what does it actually take? We don't stop at listing properties — we help all the way to opening day.",
     "feature1Title": "Hospitality Property Sourcing",

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Ziyou Hospitality",
+    "appName": "自由不動産",
     "login": "ログイン",
     "logout": "ログアウト",
     "register": "新規登録",
@@ -17,16 +17,17 @@
     "loading": "読み込み中...",
     "error": "エラーが発生しました",
     "success": "成功しました",
-    "copyright": "© {year} Ziyou Hospitality. All rights reserved.",
+    "copyright": "© {year} 自由不動産. All rights reserved.",
     "privacyPolicy": "プライバシーポリシー",
     "termsOfService": "利用規約",
     "contact": "お問い合わせ"
   },
   "nav": {
-    "listings": "宿泊業物件",
-    "guides": "ガイド",
+    "listings": "物件を探す",
+    "guides": "購入ガイド",
     "favorites": "お気に入り",
-    "admin": "管理画面"
+    "admin": "管理画面",
+    "match": "購入相談"
   },
   "listing": {
     "price": "価格",
@@ -55,19 +56,19 @@
     "error": "エラーが発生しました",
     "addressPrivacyNote": "プライバシー保護のため丁目まで表示。詳細はお問い合わせください",
     "morePhotosTitle": "もっと写真を見たい方へ",
-    "morePhotosDesc": "室内写真・周辺環境・共用部など、掲載していない写真をお送りできます。お気軽にお問い合わせください。",
-    "exclusiveTitle": "未公開物件のご紹介",
-    "exclusiveDesc": "サイト未掲載の物件も多数ございます。ご希望のエリア・予算をお伝えいただければ、条件に合う未公開物件をご紹介いたします。",
-    "registerForMore": "無料登録して未公開物件を見る",
+    "morePhotosDesc": "追加でご案内できる写真があるか確認します。お気軽にお問い合わせください。",
+    "exclusiveTitle": "購入条件から物件を探す",
+    "exclusiveDesc": "希望エリア・予算・時期を教えてください。紹介可能な物件を確認します。",
+    "registerForMore": "購入条件を整理する",
     "requestPhotos": "追加写真をリクエスト",
     "morePhotosMessage": "この物件の追加写真（室内・共用部・周辺環境）を希望します。",
     "types": {
-      "mansion": "区分・運用検討",
-      "building": "一棟ビル・簡易宿所候補",
-      "apartment": "一棟アパート・民泊候補",
-      "house": "戸建・小規模宿泊候補",
-      "land": "ホテル開発用地",
-      "commercial": "店舗/事務所・転用候補",
+      "mansion": "マンション",
+      "building": "一棟ビル",
+      "apartment": "一棟アパート",
+      "house": "戸建て",
+      "land": "土地",
+      "commercial": "店舗・事務所",
       "other": "その他"
     },
     "structures": {
@@ -81,7 +82,7 @@
   },
   "search": {
     "keyword": "キーワード",
-    "keywordPlaceholder": "エリア、駅名、ホテル、旅館、民泊...",
+    "keywordPlaceholder": "エリア、駅名など",
     "priceMin": "価格下限",
     "priceMax": "価格上限",
     "priceRange": "価格帯",
@@ -90,9 +91,8 @@
     "search": "検索",
     "area": "エリア",
     "station": "駅",
-    "allTypes": "すべての宿泊用途候補",
+    "allTypes": "すべての物件",
     "allAreas": "すべてのエリア",
-    "allTokyo13Wards": "都心13区すべて",
     "filter": "絞り込み",
     "sort": "並び替え",
     "sortNewest": "新着順",
@@ -117,7 +117,8 @@
     "prefecture": "都道府県",
     "allPrefectures": "全国",
     "line": "路線",
-    "allLines": "すべての路線"
+    "allLines": "すべての路線",
+    "allTokyo23Wards": "東京23区すべて"
   },
   "inquiry": {
     "title": "この物件について相談",
@@ -151,7 +152,15 @@
     "hasAccount": "すでにアカウントをお持ちの方",
     "loginRequired": "この機能を利用するにはログインが必要です",
     "passwordMismatch": "パスワードが一致しません",
-    "registrationSuccess": "登録が完了しました。メールを確認してください。"
+    "registrationSuccess": "登録が完了しました。メールを確認してください。",
+    "brandEyebrow": "東京の不動産購入",
+    "brandTitle": "目的に合う物件を探す。",
+    "brandDescription": "候補を保存し、希望条件を整理しながら、東京での不動産購入を進められます。",
+    "brandBenefits": {
+      "checks": "購入ガイド",
+      "sourcing": "物件を探す",
+      "focus": "購入相談"
+    }
   },
   "admin": {
     "dashboard": "ダッシュボード",
@@ -247,7 +256,8 @@
         "pageviews7d": "直近7日PV",
         "uniqueVisitors7d": "直近7日ユニーク訪問",
         "listingViews7d": "直近7日物件詳細PV",
-        "leads7d": "直近7日リード"
+        "leads7d": "直近7日リード",
+        "contactClicks7d": "WhatsAppを開いた回数（直近7日）"
       },
       "sections": {
         "dailyTrend": "日別トレンド",
@@ -269,6 +279,7 @@
       "unknownListing": "物件情報なし",
       "pageTypes": {
         "home": "ホーム",
+        "youtubeLanding": "YouTube入口",
         "listingIndex": "物件一覧",
         "listingDetail": "物件詳細",
         "favorites": "お気に入り",
@@ -286,10 +297,10 @@
   "home": {
     "heroTitle": "日本で宿泊事業を始めたい外国人投資家へ。",
     "heroTitleLine2": "物件購入から開業まで、まとめて支援します",
-    "heroDescription": "Ziyou Hospitalityは、外国人投資家向けに日本のホテル・旅館・民泊向け物件を探し、紹介し、取得まで支援する東京の宅建業者です。公開物件に加えて、希望条件に合う未公開候補も紹介します。",
+    "heroDescription": "東京で投資用・居住用・土地を探す方の物件探しと売買を、日本語・英語・中国語でお手伝いします。",
     "welcomeBack": "おかえりなさい",
     "welcomeBackDesc": "新着物件をチェックしましょう",
-    "viewListings": "物件一覧を見る",
+    "viewListings": "物件を探す",
     "features": "宿泊事業に特化した3つの強み",
     "featuresDesc": "外国人投資家が日本でホテル・旅館・民泊を始める時、何が必要か。表面的な物件紹介ではなく、開業まで見据えた実務支援をご提供します。",
     "feature1Title": "宿泊業向け物件紹介",

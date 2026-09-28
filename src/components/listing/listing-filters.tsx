@@ -15,11 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  getHospitalityCategoryOptions,
-  getHospitalityListingsCopy,
-  getHospitalityPropertyTypeOptions,
-} from '@/lib/hospitality-copy'
+import { getPortalHomeCopy, getPortalListingsCopy, getPortalPropertyTypes } from '@/lib/portal-copy'
 import {
   getStationsForLine,
   normalizeRailwayLine,
@@ -42,23 +38,9 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
   const locale = useLocale()
   const t = useTranslations('search')
   const tListing = useTranslations('listing')
-  const copy = getHospitalityListingsCopy(locale)
-  const propertyTypes = getHospitalityPropertyTypeOptions(locale)
-  const hospitalityCategories = getHospitalityCategoryOptions(locale)
-  const categoryFilterLabels: Record<string, string> = {
-    ja: '宿泊事業カテゴリ',
-    en: 'Hospitality category',
-    'zh-TW': '住宿業類別',
-    'zh-CN': '住宿业类别',
-  }
-  const categoryAllLabels: Record<string, string> = {
-    ja: '全カテゴリ',
-    en: 'All categories',
-    'zh-TW': '全部類別',
-    'zh-CN': '全部类别',
-  }
-  const categoryFilterLabel = categoryFilterLabels[locale] ?? categoryFilterLabels.en
-  const categoryAllLabel = categoryAllLabels[locale] ?? categoryAllLabels.en
+  const copy = getPortalListingsCopy(locale)
+  const homeCopy = getPortalHomeCopy(locale)
+  const propertyTypes = getPortalPropertyTypes(locale)
 
   const walkMinutesOptions = [
     { value: '5', labelKey: 'walkMinutes5' },
@@ -120,7 +102,7 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
   }
 
   return (
-    <Card className="rounded-[8px] border-[#d9d2bd] bg-[#fffdf8] shadow-sm">
+    <Card className="rounded-[4px] border-[#dbe2e9] bg-white shadow-none">
       <CardHeader className="pb-3">
         <button
           type="button"
@@ -141,6 +123,19 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
         </p>
       </CardHeader>
       <CardContent className={`space-y-4 ${!isExpanded ? 'hidden md:block' : ''}`}>
+        <div className="space-y-2">
+          <Label>{homeCopy.categoryTitle}</Label>
+          <Select
+            value={searchParams.get('category') || 'all'}
+            onValueChange={(value) => updateFilters({ category: value === 'all' ? '' : value })}
+          >
+            <SelectTrigger><SelectValue placeholder={homeCopy.categoryAll} /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{homeCopy.categoryAll}</SelectItem>
+              {homeCopy.categories.map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
         <form onSubmit={handleSearch}>
           <div className="flex gap-2">
             <Input
@@ -154,26 +149,6 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
             </Button>
           </div>
         </form>
-
-        <div className="space-y-2">
-          <Label>{categoryFilterLabel}</Label>
-          <Select
-            value={searchParams.get('category') || 'all'}
-            onValueChange={(value) => updateFilters({ category: value === 'all' ? '' : value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={categoryAllLabel} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{categoryAllLabel}</SelectItem>
-              {hospitalityCategories.map((cat) => (
-                <SelectItem key={cat.value} value={cat.value}>
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
 
         <div className="space-y-2">
           <Label>{tListing('propertyType')}</Label>
@@ -202,10 +177,10 @@ export function ListingFilters({ locationIndex }: ListingFiltersProps) {
             onValueChange={(value) => updateFilters({ ward: value === 'all' ? '' : value })}
           >
             <SelectTrigger>
-              <SelectValue placeholder={t('allTokyo13Wards')} />
+              <SelectValue placeholder={t('allTokyo23Wards')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('allTokyo13Wards')}</SelectItem>
+              <SelectItem value="all">{t('allTokyo23Wards')}</SelectItem>
               {locationIndex.wards.map((ward) => (
                 <SelectItem key={ward} value={ward}>
                   {translateCityName(ward, locale) || ward}

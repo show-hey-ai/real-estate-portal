@@ -17,6 +17,8 @@ import { formatPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, translateAddress } from '@/lib/translate-fields'
 import { getIsFavoriteForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
+import { getMarketCategory, PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
+import { getPortalCategoryLabel } from '@/lib/portal-copy'
 import {
   absoluteUrl,
   buildListingDescription,
@@ -41,6 +43,8 @@ async function getPublicListing(id: string) {
     .eq('id', id)
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
+    .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
+    .is('hospitalityCategory', null)
     .single()
 
   if (error || !data) {
@@ -70,10 +74,9 @@ export async function generateMetadata({
   const image = getPrimaryListingImage(listing)
   const url = absoluteUrl(`/listings/${id}`)
   const keywords = [
-    'Japan hospitality property',
-    'Japan hotel acquisition',
-    'Japan ryokan property',
-    'Japan minpaku property',
+    'Tokyo property for sale',
+    'Tokyo investment property',
+    'Japan property purchase',
     listing.propertyType,
     listing.city,
     ...(Array.isArray(listing.stations)
@@ -148,8 +151,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const description = getDescription()
 
   // Prisma互換の形式に変換
-  const { yieldGross, yieldNet, ...listingForDisplay } = listing
-  void yieldGross
+  const { yieldNet, ...listingForDisplay } = listing
   void yieldNet
   const formattedListing = {
     ...listingForDisplay,
@@ -157,6 +159,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
     landArea: listing.landArea ? Number(listing.landArea) : null,
+    yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
     media: sortedMedia,
   }
   const listingJsonLd = {
@@ -169,7 +172,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
     datePublished: listing.publishedAt || undefined,
     dateModified: listing.updatedAt || undefined,
     mainEntity: {
-      '@type': formattedListing.propertyType === '戸建' ? 'SingleFamilyResidence' : 'Residence',
+      '@type': getMarketCategory(formattedListing) === 'residential'
+        ? (formattedListing.propertyType === '戸建' ? 'SingleFamilyResidence' : 'Residence')
+        : 'Product',
       name: buildListingTitle(formattedListing, locale),
       description: buildListingDescription(formattedListing, locale),
       address: {
@@ -259,6 +264,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
           <ListingGallery media={formattedListing.media} />
 
           <div className="mt-8">
+            {getMarketCategory(formattedListing) && (
+              <Badge className="mb-4 bg-[#dbe8f4] text-[#142337] hover:bg-[#dbe8f4]">
+                {getPortalCategoryLabel(locale, getMarketCategory(formattedListing)!)}
+              </Badge>
+            )}
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <p className="text-3xl font-bold text-primary mb-2">

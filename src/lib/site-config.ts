@@ -25,6 +25,7 @@ type SeoListingLike = {
   city?: string | null
   stations?: SeoStation[] | null
   buildingArea?: number | string | null
+  landArea?: number | string | null
   builtYear?: number | null
   yieldGross?: number | string | null
   descriptionJa?: string | null
@@ -49,36 +50,36 @@ const siteCopy: Record<
   }
 > = {
   ja: {
-    title: '日本宿泊業物件専門ポータル',
+    title: '東京の投資用・居住用・土地を探す｜自由不動産',
     description:
-      '外国人投資家向け 宿泊事業用不動産の物件探し・紹介・購入支援。自由不動産が、東京の旅館業・民泊・ホテル向け物件の紹介から売買仲介、許認可準備、開業PMまでを支援します。',
-    listingsTitle: '宿泊業向け物件一覧',
+      '東京の投資用物件、居住用住宅、土地を探す方へ。自由不動産が日本語・英語・中国語で物件探しから売買までお手伝いします。',
+    listingsTitle: '東京の投資用・居住用・土地を探す',
     listingsDescription:
-      '東京23区の旅館業・民泊・ホテル向け物件、宿泊事業化が可能な戸建・一棟物件を検索。気になる物件の相談や、条件に合う未公開候補の紹介も可能です。',
+      '東京の収益物件、マンション、戸建て、土地を検索。掲載物件がない場合も希望条件からご相談いただけます。',
   },
   en: {
-    title: 'Japan Hospitality Property Portal for Foreign Investors',
+    title: 'Tokyo Property for Sale | Ziyou Real Estate',
     description:
-      'We help foreign investors find, acquire, and open hotel, ryokan, and minpaku-ready property in Japan — public listings, off-market introductions, brokerage, licensing preparation, and opening PM.',
-    listingsTitle: 'Japan Hospitality Property Listings',
+      'Find investment property, residential homes, and land in Tokyo with Ziyou Real Estate. Discuss your purchase in Japanese, English, or Chinese.',
+    listingsTitle: 'Tokyo Property for Sale | Ziyou Real Estate',
     listingsDescription:
-      'Browse Tokyo properties suitable for hotels, ryokan, simple lodging, and minpaku. Ask about listed candidates or send your criteria for matching off-market introductions.',
+      'Browse Tokyo income properties, condominiums, houses, and land. Tell us your criteria if a suitable property is not yet published.',
   },
   'zh-TW': {
-    title: '日本住宿業物件專門平台｜自由不動產',
+    title: '東京投資用、居住用及土地物件｜自由不動產',
     description:
-      '面向外國投資者的日本住宿業不動產物件搜尋、介紹與取得支援。自由不動產協助您完成東京旅館、民宿、飯店的候選介紹、仲介與開業準備。',
-    listingsTitle: '日本住宿業物件列表',
+      '自由不動產協助您在東京尋找投資物件、居住用住宅及土地。提供日語、英語與中文溝通。',
+    listingsTitle: '東京待售物件｜自由不動產',
     listingsDescription:
-      '搜尋東京23區旅館、民宿、飯店向物件與可改造為住宿事業的候選。可諮詢公開物件，也可接收符合條件的未公開物件介紹。',
+      '搜尋東京收益物件、公寓、獨棟住宅與土地。若沒有合適的公開物件，也可以傳送購買條件。',
   },
   'zh-CN': {
-    title: '日本住宿业物件专业平台｜自由不动产',
+    title: '东京投资、居住及土地房产｜自由不动产',
     description:
-      '面向外国投资者的日本住宿业不动产物件搜索、介绍与取得支持。自由不动产协助您完成东京旅馆、民宿、酒店的候选介绍、仲介与开业准备。',
-    listingsTitle: '日本住宿业物件列表',
+      '自由不动产协助您在东京寻找投资房产、居住用住宅及土地。提供日语、英语和中文沟通。',
+    listingsTitle: '东京待售房产｜自由不动产',
     listingsDescription:
-      '搜索东京23区旅馆、民宿、酒店向物件与可改造为住宿事业的候选。可咨询公开物件，也可接收符合条件的未公开物件介绍。',
+      '搜索东京收益房产、公寓、独栋住宅和土地。如果没有合适的公开房源，也可以发送购买条件。',
   },
 }
 
@@ -209,6 +210,8 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
   const transit = formatTransitAccessLabel(transitStations[0], normalizedLocale)
   const price = toNumber(listing.price)
   const buildingArea = toNumber(listing.buildingArea)
+  const landArea = toNumber(listing.landArea)
+  const area = listing.propertyType === '土地' ? landArea : buildingArea
   const fragments =
     normalizedLocale === 'ja'
       ? [
@@ -216,7 +219,7 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
           translatedAddress,
           price != null ? `${formatPrice(price, normalizedLocale)}` : null,
           transit ? `${transit}` : null,
-          buildingArea ? `建物面積 ${buildingArea.toFixed(0)}㎡` : null,
+          area ? `${listing.propertyType === '土地' ? '土地面積' : '建物面積'} ${area.toFixed(0)}㎡` : null,
         ]
       : normalizedLocale === 'en'
         ? [
@@ -224,7 +227,7 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
             translatedAddress,
             price != null ? `${formatPrice(price, normalizedLocale)}` : null,
             transit ? transit : null,
-            buildingArea ? `${buildingArea.toFixed(0)} sqm` : null,
+            area ? `${listing.propertyType === '土地' ? 'Land area' : 'Floor area'} ${area.toFixed(0)} sqm` : null,
           ]
         : normalizedLocale === 'zh-TW'
           ? [
@@ -232,14 +235,14 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
               translatedAddress,
               price != null ? `${formatPrice(price, normalizedLocale)}` : null,
               transit ? transit : null,
-              buildingArea ? `建物面積 ${buildingArea.toFixed(0)}㎡` : null,
+              area ? `${listing.propertyType === '土地' ? '土地面積' : '建物面積'} ${area.toFixed(0)}㎡` : null,
             ]
           : [
               translatedType,
               translatedAddress,
               price != null ? `${formatPrice(price, normalizedLocale)}` : null,
               transit ? transit : null,
-              buildingArea ? `建筑面积 ${buildingArea.toFixed(0)}㎡` : null,
+              area ? `${listing.propertyType === '土地' ? '土地面积' : '建筑面积'} ${area.toFixed(0)}㎡` : null,
             ]
 
   return fragments.filter(Boolean).join(' | ').slice(0, 160)
@@ -249,7 +252,7 @@ export function buildOrganizationJsonLd(locale: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
-    name: 'Ziyou Hospitality',
+    name: 'Ziyou Real Estate',
     url: getSiteUrl(),
     email: 'admin@ziyou-fudosan.com',
     telephone: '+81-80-8492-7068',
@@ -261,7 +264,7 @@ export function buildOrganizationJsonLd(locale: string) {
       postalCode: '111-0052',
       addressCountry: 'JP',
     },
-    areaServed: ['Tokyo', 'Greater Tokyo', 'Japan tourism destinations'],
+    areaServed: ['Tokyo', 'Greater Tokyo'],
     availableLanguage: ['ja', 'en', 'zh-Hant', 'zh-Hans'],
     inLanguage: getSchemaLanguage(locale),
   }
@@ -271,7 +274,7 @@ export function buildWebsiteJsonLd(locale: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Ziyou Hospitality',
+    name: 'Ziyou Real Estate',
     url: getSiteUrl(),
     inLanguage: getSchemaLanguage(locale),
     potentialAction: {

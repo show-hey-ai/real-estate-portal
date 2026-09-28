@@ -1,20 +1,30 @@
-export const TOKYO_13_WARDS = [
+export const TOKYO_23_WARDS = [
   '千代田区',
   '中央区',
   '港区',
   '新宿区',
   '渋谷区',
   '文京区',
-  '目黒区',
   '品川区',
   '豊島区',
   '台東区',
   '墨田区',
   '江東区',
   '大田区',
+  '目黒区',
+  '世田谷区',
+  '中野区',
+  '杉並区',
+  '北区',
+  '荒川区',
+  '板橋区',
+  '練馬区',
+  '足立区',
+  '葛飾区',
+  '江戸川区',
 ] as const
 
-export type Tokyo13Ward = (typeof TOKYO_13_WARDS)[number]
+export type Tokyo23Ward = (typeof TOKYO_23_WARDS)[number]
 
 type StationSeed = {
   line?: string | null
@@ -29,7 +39,7 @@ export interface PublicSearchSeedRow {
 }
 
 export interface PublicSearchLocationIndex {
-  wards: readonly Tokyo13Ward[]
+  wards: readonly Tokyo23Ward[]
   lines: string[]
   stationsByLine: Record<string, string[]>
 }
@@ -41,7 +51,7 @@ export interface PublicSearchMasterLineRow {
   }[]
 }
 
-const tokyo13WardSet = new Set<string>(TOKYO_13_WARDS)
+const tokyo23WardSet = new Set<string>(TOKYO_23_WARDS)
 
 const railwayLineAliases: Record<string, string> = {
   山手線: 'JR山手線',
@@ -148,8 +158,8 @@ export function normalizeStationName(name: string | null | undefined): string {
   return stationNameAliases[trimmed] ?? trimmed
 }
 
-function isRelevantWard(city: string | null | undefined): city is Tokyo13Ward {
-  return !!city && tokyo13WardSet.has(city)
+function isRelevantWard(city: string | null | undefined): city is Tokyo23Ward {
+  return !!city && tokyo23WardSet.has(city)
 }
 
 function isValidStationSeed(
@@ -201,7 +211,7 @@ export function buildPublicSearchLocationIndex(rows: PublicSearchSeedRow[]): Pub
   )
 
   return {
-    wards: TOKYO_13_WARDS,
+    wards: TOKYO_23_WARDS,
     lines: sortedLines,
     stationsByLine: sortedStationsByLine,
   }
@@ -230,7 +240,7 @@ export function buildPublicSearchLocationIndexFromMaster(
   )
 
   return {
-    wards: TOKYO_13_WARDS,
+    wards: TOKYO_23_WARDS,
     lines: [...new Set(sortedLines)],
     stationsByLine,
   }

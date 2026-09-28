@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Hotel } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 
 export function Footer() {
@@ -10,16 +9,14 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-[#ded6c4] bg-[#10231e] text-white">
-      <div className="container py-12">
+    <footer className="border-t border-[#dbe2e9] bg-[#142337] text-white">
+      <div className="container py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[8px] bg-white/10 text-[#d8a64a]">
-                <Hotel className="h-5 w-5" />
-              </span>
-              <span className="font-bold text-lg">{t('common.appName')}</span>
+            <Link href="/" className="mb-4 flex items-end gap-3">
+              <span className="text-2xl font-semibold tracking-[0.12em]">ZIYOU</span>
+              <span className="pb-1 text-xs text-white/60">{t('common.appName')}</span>
             </Link>
             <p className="text-sm leading-7 text-white/65 max-w-md">
               {t('home.heroDescription')}
@@ -36,10 +33,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/guides" className="text-white/65 hover:text-white transition-colors">
+                <Link href="/buying-guide" className="text-white/65 hover:text-white transition-colors">
                   {t('nav.guides')}
                 </Link>
               </li>
+              <li><Link href="/match" className="text-white/65 hover:text-white transition-colors">{t('nav.match')}</Link></li>
               <li>
                 <Link href="/register" className="text-white/65 hover:text-white transition-colors">
                   {t('common.register')}

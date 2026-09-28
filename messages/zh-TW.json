@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Ziyou Hospitality",
+    "appName": "自由不動產",
     "login": "登入",
     "logout": "登出",
     "register": "註冊",
@@ -17,16 +17,17 @@
     "loading": "載入中...",
     "error": "發生錯誤",
     "success": "成功",
-    "copyright": "© {year} Ziyou Hospitality. 版權所有。",
+    "copyright": "© {year} 自由不動產. All rights reserved.",
     "privacyPolicy": "隱私政策",
     "termsOfService": "服務條款",
     "contact": "聯絡我們"
   },
   "nav": {
-    "listings": "住宿業物件",
-    "guides": "指南",
+    "listings": "尋找物件",
+    "guides": "購屋指南",
     "favorites": "收藏",
-    "admin": "管理後台"
+    "admin": "管理後台",
+    "match": "購屋諮詢"
   },
   "listing": {
     "price": "價格",
@@ -55,18 +56,18 @@
     "error": "發生錯誤",
     "addressPrivacyNote": "為保護隱私僅顯示至町目，詳情請聯繫我們",
     "morePhotosTitle": "想看更多照片嗎？",
-    "morePhotosDesc": "我們可提供室內、周邊環境與共用空間等更多照片，歡迎隨時聯繫我們。",
-    "exclusiveTitle": "未公開物件介紹",
-    "exclusiveDesc": "網站上未刊載的物件也有很多。只要告訴我們您希望的區域與預算，我們就會為您推薦符合條件的未公開物件。",
-    "registerForMore": "免費註冊查看未公開物件",
+    "morePhotosDesc": "歡迎聯繫我們確認這個物件是否有其他可提供的照片。",
+    "exclusiveTitle": "依需求尋找物件",
+    "exclusiveDesc": "請告訴我們地區、預算和購買時間，我們可以確認可介紹的物件。",
+    "registerForMore": "整理購屋條件",
     "requestPhotos": "索取更多照片",
     "morePhotosMessage": "我想索取這個物件的更多照片（室內、共用空間、周邊環境）。",
     "types": {
-      "mansion": "區分物件 / 營運檢討",
+      "mansion": "公寓住宅",
       "building": "整棟大樓 / 簡易宿所候選",
       "apartment": "整棟公寓 / 民宿候選",
-      "house": "獨棟 / 小型住宿候選",
-      "land": "飯店開發用地",
+      "house": "獨棟住宅",
+      "land": "土地",
       "commercial": "店鋪辦公 / 轉用候選",
       "other": "其他"
     },
@@ -81,7 +82,7 @@
   },
   "search": {
     "keyword": "關鍵字",
-    "keywordPlaceholder": "地區、車站、飯店、旅館、民宿...",
+    "keywordPlaceholder": "地區、車站或關鍵字",
     "priceMin": "最低價格",
     "priceMax": "最高價格",
     "priceRange": "價格範圍",
@@ -90,9 +91,8 @@
     "search": "搜尋",
     "area": "地區",
     "station": "車站",
-    "allTypes": "所有住宿候選",
+    "allTypes": "所有物件類型",
     "allAreas": "所有地區",
-    "allTokyo13Wards": "都心13區全部",
     "filter": "篩選條件",
     "sort": "排序方式",
     "sortNewest": "最新上架",
@@ -117,7 +117,8 @@
     "prefecture": "都道府縣",
     "allPrefectures": "全日本",
     "line": "路線",
-    "allLines": "所有路線"
+    "allLines": "所有路線",
+    "allTokyo23Wards": "東京23區全部"
   },
   "inquiry": {
     "title": "諮詢這個物件",
@@ -151,7 +152,15 @@
     "hasAccount": "已有帳號？",
     "loginRequired": "使用此功能需要登入",
     "passwordMismatch": "密碼不一致",
-    "registrationSuccess": "註冊完成，請查看電子郵件。"
+    "registrationSuccess": "註冊完成，請查看電子郵件。",
+    "brandEyebrow": "東京不動產購買",
+    "brandTitle": "尋找適合自己的家。",
+    "brandDescription": "儲存候選住宅並整理購屋需求，規劃東京不動產購買。",
+    "brandBenefits": {
+      "checks": "購屋指南",
+      "sourcing": "尋找物件",
+      "focus": "購屋諮詢"
+    }
   },
   "admin": {
     "dashboard": "儀表板",
@@ -247,7 +256,8 @@
         "pageviews7d": "近 7 天 PV",
         "uniqueVisitors7d": "近 7 天訪客",
         "listingViews7d": "近 7 天物件詳情 PV",
-        "leads7d": "近 7 天客戶"
+        "leads7d": "近 7 天客戶",
+        "contactClicks7d": "WhatsApp 開啟次數（近7日）"
       },
       "sections": {
         "dailyTrend": "每日趨勢",
@@ -269,6 +279,7 @@
       "unknownListing": "沒有物件資訊",
       "pageTypes": {
         "home": "首頁",
+        "youtubeLanding": "YouTube 入口",
         "listingIndex": "物件列表",
         "listingDetail": "物件詳情",
         "favorites": "收藏",
@@ -286,10 +297,10 @@
   "home": {
     "heroTitle": "致想在日本開始住宿事業的外國投資者。",
     "heroTitleLine2": "從物件購買到開業，全程為您支援。",
-    "heroDescription": "自由不動產是東京持牌仲介，協助外國投資者尋找、介紹並取得日本飯店、旅館、民宿向物件。可先瀏覽公開物件，也可告訴我們希望條件，由我們介紹合適候選。",
+    "heroDescription": "以日語、英語及中文協助您在東京尋找物件並完成買賣。",
     "welcomeBack": "歡迎回來",
     "welcomeBackDesc": "查看最新物件",
-    "viewListings": "瀏覽物件",
+    "viewListings": "尋找物件",
     "features": "專注住宿業不動產的3大優勢",
     "featuresDesc": "外國投資者在日本開飯店、旅館、民宿時，到底需要什麼？我們不只是介紹物件，而是陪您一直到開業那天。",
     "feature1Title": "住宿業物件介紹",

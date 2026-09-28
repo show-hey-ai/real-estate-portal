@@ -1,482 +1,90 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { unstable_cache } from 'next/cache'
-import { getLocale, getTranslations } from 'next-intl/server'
-import {
-  ArrowRight,
-  BedDouble,
-  Building2,
-  CheckCircle2,
-  ClipboardCheck,
-  Compass,
-  FileCheck,
-  Flame,
-  Globe,
-  Hotel,
-  KeyRound,
-  Landmark,
-  MapPin,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react'
+import { getLocale } from 'next-intl/server'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
-import { GuideCard } from '@/components/guides/guide-card'
 import { HomeSearchForm } from '@/components/listing/home-search-form'
 import { ListingCard } from '@/components/listing/listing-card'
-import { Button } from '@/components/ui/button'
-import { getGuideArticles } from '@/content/guides'
-import { getGuideUiCopy, normalizeGuideLocale } from '@/lib/guides'
-import { getHospitalityHomeCopy } from '@/lib/hospitality-copy'
 import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
 import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
+import { getPortalHomeCopy } from '@/lib/portal-copy'
+import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { createServiceClient } from '@/lib/supabase/server'
-import {
-  absoluteUrl,
-  buildListingDescription,
-  buildListingTitle,
-  getPrimaryListingImage,
-  getSchemaLanguage,
-  getSiteCopy,
-} from '@/lib/site-config'
+import { absoluteUrl, getSchemaLanguage, getSiteCopy } from '@/lib/site-config'
 
-const getLatestPublishedListings = unstable_cache(
-  async () => {
-    const supabase = createServiceClient()
-    const { data, error } = await supabase
-      .from('listings')
-      .select(`
-        id,
-        propertyType,
-        hospitalityCategory,
-        price,
-        addressPublic,
-        stations,
-        builtYear,
-        buildingArea,
-        viewCount,
-        publishedAt,
-        media (url, category)
-      `)
-      .eq('status', 'PUBLISHED')
-      .eq('adAllowed', true)
-      .order('publishedAt', { ascending: false })
-      .limit(6)
+export const dynamic = 'force-dynamic'
 
-    if (error) {
-      console.error('Error fetching listings:', error)
-      return []
-    }
-
-    return data || []
-  },
-  ['home-latest-published-listings'],
-  { revalidate: 300 }
-)
-
-const targetCriteriaWhatsappUrl = `https://wa.me/818084927068?text=${encodeURIComponent(
-  'I am looking for a hospitality property in Japan. My target area / budget / property type is:'
-)}`
+async function getLatestListings() {
+  const { data, error } = await createServiceClient()
+    .from('listings')
+    .select('id, propertyType, price, addressPublic, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, viewCount, publishedAt, media (url, category)')
+    .eq('status', 'PUBLISHED').eq('adAllowed', true)
+    .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
+    .is('hospitalityCategory', null)
+    .order('publishedAt', { ascending: false }).limit(6)
+  if (error) { console.error('Failed to load homes:', error); return [] }
+  return data || []
+}
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale()
-  const siteCopy = getSiteCopy(locale)
-
-  return {
-    title: siteCopy.title,
-    description: siteCopy.description,
-    alternates: {
-      canonical: absoluteUrl('/'),
-    },
-    openGraph: {
-      title: siteCopy.title,
-      description: siteCopy.description,
-      url: absoluteUrl('/'),
-    },
-    twitter: {
-      title: siteCopy.title,
-      description: siteCopy.description,
-    },
-  }
+  const copy = getSiteCopy(await getLocale())
+  return { title: { absolute: copy.title }, description: copy.description,
+    alternates: { canonical: absoluteUrl('/') },
+    openGraph: { title: copy.title, description: copy.description, url: absoluteUrl('/') } }
 }
 
 export default async function HomePage() {
-  const [t, locale] = await Promise.all([getTranslations(), getLocale()])
-  const normalizedLocale = normalizeGuideLocale(locale)
-  const guideCopy = getGuideUiCopy(normalizedLocale)
-  const featuredGuides = getGuideArticles(normalizedLocale).slice(0, 3)
-  const viewerPromise = getOptionalPublicViewer()
-  const locationIndexPromise = getPublicSearchLocationIndex()
-  const listingsPromise = getLatestPublishedListings()
-
-  const [viewer, locationIndex, listings] = await Promise.all([
-    viewerPromise,
-    locationIndexPromise,
-    listingsPromise,
+  const locale = await getLocale()
+  const copy = getPortalHomeCopy(locale)
+  const [homes, viewer, locationIndex] = await Promise.all([
+    getLatestListings(), getOptionalPublicViewer(), getPublicSearchLocationIndex(),
   ])
-
-  const formattedListings = (listings || []).map((listing) => ({
-    ...listing,
-    price: listing.price ? BigInt(listing.price) : null,
-    buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
+  const listings = homes.map((home) => ({ ...home,
+    price: home.price ? BigInt(home.price) : null,
+    buildingArea: home.buildingArea ? Number(home.buildingArea) : null,
+    landArea: home.landArea ? Number(home.landArea) : null,
+    yieldGross: home.yieldGross ? Number(home.yieldGross) : null,
+    media: home.media || [],
   }))
-
-  const userId = viewer?.id ?? null
-  const favoriteIds = viewer
-    ? await getFavoriteIdsForViewer(
-        viewer.id,
-        formattedListings.map((listing) => listing.id)
-      )
+  const favorites = viewer
+    ? await getFavoriteIdsForViewer(viewer.id, listings.map((home) => home.id))
     : new Set<string>()
-  const isLoggedIn = !!viewer
-  const homeCopy = getHospitalityHomeCopy(locale)
-  const proofIcons = [Hotel, ShieldCheck, Globe]
-  const assetIcons = [Hotel, BedDouble, Building2, Landmark]
-  const checkIcons = [MapPin, Flame, Building2, FileCheck]
-  const processIcons = [Compass, ClipboardCheck, KeyRound, Sparkles]
-  const heroTitleDelimiter = homeCopy.heroTitle.includes('、')
-    ? '、'
-    : homeCopy.heroTitle.includes('，')
-      ? '，'
-      : null
-  const heroTitleLines = heroTitleDelimiter
-    ? (() => {
-        const [first, ...rest] = homeCopy.heroTitle.split(heroTitleDelimiter)
-        const secondLine = rest.join(heroTitleDelimiter)
-        return secondLine ? [`${first}${heroTitleDelimiter}`, secondLine] : [homeCopy.heroTitle]
-      })()
-    : [homeCopy.heroTitle]
-  const collectionJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: getSiteCopy(locale).title,
-    description: getSiteCopy(locale).description,
-    url: absoluteUrl('/'),
-    inLanguage: getSchemaLanguage(locale),
-    mainEntity: {
-      '@type': 'ItemList',
-      itemListElement: formattedListings.map((listing, index) => ({
-        '@type': 'ListItem',
-        position: index + 1,
-        url: absoluteUrl(`/listings/${listing.id}`),
-        name: buildListingTitle(listing, locale),
-        image: getPrimaryListingImage(listing) || undefined,
-        description: buildListingDescription(listing, locale),
-      })),
-    },
-  }
 
-  return (
-    <div className="bg-[#f7f5ed] text-[#19231f]">
-      <JsonLd data={collectionJsonLd} />
-
-      <section className="relative overflow-hidden bg-[#10231e] text-white">
-        <Image
-          src="/hotel-lp/img/hero.jpg"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-45"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(8,24,20,0.94)_0%,rgba(8,24,20,0.78)_48%,rgba(8,24,20,0.38)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,rgba(247,245,237,0)_0%,#f7f5ed_100%)]" />
-
-        <div className="container relative py-12 md:py-16 lg:py-20">
-          <div className="max-w-5xl">
-            <h1 className="max-w-4xl text-4xl font-semibold leading-[1.04] tracking-normal md:text-6xl lg:text-7xl">
-              {heroTitleLines.map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-white/80 md:text-lg">
-              {homeCopy.heroDescription}
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/listings">
-                <Button
-                  size="lg"
-                  className="h-12 rounded-[8px] bg-[#d8a64a] px-6 text-sm font-semibold text-[#13201c] hover:bg-[#e6b65c]"
-                >
-                  {homeCopy.primaryCta}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <a href={targetCriteriaWhatsappUrl} target="_blank" rel="noreferrer">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 rounded-[8px] border-white/30 bg-white/[0.08] px-6 text-sm font-semibold text-white hover:bg-white/[0.16] hover:text-white"
-                >
-                  {homeCopy.secondaryCta}
-                </Button>
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-12 grid gap-5 lg:grid-cols-[1fr_0.95fr] lg:items-stretch">
-            <div className="grid gap-3 sm:grid-cols-3">
-              {homeCopy.proof.map((item, index) => {
-                const Icon = proofIcons[index]
-                return (
-                  <div
-                    key={item.label}
-                    className="rounded-[8px] border border-white/15 bg-white/10 p-4 backdrop-blur-md"
-                  >
-                    <Icon className="mb-4 h-5 w-5 text-[#d8a64a]" />
-                    <p className="text-sm font-semibold text-white">{item.value}</p>
-                    <p className="mt-1 text-xs leading-5 text-white/65">{item.label}</p>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className="rounded-[8px] border border-white/20 bg-[#fffdf8]/95 p-4 text-[#19231f] shadow-2xl shadow-black/30 backdrop-blur-md md:p-5">
-              <div className="mb-4 flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold tracking-normal">
-                    {homeCopy.searchTitle}
-                  </h2>
-                  <p className="mt-1 text-sm leading-6 text-[#5f6b65]">
-                    {homeCopy.searchDescription}
-                  </p>
-                </div>
-                <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-[#2f6d58]" />
-              </div>
-              <HomeSearchForm compact={isLoggedIn} locationIndex={locationIndex} />
-            </div>
-          </div>
+  return <main className="bg-white text-[#1b293a]">
+    <JsonLd data={{ '@context': 'https://schema.org', '@type': 'WebPage',
+      name: getSiteCopy(locale).title, description: getSiteCopy(locale).description,
+      url: absoluteUrl('/'), inLanguage: getSchemaLanguage(locale) }} />
+    <section className="container grid gap-10 pb-10 pt-12 md:gap-12 md:pb-16 md:pt-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
+      <div className="relative z-10 max-w-[620px]">
+        <p className="flex items-center gap-3 text-xs font-bold tracking-[0.2em] text-[#3f638d] uppercase"><span className="h-px w-7 bg-current" />{copy.eyebrow}</p>
+        <h1 className={`mt-8 font-medium leading-[1.18] tracking-[-0.055em] text-[#142337] ${locale === 'en' ? 'text-[clamp(2.8rem,5vw,5.4rem)]' : 'text-[clamp(2.6rem,3.5vw,4rem)]'}`}>{copy.heroTitle}</h1>
+        <p className="mt-7 max-w-[540px] text-base leading-8 text-[#536274] md:text-lg">{copy.heroDescription}</p>
+        <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
+          <Link href="/listings" className="inline-flex min-h-12 items-center gap-3 rounded-[4px] bg-[#274d7d] px-6 font-semibold text-white transition-colors hover:bg-[#18375f]">{copy.browse}<ArrowUpRight className="h-4 w-4" /></Link>
+          <Link href="/match" className="inline-flex min-h-12 items-center gap-2 border-b border-[#8998a8] font-semibold text-[#274d7d] transition-colors hover:border-[#274d7d]">{copy.consult}<ArrowRight className="h-4 w-4" /></Link>
         </div>
-      </section>
-
-      <section className="py-14 md:py-20">
-        <div className="container">
-          <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
-                {t('home.newListings')}
-              </h2>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#647069] md:text-base">
-                {t('home.newListingsDesc')}
-              </p>
-            </div>
-            <Link href="/listings">
-              <Button
-                variant="outline"
-                className="rounded-[8px] border-[#b7aa8d] bg-transparent text-[#1a2a24] hover:bg-[#ebe5d6]"
-              >
-                {t('home.viewAll')}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {formattedListings.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {formattedListings.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  isFavorite={favoriteIds.has(listing.id)}
-                  userId={userId}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[8px] border border-[#d9d2bd] bg-[#fffdf8] p-8 text-center text-sm text-[#647069]">
-              {t('home.noListings')}
-            </div>
-          )}
+      </div>
+      <div className="relative min-h-[330px] overflow-hidden bg-[#e8eef3] sm:min-h-[440px] lg:min-h-[590px]">
+        <Image src="/tokyo-homes-editorial.webp" alt="" fill priority sizes="(max-width: 1024px) 100vw, 55vw" className="object-cover object-center" />
+        <div className="absolute bottom-0 left-0 flex w-full items-end justify-between gap-3 bg-gradient-to-t from-[#10233d]/80 via-[#10233d]/25 to-transparent px-6 pb-6 pt-24 text-white md:px-8 md:pb-8">
+          <span className="text-xs font-semibold tracking-[0.16em] uppercase">TOKYO / PROPERTY</span>
+          <span className="text-xs font-medium">{copy.imageNote}</span>
         </div>
-      </section>
-
-      <section className="relative py-14 md:py-20">
-        <div className="container">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-            <div className="max-w-xl">
-              <h2 className="text-3xl font-semibold leading-tight tracking-normal md:text-5xl">
-                {homeCopy.assetTitle}
-              </h2>
-              <p className="mt-5 text-base leading-8 text-[#5d6963]">
-                {homeCopy.assetDescription}
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                ['/hotel-lp/img/lobby.jpg', 'Hotel lobby'],
-                ['/hotel-lp/img/traditional.jpg', 'Ryokan room'],
-                ['/hotel-lp/img/reno-building.jpg', 'Renovation building'],
-                ['/hotel-lp/img/skyline.jpg', 'Tokyo skyline'],
-              ].map(([src, alt]) => (
-                <div key={src} className="relative aspect-[4/3] overflow-hidden rounded-[8px]">
-                  <Image
-                    src={src}
-                    alt={alt}
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 320px"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {homeCopy.assetPaths.map((asset, index) => {
-              const Icon = assetIcons[index]
-              return (
-                <div
-                  key={asset.title}
-                  className="rounded-[8px] border border-[#d9d2bd] bg-[#fffdf8] p-5 shadow-sm"
-                >
-                  <Icon className="h-5 w-5 text-[#2f6d58]" />
-                  <h3 className="mt-5 text-base font-semibold">{asset.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#647069]">{asset.desc}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#112821] py-14 text-white md:py-20">
-        <div className="container">
-          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <div>
-              <h2 className="text-3xl font-semibold leading-tight tracking-normal md:text-5xl">
-                {homeCopy.reviewTitle}
-              </h2>
-              <p className="mt-5 text-base leading-8 text-white/70">
-                {homeCopy.reviewDescription}
-              </p>
-              <a href={targetCriteriaWhatsappUrl} target="_blank" rel="noreferrer" className="mt-8 inline-flex">
-                <Button
-                  size="lg"
-                  className="h-12 rounded-[8px] bg-[#d8a64a] px-6 text-[#11231e] hover:bg-[#e6b65c]"
-                >
-                  {homeCopy.secondaryCta}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </a>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {homeCopy.checks.map((check, index) => {
-                const Icon = checkIcons[index]
-                return (
-                  <div
-                    key={check.title}
-                    className="rounded-[8px] border border-white/10 bg-white/[0.06] p-5"
-                  >
-                    <Icon className="h-5 w-5 text-[#d8a64a]" />
-                    <h3 className="mt-5 font-semibold">{check.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-white/65">{check.desc}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-[#ded6c4] bg-[#fffdf8] py-14 md:py-20">
-        <div className="container">
-          <div className="mb-9 max-w-3xl">
-            <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
-              {homeCopy.processTitle}
-            </h2>
-          </div>
-          <div className="grid gap-3 md:grid-cols-4">
-            {homeCopy.process.map((item, index) => {
-              const Icon = processIcons[index]
-              return (
-                <div key={item.step} className="rounded-[8px] border border-[#d9d2bd] p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-sm font-semibold text-[#a17426]">{item.step}</span>
-                    <Icon className="h-5 w-5 text-[#2f6d58]" />
-                  </div>
-                  <h3 className="mt-8 font-semibold">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#647069]">{item.desc}</p>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-14 md:py-20">
-        <div className="container">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl space-y-3">
-              <p className="text-sm font-semibold text-[#a17426]">
-                {guideCopy.navLabel}
-              </p>
-              <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
-                {guideCopy.homeTitle}
-              </h2>
-              <p className="text-sm leading-relaxed text-[#647069] md:text-base">
-                {guideCopy.homeDescription}
-              </p>
-            </div>
-            <Link href="/guides">
-              <Button
-                variant="outline"
-                className="rounded-[8px] border-[#b7aa8d] bg-transparent text-[#1a2a24] hover:bg-[#ebe5d6]"
-              >
-                {guideCopy.viewAllGuides}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="mt-7 grid gap-5 lg:grid-cols-3">
-            {featuredGuides.map((article) => (
-              <GuideCard
-                key={article.slug}
-                article={article}
-                locale={normalizedLocale}
-                ctaLabel={guideCopy.readArticle}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {!isLoggedIn && (
-        <section className="relative overflow-hidden bg-[#10231e] py-14 text-white md:py-16">
-          <Image
-            src="/hotel-lp/img/cta-bg.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-[#10231e]/85" />
-          <div className="container relative">
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-              <div className="max-w-2xl">
-                <h2 className="text-3xl font-semibold tracking-normal md:text-4xl">
-                  {t('home.ctaTitle')}
-                </h2>
-                <p className="mt-3 text-sm leading-7 text-white/70 md:text-base">
-                  {t('home.ctaDescription')}
-                </p>
-              </div>
-              <Link href="/register">
-                <Button
-                  size="lg"
-                  className="h-12 rounded-[8px] bg-[#d8a64a] px-6 text-[#13201c] hover:bg-[#e6b65c]"
-                >
-                  {t('home.ctaButton')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-    </div>
-  )
+      </div>
+    </section>
+    <div className="border-y border-[#e1e6ec] bg-[#f7f9fb]"><div className="container grid gap-4 py-6 md:grid-cols-3 md:gap-0">{copy.trust.map((item, index) => <div key={item} className={`flex items-center gap-4 text-sm font-medium text-[#40546a] ${index > 0 ? 'md:border-l md:border-[#d8e0e8] md:pl-8' : ''}`}><span className="text-xs font-bold tracking-[0.14em] text-[#6382a6]">0{index + 1}</span>{item}</div>)}</div></div>
+    <section className="container py-16 md:py-20"><p className="text-xs font-bold tracking-[0.18em] text-[#57769b] uppercase">CATEGORIES</p><h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">{copy.categoryTitle}</h2><div className="mt-8 grid border-t border-[#cbd5df] md:grid-cols-3">{copy.categories.map(([value, title, description], index) => <Link key={value} href={`/listings?category=${value}`} className={`group flex min-h-52 flex-col border-b border-[#cbd5df] py-7 transition-colors hover:bg-[#f5f7f9] md:border-b-0 md:border-r md:px-7 md:first:pl-0 md:last:border-r-0 ${index === 2 ? 'md:border-r-0' : ''}`}><span className="text-xs font-semibold text-[#5a7da3]">0{index + 1}</span><span className="mt-7 flex items-center justify-between text-2xl font-medium text-[#142337]">{title}<ArrowUpRight className="h-5 w-5 text-[#57769b] transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" /></span><span className="mt-3 text-sm leading-7 text-[#657487]">{description}</span></Link>)}</div></section>
+    <section data-testid="home-search-panel" className="container py-16 md:py-20">
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold tracking-[0.18em] text-[#57769b] uppercase">SEARCH</p><h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">{copy.searchTitle}</h2></div><p className="max-w-md text-sm leading-7 text-[#657487]">{copy.searchDescription}</p></div>
+      <div className="border-t-2 border-[#274d7d] pt-6"><HomeSearchForm locationIndex={locationIndex} /></div>
+    </section>
+    <section className="bg-[#f5f7f9] py-16 md:py-20"><div className="container">
+      <div className="mb-10 flex flex-wrap items-end justify-between gap-5"><div><p className="text-xs font-bold tracking-[0.18em] text-[#57769b] uppercase">PROPERTIES</p><h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">{copy.availableTitle}</h2><p className="mt-4 max-w-2xl leading-7 text-[#657487]">{copy.availableDescription}</p></div><Link href="/listings" className="inline-flex items-center gap-2 border-b border-[#274d7d] pb-1 font-semibold text-[#274d7d]">{copy.browse}<ArrowUpRight className="h-4 w-4" /></Link></div>
+      {listings.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{listings.map((listing, index) => <ListingCard key={listing.id} listing={listing} isFavorite={favorites.has(listing.id)} userId={viewer?.id ?? null} imagePriority={index === 0} />)}</div> :
+        <div className="grid gap-6 border-y border-[#dbe2e9] py-10 md:grid-cols-[1fr_auto] md:items-center md:py-14"><div><h3 className="text-2xl font-medium tracking-tight">{copy.emptyTitle}</h3><p className="mt-3 max-w-2xl leading-7 text-[#657487]">{copy.emptyDescription}</p></div><Link href="/match" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[4px] bg-[#274d7d] px-6 font-semibold text-white hover:bg-[#18375f]">{copy.consult}<ArrowRight className="h-4 w-4" /></Link></div>}
+    </div></section>
+    <section className="container py-16 md:py-24"><p className="text-xs font-bold tracking-[0.18em] text-[#57769b] uppercase">YOUR JOURNEY</p><h2 className="mt-3 text-3xl font-medium tracking-tight md:text-4xl">{copy.stepsTitle}</h2><div className="mt-10 grid gap-0 border-t border-[#cbd5df] md:grid-cols-3">{copy.steps.map(([number, title, description]) => <div key={number} className="border-b border-[#cbd5df] py-7 md:min-h-52 md:border-b-0 md:border-r md:px-8 md:first:pl-0 md:last:border-r-0"><span className="text-sm font-semibold text-[#5a7da3]">{number} / 03</span><h3 className="mt-6 text-xl font-medium">{title}</h3><p className="mt-3 leading-7 text-[#657487]">{description}</p></div>)}</div></section>
+    <section className="bg-[#e9f0f7] py-16 md:py-20"><div className="container grid gap-12 md:grid-cols-2 md:gap-20"><div><p className="text-xs font-bold tracking-[0.18em] text-[#57769b] uppercase">PERSONAL SEARCH</p><h2 className="mt-4 text-3xl font-medium leading-snug tracking-tight">{copy.matchTitle}</h2><p className="mt-5 leading-7 text-[#536274]">{copy.matchDescription}</p><Link href="/match" className="mt-8 inline-flex items-center gap-2 border-b border-[#274d7d] pb-1 font-semibold text-[#274d7d]">{copy.matchCta}<ArrowUpRight className="h-4 w-4" /></Link></div><div className="border-t border-[#cbd7e3] pt-8 md:border-l md:border-t-0 md:pl-16 md:pt-0"><p className="text-xs font-bold tracking-[0.18em] text-[#57769b] uppercase">BUYER GUIDE</p><h2 className="mt-4 text-3xl font-medium leading-snug tracking-tight">{copy.guideTitle}</h2><p className="mt-5 leading-7 text-[#536274]">{copy.guideDescription}</p><Link href="/buying-guide" className="mt-8 inline-flex items-center gap-2 border-b border-[#274d7d] pb-1 font-semibold text-[#274d7d]">{copy.guideCta}<ArrowUpRight className="h-4 w-4" /></Link></div></div></section>
+  </main>
 }

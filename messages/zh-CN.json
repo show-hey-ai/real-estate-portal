@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Ziyou Hospitality",
+    "appName": "自由不动产",
     "login": "登录",
     "logout": "登出",
     "register": "注册",
@@ -17,16 +17,17 @@
     "loading": "加载中...",
     "error": "发生错误",
     "success": "成功",
-    "copyright": "© {year} Ziyou Hospitality. 版权所有。",
+    "copyright": "© {year} 自由不动产. All rights reserved.",
     "privacyPolicy": "隐私政策",
     "termsOfService": "服务条款",
     "contact": "联系我们"
   },
   "nav": {
-    "listings": "住宿业物件",
-    "guides": "指南",
+    "listings": "寻找房产",
+    "guides": "购房指南",
     "favorites": "收藏",
-    "admin": "管理后台"
+    "admin": "管理后台",
+    "match": "购房咨询"
   },
   "listing": {
     "price": "价格",
@@ -55,18 +56,18 @@
     "error": "发生错误",
     "addressPrivacyNote": "为保护隐私仅显示至丁目，详情请联系我们",
     "morePhotosTitle": "想看更多照片吗？",
-    "morePhotosDesc": "我们可提供室内、周边环境和公共区域等更多照片，欢迎随时联系我们。",
-    "exclusiveTitle": "未公开房源推荐",
-    "exclusiveDesc": "网站上未刊载的房源还有很多。只要告诉我们您偏好的区域和预算，我们就会为您推荐符合条件的未公开房源。",
-    "registerForMore": "免费注册查看未公开房源",
+    "morePhotosDesc": "欢迎联系我们确认这个房源是否有其他可提供的照片。",
+    "exclusiveTitle": "按需求寻找房产",
+    "exclusiveDesc": "请告诉我们地区、预算和购买时间，我们可以确认可介绍的房源。",
+    "registerForMore": "整理购房条件",
     "requestPhotos": "索取更多照片",
     "morePhotosMessage": "我想索取这个房源的更多照片（室内、公共区域、周边环境）。",
     "types": {
-      "mansion": "区分物件 / 运营评估",
+      "mansion": "公寓住宅",
       "building": "整栋大楼 / 简易住宿候选",
       "apartment": "整栋公寓 / 民宿候选",
-      "house": "独栋 / 小型住宿候选",
-      "land": "酒店开发用地",
+      "house": "独栋住宅",
+      "land": "土地",
       "commercial": "店铺办公 / 转用候选",
       "other": "其他"
     },
@@ -81,7 +82,7 @@
   },
   "search": {
     "keyword": "关键字",
-    "keywordPlaceholder": "地区、车站、酒店、旅馆、民宿...",
+    "keywordPlaceholder": "地区、车站或关键词",
     "priceMin": "最低价格",
     "priceMax": "最高价格",
     "priceRange": "价格范围",
@@ -90,9 +91,8 @@
     "search": "搜索",
     "area": "地区",
     "station": "车站",
-    "allTypes": "所有住宿候选",
+    "allTypes": "所有房产类型",
     "allAreas": "所有地区",
-    "allTokyo13Wards": "都心13区全部",
     "filter": "筛选条件",
     "sort": "排序方式",
     "sortNewest": "最新上架",
@@ -117,7 +117,8 @@
     "prefecture": "都道府县",
     "allPrefectures": "全日本",
     "line": "路线",
-    "allLines": "所有路线"
+    "allLines": "所有路线",
+    "allTokyo23Wards": "东京23区全部"
   },
   "inquiry": {
     "title": "咨询这个物件",
@@ -151,7 +152,15 @@
     "hasAccount": "已有账号？",
     "loginRequired": "使用此功能需要登录",
     "passwordMismatch": "密码不一致",
-    "registrationSuccess": "注册完成，请查看电子邮件。"
+    "registrationSuccess": "注册完成，请查看电子邮件。",
+    "brandEyebrow": "东京房产购买",
+    "brandTitle": "寻找适合自己的家。",
+    "brandDescription": "保存候选住宅并整理购房需求，规划东京房产购买。",
+    "brandBenefits": {
+      "checks": "购房指南",
+      "sourcing": "寻找房产",
+      "focus": "购房咨询"
+    }
   },
   "admin": {
     "dashboard": "仪表板",
@@ -247,7 +256,8 @@
         "pageviews7d": "近 7 天 PV",
         "uniqueVisitors7d": "近 7 天访客",
         "listingViews7d": "近 7 天房源详情 PV",
-        "leads7d": "近 7 天客户"
+        "leads7d": "近 7 天客户",
+        "contactClicks7d": "WhatsApp 打开次数（近7日）"
       },
       "sections": {
         "dailyTrend": "每日趋势",
@@ -269,6 +279,7 @@
       "unknownListing": "没有房源信息",
       "pageTypes": {
         "home": "首页",
+        "youtubeLanding": "YouTube 入口",
         "listingIndex": "房源列表",
         "listingDetail": "房源详情",
         "favorites": "收藏",
@@ -286,10 +297,10 @@
   "home": {
     "heroTitle": "致想在日本开始住宿事业的外国投资者。",
     "heroTitleLine2": "从物件购买到开业，全程为您支援。",
-    "heroDescription": "自由不动产是东京持牌中介，协助外国投资者寻找、介绍并取得日本酒店、旅馆、民宿向物件。可先浏览公开物件，也可告诉我们希望条件，由我们介绍合适候选。",
+    "heroDescription": "以日语、英语及中文协助您在东京寻找房产并完成买卖。",
     "welcomeBack": "欢迎回来",
     "welcomeBackDesc": "查看最新房源",
-    "viewListings": "浏览房源",
+    "viewListings": "寻找房产",
     "features": "专注住宿业不动产的3大优势",
     "featuresDesc": "外国投资者在日本开酒店、旅馆、民宿时，到底需要什么？我们不只是介绍物件，而是支持您一直到开业那天。",
     "feature1Title": "住宿业物件介绍",

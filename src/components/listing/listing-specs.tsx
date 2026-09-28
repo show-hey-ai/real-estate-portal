@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatArea } from '@/lib/format'
 import { translatePropertyType, translateStructure, translateZoning, translateCurrentStatus } from '@/lib/translate-fields'
+import { getMarketCategory } from '@/lib/market-category'
 
 interface ListingSpecsProps {
   listing: {
@@ -16,6 +17,7 @@ interface ListingSpecsProps {
     buildingArea: { toString(): string } | null
     zoning: string | null
     currentStatus: string | null
+    yieldGross?: number | null
   }
 }
 
@@ -54,6 +56,9 @@ export function ListingSpecs({ listing }: ListingSpecsProps) {
     { label: t('buildingArea'), value: listing.buildingArea ? formatArea(Number(listing.buildingArea)) : null },
     { label: t('zoning'), value: translateZoning(listing.zoning, locale) },
     { label: t('currentStatus'), value: translateCurrentStatus(listing.currentStatus, locale) },
+    ...(getMarketCategory(listing) === 'investment' && listing.yieldGross && Number(listing.yieldGross) > 0
+      ? [{ label: locale === 'ja' ? '表面利回り' : locale === 'en' ? 'Gross yield' : locale === 'zh-TW' ? '表面投報率' : '表面收益率', value: `${Number(listing.yieldGross)}%` }]
+      : []),
   ].filter((spec) => spec.value)
 
   return (
