@@ -16,6 +16,7 @@ const propertyTypeMap: Record<string, Record<string, string>> = {
 const structureMap: Record<string, Record<string, string>> = {
   'RC': { en: 'Reinforced Concrete (RC)', 'zh-TW': '鋼筋混凝土 (RC)', 'zh-CN': '钢筋混凝土 (RC)' },
   'SRC': { en: 'Steel Reinforced Concrete (SRC)', 'zh-TW': '鋼骨鋼筋混凝土 (SRC)', 'zh-CN': '钢骨钢筋混凝土 (SRC)' },
+  'S': { en: 'Steel Frame (S)', 'zh-TW': '鋼骨結構 (S)', 'zh-CN': '钢骨结构 (S)' },
   'S造': { en: 'Steel Frame', 'zh-TW': '鋼骨結構', 'zh-CN': '钢骨结构' },
   '鉄骨造': { en: 'Steel Frame', 'zh-TW': '鋼骨結構', 'zh-CN': '钢骨结构' },
   '木造': { en: 'Wooden', 'zh-TW': '木造', 'zh-CN': '木造' },
@@ -58,9 +59,9 @@ function lookupTranslation(
   // 完全一致
   if (map[value]?.[locale]) return map[value][locale]
 
-  // 部分一致（「RC造」→「RC」等）
-  for (const [key, translations] of Object.entries(map)) {
-    if (value.includes(key) || key.includes(value)) {
+  // Longer names must win, for example SRC造 over RC and 鉄骨鉄筋コンクリート造 over 鉄筋コンクリート造.
+  for (const [key, translations] of Object.entries(map).sort(([a], [b]) => b.length - a.length)) {
+    if (value.includes(key)) {
       return translations[locale] || value
     }
   }
