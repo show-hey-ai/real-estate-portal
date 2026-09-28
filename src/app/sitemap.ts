@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 import { absoluteUrl } from '@/lib/site-config'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 
+export const dynamic = 'force-dynamic'
+
 function getLatestDate(values: Array<string | Date | null | undefined>) {
   const timestamps = values
     .map((value) => {
