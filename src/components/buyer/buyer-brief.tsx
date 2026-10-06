@@ -1,5 +1,6 @@
 'use client'
 
+import { FunnelText } from '@/components/analytics/buyer-funnel'
 import { useMemo, useState } from 'react'
 import { useLocale } from 'next-intl'
 import { ArrowRight } from 'lucide-react'
@@ -56,7 +57,7 @@ export function BuyerBrief({ initialPurpose = '' }: { initialPurpose?: MarketCat
       <label><span className="mb-2 block text-sm font-semibold">{copy.timing}</span><select value={brief.timing} onChange={(event) => setBrief({ ...brief, timing: event.target.value as Brief['timing'] })} className={selectClass}><option value="">{copy.select}</option>{timingValues.map((value, index) => <option key={value} value={value}>{copy.timingOptions[index]}</option>)}</select></label>
       <label><span className="mb-2 block text-sm font-semibold">{copy.priority}</span><select value={brief.priority} onChange={(event) => setBrief({ ...brief, priority: event.target.value as Brief['priority'] })} className={selectClass}><option value="">{copy.select}</option>{priorityValues.map((value, index) => <option key={value} value={value}>{copy.priorityOptions[index]}</option>)}</select></label>
     </div>
-    <div className="mt-7 flex flex-wrap gap-3"><a href={whatsappUrl} onClick={recordContactClick} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-[4px] bg-[#274d7d] px-5 py-3 font-semibold text-white hover:bg-[#18375f]">{copy.contact}<ArrowRight className="h-4 w-4" /></a></div>
+    <div className="mt-7 flex flex-wrap gap-3"><a href={whatsappUrl} onClick={recordContactClick} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-[4px] bg-[#274d7d] px-5 py-3 font-semibold text-white hover:bg-[#18375f]"><FunnelText field="contact" baseline={copy.contact} /><ArrowRight className="h-4 w-4" /></a></div>
     <p className="mt-3 text-xs text-[#657487]">{copy.contactNote}</p>
   </div>
 }
