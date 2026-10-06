@@ -1,5 +1,6 @@
 import sharp from 'sharp'
 import { openai } from '@/lib/openai'
+import { AD_PUBLICATION_RULES } from './ad-publication-policy'
 
 const DEFAULT_AD_MODEL = 'gpt-4.1'
 const DEFAULT_BANNER_MODEL = 'gpt-4.1'
@@ -269,21 +270,8 @@ async function decideAdPolicyWithAI(evidence: AdEvidenceResult): Promise<AdDecis
         content: `あなたは日本の不動産マイソク広告掲載ポリシー判定AIです。
 人間レビューは入りません。誤って広告不可物件を掲載しないことを最優先にしてください。
 
-最終ステータス:
-- ALLOWED: 自社ポータル掲載を明確に許可する原文があり、禁止・承諾条件がない。
-- DENIED: 広告不可、広告転載不可、掲載不可、転載不可、ネット広告不可、掲載厳禁、一切不可等がある。
-- APPROVAL_NEEDED: 広告承認、要承諾、要連絡、承諾書、事前確認、応相談等がある。
-- NOT_MENTIONED: 広告関連の許可/禁止/承諾条件が見つからない。
-- AMBIGUOUS: 証拠が矛盾、読みにくい、媒体制限の意味が判断できない。
-
-can_publish=true にしてよい条件:
-1. status が ALLOWED
-2. positive_evidence に「広告可」「広告掲載可」「広告転載可」「自社HP可」「自社サイト可」「自社ホームページのみ可」「御社HP可」等の明確な許可原文がある
-3. blocking_evidence が空
-4. 「SUUMO以外可」「SUUMO不可」「楽待不可」「健美家不可」「ポータルサイト不可」等の特定媒体のみ不可は、自社ポータルがその禁止媒体に該当しない限り ALLOWED としてよい。
-5. ただし「ネット広告不可」「ポータル全般不可」「HP含む不可」「広告転載不可」「広告掲載不可」は DENIED。
-6. 「広告有効期限」だけでは ALLOWED にしない。
-7. 迷ったら can_publish=false。
+${AD_PUBLICATION_RULES}
+ALLOWEDは自社ポータルへの明確な許可があり、未解消の禁止・承諾条件がない場合のみ。can_publish=trueにはpositive_evidenceの許可原文と空のblocking_evidenceが必要。
 
 この判定は自動掲載ゲートです。保守的に判断してください。`,
       },
@@ -318,14 +306,8 @@ async function verifyAllowedDecisionWithAI(
         content: `あなたは広告掲載可判定の最終検証AIです。
 前段が ALLOWED と判定しました。あなたの役割は反証探しです。
 
-画像を読み直し、次のような掲載ブロック文言が1つでもあれば verified_allowed=false:
-- 広告不可、広告掲載不可、広告転載不可、転載不可、ネット広告不可
-- 掲載厳禁、一切不可、ポータル全般不可、HP含む不可
-- 承諾書、広告承認、要承諾、要連絡、事前確認、応相談
-- 自社HP可と矛盾する禁止文言
-
-「SUUMO以外可」「SUUMO不可」「楽待不可」「健美家不可」などの特定媒体のみ不可は、自社ポータルが該当しないためブロック文言ではない。
-自社HP可、広告可、または特定媒体以外可など明確な許可があり、上記ブロックが見当たらない場合のみ verified_allowed=true。
+${AD_PUBLICATION_RULES}
+画像を独立に読み直し、自社ポータルに適用される未解消の禁止・承諾条件があればverified_allowed=false。明確な許可原文と、その範囲に矛盾がないことを確認できた場合だけverified_allowed=true。
 迷ったら false。`,
       },
       {

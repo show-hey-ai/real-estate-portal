@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations, getLocale } from 'next-intl/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { getAdminUserFromSession } from '@/lib/admin-auth'
 import { ListingGallery } from '@/components/listing/listing-gallery'
 import { ListingSpecs } from '@/components/listing/listing-specs'
@@ -17,7 +17,7 @@ import {
   formatTransitAccessLabel,
   translateAddress,
 } from '@/lib/translate-fields'
-import { formatPublicAddress } from '@/lib/address'
+import { formatApprovedPublicAddress, hasDetailedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 
 interface ListingPreviewPageProps {
@@ -43,7 +43,7 @@ export default async function ListingPreviewPage({
   const { id } = await params
   const t = await getTranslations('listing')
   const locale = await getLocale()
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   const { data: listing, error } = await supabase
     .from('listings')
@@ -78,7 +78,7 @@ export default async function ListingPreviewPage({
 
   const warnings = (listing.warnings as string[]) || []
   const publicAddress =
-    formatPublicAddress(listing.addressPublic).publicAddress || listing.addressPublic
+    formatApprovedPublicAddress(listing.addressPublic)
   const stations = normalizeTransitStations(
     listing.stations as {
       name: string
@@ -139,10 +139,10 @@ export default async function ListingPreviewPage({
                           {translateAddress(publicAddress, locale) || publicAddress}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground/70 flex items-center gap-1 ml-5">
+                      {!hasDetailedPublicAddress(publicAddress) && (<p className="text-xs text-muted-foreground/70 flex items-center gap-1 ml-5">
                         <Info className="h-3 w-3 shrink-0" />
                         {t('addressPrivacyNote')}
-                      </p>
+                      </p>)}
                     </div>
                   )}
                   {stations.length > 0 && (

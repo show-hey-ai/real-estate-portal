@@ -59,6 +59,8 @@ const listingSchema = z.object({
     infoUpdatedAt: z.string().optional(),
     conditionsExpiry: z.string().optional(),
     deliveryDate: z.string().optional(),
+    adAllowed: z.boolean().default(false),
+    adConsentRequired: z.boolean().default(false),
     status: z.enum(['DRAFT', 'PUBLISHED', 'REVIEWED', 'ARCHIVED']).default('DRAFT'),
     images: z.array(z.string()).optional(),
 })
@@ -98,6 +100,8 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
 
     const defaultValues: Partial<ListingFormValues> = {
         status: 'DRAFT',
+        adAllowed: false,
+        adConsentRequired: false,
         stations: [{ name: '', line: '', walk_minutes: null }],
         images: [],
         ...initialData,
@@ -258,7 +262,22 @@ export function ListingForm({ initialData, mode = 'create' }: ListingFormProps) 
                             </div>
 
                             <div className="space-y-2">
-                                <Label>公開用住所（市町村・丁目まで） <span className="text-red-500">*</span></Label>
+                                <Label>広告・公開区分</Label>
+                                <Select value={form.watch('adAllowed') ? 'allowed' : 'private'} onValueChange={(value) => {
+                                    form.setValue('adAllowed', value === 'allowed')
+                                    if (value === 'private') form.setValue('status', 'DRAFT')
+                                }}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="allowed">広告可（許可確認済み・公開候補）</SelectItem>
+                                        <SelectItem value="private">非公開・預かり（広告不可／未確認）</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-xs text-muted-foreground">広告不可の預かり物件は管理画面で保存し、一般の物件一覧には表示しません。</p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>公開用住所（広告可なら番地・建物名・部屋番号まで） <span className="text-red-500">*</span></Label>
                                 <Input {...form.register('addressPublic')} placeholder="東京都渋谷区神南1丁目" />
                                 {form.formState.errors.addressPublic && (
                                     <p className="text-sm text-red-500">{form.formState.errors.addressPublic.message}</p>

@@ -12,6 +12,8 @@ import { AdminListingDeleteButton } from '@/components/admin/admin-listing-delet
 import { AdminListingNotes } from '@/components/admin/admin-listing-notes'
 import { AdminBulkImagePreview } from '@/components/admin/admin-bulk-image-preview'
 import { getHospitalityCategoryLabel } from '@/lib/hospitality-copy'
+import { getMarketCategory } from '@/lib/market-category'
+import { getPortalCategoryLabel } from '@/lib/portal-copy'
 import {
   Table,
   TableBody,
@@ -34,6 +36,8 @@ interface Listing {
   managementId: string | null
   addressPublic: string | null
   propertyType: string | null
+  currentStatus: string | null
+  yieldGross: number | string | null
   hospitalityCategory: string | null
   price: number | null
   status: string
@@ -194,6 +198,7 @@ export function AdminListingsTable({ listings, labels }: AdminListingsTableProps
             ) : (
               listings.map((listing) => {
                 const hospitalityCategoryLabel = getHospitalityCategoryLabel(listing.hospitalityCategory, 'ja')
+                const marketCategory = getMarketCategory(listing)
 
                 return (
                 <TableRow key={listing.id} className={selected.has(listing.id) ? 'bg-muted/50' : ''}>
@@ -217,6 +222,11 @@ export function AdminListingsTable({ listings, labels }: AdminListingsTableProps
                       {hospitalityCategoryLabel && (
                         <Badge variant="outline" className="rounded-[6px] text-[11px]">
                           {hospitalityCategoryLabel}
+                        </Badge>
+                      )}
+                      {!hospitalityCategoryLabel && marketCategory && (
+                        <Badge variant="outline" className="rounded-[4px] text-[11px]">
+                          {getPortalCategoryLabel('ja', marketCategory)}
                         </Badge>
                       )}
                     </div>

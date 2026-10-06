@@ -1,7 +1,9 @@
 import { spawn } from 'child_process'
-import { resolve } from 'path'
+import { access, mkdir, readdir, readFile, rename, writeFile } from 'fs/promises'
+import { basename, extname, join, resolve } from 'path'
 import { config } from 'dotenv'
 import { createClient } from '@supabase/supabase-js'
+import { PDFDocument } from 'pdf-lib'
 
 config({ path: resolve(process.cwd(), '.env') })
 
@@ -30,6 +32,41 @@ function log(message: string) {
   console.log(`[${new Date().toLocaleTimeString('ja-JP')}] ${message}`)
 }
 
+function formatRunStamp(date = new Date()) {
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    '_',
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join('')
+}
+
+async function pathExists(path: string) {
+  try {
+    await access(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function uniquePath(path: string) {
+  if (!(await pathExists(path))) return path
+  const ext = extname(path)
+  const base = path.slice(0, path.length - ext.length)
+
+  for (let index = 2; index < 1000; index++) {
+    const candidate = `${base}-${index}${ext}`
+    if (!(await pathExists(candidate))) return candidate
+  }
+
+  return `${base}-${Date.now()}${ext}`
+}
+
 function runTsxScript(scriptPath: string, scriptArgs: string[], env: NodeJS.ProcessEnv) {
   return new Promise<void>((resolvePromise, rejectPromise) => {
     const child = spawn(process.execPath, [tsxCli, scriptPath, ...scriptArgs], {
@@ -50,61 +87,51 @@ function runTsxScript(scriptPath: string, scriptArgs: string[], env: NodeJS.Proc
 }
 
 // === PDF分割: 結合PDF(zmn_list_*.pdf)を1ページずつに分割 ===
-async function splitCombinedPdfs() {
+async function splitCombinedPdfs(targetDir: string) {
   log('結合PDFを個別ファイルに分割中...')
+  await mkdir(targetDir, { recursive: true })
 
-  // PyMuPDF (fitz) を使って分割
-  const { execSync } = await import('child_process')
+  const combinedFiles = (await readdir(targetDir))
+    .filter(file => /^zmn_list_.*\.pdf$/i.test(file))
+    .sort()
 
-  const pythonScript = `
-import fitz, os, glob, sys
-
-maisoku_dir = sys.argv[1]
-combined_pdfs = sorted(glob.glob(os.path.join(maisoku_dir, "zmn_list_*.pdf")))
-
-if not combined_pdfs:
-    print("分割対象の結合PDFなし")
-    sys.exit(0)
-
-print(f"{len(combined_pdfs)}件の結合PDFを検出")
-
-total = 0
-for pdf_path in combined_pdfs:
-    doc = fitz.open(pdf_path)
-    bn = os.path.splitext(os.path.basename(pdf_path))[0]
-    for i in range(len(doc)):
-        total += 1
-        out = fitz.open()
-        out.insert_pdf(doc, from_page=i, to_page=i)
-        out.save(os.path.join(maisoku_dir, f"split_{bn}_p{i+1:03d}.pdf"))
-        out.close()
-    doc.close()
-
-# 結合PDFを退避
-combined_dir = os.path.join(maisoku_dir, "combined-originals")
-os.makedirs(combined_dir, exist_ok=True)
-for p in combined_pdfs:
-    os.rename(p, os.path.join(combined_dir, os.path.basename(p)))
-
-print(f"分割完了: {total}件の個別PDF作成、{len(combined_pdfs)}件の結合PDFを退避")
-`
-
-  try {
-    const result = execSync(`python3 -c ${JSON.stringify(pythonScript)} ${JSON.stringify(watchDir)}`, {
-      encoding: 'utf-8',
-      timeout: 120000,
-    })
-    result.trim().split('\n').forEach(line => log(`  ${line}`))
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err)
-    // python3が無い場合のフォールバック: Node.jsのpdf-libで分割
-    log('  python3/PyMuPDF が利用不可。フォールバック: 結合PDFをそのまま処理します')
-    log(`  エラー: ${message.slice(0, 100)}`)
+  if (combinedFiles.length === 0) {
+    log('  分割対象の結合PDFなし')
+    return
   }
+
+  const combinedDir = join(targetDir, 'combined-originals')
+  await mkdir(combinedDir, { recursive: true })
+  log(`  ${combinedFiles.length}件の結合PDFを検出`)
+
+  let splitCount = 0
+  let movedCount = 0
+
+  for (const fileName of combinedFiles) {
+    const filePath = join(targetDir, fileName)
+    const sourcePdf = await PDFDocument.load(await readFile(filePath))
+    const baseName = basename(fileName, '.pdf')
+    const pageCount = sourcePdf.getPageCount()
+
+    for (let pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+      const singlePdf = await PDFDocument.create()
+      const [page] = await singlePdf.copyPages(sourcePdf, [pageIndex])
+      singlePdf.addPage(page)
+
+      const outputName = `split_${baseName}_p${String(pageIndex + 1).padStart(3, '0')}.pdf`
+      await writeFile(await uniquePath(join(targetDir, outputName)), Buffer.from(await singlePdf.save()))
+      splitCount++
+    }
+
+    await rename(filePath, await uniquePath(join(combinedDir, fileName)))
+    movedCount++
+  }
+
+  log(`  分割完了: ${splitCount}件の個別PDF作成、${movedCount}件の結合PDFを退避`)
 }
 
 // === ポータル検証: 登録済み物件をチェック ===
-async function verifyPortal() {
+async function verifyPortal(sinceIso?: string) {
   log('ポータル登録結果を確認中...')
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -116,8 +143,8 @@ async function verifyPortal() {
 
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-  // 最新の物件を取得（直近24時間以内に登録されたもの）
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+  // 最新の物件を取得（実行開始後。未指定なら直近24時間以内）
+  const since = sinceIso || new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
   const { data: listings, error } = await supabase
     .from('listings')
     .select('managementId, addressPublic, propertyType, price, status, adAllowed, createdAt')
@@ -130,11 +157,11 @@ async function verifyPortal() {
   }
 
   if (!listings || listings.length === 0) {
-    log('  直近24時間の新規登録なし')
+    log('  新規登録なし')
     return
   }
 
-  log(`  直近24時間の新規登録: ${listings.length}件`)
+  log(`  新規登録: ${listings.length}件`)
   log('')
   log('  管理番号    | 住所                           | 種別         | 価格        | 広告  | ステータス')
   log('  ' + '-'.repeat(100))
@@ -144,7 +171,7 @@ async function verifyPortal() {
   for (const l of recentListings) {
     const addr = (l.addressPublic || '').slice(0, 28).padEnd(28)
     const type = (l.propertyType || '').slice(0, 10).padEnd(10)
-    const price = l.price ? `¥${Number(l.price).toLocaleString()}万`.padEnd(10) : '不明'.padEnd(10)
+    const price = l.price ? `${(Number(l.price) / 10000).toLocaleString()}万円`.padEnd(10) : '不明'.padEnd(10)
     const ad = l.adAllowed ? '✅' : '❌'
     const status = l.status || 'DRAFT'
     log(`  ${l.managementId} | ${addr} | ${type} | ${price} | ${ad}   | ${status}`)
@@ -168,40 +195,63 @@ async function main() {
   npx tsx scripts/reins-auto.ts --headless
   npx tsx scripts/reins-auto.ts --headless --max-pages=1 --max=1
   npx tsx scripts/reins-auto.ts --dry-run --max=5
+  npx tsx scripts/reins-auto.ts --dry-run --max=1 --max-pdf-pages=1
+  npx tsx scripts/reins-auto.ts --dry-run --max=1 --ai-provider=codex
   npx tsx scripts/reins-auto.ts --skip-reins --dir ~/Downloads/maisoku
   npx tsx scripts/reins-auto.ts --skip-reins --skip-split   # 分割済みの場合
 
 Options:
-  --headless          ブラウザ非表示でREINS操作
+  --headless          ブラウザ非表示でREINS操作（2026-05-27時点ではREINSが503を返すため通常は非推奨）
   --max-pages=N       REINSの最大ページ数 (default: 20)
   --max=N             取り込み最大件数
+  --max-pdf-pages=N   1つのPDF内で処理する最大ページ数
+  --ai-provider=openai|codex  広告判定・抽出・帯除去に使うAI
+  --codex-on-quota    OpenAI quota/billing 429時だけCodexへ切替
   --dry-run           取り込みのドライラン
+  --allow-missing-storage  PDF保存失敗でもDB登録を続行
   --skip-reins        REINSダウンロードをスキップ
   --skip-split        PDF分割をスキップ
   --dir <path>        監視ディレクトリ指定`)
     process.exit(0)
   }
 
-  const sharedEnv = {
-    ...process.env,
-    MAISOKU_WATCH_DIR: watchDir,
+  const downloadArgs = args.filter(arg => arg === '--headless' || arg.startsWith('--max-pages='))
+  let activeDir = watchDir
+
+  if (!skipReins) {
+    activeDir = resolve(watchDir, `reins-run-${formatRunStamp()}`)
+    await mkdir(activeDir, { recursive: true })
   }
 
-  const downloadArgs = args.filter(arg => arg === '--headless' || arg.startsWith('--max-pages='))
-  const importArgs = ['--all', '--dir', watchDir]
+  const sharedEnv = {
+    ...process.env,
+    MAISOKU_WATCH_DIR: activeDir,
+  }
+
+  const importArgs = ['--all', '--dir', activeDir]
 
   for (const arg of args) {
-    if (arg === '--dry-run' || arg.startsWith('--max=')) {
+    if (
+      arg === '--dry-run' ||
+      arg === '--allow-missing-storage' ||
+      arg === '--codex-on-quota' ||
+      arg.startsWith('--max=') ||
+      arg.startsWith('--max-pdf-pages=') ||
+      arg.startsWith('--ai-provider=')
+    ) {
       importArgs.push(arg)
     }
   }
 
   let step = 1
+  const runStartedAt = new Date().toISOString()
 
   log('=== REINS自動取得 + PDF分割 + 自動取り込み ===')
   log(`  監視ディレクトリ: ${watchDir}`)
+  if (activeDir !== watchDir) log(`  今回の実行ディレクトリ: ${activeDir}`)
   log(`  ダウンロード: ${skipReins ? 'skip' : downloadArgs.includes('--headless') ? 'headless' : 'browser'}`)
   log(`  PDF分割: ${skipSplit ? 'skip' : 'auto'}`)
+  log(`  AI: ${args.find(arg => arg.startsWith('--ai-provider='))?.replace('--ai-provider=', '') || process.env.MAISOKU_AI_PROVIDER || 'openai'}${args.includes('--codex-on-quota') || process.env.MAISOKU_CODEX_ON_QUOTA === 'true' ? ' (quota時Codex)' : ''}`)
   if (importArgs.includes('--dry-run')) log('  取り込み: dry-run')
   log('')
 
@@ -215,7 +265,7 @@ Options:
   // Step 2: PDF分割
   if (!skipSplit) {
     log(`${step}. 結合PDFを個別ファイルに分割`)
-    await splitCombinedPdfs()
+    await splitCombinedPdfs(activeDir)
     step++
   }
 
@@ -226,7 +276,7 @@ Options:
 
   // Step 4: ポータル検証
   log(`${step}. ポータル登録結果を確認`)
-  await verifyPortal()
+  await verifyPortal(runStartedAt)
 
   log('=== 完了 ===')
 }

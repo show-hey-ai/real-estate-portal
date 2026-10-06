@@ -25,6 +25,13 @@ const prisma = new PrismaClient({ adapter })
 
 const dryRun = process.argv.includes('--dry-run')
 
+// This historical hospitality batch publishes every draft. Keep it unavailable
+// during the residential transition unless an operator explicitly opts in.
+if (process.env.ALLOW_LEGACY_HOSPITALITY_BULK_PUBLISH !== 'true') {
+  console.error('旧・宿泊向け一括公開は停止中です。住宅物件は管理画面で一件ずつ確認してください。')
+  process.exit(1)
+}
+
 // ARCHIVE 対象の管理番号（明らかに 4本柱外 / 高級区分など）
 const ARCHIVE_MANAGEMENT_IDS: string[] = [
   'TP-0212', // ザ豊海タワー、76.69㎡ 3LDK 区分

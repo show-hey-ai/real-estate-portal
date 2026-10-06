@@ -255,6 +255,9 @@ const listingsCopy = {
     resultPrefix: '公開中の候補',
     filtersTitle: '取得条件',
     filtersDescription: '宿泊用途・エリア・価格・建物規模で絞り込み',
+    emptyTitle: '条件に合う公開物件が見つかりません',
+    emptyDescription: '条件を少し広げるか、希望エリア・予算・用途を送ってください。未公開候補も確認します。',
+    emptyCta: '条件を相談する',
   },
   en: {
     title: 'Hospitality Property Listings',
@@ -263,6 +266,9 @@ const listingsCopy = {
     resultPrefix: 'Published candidates',
     filtersTitle: 'Acquisition criteria',
     filtersDescription: 'Filter by lodging use, location, budget, and building scale',
+    emptyTitle: 'No public properties match these criteria',
+    emptyDescription: 'Try widening your search, or send us your area, budget, and hospitality use. We can check off-market candidates too.',
+    emptyCta: 'Discuss your criteria',
   },
   'zh-TW': {
     title: '住宿業物件列表',
@@ -271,6 +277,9 @@ const listingsCopy = {
     resultPrefix: '公開候選',
     filtersTitle: '取得條件',
     filtersDescription: '依住宿用途、地區、預算與建物規模篩選',
+    emptyTitle: '找不到符合條件的公開物件',
+    emptyDescription: '可以放寬條件，或直接告訴我們希望的地區、預算與用途。我們也可以確認未公開候選。',
+    emptyCta: '諮詢您的條件',
   },
   'zh-CN': {
     title: '住宿业物件列表',
@@ -279,6 +288,9 @@ const listingsCopy = {
     resultPrefix: '公开候选',
     filtersTitle: '取得条件',
     filtersDescription: '按住宿用途、地区、预算与建筑规模筛选',
+    emptyTitle: '没有符合条件的公开物件',
+    emptyDescription: '可以放宽条件，或直接告诉我们希望的地区、预算与用途。我们也可以确认未公开候选。',
+    emptyCta: '咨询您的条件',
   },
 } as const
 

@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
+import { getAdminUserFromSession } from '@/lib/admin-auth'
+import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { AdminListingsTable } from '@/components/admin/admin-listings-table'
@@ -9,11 +11,13 @@ import { FileUp, Search } from 'lucide-react'
 export default async function AdminListingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>
+  searchParams: Promise<{ q?: string; inventory?: string }>
 }) {
   const t = await getTranslations('admin')
-  const supabase = await createClient()
-  const { q } = await searchParams
+  if (!await getAdminUserFromSession()) notFound()
+  const supabase = createServiceClient()
+  const { q, inventory: requestedInventory } = await searchParams
+  const inventory = ['advertisable', 'private', 'consent'].includes(requestedInventory || '') ? requestedInventory! : 'all'
 
   let query = supabase
     .from('listings')
@@ -26,8 +30,13 @@ export default async function AdminListingsPage({
     `)
     .order('createdAt', { ascending: false })
 
-  if (q) {
-    query = query.or(`managementId.ilike.%${q}%,addressPublic.ilike.%${q}%,addressPrivate.ilike.%${q}%`)
+  if (inventory === 'advertisable') query = query.eq('adAllowed', true).eq('adConsentRequired', false)
+  if (inventory === 'private') query = query.eq('adAllowed', false).eq('adConsentRequired', false)
+  if (inventory === 'consent') query = query.eq('adConsentRequired', true)
+
+  const safeKeyword = q?.replace(/[^\p{L}\p{N}\s\-]/gu, '').trim().slice(0, 80)
+  if (safeKeyword) {
+    query = query.or(`managementId.ilike.%${safeKeyword}%,addressPublic.ilike.%${safeKeyword}%,addressPrivate.ilike.%${safeKeyword}%`)
   }
 
   const { data: listingsData, error } = await query
@@ -55,7 +64,16 @@ export default async function AdminListingsPage({
         </Link>
       </div>
 
+      <nav aria-label="広告・公開区分" className="mb-4 flex flex-wrap gap-2">
+        {[['all', 'すべて'], ['advertisable', '広告可・掲載候補'], ['private', '非公開・預かり'], ['consent', '承諾・確認待ち']].map(([value, label]) => (
+          <Link key={value} href={`/admin/listings?inventory=${value}${q ? `&q=${encodeURIComponent(q)}` : ''}`}>
+            <Button variant={inventory === value ? 'default' : 'outline'}>{label}</Button>
+          </Link>
+        ))}
+      </nav>
+      <p className="mb-4 text-sm text-muted-foreground">広告可の物件は許可範囲内の住所を最後まで掲載できます。広告不可・未確認の預かり物件は非公開で管理し、承諾待ちは別区分に保留します。</p>
       <form className="mb-4 flex gap-2" action="/admin/listings" method="GET">
+        <input type="hidden" name="inventory" value={inventory} />
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -27,7 +27,7 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const { id } = await context.params
 
-  const { data: listing, error } = await supabase
+  const { data: listing, error } = await createServiceClient()
     .from('listings')
     .select(`
       *,

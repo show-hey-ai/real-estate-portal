@@ -245,7 +245,7 @@ export function ReviewForm({ listing }: ReviewFormProps) {
     {
       key: 'noFullAddress',
       label: t('checks.noFullAddress'),
-      passed: !listing.addressBlocked || !!formData.addressPublic?.match(/^.+?\d+丁目$/),
+      passed: formData.adAllowed && !formData.adConsentRequired,
     },
   ]
 
@@ -348,13 +348,13 @@ export function ReviewForm({ listing }: ReviewFormProps) {
       </div>
 
       {/* 住所ブロック警告 */}
-      {listing.addressBlocked && (
+      {!formData.adAllowed && listing.addressBlocked && (
         <Card className="border-red-200 bg-red-50 mb-6">
           <CardContent className="py-4">
             <div className="flex items-center gap-2 text-red-800">
               <AlertTriangle className="h-5 w-5" />
               <span className="font-medium">
-                番地パターンが検出されました。公開住所を丁目までに修正してください。
+                広告不可・未確認の物件は非公開で管理します。広告可の確認後に、許可範囲内の住所を公開できます。
               </span>
             </div>
           </CardContent>
@@ -431,6 +431,17 @@ export function ReviewForm({ listing }: ReviewFormProps) {
                 </div>
               </div>
 
+              <div className="space-y-2">
+                <Label>広告・公開区分</Label>
+                <Select value={formData.adAllowed ? 'allowed' : 'private'} onValueChange={(value) => setFormData(prev => ({ ...prev, adAllowed: value === 'allowed' }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="allowed">広告可（許可確認済み・公開候補）</SelectItem>
+                    <SelectItem value="private">非公開・預かり（広告不可／未確認）</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="flex items-center gap-3 p-3 rounded-md border bg-muted/30">
                 <Checkbox
                   id="adConsentRequired"
@@ -449,15 +460,15 @@ export function ReviewForm({ listing }: ReviewFormProps) {
 
               <div className="space-y-2">
                 <Label>
-                  住所（公開用・丁目まで）
-                  {listing.addressBlocked && (
+                  住所（公開用・広告可なら最後まで）
+                  {!formData.adAllowed && listing.addressBlocked && (
                     <Badge variant="destructive" className="ml-2">要修正</Badge>
                   )}
                 </Label>
                 <Input
                   value={formData.addressPublic}
                   onChange={(e) => handleChange('addressPublic', e.target.value)}
-                  className={listing.addressBlocked ? 'border-red-500' : ''}
+                  className={!formData.adAllowed && listing.addressBlocked ? 'border-red-500' : ''}
                 />
               </div>
 

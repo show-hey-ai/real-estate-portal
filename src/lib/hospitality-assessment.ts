@@ -24,7 +24,7 @@ interface StationLike {
   walk_minutes?: number | null
 }
 
-interface HospitalityCandidateInput {
+export interface HospitalityCandidateInput {
   propertyType: string | null
   zoning?: string | null
   currentStatus?: string | null
@@ -98,6 +98,25 @@ function hasHospitalityAdjacentUseSignal(text: string): boolean {
 
 function hasWeakRoadSignal(text: string): boolean {
   return /(再建築不可|接道.*(不足|なし|弱い|不明|2m未満)|43条|但し書き|ただし書き|私道.*(権利|不明)|セットバック未了|道路種別.*不明)/u.test(text)
+}
+
+export function getOwnerChangeSignal(input: HospitalityCandidateInput): string | null {
+  const currentStatus = input.currentStatus || ''
+  const currentStatusMatch = currentStatus.match(
+    /(オーナーチェンジ|賃貸中|居住中|入居中|入居者(?:有|あり)|サブリース中|満室)/u
+  )
+  if (currentStatusMatch?.[0]) return currentStatusMatch[0]
+
+  const text = toSourceText(input)
+  const textMatch = text.match(
+    /(オーナーチェンジ|賃貸中|居住中|入居中|入居者(?:有|あり)|賃借人|借家権|既存賃貸借|サブリース中|満室(?:稼働|賃貸)|現(?:行|況)(?:年収|収入|賃料|利回り)|年間(?:賃料|家賃)収入|家賃収入|賃料収入|一棟収益|収益(?:物件|ビル|マンション)|売収益(?:ビル|マンション|アパート)?)/u
+  )
+
+  return textMatch?.[0] || null
+}
+
+export function isOwnerChangeListing(input: HospitalityCandidateInput): boolean {
+  return getOwnerChangeSignal(input) != null
 }
 
 function isPre1981(input: HospitalityCandidateInput): boolean {
@@ -192,8 +211,8 @@ function inferPotentialScore(input: HospitalityCandidateInput, category: Hospita
     score += 1
   }
 
-  if (/(居住中|賃貸中|オーナーチェンジ|満室)/u.test(input.currentStatus || text)) {
-    score -= 1
+  if (isOwnerChangeListing(input)) {
+    score -= 2
   }
 
   if (isPre1981(input)) {
@@ -256,7 +275,7 @@ function inferPrimaryRisks(input: HospitalityCandidateInput): string[] {
     '保健所・消防の事前相談で、想定する宿泊用途の成立性を確認する必要があります。',
   ]
 
-  if (/(居住中|賃貸中|オーナーチェンジ|満室)/u.test(`${input.currentStatus || ''} ${text}`)) {
+  if (isOwnerChangeListing(input)) {
     risks.push('既存賃貸借、明渡し時期、宿泊用途への切替タイミングを確認する必要があります。')
   }
 

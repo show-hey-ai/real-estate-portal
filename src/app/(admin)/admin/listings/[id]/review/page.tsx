@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
+import { getAdminUserFromSession } from '@/lib/admin-auth'
 import { ReviewForm } from '@/components/admin/review-form'
+import { ChatSellerSetup } from '@/components/admin/chat-seller-setup'
 
 interface ReviewPageProps {
   params: Promise<{ id: string }>
@@ -17,7 +19,8 @@ interface ListingEvidence {
 
 export default async function ReviewPage({ params }: ReviewPageProps) {
   const { id } = await params
-  const supabase = await createClient()
+  if (!await getAdminUserFromSession()) notFound()
+  const supabase = createServiceClient()
 
   const { data: listing, error } = await supabase
     .from('listings')
@@ -57,6 +60,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
 
   return (
     <div>
+      <ChatSellerSetup listingId={id} />
       <ReviewForm listing={serializedListing} />
     </div>
   )

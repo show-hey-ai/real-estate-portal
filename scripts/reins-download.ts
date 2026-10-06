@@ -5,39 +5,76 @@
  * Usage:
  *   npx tsx scripts/reins-download.ts
  *   npx tsx scripts/reins-download.ts --headless
+ *   npx tsx scripts/reins-download.ts --dir ~/Downloads/maisoku/reins-run-test
  *
  * .env設定:
  *   REINS_LOGIN_ID / REINS_LOGIN_PW  (認証)
  *   REINS_AREA=東京都                (都道府県)
  *   REINS_CITY=中央区                (市区町村、任意)
- *   REINS_PROPERTY_TYPE=売外全     (物件種別。宿泊業候補は一棟系を優先)
+ *   REINS_PROPERTY_TYPE=売マンション (物件種別。売外全・売土地・売一戸建なども対象)
+ *   REINS_ITEM_NAME=中古マンション  (種目。任意)
  *   REINS_PRICE_MIN=10000            (最低価格 万円)
  *   REINS_PRICE_MAX=15000            (最高価格 万円)
  */
 import { chromium, type Page, type Download } from 'playwright'
-import { resolve } from 'path'
-import { mkdir } from 'fs/promises'
+import { basename, extname, resolve } from 'path'
+import { access, mkdir } from 'fs/promises'
 import { config } from 'dotenv'
 
 config({ path: resolve(process.cwd(), '.env') })
 
-const LOGIN_URL = 'https://system.reins.jp/login/main/KG/GKG001200'
+const ARGS = process.argv.slice(2)
+const ENTRY_URL = 'https://system.reins.jp/'
 const USER_ID = process.env.REINS_USER_ID || process.env.REINS_LOGIN_ID || ''
 const PASSWORD = process.env.REINS_PASSWORD || process.env.REINS_LOGIN_PW || ''
-const DOWNLOAD_DIR = resolve(process.env.MAISOKU_WATCH_DIR?.replace('~', process.env.HOME || '') || `${process.env.HOME}/Downloads/maisoku`)
+const dirArgIndex = ARGS.indexOf('--dir')
+const DOWNLOAD_DIR = resolve(
+  dirArgIndex !== -1 && ARGS[dirArgIndex + 1]
+    ? ARGS[dirArgIndex + 1].replace('~', process.env.HOME || '')
+    : process.env.MAISOKU_WATCH_DIR?.replace('~', process.env.HOME || '') || `${process.env.HOME}/Downloads/maisoku`
+)
 
 const SEARCH_AREA = process.env.REINS_AREA || '東京都'
 const SEARCH_CITY = process.env.REINS_CITY || ''
-const SEARCH_PROPERTY_TYPE = process.env.REINS_PROPERTY_TYPE || '売外全'
+const BUYER_STRICT = process.env.REINS_BUYER_STRICT === 'true'
+const SEARCH_PROPERTY_TYPE = process.env.REINS_PROPERTY_TYPE || '売マンション'
+const SEARCH_ITEM_NAME = process.env.REINS_ITEM_NAME || ''
 const SEARCH_PRICE_MIN = process.env.REINS_PRICE_MIN || ''
 const SEARCH_PRICE_MAX = process.env.REINS_PRICE_MAX || ''
-const maxPagesArg = process.argv.find(arg => arg.startsWith('--max-pages='))
+const EXCLUDE_OWNER_CHANGE = process.env.REINS_EXCLUDE_OWNER_CHANGE === 'true'
+const maxPagesArg = ARGS.find(arg => arg.startsWith('--max-pages='))
 const MAX_PAGES = maxPagesArg ? Math.max(1, parseInt(maxPagesArg.replace('--max-pages=', ''), 10) || 1) : 20
 
-const headless = process.argv.includes('--headless')
+const headless = ARGS.includes('--headless')
 
 function log(msg: string) {
-  console.log(`[${new Date().toLocaleTimeString('ja-JP')}] ${msg}`)
+  let safe = msg
+  for (const credential of [USER_ID, PASSWORD].filter(Boolean)) {
+    safe = safe.replaceAll(credential, '[REDACTED]').replaceAll(JSON.stringify(credential).slice(1, -1), '[REDACTED]')
+  }
+  console.log(`[${new Date().toLocaleTimeString('ja-JP')}] ${safe}`)
+}
+
+async function pathExists(path: string) {
+  try {
+    await access(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function uniquePath(path: string) {
+  if (!(await pathExists(path))) return path
+  const ext = extname(path)
+  const base = path.slice(0, path.length - ext.length)
+
+  for (let index = 2; index < 1000; index++) {
+    const candidate = `${base}-${index}${ext}`
+    if (!(await pathExists(candidate))) return candidate
+  }
+
+  return `${base}-${Date.now()}${ext}`
 }
 
 // BootstrapVueのフォームはname属性がなく動的IDのみ。
@@ -69,6 +106,58 @@ async function findPropertyTypeSelect(page: Page, typeName: string): Promise<{ s
     }
     return null
   }, typeName)
+}
+
+async function selectItemName(page: Page, itemName: string) {
+  if (!itemName) return
+
+  const result = await page.evaluate((targetItemName) => {
+    const needle = targetItemName.replace(/\s+/g, '')
+    const selects = document.querySelectorAll('select')
+
+    for (const sel of selects) {
+      const options = Array.from(sel.options)
+      let match: HTMLOptionElement | null = null
+
+      for (const option of options) {
+        const text = (option.textContent || '').replace(/\s+/g, '')
+        if (text === needle) {
+          match = option
+          break
+        }
+      }
+
+      if (!match) {
+        for (const option of options) {
+          const text = (option.textContent || '').replace(/\s+/g, '')
+          if (text.includes(needle)) {
+            match = option
+            break
+          }
+        }
+      }
+
+      if (!match) continue
+
+      sel.value = match.value
+      sel.dispatchEvent(new Event('input', { bubbles: true }))
+      sel.dispatchEvent(new Event('change', { bubbles: true }))
+      return {
+        selectId: sel.id,
+        value: match.value,
+        text: match.textContent?.trim() || '',
+      }
+    }
+
+    return null
+  }, itemName)
+
+  if (!result) {
+    throw new Error(`種目 "${itemName}" が見つかりません`)
+  }
+
+  log(`  種目: ${result.text} (value=${result.value})`)
+  await page.waitForTimeout(800)
 }
 
 // 価格入力欄を探す（"価格"ラベルのcard-body内の最初の2つのtext input）
@@ -104,24 +193,22 @@ async function dismissModal(page: Page) {
 // === ステップ1: ログイン ===
 async function login(page: Page) {
   log('1. REINSにログイン...')
-  await page.goto(LOGIN_URL, { waitUntil: 'domcontentloaded', timeout: 30000 })
-  await page.waitForTimeout(2000)
+  if (!USER_ID || !PASSWORD) throw new Error('REINSの認証情報が未設定です')
+  const response = await page.goto(ENTRY_URL, { waitUntil: 'domcontentloaded', timeout: 30000 })
+  if (!response?.ok()) throw new Error(`REINS入口の応答が正常ではありません: HTTP ${response?.status() ?? 'unknown'}`)
+  await page.locator('#login-button').click({ timeout: 30000 })
+  await page.locator('input[type="password"]').waitFor({ state: 'visible', timeout: 30000 })
 
   // BootstrapVue: name属性なし、type="text"が1つ、type="password"が1つ
-  const userField = await page.$('input[type="text"]')
-  if (userField) await userField.fill(USER_ID)
-
-  const passField = await page.$('input[type="password"]')
-  if (passField) await passField.fill(PASSWORD)
+  try {
+    await page.locator('input[type="text"]').fill(USER_ID)
+    await page.locator('input[type="password"]').fill(PASSWORD)
+  } catch { throw new Error('REINS認証フォームへ入力できませんでした') }
 
   // 規程遵守チェックボックス（BootstrapVue: labelがinterceptするのでforce使用）
-  for (const cb of await page.$$('input[type="checkbox"]')) {
-    if (!(await cb.isChecked())) await cb.check({ force: true })
-  }
-
-  await page.waitForTimeout(500)
-  const loginBtn = await page.$('button:has-text("ログイン")')
-  if (loginBtn) await loginBtn.click()
+  await page.getByLabel('所属機構の規程及びガイドラインを遵守します', { exact: true }).check({ force: true })
+  await page.getByRole('button', { name: 'ログイン', exact: true }).click()
+  await page.waitForURL((url) => !url.pathname.includes('GKG001200'), { timeout: 30000 })
 
   await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {})
   await page.waitForTimeout(3000)
@@ -135,6 +222,13 @@ async function login(page: Page) {
 // === ステップ2: 売買物件検索ページへ ===
 async function navigateToSearch(page: Page) {
   log('2. 売買物件検索ページへ...')
+
+  await page.waitForFunction(
+    () => document.body?.innerText.includes('売買 物件検索') || document.body?.innerText.includes('売買物件検索'),
+    undefined,
+    { timeout: 20000 }
+  ).catch(() => {})
+  await page.waitForTimeout(1000)
 
   // まずメインメニューのボタンを確認
   const menuButtons = await page.evaluate(() => {
@@ -217,6 +311,7 @@ async function navigateToSearch(page: Page) {
       await page.waitForTimeout(2000)
       log(`  URL: ${page.url()}`)
     } else {
+      if (BUYER_STRICT) throw new Error('Required buyer property type could not be applied.')
       log(`  物件種別 "${SEARCH_PROPERTY_TYPE}" がselectに見つかりません`)
     }
   }
@@ -232,13 +327,16 @@ async function setSearchCriteria(page: Page) {
     if (typeInfo) {
       await page.selectOption(`#${typeInfo.selectId}`, typeInfo.value)
       log(`  物件種別(select): ${SEARCH_PROPERTY_TYPE}`)
-      await page.waitForTimeout(500)
+      await page.waitForTimeout(1500)
     }
   }
+
+  await selectItemName(page, SEARCH_ITEM_NAME)
 
   // 都道府県
   if (SEARCH_AREA) {
     const prefId = await findInputByLabel(page, '都道府県名')
+    if (BUYER_STRICT && !prefId) throw new Error('Required buyer prefecture input was not found.')
     if (prefId) {
       await page.fill(`#${prefId}`, SEARCH_AREA)
       log(`  都道府県: ${SEARCH_AREA}`)
@@ -248,6 +346,7 @@ async function setSearchCriteria(page: Page) {
   // 市区町村
   if (SEARCH_CITY) {
     const cityId = await findInputByLabel(page, '所在地名１')
+    if (BUYER_STRICT && !cityId) throw new Error('Required buyer location input was not found.')
     if (cityId) {
       await page.fill(`#${cityId}`, SEARCH_CITY)
       log(`  所在地名1: ${SEARCH_CITY}`)
@@ -257,6 +356,7 @@ async function setSearchCriteria(page: Page) {
   // 価格
   if (SEARCH_PRICE_MIN || SEARCH_PRICE_MAX) {
     const priceIds = await findPriceInputs(page)
+    if (BUYER_STRICT && !priceIds) throw new Error('Required buyer price inputs were not found.')
     if (priceIds) {
       if (SEARCH_PRICE_MIN) {
         await page.fill(`#${priceIds.minId}`, SEARCH_PRICE_MIN)
@@ -266,6 +366,31 @@ async function setSearchCriteria(page: Page) {
         await page.fill(`#${priceIds.maxId}`, SEARCH_PRICE_MAX)
         log(`  価格上限: ${SEARCH_PRICE_MAX}万円`)
       }
+    }
+  }
+
+  if (EXCLUDE_OWNER_CHANGE) {
+    const ownerChangeResult = await page.evaluate(() => {
+      const selects = document.querySelectorAll('select')
+      for (const sel of selects) {
+        const option = Array.from(sel.options).find((opt) => opt.textContent?.includes('オーナーチェンジを除く'))
+        if (!option) continue
+
+        sel.value = option.value
+        sel.dispatchEvent(new Event('input', { bubbles: true }))
+        sel.dispatchEvent(new Event('change', { bubbles: true }))
+        return { selectId: sel.id, value: option.value, text: option.textContent?.trim() || '' }
+      }
+
+      return null
+    })
+
+    if (ownerChangeResult) {
+      log(`  ${ownerChangeResult.text}`)
+      await page.waitForTimeout(500)
+    } else {
+      if (BUYER_STRICT) throw new Error('Required buyer occupancy exclusion could not be applied.')
+      log('  オーナーチェンジ除外項目なし（この検索種別では未表示）')
     }
   }
 
@@ -416,32 +541,50 @@ async function selectAllAndDownload(page: Page): Promise<Download[]> {
   // 複数DLを収集（REINSは50件を25件×2ファイルに分割）
   const downloads: Download[] = []
   const downloadHandler = (dl: Download) => { downloads.push(dl) }
-  page.on('download', downloadHandler)
-
-  await page.waitForTimeout(500)
-  log('  図面一括取得クリック')
-  await dlBtn.click()
-  // BootstrapVueモーダル確認
-  await page.waitForTimeout(2000)
-  await dismissModal(page)
-
-  // 最初のDLを最大120秒待つ
-  const deadline = Date.now() + 120000
-  while (downloads.length === 0 && Date.now() < deadline) {
-    await page.waitForTimeout(1000)
+  const context = page.context()
+  const observedPages = new Set<Page>()
+  const observePage = (target: Page) => {
+    if (observedPages.has(target)) return
+    observedPages.add(target)
+    target.on('download', downloadHandler)
   }
+  context.pages().forEach(observePage)
+  context.on('page', observePage)
 
-  // 2つ目のDLを最大30秒待つ
-  if (downloads.length > 0) {
-    const deadline2 = Date.now() + 30000
-    while (downloads.length < 2 && Date.now() < deadline2) {
+  try {
+    await page.waitForTimeout(500)
+    log('  図面一括取得クリック')
+    await dlBtn.click()
+    // BootstrapVueモーダル確認
+    await page.waitForTimeout(2000)
+    await dismissModal(page)
+
+    // 最初のDLを最大120秒待つ
+    const deadline = Date.now() + 120000
+    while (downloads.length === 0 && Date.now() < deadline) {
       await page.waitForTimeout(1000)
     }
-  }
 
-  page.off('download', downloadHandler)
-  log(`  ダウンロード検出: ${downloads.length}件`)
-  return downloads
+    // 2つ目のDLを最大30秒待つ
+    if (downloads.length > 0) {
+      const deadline2 = Date.now() + 30000
+      while (downloads.length < 2 && Date.now() < deadline2) {
+        await page.waitForTimeout(1000)
+      }
+    } else {
+      log(`  取得後のウィンドウ数: ${observedPages.size}`)
+      for (const [index, target] of context.pages().entries()) {
+        const url = new URL(target.url())
+        log(`  取得後の画面: ${url.origin}${url.pathname}`)
+        await target.screenshot({ path: resolve(DOWNLOAD_DIR, `debug-no-download-${index}.png`), fullPage: true }).catch(() => {})
+      }
+    }
+    log(`  ダウンロード検出: ${downloads.length}件`)
+    return downloads
+  } finally {
+    context.off('page', observePage)
+    observedPages.forEach((target) => target.off('download', downloadHandler))
+  }
 }
 
 // === ステップ6: ファイル保存（複数DL対応）===
@@ -453,8 +596,9 @@ async function saveDownloads(downloads: Download[], pageNum: number) {
 
   let saved = 0
   for (const download of downloads) {
-    const fileName = download.suggestedFilename() || `reins-page${pageNum}-${saved + 1}.pdf`
-    const savePath = resolve(DOWNLOAD_DIR, fileName)
+    const suggestedName = download.suggestedFilename() || `reins-page${pageNum}-${saved + 1}.pdf`
+    const fileName = basename(suggestedName)
+    const savePath = await uniquePath(resolve(DOWNLOAD_DIR, fileName))
     await download.saveAs(savePath)
     log(`  保存完了: ${savePath}`)
     saved++
@@ -487,17 +631,20 @@ async function main() {
   log('=== REINS全自動PDFダウンロード ===')
   log(`エリア: ${SEARCH_AREA} ${SEARCH_CITY}`)
   log(`物件種別: ${SEARCH_PROPERTY_TYPE}`)
+  log(`種目: ${SEARCH_ITEM_NAME || '-'}`)
   log(`価格帯: ${SEARCH_PRICE_MIN || '-'}〜${SEARCH_PRICE_MAX || '-'}万円`)
+  log(`オーナーチェンジ: ${EXCLUDE_OWNER_CHANGE ? '除外' : '除外しない'}`)
   log(`保存先: ${DOWNLOAD_DIR}`)
   log('')
 
-  const browser = await chromium.launch({ headless, downloadsPath: DOWNLOAD_DIR })
+  const browser = await chromium.launch({ headless, downloadsPath: DOWNLOAD_DIR, ...(!headless && ARGS.includes('--background') ? { args: ['--start-minimized'] } : {}) })
   const context = await browser.newContext({ acceptDownloads: true, locale: 'ja-JP' })
 
   const page = await context.newPage()
   page.on('dialog', async (d) => { log(`ダイアログ: "${d.message()}"`); await d.accept() })
 
   let totalDownloads = 0
+  let hadError = false
 
   try {
     await login(page)
@@ -513,6 +660,7 @@ async function main() {
       totalDownloads += saved
 
       // 次ページへ
+      if (pageNum === MAX_PAGES) break
       const moved = await goNextPage(page, pageNum)
       if (!moved) {
         log('最終ページに到達')
@@ -520,6 +668,7 @@ async function main() {
       }
     }
   } catch (err) {
+    hadError = true
     log(`エラー: ${err instanceof Error ? err.message : err}`)
     await page.screenshot({ path: resolve(DOWNLOAD_DIR, 'error-screenshot.png') }).catch(() => {})
   } finally {
@@ -527,7 +676,7 @@ async function main() {
     log(`=== 完了: ${totalDownloads}件ダウンロード ===`)
     log('→ 取り込みは必要に応じて `npm run maisoku:all` を実行してください')
     await browser.close()
-    process.exit(0)
+    process.exit(hadError ? 1 : 0)
   }
 }
 

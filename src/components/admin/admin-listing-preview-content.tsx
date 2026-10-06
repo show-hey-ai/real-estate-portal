@@ -1,5 +1,7 @@
 'use client'
 
+import { hasDetailedPublicAddress } from '@/lib/address'
+
 import { useLocale, useTranslations } from 'next-intl'
 import { MapPin, Train, Info, Sparkles } from 'lucide-react'
 import { ListingGallery } from '@/components/listing/listing-gallery'
@@ -128,10 +130,10 @@ export function AdminListingPreviewContent({
                             formattedListing.addressPublic}
                         </span>
                       </div>
-                      <p className="ml-5 flex items-center gap-1 text-xs text-muted-foreground/70">
+                      {!hasDetailedPublicAddress(formattedListing.addressPublic) && (<p className="ml-5 flex items-center gap-1 text-xs text-muted-foreground/70">
                         <Info className="h-3 w-3 shrink-0" />
                         {t('addressPrivacyNote')}
-                      </p>
+                      </p>)}
                     </div>
                   )}
                   {stations.length > 0 && (

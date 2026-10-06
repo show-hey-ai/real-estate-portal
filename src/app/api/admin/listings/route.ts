@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { formatPublicAddress } from '@/lib/address'
 import { requireAdminUser } from '@/lib/admin-auth'
 import { adminListingCreateSchema } from '@/lib/admin-validation'
+import { PORTAL_VENTURE_ID, AUTONOMY_VERSION } from '@/lib/autonomy/policy'
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,11 +21,15 @@ export async function POST(req: NextRequest) {
     }
 
     const input = parsed.data
-    const addressResult = formatPublicAddress(input.addressPublic)
+    const addressResult = formatPublicAddress(input.addressPublic, input)
+
+    if (input.status === 'PUBLISHED' && (input.adAllowed !== true || input.adConsentRequired === true)) {
+      return NextResponse.json({ error: '広告不可・広告未確認・承諾待ちの物件は一般公開できません。非公開で保存してください。' }, { status: 400 })
+    }
 
     if (input.status === 'PUBLISHED' && addressResult.isBlocked) {
       return NextResponse.json(
-        { error: '公開住所に番地パターンが含まれています。丁目までに修正してください。' },
+        { error: '公開許可と公開用住所の内容を確認してください。' },
         { status: 400 }
       )
     }
@@ -38,6 +43,8 @@ export async function POST(req: NextRequest) {
         addressPublic: addressResult.publicAddress || input.addressPublic,
         addressPrivate: input.addressPrivate,
         addressBlocked: addressResult.isBlocked,
+        adAllowed: input.adAllowed ?? false,
+        adConsentRequired: input.adConsentRequired ?? false,
         prefecture: input.prefecture || null,
         city: input.city || null,
         stations: input.stations?.length ? input.stations : undefined,
@@ -99,6 +106,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM autonomy_policies WHERE id=${PORTAL_VENTURE_ID} FOR UPDATE`
+      const sources = await tx.listing.findMany({ where: { id: { in: ids }, sourcePropertyId: { not: null } }, select: { id: true, sourcePropertyId: true } })
+      for (const source of sources) await tx.autonomyRecord.upsert({ where: { ventureId_dedupeKey: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${source.sourcePropertyId}` } }, create: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${source.sourcePropertyId}`, recordType: 'operator_override', title: 'Bulk-deleted source listing will not be recreated automatically', content: { listingId: source.id, actorId: auth.user.id }, sources: [source.sourcePropertyId!], verification: 'verified', version: AUTONOMY_VERSION }, update: {} })
       await tx.extractionEvidence.deleteMany({ where: { listingId: { in: ids } } })
       await tx.media.deleteMany({ where: { listingId: { in: ids } } })
       await tx.favorite.deleteMany({ where: { listingId: { in: ids } } })

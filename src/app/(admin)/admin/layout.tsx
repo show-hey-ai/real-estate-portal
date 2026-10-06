@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 // import { prisma } from '@/lib/db' // Removed to bypass firewall
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
+import { InternalAnalyticsMarker } from '@/components/analytics/internal-analytics-marker'
 
 export const metadata: Metadata = {
   robots: {
@@ -35,9 +36,12 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[#f7f5ed]">
+      <InternalAnalyticsMarker />
       <AdminSidebar />
-      <main className="flex-1 p-8">{children}</main>
+      <main className="min-w-0 flex-1 p-5 md:p-8">
+        <div className="mx-auto max-w-[1440px]">{children}</div>
+      </main>
     </div>
   )
 }

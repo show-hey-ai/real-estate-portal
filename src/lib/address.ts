@@ -1,8 +1,8 @@
 /**
- * 住所を丁目までに整形し、番地パターンを検出する
+ * 公開許可に応じて住所を整形する。許可がない場合は町名・丁目まで。
  */
 
-// 番地パターン（公開NGとなるパターン）
+// 詳細公開の許可がない場合に省略する番地パターン
 const BANCHI_PATTERNS = [
   /[0-9０-９]+番地?([0-9０-９]+号?)?/,        // 1番地、1番2号
   /[0-9０-９]+[-－−ー][0-9０-９]+([-－−ー][0-9０-９]+)?/, // 1-2-3
@@ -16,17 +16,41 @@ const CHOME_PATTERN = /^(.+?(?:[0-9０-９]+丁目|[一二三四五六七八九�
 // 丁目がない住所は、最初のアラビア数字の直前までを町名として扱う
 const TOWN_BEFORE_NUMBER_PATTERN = /^(.+?)(?=[0-9０-９])/
 
+// Confirmed town names that do not use chome. Never treat arbitrary suffixes as towns.
+const PUBLIC_TOWNS_WITHOUT_CHOME = new Set(['東京都中央区日本橋小舟町'])
+
 function normalizeAddressText(address: string): string {
   return address
+    .normalize('NFKC')
     .trim()
     .replace(/[０-９]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0xFEE0))
     .replace(/\s+/g, '')
 }
 
 export interface AddressResult {
-  publicAddress: string | null  // 公開用住所（丁目まで）
+  publicAddress: string | null
   isBlocked: boolean            // 番地が検出されたか
   hasFullAddress: boolean       // 完全な住所があるか
+}
+
+export interface AddressPublicationPermission {
+  adAllowed?: boolean
+  adConsentRequired?: boolean
+}
+
+/** Read only the explicitly approved public column; never fall back to addressPrivate. */
+export function formatApprovedPublicAddress(address: string | null | undefined): string | null {
+  if (!address?.trim()) return null
+  const normalized = normalizeAddressText(address)
+  if (!extractPrefecture(normalized) || !extractCity(normalized)) return null
+  if (/@|https?:\/\/|電話|連絡先|入居者|\bTEL\b|0\d{1,4}[-ー]\d{1,4}[-ー]\d{3,4}/iu.test(normalized)) return null
+  // Keep separators between lot and unit numbers (24-16 502号室).
+  return address.normalize('NFKC').trim().replace(/\s+/g, ' ')
+}
+
+export function hasDetailedPublicAddress(address: string | null | undefined): boolean {
+  const approved = formatApprovedPublicAddress(address)
+  return !!approved && approved !== formatPublicAddress(approved).publicAddress
 }
 
 /**
@@ -34,7 +58,7 @@ export interface AddressResult {
  * @param fullAddress 完全な住所
  * @returns 整形結果
  */
-export function formatPublicAddress(fullAddress: string | null | undefined): AddressResult {
+export function formatPublicAddress(fullAddress: string | null | undefined, permission?: AddressPublicationPermission): AddressResult {
   if (!fullAddress || fullAddress.trim() === '') {
     return {
       publicAddress: null,
@@ -44,6 +68,11 @@ export function formatPublicAddress(fullAddress: string | null | undefined): Add
   }
 
   const address = normalizeAddressText(fullAddress)
+
+  if (permission?.adAllowed === true && permission.adConsentRequired !== true) {
+    const approved = formatApprovedPublicAddress(fullAddress)
+    return { publicAddress: approved, isBlocked: !approved, hasFullAddress: true }
+  }
 
   // 番地パターンが含まれているかチェック
   const hasBanchi = BANCHI_PATTERNS.some(pattern => pattern.test(address))
@@ -59,6 +88,9 @@ export function formatPublicAddress(fullAddress: string | null | undefined): Add
     const townMatch = address.match(TOWN_BEFORE_NUMBER_PATTERN)
     if (townMatch) {
       publicAddress = townMatch[1]
+    } else if (!hasBanchi && PUBLIC_TOWNS_WITHOUT_CHOME.has(address)) {
+      // A source-verified town such as 日本橋小舟町 has no chome or lot number.
+      publicAddress = address
     }
   }
 

@@ -3,13 +3,16 @@ import { getTranslations } from 'next-intl/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
+import { getAdminUserFromSession } from '@/lib/admin-auth'
+import { notFound } from 'next/navigation'
 import { Building2, Eye, FileText, Users, ArrowRight, Mail, MessageSquare, BarChart3 } from 'lucide-react'
 import { formatDistanceToNow } from '@/lib/format'
 
 export default async function AdminDashboardPage() {
   const t = await getTranslations('admin')
-  const supabase = await createClient()
+  if (!await getAdminUserFromSession()) notFound()
+  const supabase = createServiceClient()
 
   // Helper to get count safely
   const getCount = async (table: string, filter?: { column: string, value: string }) => {

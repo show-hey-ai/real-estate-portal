@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { formatPublicAddress } from '@/lib/address'
 import { requireAdminUser } from '@/lib/admin-auth'
 import { adminListingUpdateSchema } from '@/lib/admin-validation'
+import { PORTAL_VENTURE_ID, AUTONOMY_VERSION } from '@/lib/autonomy/policy'
 
 interface Media {
   id: string
@@ -26,6 +27,10 @@ export async function PATCH(
         propertyType: true,
         price: true,
         addressPublic: true,
+        sourcePropertyId: true,
+        adAllowed: true,
+        adConsentRequired: true,
+        updatedAt: true,
       },
     })
 
@@ -59,9 +64,15 @@ export async function PATCH(
     const effectiveAddress = hasField('addressPublic')
       ? input.addressPublic ?? null
       : existingListing.addressPublic
-    const addressResult = formatPublicAddress(effectiveAddress)
+    const effectiveAdAllowed = input.adAllowed ?? existingListing.adAllowed
+    const effectiveConsentRequired = input.adConsentRequired ?? existingListing.adConsentRequired
+    const addressResult = formatPublicAddress(effectiveAddress, { adAllowed: effectiveAdAllowed, adConsentRequired: effectiveConsentRequired })
+    const updateAddress = hasField('addressPublic') || hasField('adAllowed') || hasField('adConsentRequired')
 
     if (effectiveStatus === 'PUBLISHED') {
+      if (!effectiveAdAllowed || effectiveConsentRequired) {
+        return NextResponse.json({ error: '広告不可・広告未確認・承諾待ちの物件は一般公開できません。非公開で保存してください。' }, { status: 400 })
+      }
       if (!effectivePropertyType || effectivePrice === null || !effectiveAddress) {
         return NextResponse.json(
           { error: '公開には物件種別・価格・公開住所が必要です。' },
@@ -71,24 +82,28 @@ export async function PATCH(
 
       if (addressResult.isBlocked) {
         return NextResponse.json(
-          { error: '公開住所に番地パターンが含まれています。丁目までに修正してください。' },
+          { error: '公開許可と公開用住所の内容を確認してください。' },
           { status: 400 }
         )
       }
     }
 
     const listing = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM autonomy_policies WHERE id=${PORTAL_VENTURE_ID} FOR UPDATE`
+      const current = await tx.listing.findUniqueOrThrow({ where: { id }, select: { updatedAt: true } })
+      if (current.updatedAt.getTime() !== existingListing.updatedAt.getTime()) throw new Error('Listing changed before manual save.')
       const updated = await tx.listing.update({
         where: { id },
         data: {
+          autonomyValidUntil: null,
           propertyType: hasField('propertyType') ? input.propertyType ?? null : undefined,
           hospitalityCategory: hasField('hospitalityCategory') ? input.hospitalityCategory ?? null : undefined,
           price: hasField('price')
             ? (input.price !== undefined ? BigInt(Math.trunc(input.price)) : null)
             : undefined,
-          addressPublic: hasField('addressPublic') ? addressResult.publicAddress || null : undefined,
+          addressPublic: updateAddress ? addressResult.publicAddress || null : undefined,
           addressPrivate: hasField('addressPrivate') ? input.addressPrivate ?? null : undefined,
-          addressBlocked: hasField('addressPublic') ? addressResult.isBlocked : undefined,
+          addressBlocked: updateAddress ? addressResult.isBlocked : undefined,
           prefecture: hasField('prefecture') ? input.prefecture ?? null : undefined,
           city: hasField('city') ? input.city ?? null : undefined,
           stations: hasField('stations') ? input.stations ?? [] : undefined,
@@ -125,6 +140,8 @@ export async function PATCH(
             : undefined,
         },
       })
+
+      if (existingListing.sourcePropertyId) await tx.autonomyRecord.upsert({ where: { ventureId_dedupeKey: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${existingListing.sourcePropertyId}` } }, create: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${existingListing.sourcePropertyId}`, recordType: 'operator_override', title: 'Manual listing changes take precedence over source renewal', content: { listingId: id, sourceId: existingListing.sourcePropertyId, actorId: auth.user.id }, sources: [existingListing.sourcePropertyId], verification: 'verified', version: AUTONOMY_VERSION }, update: {} })
 
       if (input.images) {
         const existingMedia = await tx.media.findMany({
@@ -206,7 +223,7 @@ export async function DELETE(
     const { id } = await params
     const existing = await prisma.listing.findUnique({
       where: { id },
-      select: { id: true, managementId: true },
+      select: { id: true, managementId: true, sourcePropertyId: true },
     })
 
     if (!existing) {
@@ -214,6 +231,8 @@ export async function DELETE(
     }
 
     await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM autonomy_policies WHERE id=${PORTAL_VENTURE_ID} FOR UPDATE`
+      if (existing.sourcePropertyId) await tx.autonomyRecord.upsert({ where: { ventureId_dedupeKey: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${existing.sourcePropertyId}` } }, create: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${existing.sourcePropertyId}`, recordType: 'operator_override', title: 'Manually deleted source listing will not be recreated automatically', content: { listingId: id, actorId: auth.user.id }, sources: [existing.sourcePropertyId], verification: 'verified', version: AUTONOMY_VERSION }, update: {} })
       await tx.extractionEvidence.deleteMany({ where: { listingId: id } })
       await tx.media.deleteMany({ where: { listingId: id } })
       await tx.favorite.deleteMany({ where: { listingId: id } })

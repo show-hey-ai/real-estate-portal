@@ -2,7 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
+import { getPrivateChatCopy } from '@/lib/private-chat-copy'
+import { getLoginMethodsCopy } from '@/lib/login-methods-copy'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
@@ -11,6 +13,7 @@ import {
   FileUp,
   LogOut,
   BarChart3,
+  Activity,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -59,34 +62,44 @@ const navItems: AdminNavItem[] = [
   },
   { href: '/admin/leads', icon: Users, labelKey: 'admin.leads' },
   { href: '/admin/analytics', icon: BarChart3, labelKey: 'admin.analyticsNav' },
+  { href: '/admin/autonomy', icon: Activity, labelKey: 'admin.autonomyNav' },
   { href: '/admin/import', icon: FileUp, labelKey: 'admin.importNav' },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
   const t = useTranslations()
+  const chat = getPrivateChatCopy(useLocale())
+  const loginCopy = getLoginMethodsCopy(useLocale())
 
   return (
-    <aside className="w-64 border-r bg-muted/30 min-h-screen flex flex-col">
-      <div className="p-6">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <Building2 className="h-6 w-6" />
-          <span>Admin</span>
+    <aside data-testid="admin-sidebar" className="sticky top-0 flex h-screen w-72 shrink-0 flex-col border-r border-[#1f3b32] bg-[#10231e] text-white">
+      <div className="border-b border-white/10 p-6">
+        <Link href="/" className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#d8a64a] text-[#10231e]">
+            <Building2 className="h-5 w-5" />
+          </span>
+          <span>
+            <span className="block text-base font-semibold tracking-[-0.02em]">Ziyou</span>
+            <span className="block text-xs text-white/50">Hospitality admin</span>
+          </span>
         </Link>
       </div>
 
-      <nav className="px-4 space-y-1 flex-1">
+      <nav aria-label="Admin" className="flex-1 space-y-2 px-4 py-6">
+        <Link href="/admin/chats" className="block rounded-lg px-3 py-2 text-sm font-medium text-white/80 hover:bg-white/10">{chat.title}</Link>
+        <Link href="/admin/login-methods" className={cn('block rounded-lg px-3 py-2 text-sm font-medium', pathname === '/admin/login-methods' ? 'bg-[#d8a64a] text-[#10231e]' : 'text-white/80 hover:bg-white/10')}>{loginCopy.adminTitle}</Link>
         {navItems.map((item) => {
           if (isNavGroup(item)) {
             // Parent item with children
             return (
               <div key={item.titleKey} className="space-y-1">
-                <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground">
+                <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-white/50">
                   {item.icon && <item.icon className="h-4 w-4" />}
                   {/* Fallback to simple string if key not found (debugging) or use t() */}
                   {t(item.titleKey)}
                 </div>
-                <div className="pl-4 space-y-1">
+                <div className="space-y-1 border-l border-white/10 pl-4">
                   {item.children.map((child) => {
                     const isActive = pathname === child.href
                     return (
@@ -96,8 +109,8 @@ export function AdminSidebar() {
                         className={cn(
                           'block rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                           isActive
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                            ? 'bg-[#d8a64a] text-[#10231e] shadow-sm'
+                            : 'text-white/65 hover:bg-white/10 hover:text-white'
                         )}
                       >
                         {t(child.labelKey)}
@@ -119,8 +132,8 @@ export function AdminSidebar() {
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-[#d8a64a] text-[#10231e] shadow-sm'
+                  : 'text-white/65 hover:bg-white/10 hover:text-white'
               )}
             >
               {item.icon && <item.icon className="h-4 w-4" />}
@@ -130,9 +143,9 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t mt-auto">
+      <div className="mt-auto border-t border-white/10 p-4">
         <form action="/api/auth/logout" method="POST">
-          <Button variant="ghost" className="w-full justify-start" type="submit">
+          <Button variant="ghost" className="w-full justify-start text-white/70 hover:bg-white/10 hover:text-white" type="submit">
             <LogOut className="h-4 w-4 mr-2" />
             {t('common.logout')}
           </Button>
