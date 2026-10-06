@@ -1,7 +1,7 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import type { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
-import { absoluteUrl } from '@/lib/site-config'
+import { absoluteUrl, getSchemaLanguage } from '@/lib/site-config'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { getPublicArticles } from '@/lib/portal-articles'
 import { guideArticles } from '@/content/guides'
@@ -29,7 +29,7 @@ function localized(path: string, lastModified: Date | string, changeFrequency: C
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const portalLaunchAt = new Date('2026-09-29T00:00:00+09:00')
   const articles = await getPublicArticles()
-  const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: Object.fromEntries(locales.map((language) => [language, absoluteUrl(`/articles/${article.slug}/${language}`)])) } })))
+  const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: Object.fromEntries(locales.map((language) => [getSchemaLanguage(language), absoluteUrl(`/articles/${article.slug}/${language}`)])) } })))
   const guideEntries: MetadataRoute.Sitemap = [
     ...localized('/guides', getLatestDate(guideArticles.map((guide) => guide.updatedAt)), 'monthly', 0.6),
     ...guideArticles.flatMap((guide) => localized(`/guides/${guide.slug}`, new Date(guide.updatedAt), 'monthly', 0.6)),

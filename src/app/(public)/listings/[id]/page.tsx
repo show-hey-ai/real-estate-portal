@@ -1,4 +1,7 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { StationAccess } from '@/components/listing/station-access'
+import { UnitPriceChart } from '@/components/listing/unit-price-chart'
+import { compareUnitPrice, type UnitPriceSource } from '@/lib/unit-price'
 import { LoanSimulator } from '@/components/listing/loan-simulator'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
@@ -21,7 +24,7 @@ import { getTradeChatCopy } from '@/lib/trade-chat'
 import { FavoriteButton } from '@/components/listing/favorite-button'
 import { ViewTracker } from '@/components/listing/view-tracker'
 import { formatPrice } from '@/lib/format'
-import { MapPin, Train, Info, Sparkles, MessageCircle } from 'lucide-react'
+import { MapPin, Info, Sparkles, MessageCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
@@ -133,7 +136,7 @@ function schemaPropertyType(propertyType: string | null | undefined): string {
   return 'Place'
 }
 
-async function getRelatedListings(current: RelatedCandidate) {
+async function getRelatedListings(current: RelatedCandidate & UnitPriceSource) {
   const { data, error } = await createServiceClient()
     .from('listings')
     .select('id, city, propertyType, price, addressPublic, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted)')
@@ -141,8 +144,9 @@ async function getRelatedListings(current: RelatedCandidate) {
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])
     .limit(200)
-  if (error || !data) return []
-  return rankRelatedListings(current, data).map((home) => ({
+  if (error || !data) return { related: [], unitPrice: null }
+  const unitPrice = current.city ? compareUnitPrice(current, data.filter((row) => row.city === current.city)) : null
+  const related = rankRelatedListings(current, data).map((home) => ({
     ...home,
     price: home.price ? BigInt(home.price) : null,
     buildingArea: home.buildingArea ? Number(home.buildingArea) : null,
@@ -150,6 +154,14 @@ async function getRelatedListings(current: RelatedCandidate) {
     yieldGross: home.yieldGross ? Number(home.yieldGross) : null,
     media: (home.media || []).filter((item) => item.isAdopted),
   }))
+  return { related, unitPrice }
+}
+
+const unitPriceCopy: Record<string, { title: string; self: string; average: (ward: string, count: number) => string; note: (count: number) => string }> = {
+  ja: { title: '㎡単価の比較', self: 'この物件', average: (ward, count) => `${ward}の公開物件の平均（${count}件）`, note: (count) => `当ポータルで公開中の同区の物件${count}件の売出価格から計算した参考値です。成約価格や相場を示すものではありません。` },
+  en: { title: 'Price per m² compared', self: 'This property', average: (ward, count) => `Average of ${count} listings in ${ward}`, note: (count) => `Reference figure from the asking prices of ${count} other listings in this ward on this portal; not transaction prices or a market valuation.` },
+  'zh-TW': { title: '每平方公尺單價比較', self: '本物件', average: (ward, count) => `${ward}刊登物件平均（${count}筆）`, note: (count) => `依本站同區刊登中${count}筆物件的開價計算的參考值，並非成交價或市場行情。` },
+  'zh-CN': { title: '每平方米单价比较', self: '本房源', average: (ward, count) => `${ward}在售房源平均（${count}套）`, note: (count) => `根据本站同区在售${count}套房源的挂牌价计算的参考值，并非成交价或市场行情。` },
 }
 
 const wardMore: Record<string, (ward: string) => string> = { ja: (ward) => `${ward}の物件をもっと見る`, en: (ward) => `More properties in ${ward}`, 'zh-TW': (ward) => `查看更多${ward}物件`, 'zh-CN': (ward) => `查看更多${ward}房源` }
@@ -175,7 +187,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
   const viewer = await viewerPromise
   const userId = viewer?.id ?? null
-  const related = await getRelatedListings({ id: listing.id, city: listing.city, propertyType: listing.propertyType, price: listing.price })
+  const { related, unitPrice } = await getRelatedListings({ id: listing.id, city: listing.city, propertyType: listing.propertyType, price: listing.price, buildingArea: listing.buildingArea, landArea: listing.landArea })
   const isFavorite = viewer ? await getIsFavoriteForViewer(viewer.id, id) : false
 
   const publicAddress = formatApprovedPublicAddress(listing.addressPublic)
@@ -304,19 +316,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                     </p>)}
                   </div>
                 )}
-                {stations.length > 0 && (
-                  <div className="space-y-1 mt-1">
-                    {stations.map((station, index) => (
-                      <div key={index} className="flex items-center gap-1 text-muted-foreground">
-                        <Train className="h-4 w-4" />
-                        <span>
-                          {formatTransitAccessLabel(station, locale)}
-                          {station.walk_minutes && ` ${t('walkMinutes', { minutes: station.walk_minutes })}`}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {stations.length > 0 && <StationAccess locale={locale} stations={stations.map((station) => ({ label: formatTransitAccessLabel(station, locale) || station.name || '', walkMinutes: station.walk_minutes ?? null }))} />}
               </div>
               <FavoriteButton
                 listingId={formattedListing.id}
@@ -333,6 +333,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
             <div id="property-facts" className="scroll-mt-44">
               <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} />
             </div>
+
+            {unitPrice && listing.city && <UnitPriceChart locale={locale} title={unitPriceCopy[locale]?.title ?? unitPriceCopy.en.title} note={unitPriceCopy[locale]?.note(unitPrice.count) ?? unitPriceCopy.en.note(unitPrice.count)} bars={[
+              { label: unitPriceCopy[locale]?.self ?? unitPriceCopy.en.self, value: unitPrice.current, highlight: true },
+              { label: (unitPriceCopy[locale] ?? unitPriceCopy.en).average(wardLabel(listing.city, locale), unitPrice.count), value: unitPrice.average, href: wardSlug ? `/areas/${wardSlug}` : undefined },
+            ]} />}
 
             {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} />}
 
