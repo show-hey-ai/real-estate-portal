@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getLocale } from 'next-intl/server'
-import { ArrowRight, ArrowUpRight, Check, ChevronDown, Search } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Check, ChevronDown, ClipboardList, FileSignature, Scale, Search } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { MarketShortcuts } from '@/components/listing/market-shortcuts'
 import { WardMap } from '@/components/listing/ward-map'
@@ -20,6 +20,12 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { absoluteUrl, getSchemaLanguage, getSiteCopy } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
+
+const stepVisuals = [
+  { Icon: ClipboardList, tone: 'bg-[#e8f1fb] text-[#274d7d]' },
+  { Icon: Scale, tone: 'bg-[#edf3e7] text-[#557447]' },
+  { Icon: FileSignature, tone: 'bg-[#fcece8] text-[#aa5746]' },
+] as const
 
 async function getLatestListings() {
   const { data, error } = await createServiceClient()
@@ -124,7 +130,22 @@ export default async function HomePage() {
         <div className="rounded-xl bg-[#edf3f9] p-6"><h2 className="text-lg font-semibold">{copy.matchTitle}</h2><p className="mt-3 text-sm leading-7 text-[#536274]">{copy.matchDescription}</p><Link href="/match" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]"><FunnelText field="matchCta" baseline={copy.matchCta} /><ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>
         <div className="rounded-xl border border-[#dbe2e9] p-6"><h2 className="text-lg font-semibold">{copy.guideTitle}</h2><p className="mt-3 text-sm leading-7 text-[#536274]">{copy.guideDescription}</p><Link href="/buying-guide" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]">{copy.guideCta}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>
       </section>
-      <section className="mt-12"><h2 className="text-xl font-semibold">{copy.stepsTitle}</h2><div className="mt-5 grid gap-6 md:grid-cols-3">{copy.steps.map(([number, title, description]) => <div key={number} className="border-t border-[#dbe2e9] pt-4"><span className="text-xs font-semibold text-[#57769b]">{number}</span><h3 className="mt-2 font-semibold">{title}</h3><p className="mt-2 text-sm leading-7 text-[#657487]">{description}</p></div>)}</div></section>
+      <section className="mt-12" aria-labelledby="home-steps-title">
+        <h2 id="home-steps-title" className="text-xl font-semibold">{copy.stepsTitle}</h2>
+        <ol className="mt-5 grid gap-3 md:grid-cols-3 md:gap-0">
+          {copy.steps.map(([number, title, description], index) => {
+            const { Icon, tone } = stepVisuals[index % stepVisuals.length]
+            return <li key={number} className="relative flex gap-4 rounded-xl border border-[#dbe2e9] bg-white p-5 md:mx-3 md:flex-col md:items-center md:text-center">
+              <span className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl md:h-20 md:w-20 ${tone}`}>
+                <Icon aria-hidden="true" strokeWidth={1.6} className="h-7 w-7 md:h-9 md:w-9" />
+                <span className="absolute -left-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#274d7d] text-[11px] font-bold text-white">{index + 1}</span>
+              </span>
+              <div><h3 className="font-semibold md:mt-1">{title}</h3><p className="mt-1.5 text-sm leading-6 text-[#657487]">{description}</p></div>
+              {index < copy.steps.length - 1 && <ArrowRight aria-hidden="true" className="absolute -right-5 top-1/2 hidden h-5 w-5 -translate-y-1/2 text-[#9fb3c8] md:block" />}
+            </li>
+          })}
+        </ol>
+      </section>
     </div>
   </div>
 }
