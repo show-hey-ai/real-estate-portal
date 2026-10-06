@@ -9,7 +9,7 @@ const eventSchema = z.object({
   search: z.string().max(500).optional(),
   // Direct-contact buttons on listing pages report the listing and the channel used.
   listingId: z.string().regex(/^[A-Za-z0-9-]{8,64}$/).optional(),
-  channel: z.enum(['whatsapp', 'email', 'phone']).optional(),
+  channel: z.enum(['whatsapp', 'line', 'wechat', 'email', 'phone']).optional(),
 }).strict()
 
 export async function POST(request: NextRequest) {

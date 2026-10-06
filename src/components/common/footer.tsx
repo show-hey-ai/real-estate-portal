@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { WARD_SLUGS, WARD_TILES, wardLabel } from '@/lib/ward-tile-map'
 import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, type TypeSlug } from '@/lib/collections'
 import { priceBandRange } from '@/lib/price-bands'
+import { LINE_ADD_URL, LINE_ID, WECHAT_DEEP_LINK, WECHAT_ID, WHATSAPP_NUMBER } from '@/lib/contact-channels'
 
 export function Footer() {
   const t = useTranslations()
@@ -78,6 +79,11 @@ export function Footer() {
               <p>{company.address}</p>
               <p><a href="tel:+81356877120" className="hover:text-white">TEL 03-5687-7120</a></p>
               <p><a href="mailto:admin@ziyou-fudosan.com" className="hover:text-white">admin@ziyou-fudosan.com</a></p>
+              <p className="flex flex-wrap gap-x-4 gap-y-1">
+                <a href={LINE_ADD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white">LINE {LINE_ID}</a>
+                <a href={WECHAT_DEEP_LINK} className="hover:text-white">WeChat {WECHAT_ID}</a>
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a>
+              </p>
             </address>
             <ul className="space-y-2 text-sm">
               <li>
