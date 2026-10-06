@@ -4,7 +4,7 @@ import { useId, useState } from 'react'
 import Link from 'next/link'
 import { useLocale } from 'next-intl'
 import { Receipt } from 'lucide-react'
-import { DEPOSIT_RATE, LOAN_FEE_RATE, OTHER_COST_RATE, estimateInitialCosts, type Range } from '@/lib/purchase-costs'
+import { DEPOSIT_RATE, LOAN_FEE_RATE, estimateInitialCosts, type OtherCostKey, type Range } from '@/lib/purchase-costs'
 import { formatYenWords } from '@/lib/yen-words'
 
 const pct = (rate: number) => `${Math.round(rate * 1000) / 10}%`
@@ -13,38 +13,42 @@ const copy = {
   ja: {
     title: '初期費用シミュレーター', price: '物件価格', priceUnit: '万円', unitValue: 10_000, payment: '支払い方法', cash: '現金', loan: 'ローン', down: '頭金',
     cashNeeded: '必要な自己資金の目安', ownFunds: (useLoan: boolean) => (useLoan ? '頭金' : '物件価格'), loanAmount: '借入額（ローンで支払う分）',
-    brokerage: '仲介手数料（上限・税込）', stamp: '売買契約書の印紙税', loanFee: `ローン事務手数料（借入額の${pct(LOAN_FEE_RATE)}）`, other: '登記・税金・司法書士・火災保険・精算金など',
+    brokerage: '仲介手数料（上限・税込）', stamp: '売買契約書の印紙税', loanFee: `ローン事務手数料（借入額の${pct(LOAN_FEE_RATE)}）`, items: { registrationTransfer: '登録免許税（所有権移転）', registrationMortgage: '登録免許税（抵当権設定）', scrivener: '司法書士報酬', acquisitionTax: '不動産取得税（引渡し後に納付）', settlement: '固定資産税・管理費などの日割り精算', insurance: '火災・地震保険', loanStamp: 'ローン契約書の印紙税' },
     timing: '支払いのタイミング', atContract: `売買契約時（手付金${pct(DEPOSIT_RATE)}・印紙・仲介手数料の半額など）`, atSettlement: '決済・引渡し時（残りの自己資金）',
-    note: `仲介手数料は法定上限、印紙税は国税庁の税額表（軽減措置は2027年3月31日まで）、登記・税金などは物件価格の${pct(OTHER_COST_RATE.low)}〜${pct(OTHER_COST_RATE.high)}で計算した目安です。ローン費用は金融機関によって保証料型など方式が異なります。外国籍の方のローンは購入ガイドをご覧ください。`,
+    note: '仲介手数料は法定上限、売買契約書とローン契約書の印紙税は国税庁の税額表（売買契約書の軽減措置は2027年3月31日まで）で計算しています。登録免許税・不動産取得税・精算金・保険は固定資産税評価額や物件によって変わるため、物件価格（抵当権は借入額）に対する一般的な割合で幅をもたせた目安です（合計で物件価格の約2〜3%）。ローン費用は保証料型など金融機関によって方式が異なります。外国籍の方のローンは購入ガイドをご覧ください。',
     lowPrice: '800万円以下の物件は、空き家等の特例で仲介手数料の上限が異なる場合があります。', guide: '費用とローンの詳しい説明',
   },
   en: {
     title: 'Initial cost simulator', price: 'Price', priceUnit: 'million yen', unitValue: 1_000_000, payment: 'Payment', cash: 'Cash', loan: 'Mortgage', down: 'Down payment',
     cashNeeded: 'Cash you need (estimate)', ownFunds: (useLoan: boolean) => (useLoan ? 'Down payment' : 'Price'), loanAmount: 'Loan amount (paid by the lender)',
-    brokerage: 'Brokerage fee (maximum, incl. tax)', stamp: 'Stamp duty on the contract', loanFee: `Loan administration fee (${pct(LOAN_FEE_RATE)} of the loan)`, other: 'Registration, taxes, scrivener, insurance, pro-rata settlements',
+    brokerage: 'Brokerage fee (maximum, incl. tax)', stamp: 'Stamp duty on the contract', loanFee: `Loan administration fee (${pct(LOAN_FEE_RATE)} of the loan)`, items: { registrationTransfer: 'Registration tax (ownership)', registrationMortgage: 'Registration tax (mortgage)', scrivener: 'Judicial scrivener fee', acquisitionTax: 'Acquisition tax (paid after handover)', settlement: 'Pro-rata property tax and fees', insurance: 'Fire and earthquake insurance', loanStamp: 'Stamp duty on the loan contract' },
     timing: 'When you pay', atContract: `At the contract (deposit ${pct(DEPOSIT_RATE)}, stamp duty, half the brokerage, etc.)`, atSettlement: 'At settlement (the rest of your cash)',
-    note: `Brokerage is the legal maximum, stamp duty follows the National Tax Agency table (reduced rates until 31 March 2027), and registration, taxes and similar costs are ${pct(OTHER_COST_RATE.low)}–${pct(OTHER_COST_RATE.high)} of the price. Lenders charge loan costs in different ways. See the buying guide for mortgages for foreign nationals.`,
+    note: 'Brokerage is the legal maximum; stamp duty on the sale and loan contracts follows the National Tax Agency tables (reduced sale-contract rates until 31 March 2027). Registration and acquisition taxes, settlements and insurance depend on assessed values and the property, so they are ranges based on typical shares of the price (the loan for the mortgage registration), about 2–3% of the price in total. Lenders charge loan costs in different ways, such as a guarantee fee. See the buying guide for mortgages for foreign nationals.',
     lowPrice: 'For properties at ¥8 million or less, a special rule for vacant homes can allow a different brokerage maximum.', guide: 'Costs and mortgages explained',
   },
   'zh-TW': {
     title: '初期費用試算', price: '物件價格', priceUnit: '萬日圓', unitValue: 10_000, payment: '付款方式', cash: '現金', loan: '貸款', down: '頭期款',
     cashNeeded: '所需自有資金（估算）', ownFunds: (useLoan: boolean) => (useLoan ? '頭期款' : '物件價格'), loanAmount: '貸款金額（由貸款支付）',
-    brokerage: '仲介費（上限・含稅）', stamp: '買賣契約印花稅', loanFee: `貸款手續費（貸款額的${pct(LOAN_FEE_RATE)}）`, other: '登記、稅金、代書、火災保險、分攤款等',
+    brokerage: '仲介費（上限・含稅）', stamp: '買賣契約印花稅', loanFee: `貸款手續費（貸款額的${pct(LOAN_FEE_RATE)}）`, items: { registrationTransfer: '登錄免許稅（所有權移轉）', registrationMortgage: '登錄免許稅（抵押權設定）', scrivener: '代書（司法書士）費用', acquisitionTax: '不動產取得稅（交屋後繳納）', settlement: '固定資產稅・管理費等按日分攤', insurance: '火災・地震保險', loanStamp: '貸款契約印花稅' },
     timing: '付款時間', atContract: `簽約時（訂金${pct(DEPOSIT_RATE)}、印花稅、一半仲介費等）`, atSettlement: '交割・交屋時（其餘自有資金）',
-    note: `仲介費為法定上限，印花稅依國稅廳稅額表（減稅至2027年3月31日），登記與稅金等以物件價格的${pct(OTHER_COST_RATE.low)}〜${pct(OTHER_COST_RATE.high)}估算。貸款費用依金融機構方式不同。外國籍買家的貸款請參考購屋指南。`,
+    note: '仲介費為法定上限；買賣契約與貸款契約的印花稅依國稅廳稅額表計算（買賣契約減稅至2027年3月31日）。登錄免許稅、不動產取得稅、分攤款與保險依評定價值及物件而異，以物件價格（抵押權為貸款額）的一般比例估算範圍（合計約物件價格的2〜3%）。貸款費用依金融機構方式不同（如保證費型）。外國籍買家的貸款請參考購屋指南。',
     lowPrice: '800萬日圓以下的物件，可能適用空屋特例，仲介費上限不同。', guide: '費用與貸款詳細說明',
   },
   'zh-CN': {
     title: '初期费用试算', price: '房产价格', priceUnit: '万日元', unitValue: 10_000, payment: '付款方式', cash: '全款', loan: '贷款', down: '首付',
     cashNeeded: '所需自有资金（估算）', ownFunds: (useLoan: boolean) => (useLoan ? '首付' : '房产价格'), loanAmount: '贷款金额（由贷款支付）',
-    brokerage: '中介费（上限・含税）', stamp: '买卖合同印花税', loanFee: `贷款手续费（贷款额的${pct(LOAN_FEE_RATE)}）`, other: '登记、税金、司法书士、火灾保险、分摊款等',
+    brokerage: '中介费（上限・含税）', stamp: '买卖合同印花税', loanFee: `贷款手续费（贷款额的${pct(LOAN_FEE_RATE)}）`, items: { registrationTransfer: '登录免许税（所有权转移）', registrationMortgage: '登录免许税（抵押权设定）', scrivener: '司法书士费用', acquisitionTax: '不动产取得税（交房后缴纳）', settlement: '固定资产税・管理费等按日分摊', insurance: '火灾・地震保险', loanStamp: '贷款合同印花税' },
     timing: '付款时间', atContract: `签约时（定金${pct(DEPOSIT_RATE)}、印花税、一半中介费等）`, atSettlement: '交割・交房时（其余自有资金）',
-    note: `中介费为法定上限，印花税依国税厅税额表（减税至2027年3月31日），登记与税金等按房价的${pct(OTHER_COST_RATE.low)}〜${pct(OTHER_COST_RATE.high)}估算。贷款费用因金融机构方式不同。外国籍买家的贷款请参考购房指南。`,
+    note: '中介费为法定上限；买卖合同与贷款合同的印花税依国税厅税额表计算（买卖合同减税至2027年3月31日）。登录免许税、不动产取得税、分摊款与保险因评估价值及房产而异，按房价（抵押权为贷款额）的一般比例估算范围（合计约房价的2〜3%）。贷款费用因金融机构方式不同（如保证费型）。外国籍买家的贷款请参考购房指南。',
     lowPrice: '800万日元以下的房产，可能适用空置房特例，中介费上限不同。', guide: '费用与贷款详细说明',
   },
 } as const
 
 const DEFAULT_DOWN_PAYMENT_RATE = 0.2
+const OTHER_TONES: Record<OtherCostKey, string> = {
+  registrationTransfer: 'bg-[#8fb0d6]', registrationMortgage: 'bg-[#b7cde4]', scrivener: 'bg-[#6f9a6a]', acquisitionTax: 'bg-[#9b7fd1]',
+  settlement: 'bg-[#c9a227]', insurance: 'bg-[#d98a6c]', loanStamp: 'bg-[#e3c48b]',
+}
 const MAX_PRICE_YEN = 10_000_000_000
 
 interface InitialCostSimulatorProps {
@@ -65,13 +69,12 @@ export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGui
   const costs = estimateInitialCosts({ price: effectivePrice, downPaymentRate, useLoan })
   const yen = (value: number) => formatYenWords(Math.round(value / 10_000) * 10_000, locale)
   const range = ({ low, high }: Range) => (low === high ? yen(low) : `${yen(low)}${locale === 'en' ? ' – ' : '〜'}${yen(high)}`)
-  const otherMid = (costs.other.low + costs.other.high) / 2
   const segments = [
     { label: text.ownFunds(useLoan), value: costs.ownFunds, display: yen(costs.ownFunds), tone: 'bg-[#274d7d]' },
     { label: text.brokerage, value: costs.brokerage, display: yen(costs.brokerage), tone: 'bg-[#5b86b8]' },
     { label: text.stamp, value: costs.stamp, display: formatYenWords(costs.stamp, locale), tone: 'bg-[#e0a34a]' },
     ...(useLoan ? [{ label: text.loanFee, value: costs.loanFee, display: yen(costs.loanFee), tone: 'bg-[#aa5746]' }] : []),
-    { label: text.other, value: otherMid, display: range(costs.other), tone: 'bg-[#8fb0d6]' },
+    ...costs.otherItems.map((item) => ({ label: text.items[item.key as OtherCostKey], value: (item.range.low + item.range.high) / 2, display: range(item.range), tone: OTHER_TONES[item.key] })),
   ]
   const total = segments.reduce((sum, segment) => sum + segment.value, 0)
   const toggle = (active: boolean) => `min-h-11 flex-1 rounded-lg px-4 text-sm font-semibold transition ${active ? 'bg-[#274d7d] text-white' : 'text-[#536274] hover:bg-white'}`

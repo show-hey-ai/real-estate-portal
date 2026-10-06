@@ -43,7 +43,7 @@ const ja: BuyingCostsCopy = {
     settlement: { title: '決済・引渡しのとき', items: [
       { name: '残代金・仲介手数料（残り）', amount: '物件価格−手付金', note: 'ローンを使う場合は融資金で支払います。' },
       { name: '登録免許税', amount: '固定資産税評価額×税率', note: '所有権移転・抵当権設定の登記にかかる税金。住宅用の軽減があります。' },
-      { name: '司法書士報酬', amount: '数万〜十数万円', note: '登記手続きの代行費用です。' },
+      { name: '司法書士報酬', amount: '10万〜20万円程度', note: '登記手続きの代行費用です。' },
       { name: '固定資産税・管理費などの精算', amount: '日割り', note: '引渡し日以降の分を売主に払います。' },
       { name: 'ローン費用・火災保険', amount: '金融機関・補償内容による', note: '事務手数料、保証料、ローン契約の印紙、火災・地震保険料など。' },
     ] },
@@ -80,7 +80,7 @@ const en: BuyingCostsCopy = {
     settlement: { title: 'At settlement and handover', items: [
       { name: 'Balance and remaining brokerage', amount: 'Price minus deposit', note: 'Paid from the loan if you borrow.' },
       { name: 'Registration tax', amount: 'Assessed value × rate', note: 'For registering ownership and any mortgage; reduced for homes.' },
-      { name: 'Judicial scrivener fee', amount: 'Tens of thousands to ~¥150,000', note: 'For handling the registration.' },
+      { name: 'Judicial scrivener fee', amount: 'About ¥100,000–200,000', note: 'For handling the registration.' },
       { name: 'Property tax and fee settlement', amount: 'Pro rata', note: 'You reimburse the seller from the handover date.' },
       { name: 'Loan costs and insurance', amount: 'Depends on lender and cover', note: 'Loan fees, guarantee, loan contract stamp, fire and earthquake insurance.' },
     ] },
@@ -117,7 +117,7 @@ const zhTW: BuyingCostsCopy = {
     settlement: { title: '交割・交屋時', items: [
       { name: '尾款・剩餘仲介費', amount: '物件價格−訂金', note: '使用貸款時以貸款金支付。' },
       { name: '登錄免許稅', amount: '評定價值×稅率', note: '所有權移轉與抵押權設定登記的稅金，住宅有減免。' },
-      { name: '代書（司法書士）費用', amount: '數萬〜十數萬日圓', note: '代辦登記手續的費用。' },
+      { name: '代書（司法書士）費用', amount: '約10萬〜20萬日圓', note: '代辦登記手續的費用。' },
       { name: '固定資產稅・管理費等分攤', amount: '按日計算', note: '交屋日之後的部分支付給賣方。' },
       { name: '貸款費用・火災保險', amount: '依金融機構與保障內容', note: '手續費、保證費、貸款契約印花稅、火災與地震保險費等。' },
     ] },
@@ -154,7 +154,7 @@ const zhCN: BuyingCostsCopy = {
     settlement: { title: '交割・交房时', items: [
       { name: '尾款・剩余中介费', amount: '房价−定金', note: '使用贷款时以贷款支付。' },
       { name: '登录免许税', amount: '评估价值×税率', note: '所有权转移与抵押权设定登记的税金，住宅有减免。' },
-      { name: '司法书士费用', amount: '数万〜十数万日元', note: '代办登记手续的费用。' },
+      { name: '司法书士费用', amount: '约10万〜20万日元', note: '代办登记手续的费用。' },
       { name: '固定资产税・管理费等分摊', amount: '按日计算', note: '交房日之后的部分支付给卖方。' },
       { name: '贷款费用・火灾保险', amount: '因金融机构与保障内容而异', note: '手续费、保证费、贷款合同印花税、火灾与地震保险费等。' },
     ] },

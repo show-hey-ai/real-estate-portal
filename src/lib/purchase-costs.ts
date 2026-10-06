@@ -7,8 +7,19 @@
 const CONSUMPTION_TAX = 0.1
 /** Reduced stamp duty for real-estate sale contracts applies to contracts signed up to this day (JST). */
 export const STAMP_RELIEF_UNTIL = '2027-03-31'
-/** Registration and acquisition tax, scrivener, insurance and pro-rata settlements as a share of price. */
-export const OTHER_COST_RATE = { low: 0.02, high: 0.03 } as const
+/**
+ * Costs that depend on assessed values or the buyer's choices, as rules of thumb. Rates apply to the
+ * price unless `base` says otherwise; fixed amounts are in yen. Together they come to about 2–3% of the price.
+ */
+export const OTHER_COSTS = [
+  { key: 'registrationTransfer', base: 'price', low: 0.005, high: 0.008 },
+  { key: 'registrationMortgage', base: 'loan', low: 0.001, high: 0.004 },
+  { key: 'scrivener', base: 'fixed', low: 100_000, high: 200_000 },
+  { key: 'acquisitionTax', base: 'price', low: 0.005, high: 0.01 },
+  { key: 'settlement', base: 'price', low: 0.002, high: 0.003 },
+  { key: 'insurance', base: 'price', low: 0.0015, high: 0.003 },
+] as const
+export type OtherCostKey = (typeof OTHER_COSTS)[number]['key'] | 'loanStamp'
 /** Typical lender administration fee as a share of the loan (banks that charge a fee instead of a guarantee). */
 export const LOAN_FEE_RATE = 0.022
 /** Deposit paid at the contract, as a share of price. */
@@ -45,6 +56,18 @@ export function stampDuty(price: number, on: Date = new Date()): number {
   return reduced ? row[1] : row[2]
 }
 
+// Loan agreements (第1号の3文書) have no reduced rate. [upper bound inclusive, duty]
+const LOAN_STAMP_TABLE: [number, number][] = [
+  [100_000, 200], [500_000, 400], [1_000_000, 1_000], [5_000_000, 2_000], [10_000_000, 10_000],
+  [50_000_000, 20_000], [100_000_000, 60_000], [500_000_000, 100_000], [1_000_000_000, 200_000],
+  [5_000_000_000, 400_000], [Infinity, 600_000],
+]
+
+export function loanStampDuty(amount: number): number {
+  if (!(amount >= 10_000)) return 0
+  return LOAN_STAMP_TABLE.find(([limit]) => amount <= limit)![1]
+}
+
 export interface InitialCostInput {
   price: number
   /** Share of the price paid from own funds when borrowing; ignored for cash purchases. */
@@ -64,6 +87,8 @@ export interface InitialCosts {
   loanAmount: number
   brokerage: number
   stamp: number
+  /** Itemised other costs; loan-only items are left out for cash purchases. */
+  otherItems: { key: OtherCostKey; range: Range }[]
   other: Range
   loanFee: number
   fees: Range
@@ -78,13 +103,26 @@ export interface InitialCosts {
 
 const clampRate = (rate: number) => Math.min(Math.max(rate, 0), 1)
 
+function otherCostItems(price: number, loanAmount: number): { key: OtherCostKey; range: Range }[] {
+  if (price <= 0) return []
+  const items = OTHER_COSTS
+    .filter((item) => item.base !== 'loan' || loanAmount > 0)
+    .map((item) => {
+      const base = item.base === 'fixed' ? 1 : item.base === 'loan' ? loanAmount : price
+      return { key: item.key as OtherCostKey, range: { low: Math.round(base * item.low), high: Math.round(base * item.high) } }
+    })
+  const stamp = loanStampDuty(loanAmount)
+  return stamp ? [...items, { key: 'loanStamp', range: { low: stamp, high: stamp } }] : items
+}
+
 export function estimateInitialCosts({ price, downPaymentRate, useLoan, on = new Date() }: InitialCostInput): InitialCosts {
   const safePrice = price > 0 ? price : 0
   const ownFunds = useLoan ? Math.round(safePrice * clampRate(downPaymentRate)) : safePrice
   const loanAmount = safePrice - ownFunds
   const brokerage = brokerageFeeMax(safePrice)
   const stamp = stampDuty(safePrice, on)
-  const other = { low: Math.round(safePrice * OTHER_COST_RATE.low), high: Math.round(safePrice * OTHER_COST_RATE.high) }
+  const otherItems = otherCostItems(safePrice, loanAmount)
+  const other = otherItems.reduce((sum, item) => ({ low: sum.low + item.range.low, high: sum.high + item.range.high }), { low: 0, high: 0 })
   const loanFee = Math.round(loanAmount * LOAN_FEE_RATE)
   const fixedFees = brokerage + stamp + loanFee
   const fees = { low: fixedFees + other.low, high: fixedFees + other.high }
@@ -96,6 +134,7 @@ export function estimateInitialCosts({ price, downPaymentRate, useLoan, on = new
     loanAmount,
     brokerage,
     stamp,
+    otherItems,
     other,
     loanFee,
     fees,
