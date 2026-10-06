@@ -203,7 +203,7 @@ export function ListingCard({
 
         <div className="mt-4 grid grid-cols-2 overflow-hidden rounded-[4px] border border-[#dbe2e9] bg-[#f5f7f9] text-xs">
           <div className="border-r border-[#e1dac8] p-2">
-            <div className="flex items-center gap-1 text-[#7a837d]">
+            <div className="flex items-center gap-1 text-[#5c6560]">
               <Ruler className="h-3 w-3" />
               {listing.propertyType === '土地' ? t('landArea') : t('buildingArea')}
             </div>
@@ -214,7 +214,7 @@ export function ListingCard({
             </p>
           </div>
           <div className="p-2">
-            <div className="flex items-center gap-1 text-[#7a837d]">
+            <div className="flex items-center gap-1 text-[#5c6560]">
               <CalendarDays className="h-3 w-3" />
               {listing.propertyType === '土地' ? t('zoning') : t('builtYear')}
             </div>
