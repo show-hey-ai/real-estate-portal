@@ -8,6 +8,7 @@ import { guideArticles } from '@/content/guides'
 import { locales } from '@/i18n/config'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { localizedSitemapUrls } from '@/lib/locale-url'
+import { WARD_SLUGS } from '@/lib/ward-tile-map'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(supabaseUrl, serviceRoleKey)
   const { data, error } = await supabase
     .from('listings')
-    .select('id, updatedAt, publishedAt')
+    .select('id, city, updatedAt, publishedAt')
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
     .eq('adConsentRequired', false)
@@ -81,5 +82,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const listingEntries: MetadataRoute.Sitemap = (data || []).flatMap((listing) =>
     localized(`/listings/${listing.id}`, parseDbTimestamp(listing.updatedAt) || parseDbTimestamp(listing.publishedAt) || new Date(), 'weekly', 0.8))
 
-  return [...adjustedStaticEntries, ...guideEntries, ...listingEntries, ...articleEntries]
+  // Ward pages with at least one published listing; empty wards are noindex.
+  const wardEntries: MetadataRoute.Sitemap = [...new Set((data || []).map((listing) => listing.city).filter((city): city is string => !!city && !!WARD_SLUGS[city]))]
+    .flatMap((city) => localized(`/areas/${WARD_SLUGS[city]}`, getLatestDate((data || []).filter((listing) => listing.city === city).map((listing) => listing.updatedAt)), 'daily', 0.85))
+
+  return [...adjustedStaticEntries, ...wardEntries, ...guideEntries, ...listingEntries, ...articleEntries]
 }

@@ -1,4 +1,6 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import Link from 'next/link'
+import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingCard } from '@/components/listing/listing-card'
 import { rankRelatedListings, type RelatedCandidate } from '@/lib/related-listings'
 import { QuickContact } from '@/components/listing/quick-contact'
@@ -148,6 +150,8 @@ async function getRelatedListings(current: RelatedCandidate) {
     media: (home.media || []).filter((item) => item.isAdopted),
   }))
 }
+
+const wardMore: Record<string, (ward: string) => string> = { ja: (ward) => `${ward}の物件をもっと見る`, en: (ward) => `More properties in ${ward}`, 'zh-TW': (ward) => `查看更多${ward}物件`, 'zh-CN': (ward) => `查看更多${ward}房源` }
 
 const relatedTitle: Record<string, string> = { ja: '似ている物件', en: 'Similar properties', 'zh-TW': '類似物件', 'zh-CN': '类似房源' }
 
@@ -304,6 +308,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                       <MapPin className="h-4 w-4 shrink-0" />
                       <span>{translateAddress(publicAddress, locale) || publicAddress}</span>
                     </div>
+                    {listing.city && WARD_SLUGS[listing.city] && <Link href={`/areas/${WARD_SLUGS[listing.city]}`} className="ml-5 text-xs font-semibold text-[#274d7d] hover:underline">{wardMore[locale]?.(wardLabel(listing.city, locale)) ?? wardMore.en(wardLabel(listing.city, locale))} →</Link>}
                     {!hasDetailedPublicAddress(publicAddress) && (<p className="text-xs text-muted-foreground/70 flex items-center gap-1 ml-5">
                       <Info className="h-3 w-3 shrink-0" />
                       {t('addressPrivacyNote')}

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { MapPin } from 'lucide-react'
-import { WARD_GRID, WARD_TILES, wardLabel } from '@/lib/ward-tile-map'
+import { WARD_GRID, WARD_SLUGS, WARD_TILES, wardLabel } from '@/lib/ward-tile-map'
 
 const copy = {
   ja: { title: 'エリアから探す', note: '東京23区の位置関係で表示。数字は公開中の物件数です。', empty: '公開中の物件なし', more: '色が濃いほど物件が多い区です' },
@@ -20,9 +20,11 @@ function tone(count: number, max: number): string {
 interface WardMapProps {
   locale: string
   counts: Record<string, number>
+  /** Ward whose page is being shown; it is outlined on the map. */
+  current?: string
 }
 
-export function WardMap({ locale, counts }: WardMapProps) {
+export function WardMap({ locale, counts, current }: WardMapProps) {
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const max = Math.max(0, ...Object.values(counts))
   return <section aria-labelledby="ward-map-title" data-testid="ward-map" className="rounded-2xl border border-[#dbe2e9] bg-[#f8fafc] p-4 md:p-6">
@@ -39,7 +41,7 @@ export function WardMap({ locale, counts }: WardMapProps) {
       {WARD_TILES.map(({ ward, row, col }) => {
         const count = counts[ward] ?? 0
         const label = wardLabel(ward, locale)
-        const className = `flex aspect-square flex-col items-center justify-center rounded-md border p-0.5 text-center transition-colors sm:rounded-lg ${tone(count, max)}`
+        const className = `flex aspect-square flex-col items-center justify-center rounded-md border p-0.5 text-center transition-colors sm:rounded-lg ${tone(count, max)} ${ward === current ? 'ring-2 ring-[#c2410c] ring-offset-2' : ''}`
         const content = <>
           <span className="w-full break-words text-[9px] font-semibold leading-tight sm:text-xs md:text-sm">{label}</span>
           <span className="mt-0.5 text-[10px] font-bold tabular-nums sm:text-sm md:text-base">{count}</span>
@@ -47,7 +49,7 @@ export function WardMap({ locale, counts }: WardMapProps) {
         </>
         const style = { gridRow: row + 1, gridColumn: col + 1 }
         return count > 0
-          ? <Link key={ward} href={`/listings?${new URLSearchParams({ ward })}`} prefetch={false} style={style} className={className}>{content}</Link>
+          ? <Link key={ward} href={`/areas/${WARD_SLUGS[ward]}`} prefetch={false} style={style} className={className} aria-current={ward === current ? 'page' : undefined}>{content}</Link>
           : <div key={ward} style={style} className={className}>{content}</div>
       })}
     </div>
