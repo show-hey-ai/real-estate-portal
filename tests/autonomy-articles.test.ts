@@ -7,11 +7,13 @@ const rows: ArticleSource[] = [10_000_000, 20_000_000, 30_000_000].map((price, i
 test('articles use observed asking prices in four languages without asserting market-wide or realized returns', () => {
   const content = generateArticleContent('目黒区', rows, new Date('2026-10-02T00:00:00Z'))
   assert.deepEqual(Object.keys(content).sort(), ['en', 'ja', 'zh-CN', 'zh-TW'])
-  for (const article of Object.values(content)) {
+  const expected = { en: ['10,000,000', '30,000,000', '20,000,000'], ja: ['1,000万円', '3,000万円', '2,000万円'], 'zh-TW': ['1,000萬日圓', '3,000萬日圓', '2,000萬日圓'], 'zh-CN': ['1,000万日元', '3,000万日元', '2,000万日元'] } as const
+  for (const [locale, article] of Object.entries(content)) {
+    const [low, high, median] = expected[locale as keyof typeof expected]
     assert.equal(article.sections.length, 3)
-    assert.ok(article.description.includes('10,000,000'))
-    assert.ok(article.description.includes('30,000,000'))
-    assert.ok(article.sections[0].paragraphs[0].includes('20,000,000'))
+    assert.ok(article.description.includes(low))
+    assert.ok(article.description.includes(high))
+    assert.ok(article.sections[0].paragraphs[0].includes(median))
   }
   assert.match(content.en.notice, /dated snapshot/)
   assert.match(content.en.sections[0].paragraphs[1], /asking prices/)
