@@ -52,7 +52,7 @@ import {
   translatePropertyType,
   translateRailwayLine,
 } from '@/lib/translate-fields'
-import { withBuildingName } from '@/lib/building-name'
+import { withCardFacts } from '@/lib/card-facts'
 import { listingsSnippet, titleTemplate } from '@/lib/home-snippet'
 import { countPublicListings } from '@/lib/public-listing-cards'
 
@@ -425,7 +425,7 @@ export default async function ListingsPage({
                 {formattedListings.map((listing, index) => (
                   <ListingCard
                     key={listing.id}
-                    listing={withBuildingName(listing)}
+                    listing={withCardFacts(listing)}
                     isFavorite={favoriteIds.has(listing.id)}
                     userId={userId}
                     imagePriority={index === 0}

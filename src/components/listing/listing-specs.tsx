@@ -5,7 +5,14 @@ import { formatUnitPrice } from '@/lib/unit-price'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatArea } from '@/lib/format'
 import { translatePropertyType, translateStructure, translateZoning, translateCurrentStatus } from '@/lib/translate-fields'
-import { getMarketCategory } from '@/lib/market-category'
+import type { MonthlyFigures } from '@/lib/monthly-costs'
+
+const monthlyCopy = {
+  ja: { management: '管理費（月額）', repair: '修繕積立金（月額）', fees: '管理費等（月額）', rent: '賃料（月額）', yield: '表面利回り', yen: (value: number) => `${value.toLocaleString('ja-JP')}円` },
+  en: { management: 'Management fee (monthly)', repair: 'Repair reserve (monthly)', fees: 'Management fees (monthly)', rent: 'Rent (monthly)', yield: 'Gross yield', yen: (value: number) => `¥${value.toLocaleString('en-US')}` },
+  'zh-TW': { management: '管理費（月）', repair: '修繕公積金（月）', fees: '管理費等（月）', rent: '租金（月）', yield: '表面投報率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日圓` },
+  'zh-CN': { management: '管理费（月）', repair: '修缮基金（月）', fees: '管理费等（月）', rent: '租金（月）', yield: '表面收益率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日元` },
+} as const
 
 interface ListingSpecsProps {
   listing: {
@@ -21,11 +28,16 @@ interface ListingSpecsProps {
     currentStatus: string | null
     yieldGross?: number | null
   }
+  /** Monthly figures read from the description; see parseMonthlyFigures. */
+  monthly?: MonthlyFigures
+  /** Gross yield to show, stored or computed from the stated rent. */
+  grossYield?: number | null
 }
 
-export function ListingSpecs({ listing }: ListingSpecsProps) {
+export function ListingSpecs({ listing, monthly, grossYield }: ListingSpecsProps) {
   const t = useTranslations('listing')
   const locale = useLocale()
+  const text = monthlyCopy[locale as keyof typeof monthlyCopy] ?? monthlyCopy.en
 
   // 築年月フォーマット
   const formatBuiltDate = (year: number | null, month: number | null) => {
@@ -59,9 +71,11 @@ export function ListingSpecs({ listing }: ListingSpecsProps) {
     { label: t('zoning'), value: translateZoning(listing.zoning, locale) },
     { label: t('currentStatus'), value: translateCurrentStatus(listing.currentStatus, locale) },
     { label: locale === 'ja' ? '㎡単価' : locale === 'en' ? 'Price per m²' : locale === 'zh-TW' ? '每平方公尺單價' : '每平方米单价', value: formatUnitPrice(Number(listing.price) || null, Number(listing.propertyType === '土地' ? listing.landArea : listing.buildingArea) || null, locale) },
-    ...(getMarketCategory(listing) === 'investment' && listing.yieldGross && Number(listing.yieldGross) > 0
-      ? [{ label: locale === 'ja' ? '表面利回り' : locale === 'en' ? 'Gross yield' : locale === 'zh-TW' ? '表面投報率' : '表面收益率', value: `${Number(listing.yieldGross)}%` }]
-      : []),
+    ...(monthly?.managementFee ? [{ label: text.management, value: text.yen(monthly.managementFee) }] : []),
+    ...(monthly?.repairReserve ? [{ label: text.repair, value: text.yen(monthly.repairReserve) }] : []),
+    ...(monthly?.fees && !monthly.managementFee && !monthly.repairReserve ? [{ label: text.fees, value: text.yen(monthly.fees) }] : []),
+    ...(monthly?.rent && listing.currentStatus?.includes('賃貸中') ? [{ label: text.rent, value: text.yen(monthly.rent) }] : []),
+    ...(grossYield ? [{ label: text.yield, value: `${grossYield}%` }] : []),
   ].filter((spec) => spec.value)
 
   return (

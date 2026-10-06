@@ -9,7 +9,7 @@ import { ListingCard } from '@/components/listing/listing-card'
 import { Button } from '@/components/ui/button'
 import { Heart, Search } from 'lucide-react'
 import { isPublicPropertyType } from '@/lib/market-category'
-import { withBuildingName } from '@/lib/building-name'
+import { withCardFacts } from '@/lib/card-facts'
 
 export const metadata: Metadata = {
   robots: {
@@ -82,7 +82,7 @@ export default async function FavoritesPage() {
             return (
               <ListingCard
                 key={fav.id}
-                listing={withBuildingName({
+                listing={withCardFacts({
                   ...listing,
                   buildingArea: fav.listing.buildingArea ? Number(fav.listing.buildingArea) : null,
                   landArea: fav.listing.landArea ? Number(fav.listing.landArea) : null,

@@ -19,7 +19,8 @@ import { formatYenWords } from '@/lib/yen-words'
 import { pickCoverImage } from '@/lib/cover-image'
 import { unitPriceOf } from '@/lib/unit-price'
 import { UnitPriceChart } from '@/components/listing/unit-price-chart'
-import { extractBuildingName, withBuildingName } from '@/lib/building-name'
+import { extractBuildingName } from '@/lib/building-name'
+import { withCardFacts } from '@/lib/card-facts'
 import { countedTitle } from '@/lib/home-snippet'
 
 export const dynamic = 'force-dynamic'
@@ -119,7 +120,7 @@ export default async function WardPage({ params }: Props) {
 
       {listings.length > 0 && <section className="mt-10" aria-labelledby="ward-listings-title">
         <h2 id="ward-listings-title" className="text-xl font-semibold">{text.listings}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withBuildingName(home)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
       </section>}
 
       {unitBars.length >= 2 && <UnitPriceChart locale={locale} title={text.unitTitle} note={text.unitNote} bars={unitBars} />}

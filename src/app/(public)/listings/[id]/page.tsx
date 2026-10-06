@@ -5,6 +5,8 @@ import { UnitPriceChart } from '@/components/listing/unit-price-chart'
 import { compareUnitPrice, type UnitPriceSource } from '@/lib/unit-price'
 import { LoanSimulator } from '@/components/listing/loan-simulator'
 import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
+import { parseMonthlyFigures } from '@/lib/monthly-costs'
+import { cardGrossYield } from '@/lib/card-facts'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -48,7 +50,7 @@ import {
   getPrimaryListingImage,
   getSchemaLanguage,
 } from '@/lib/site-config'
-import { withBuildingName } from '@/lib/building-name'
+import { withCardFacts } from '@/lib/card-facts'
 
 interface ListingPageProps {
   params: Promise<{ id: string }>
@@ -198,6 +200,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const isFavorite = viewer ? await getIsFavoriteForViewer(viewer.id, id) : false
 
   const publicAddress = formatApprovedPublicAddress(listing.addressPublic)
+  const monthly = parseMonthlyFigures(listing.descriptionJa)
+  const grossYield = cardGrossYield(listing)
+  const letRent = listing.currentStatus?.includes('賃貸中') ? monthly.rent : null
   const stations = normalizeTransitStations(
     listing.stations as { name: string; name_en?: string | null; line?: string | null; line_en?: string | null; walk_minutes?: number | null }[] | null
   )
@@ -342,7 +347,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
             </a>
 
             <div id="property-facts" className="scroll-mt-4 md:scroll-mt-44">
-              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} />
+              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} monthly={monthly} grossYield={grossYield} />
             </div>
 
             {unitPrice && listing.city && <UnitPriceChart locale={locale} title={unitPriceCopy[locale]?.title ?? unitPriceCopy.en.title} note={unitPriceCopy[locale]?.note(unitPrice.count) ?? unitPriceCopy.en.note(unitPrice.count)} bars={[
@@ -350,7 +355,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
               { label: (unitPriceCopy[locale] ?? unitPriceCopy.en).average(wardLabel(listing.city, locale), unitPrice.count), value: unitPrice.average, href: wardSlug ? `/areas/${wardSlug}` : undefined },
             ]} />}
 
-            {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} />}
+            {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} monthlyFees={monthly.fees} monthlyRent={letRent} />}
             {formattedListing.price && Number(formattedListing.price) > 0 && <InitialCostSimulator price={Number(formattedListing.price)} />}
 
             {publicAddress && <ListingMap locale={locale} publicAddress={publicAddress} />}
@@ -415,7 +420,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
       <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingHeading(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing) }} />
       {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withBuildingName(item)} userId={userId} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withCardFacts(item)} userId={userId} />)}</div>
       </section>}
       <RecentlyViewed excludeId={formattedListing.id} />
     </div>
