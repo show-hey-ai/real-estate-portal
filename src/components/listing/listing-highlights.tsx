@@ -1,5 +1,13 @@
+import Link from 'next/link'
 import { AlertTriangle, CheckCircle2 } from 'lucide-react'
 import type { CautionKey, HighlightKey, ListingHighlights } from '@/lib/listing-highlights'
+
+/** Points to check that have a guide explaining them. */
+const CAUTION_GUIDES: Partial<Record<CautionKey, string>> = {
+  oldSeismic: 'japan-earthquake-standards-1981',
+  checkSeismic: 'japan-earthquake-standards-1981',
+  leasehold: 'leasehold-vs-freehold-tokyo',
+}
 
 type Labels<K extends string> = Record<K, string | ((minutes: number) => string)>
 
@@ -47,7 +55,12 @@ export function ListingHighlightChips({ locale, result }: ListingHighlightChipsP
     </div>}
     {result.cautions.length > 0 && <div className="flex flex-wrap items-center gap-1.5">
       <span className="mr-1 text-xs font-semibold text-[#8a4b00]">{text.check}</span>
-      {result.cautions.map((key) => <span key={key} className="inline-flex items-center gap-1 rounded-md bg-[#fff4e5] px-2 py-1 text-xs font-semibold text-[#8a4b00]"><AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" />{label(text.cautions, key, result.walkMinutes)}</span>)}
+      {result.cautions.map((key) => {
+        const chip = <><AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" />{label(text.cautions, key, result.walkMinutes)}</>
+        const className = 'inline-flex items-center gap-1 rounded-md bg-[#fff4e5] px-2 py-1 text-xs font-semibold text-[#8a4b00]'
+        const guide = CAUTION_GUIDES[key]
+        return guide ? <Link key={key} href={`/guides/${guide}`} className={`${className} underline-offset-2 hover:underline`}>{chip}</Link> : <span key={key} className={className}>{chip}</span>
+      })}
     </div>}
   </div>
 }

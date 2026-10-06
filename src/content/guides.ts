@@ -1,6 +1,7 @@
 import { type Locale } from '@/i18n/config'
 import { extraGuideArticles } from './guides-extra'
 import { extraGuideArticles2 } from './guides-extra-2'
+import { extraGuideArticles3 } from './guides-extra-3'
 
 export interface GuideSection {
   id: string
@@ -1106,7 +1107,7 @@ const baseGuideArticles: GuideArticle[] = [
   },
 ]
 
-export const guideArticles: GuideArticle[] = [...baseGuideArticles, ...extraGuideArticles, ...extraGuideArticles2]
+export const guideArticles: GuideArticle[] = [...baseGuideArticles, ...extraGuideArticles, ...extraGuideArticles2, ...extraGuideArticles3]
 
 export function getGuideArticles(locale: Locale) {
   return guideArticles.map((article) => ({
