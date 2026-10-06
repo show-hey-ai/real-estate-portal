@@ -9,6 +9,8 @@ import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, type TypeSlug } from '@/lib
 import { priceBandRange } from '@/lib/price-bands'
 import { LINE_ADD_URL, LINE_ID, WECHAT_DEEP_LINK, WECHAT_ID, WHATSAPP_NUMBER } from '@/lib/contact-channels'
 
+const ABOUT_LABEL: Record<string, string> = { ja: '運営会社・監修者', en: 'About us', 'zh-TW': '營運公司與監修者', 'zh-CN': '运营公司与审校者' }
+
 export function Footer() {
   const t = useTranslations()
   const locale = useLocale()
@@ -57,6 +59,7 @@ export function Footer() {
               <li><Link href="/match" className="text-white/65 hover:text-white transition-colors">{t('nav.match')}</Link></li>
               <li><Link href="/articles" className="text-white/65 hover:text-white transition-colors">{t('nav.articles')}</Link></li>
               <li><Link href="/help" className="text-white/65 hover:text-white transition-colors">{help.nav}</Link></li>
+              <li><Link href="/about" className="text-white/65 hover:text-white transition-colors">{ABOUT_LABEL[locale] ?? ABOUT_LABEL.en}</Link></li>
               <li>
                 <Link href="/register" className="text-white/65 hover:text-white transition-colors">
                   {t('common.register')}

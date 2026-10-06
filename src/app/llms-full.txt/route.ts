@@ -42,6 +42,7 @@ export async function GET() {
     `- [Personal search and saved criteria](${absoluteUrl('/match')})`,
     `- [Articles](${absoluteUrl('/articles')})`,
     `- [Help center](${absoluteUrl('/help')})`,
+    `- [About us: operator, licence and content reviewer](${absoluteUrl('/about')})`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
     `## Properties for sale now (${listings.length})`, '',
     ...(listings.length ? listings.map((listing) => formatLlmsListing(listing, absoluteUrl(`/listings/${listing.id}`))) : ['See the properties page for the current inventory.']), '',

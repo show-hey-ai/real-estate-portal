@@ -26,7 +26,8 @@ export async function GET() {
     `- [Buying guide](${absoluteUrl('/buying-guide')}): The basic process from criteria to closing.`,
     `- [Property insights](${absoluteUrl('/articles')}): Source-backed Tokyo property selections and comparisons.`,
     `- [Personal search](${absoluteUrl('/match')}): Save purchase criteria and review matching published listings.`,
-    `- [Help center](${absoluteUrl('/help')}): Answers about searching, accounts, property chat, and buying steps.`, '',
+    `- [Help center](${absoluteUrl('/help')}): Answers about searching, accounts, property chat, and buying steps.`,
+    `- [About us](${absoluteUrl('/about')}): Operator, licence, content reviewer, listing and editorial rules.`, '',
     `- [Full details for AI assistants](${absoluteUrl('/llms-full.txt')})`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
   ].join('\n')
