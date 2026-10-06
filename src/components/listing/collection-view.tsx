@@ -10,6 +10,7 @@ import { translatePropertyType } from '@/lib/translate-fields'
 import { unitPriceOf } from '@/lib/unit-price'
 import { WARD_SLUGS, countByWard, summarizeWard, wardLabel } from '@/lib/ward-tile-map'
 import { formatYenWords } from '@/lib/yen-words'
+import { withBuildingName } from '@/lib/building-name'
 
 const labels = {
   ja: { home: 'ホーム', range: '掲載価格の範囲', types: '物件の種類', wards: 'エリア別', listings: '公開中の物件', unitTitle: '物件ごとの㎡単価', unitNote: '公開中の物件の売出価格を面積で割った参考値です。成約価格や相場ではありません。', all: '条件を指定して探す', match: '購入条件を整理する', count: (count: number) => `${count}件` },
@@ -70,7 +71,7 @@ export function CollectionView({ locale, path, title, intro, Icon, rows, filterH
 
       {listings.length > 0 && <section className="mt-10" aria-labelledby="collection-listings-title">
         <h2 id="collection-listings-title" className="text-xl font-semibold">{text.listings}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={home} isFavorite={favorites.has(home.id)} userId={userId} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withBuildingName(home)} isFavorite={favorites.has(home.id)} userId={userId} />)}</div>
       </section>}
 
       {unitBars.length >= 2 && <UnitPriceChart locale={locale} title={text.unitTitle} note={text.unitNote} bars={unitBars} />}

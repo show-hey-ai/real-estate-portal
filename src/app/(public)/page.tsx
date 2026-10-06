@@ -22,6 +22,7 @@ import { getPortalHomeCopy } from '@/lib/portal-copy'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { createServiceClient } from '@/lib/supabase/server'
 import { absoluteUrl, getSchemaLanguage, getSiteCopy, shareMetadata } from '@/lib/site-config'
+import { withBuildingName } from '@/lib/building-name'
 
 export const dynamic = 'force-dynamic'
 
@@ -131,7 +132,7 @@ export default async function HomePage() {
           <div><h2 className="text-xl font-semibold md:text-2xl">{copy.availableTitle}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#657487]">{copy.availableDescription}</p></div>
           <Link href="/listings" className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[#274d7d]">{market.all}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
         </div>
-        {listings.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((listing) => <ListingCard key={listing.id} listing={listing} isFavorite={favorites.has(listing.id)} userId={viewer?.id ?? null} />)}</div> :
+        {listings.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((listing) => <ListingCard key={listing.id} listing={withBuildingName(listing)} isFavorite={favorites.has(listing.id)} userId={viewer?.id ?? null} />)}</div> :
           <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-6 md:p-8"><h3 className="text-lg font-semibold">{copy.emptyTitle}</h3><p className="mt-2 max-w-2xl text-sm leading-7 text-[#657487]">{copy.emptyDescription}</p><Link href="/match" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]"><FunnelText field="consult" baseline={copy.consult} /><ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>}
       </section>
 

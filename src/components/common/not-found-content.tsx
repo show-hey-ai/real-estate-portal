@@ -3,6 +3,7 @@ import { getLocale } from 'next-intl/server'
 import { ArrowRight, BookOpen, Search, SlidersHorizontal } from 'lucide-react'
 import { ListingCard } from '@/components/listing/listing-card'
 import { getLatestListingCards } from '@/lib/public-listing-cards'
+import { withBuildingName } from '@/lib/building-name'
 
 const copy = {
   ja: { title: 'ページが見つかりません', body: '物件の販売が終了したか、URLが変更された可能性があります。公開中の物件から探すか、ご希望の条件をお知らせください。', listings: '公開中の物件を見る', match: '購入条件を整理する', guide: '購入ガイドを読む', latest: '新着の物件' },
@@ -29,7 +30,7 @@ export async function NotFoundContent() {
     </div>
     {latest.length > 0 && <section className="mt-14 text-left" aria-labelledby="not-found-latest">
       <h2 id="not-found-latest" className="text-lg font-semibold">{text.latest}</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{latest.map((home) => <ListingCard key={home.id} listing={home} showFavoriteButton={false} />)}</div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{latest.map((home) => <ListingCard key={home.id} listing={withBuildingName(home)} showFavoriteButton={false} />)}</div>
     </section>}
   </main>
 }

@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import { pickCoverImage } from '@/lib/cover-image'
-import { extractBuildingName } from '@/lib/building-name'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
@@ -51,7 +50,7 @@ interface ListingCardProps {
     hospitalityCategory?: string | null
     price: bigint | null
     addressPublic: string | null
-    descriptionJa?: string | null
+    buildingName?: string | null
     stations?: Station[] | null
     builtYear: number | null
     buildingArea: number | null
@@ -90,7 +89,7 @@ export function ListingCard({
 
   const mainImage = pickCoverImage(listing.media)
   const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
-  const buildingName = extractBuildingName(listing.descriptionJa)
+  const buildingName = listing.buildingName
   const stations = normalizeTransitStations(listing.stations)
   const primaryStation = stations[0]
   const primaryTransitLabel = formatTransitAccessLabel(primaryStation, locale)

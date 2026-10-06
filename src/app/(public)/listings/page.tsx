@@ -52,6 +52,7 @@ import {
   translatePropertyType,
   translateRailwayLine,
 } from '@/lib/translate-fields'
+import { withBuildingName } from '@/lib/building-name'
 
 interface ListingsPageProps {
   searchParams: Promise<{
@@ -136,6 +137,7 @@ interface ListingRow {
   hospitalityCategory?: string | null
   price: string | number | null
   addressPublic: string | null
+  descriptionJa?: string | null
   stations:
     | {
         name: string
@@ -418,7 +420,7 @@ export default async function ListingsPage({
                 {formattedListings.map((listing, index) => (
                   <ListingCard
                     key={listing.id}
-                    listing={listing}
+                    listing={withBuildingName(listing)}
                     isFavorite={favoriteIds.has(listing.id)}
                     userId={userId}
                     imagePriority={index === 0}

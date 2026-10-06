@@ -33,6 +33,7 @@ export async function GET() {
     'The portal lists properties for which advertising permission has been confirmed. A search result does not confirm current availability or suitability for an individual buyer. Prices are seller asking prices, not transaction prices.', '',
     'Signed-in buyers can save their purpose, budget, wards, property type, timing and other criteria on the personal search page. Saved criteria are rechecked against published listings, and matches are shown with matched, unmatched and unconfirmed points. The match score compares entered criteria only; it is not a loan, eligibility, yield or availability decision.', '',
     'Every listing page offers contact without sign-up: WhatsApp (+81-80-8492-7068, pre-filled with the listing), email (admin@ziyou-fudosan.com) and phone (+81-3-5687-7120). Signed-in buyers can also use the listing\'s private property chat.', '',
+    'Each listing page also shows a monthly payment estimate and an estimated purchase-cost breakdown: the statutory brokerage maximum, contract stamp duty from the National Tax Agency table, and 3–5% of the price for registration, acquisition tax, scrivener, insurance and loan fees. These are rough guides, not quotes.', '',
     '## Pages', '',
     `- [Home](${absoluteUrl('/')})`,
     `- [Properties for sale](${absoluteUrl('/listings')})`,

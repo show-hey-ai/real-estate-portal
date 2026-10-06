@@ -32,7 +32,7 @@ export function Header({ user }: HeaderProps) {
     { href: '/help', label: help.nav, active: pathname.startsWith('/help') },
   ]
 
-  return <header data-testid="public-header" className="sticky top-0 z-50 w-full border-b border-[#dbe2e9] bg-white">
+  return <header data-testid="public-header" className="relative z-50 w-full border-b md:sticky md:top-0 border-[#dbe2e9] bg-white">
     <div className="container grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 py-3 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-5 md:py-4">
       <Link href="/" className="flex items-center gap-2 text-[#142337]" aria-label={`ZIYOU ${t('common.appName')}`}>
         <span className="text-[1.4rem] font-semibold tracking-[0.12em]">ZIYOU</span>

@@ -45,6 +45,7 @@ import {
   getPrimaryListingImage,
   getSchemaLanguage,
 } from '@/lib/site-config'
+import { withBuildingName } from '@/lib/building-name'
 
 interface ListingPageProps {
   params: Promise<{ id: string }>
@@ -337,7 +338,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
               {getTradeChatCopy(locale).start}
             </a>
 
-            <div id="property-facts" className="scroll-mt-44">
+            <div id="property-facts" className="scroll-mt-4 md:scroll-mt-44">
               <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} />
             </div>
 
@@ -401,7 +402,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
               listingId={formattedListing.id}
               listingTitle={translateAddress(publicAddress, locale) || publicAddress || t('property')}
             />
-            <div id="inquiry" className="scroll-mt-44">
+            <div id="inquiry" className="scroll-mt-4 md:scroll-mt-44">
               <PropertyChatLink listingId={formattedListing.id} />
             </div>
             <ExclusiveCta listingId={formattedListing.id} userId={userId} />
@@ -411,7 +412,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
       <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingTitle(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing) }} />
       {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={item} userId={userId} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withBuildingName(item)} userId={userId} />)}</div>
       </section>}
       <RecentlyViewed excludeId={formattedListing.id} />
     </div>

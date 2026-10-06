@@ -236,7 +236,7 @@ export default async function GuideDetailPage({
 
           <div className="mt-10 space-y-10">
             {article.sections.map((section) => (
-              <section key={section.id} id={section.id} className="scroll-mt-44 space-y-4">
+              <section key={section.id} id={section.id} className="scroll-mt-4 md:scroll-mt-44 space-y-4">
                 <h2 className="text-2xl font-semibold tracking-tight">{section.heading}</h2>
                 <div className="space-y-4 text-base leading-8 text-muted-foreground">
                   {section.paragraphs.map((paragraph, index) => (
@@ -257,7 +257,7 @@ export default async function GuideDetailPage({
             ))}
           </div>
 
-          <section id="faq" className="mt-12 scroll-mt-44">
+          <section id="faq" className="mt-12 scroll-mt-4 md:scroll-mt-44">
             <h2 className="text-2xl font-semibold tracking-tight">{guideCopy.faq}</h2>
             <div className="mt-5 space-y-4">
               {article.faq.map((item) => (

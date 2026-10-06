@@ -14,3 +14,9 @@ export function extractBuildingName(descriptionJa: string | null | undefined): s
   if (/^[^\s]{1,4}区/u.test(name)) return null
   return name
 }
+
+/** Card props carry only the extracted name, so the full description is not sent to the browser. */
+export function withBuildingName<T extends { descriptionJa?: string | null }>(listing: T): Omit<T, 'descriptionJa'> & { buildingName: string | null } {
+  const { descriptionJa, ...rest } = listing
+  return { ...rest, buildingName: extractBuildingName(descriptionJa) }
+}
