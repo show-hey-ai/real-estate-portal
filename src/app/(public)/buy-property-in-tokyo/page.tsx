@@ -25,12 +25,12 @@ const copy = {
   en: {
     title: 'Buying Property in Tokyo as a Foreigner: Listings, Costs and Steps',
     description: 'Yes, foreigners can buy property in Tokyo without a visa or residence. How mortgages, costs, taxes and the buying process work, with current listings in USD and yen.',
-    lead: 'Yes. Foreigners can buy property in Tokyo without a visa or residence in Japan, with the same ownership rights as Japanese buyers. Most overseas buyers pay cash; a mortgage usually needs Japanese residence status or a company in Japan. Budget roughly 6–7% of the price for purchase costs in a cash purchase.',
+    lead: 'Yes. Foreigners can buy property in Tokyo without a visa or residence in Japan, with the same ownership rights as Japanese buyers. Most overseas buyers pay cash; a mortgage usually needs Japanese residence status or a company in Japan. Budget roughly 5–7% of the price for purchase costs in a cash purchase.',
     answers: [
       { question: 'Can foreigners own property in Japan?', answer: 'Yes, including the land, with no nationality restriction.', href: '/guides/buying-property-japan-visa' },
       { question: 'Do I get a visa by buying?', answer: 'No. Property does not give residence status.', href: '/guides/buying-property-japan-visa' },
       { question: 'Can I get a mortgage?', answer: 'Possible with Japanese residence status or through a Japanese company; otherwise cash is usual.', href: '/buying-guide' },
-      { question: 'What does it cost on top of the price?', answer: 'About 6–7% in cash; each listing has an initial cost simulator.', href: '/buying-guide' },
+      { question: 'What does it cost on top of the price?', answer: 'About 5–7% in cash; each listing has an initial cost simulator.', href: '/buying-guide' },
       { question: 'How long does it take?', answer: 'Usually one to two months from offer to handover.', href: '/buying-guide' },
       { question: 'Can I rent it out from abroad?', answer: 'Yes, through a management company; rent to non-residents has 20.42% withheld.', href: '/guides/renting-out-tokyo-condo-from-overseas' },
     ] as QuickAnswer[],
@@ -39,12 +39,12 @@ const copy = {
   'zh-TW': {
     title: '外國人在東京買房指南：物件、費用與流程',
     description: '外國人不需簽證或居留也能在東京買房。說明貸款、費用、稅金與購屋流程，並以新台幣與日圓顯示最新物件。',
-    lead: '可以。外國人不需日本簽證或居留，也能在東京購買不動產，享有與日本人相同的所有權（包含土地）。海外買家多以現金購買；貸款通常需要日本在留資格或在日本設立公司。現金購買時，雜費約為物件價格的6〜7%。',
+    lead: '可以。外國人不需日本簽證或居留，也能在東京購買不動產，享有與日本人相同的所有權（包含土地）。海外買家多以現金購買；貸款通常需要日本在留資格或在日本設立公司。現金購買時，雜費約為物件價格的5〜7%。',
     answers: [
       { question: '外國人可以擁有日本不動產嗎？', answer: '可以，包含土地，沒有國籍限制。', href: '/guides/buying-property-japan-visa' },
       { question: '買房能拿到簽證嗎？', answer: '不能。持有不動產不會取得在留資格。', href: '/guides/buying-property-japan-visa' },
       { question: '可以貸款嗎？', answer: '持有日本在留資格或以日本法人名義有機會；否則多為現金購買。', href: '/buying-guide' },
-      { question: '價格之外要多少費用？', answer: '現金購買約6〜7%，每個物件頁面都有初期費用試算。', href: '/buying-guide' },
+      { question: '價格之外要多少費用？', answer: '現金購買約5〜7%，每個物件頁面都有初期費用試算。', href: '/buying-guide' },
       { question: '需要多久？', answer: '從出價到交屋通常1〜2個月。', href: '/buying-guide' },
       { question: '人在海外可以出租嗎？', answer: '可以，委託管理公司；支付給非居住者的租金需預扣20.42%。', href: '/guides/renting-out-tokyo-condo-from-overseas' },
     ] as QuickAnswer[],
@@ -53,12 +53,12 @@ const copy = {
   'zh-CN': {
     title: '外国人在东京买房指南：房源、费用与流程',
     description: '外国人无需签证或居留也能在东京买房。说明贷款、费用、税金与购房流程，并以人民币与日元显示最新房源。',
-    lead: '可以。外国人无需日本签证或居留，也能在东京购买房产，享有与日本人相同的所有权（包括土地，即永久产权）。海外买家多为全款购买；贷款通常需要日本在留资格或在日本设立公司。全款购买时，杂费约为房价的6〜7%。',
+    lead: '可以。外国人无需日本签证或居留，也能在东京购买房产，享有与日本人相同的所有权（包括土地，即永久产权）。海外买家多为全款购买；贷款通常需要日本在留资格或在日本设立公司。全款购买时，杂费约为房价的5〜7%。',
     answers: [
       { question: '外国人可以拥有日本房产吗？', answer: '可以，包括土地，没有国籍限制。', href: '/guides/buying-property-japan-visa' },
       { question: '买房能拿到签证吗？', answer: '不能。持有房产不会获得在留资格。', href: '/guides/buying-property-japan-visa' },
       { question: '可以贷款吗？', answer: '持有日本在留资格或以日本法人名义有机会；否则多为全款购买。', href: '/buying-guide' },
-      { question: '房价之外要多少费用？', answer: '全款约6〜7%，每个房源页面都有初期费用试算。', href: '/buying-guide' },
+      { question: '房价之外要多少费用？', answer: '全款约5〜7%，每个房源页面都有初期费用试算。', href: '/buying-guide' },
       { question: '需要多久？', answer: '从出价到交房通常1〜2个月。', href: '/buying-guide' },
       { question: '人在海外可以出租吗？', answer: '可以，委托管理公司；支付给非居住者的租金需预扣20.42%。', href: '/guides/renting-out-tokyo-condo-from-overseas' },
     ] as QuickAnswer[],
@@ -67,12 +67,12 @@ const copy = {
   ja: {
     title: '外国人が東京で不動産を買うには：物件・費用・流れ',
     description: '外国人はビザや居住がなくても東京の不動産を購入できます。ローン・費用・税金・購入の流れと、公開中の物件をまとめました。',
-    lead: '外国人の方も、日本のビザや居住がなくても東京の不動産を購入でき、日本人と同じ所有権（土地を含む）を持てます。海外のお客様は現金購入が中心で、ローンには日本の在留資格や日本法人が必要になることが多いです。現金購入の場合、諸費用は物件価格の6〜7%程度が目安です。',
+    lead: '外国人の方も、日本のビザや居住がなくても東京の不動産を購入でき、日本人と同じ所有権（土地を含む）を持てます。海外のお客様は現金購入が中心で、ローンには日本の在留資格や日本法人が必要になることが多いです。現金購入の場合、諸費用は物件価格の5〜7%程度が目安です。',
     answers: [
       { question: '外国人も不動産を所有できますか？', answer: 'できます。土地も含め、国籍による制限はありません。', href: '/guides/buying-property-japan-visa' },
       { question: '買うとビザがもらえますか？', answer: 'もらえません。不動産の所有は在留資格になりません。', href: '/guides/buying-property-japan-visa' },
       { question: 'ローンは使えますか？', answer: '日本の在留資格がある場合や日本法人なら可能性があります。それ以外は現金購入が一般的です。', href: '/buying-guide' },
-      { question: '価格のほかにいくらかかりますか？', answer: '現金購入で約6〜7%。物件ページごとに初期費用を試算できます。', href: '/buying-guide' },
+      { question: '価格のほかにいくらかかりますか？', answer: '現金購入で約5〜7%。物件ページごとに初期費用を試算できます。', href: '/buying-guide' },
       { question: 'どれくらいの期間がかかりますか？', answer: '申込から引渡しまで、通常1〜2か月です。', href: '/buying-guide' },
       { question: '海外から賃貸に出せますか？', answer: '管理会社に任せて貸せます。非居住者への家賃は20.42%が源泉徴収されます。', href: '/guides/renting-out-tokyo-condo-from-overseas' },
     ] as QuickAnswer[],
