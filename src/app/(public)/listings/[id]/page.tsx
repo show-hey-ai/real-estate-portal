@@ -7,6 +7,7 @@ import { LoanSimulator } from '@/components/listing/loan-simulator'
 import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
 import { parseMonthlyFigures } from '@/lib/monthly-costs'
 import { cardGrossYield } from '@/lib/card-facts'
+import { netYieldFromRent } from '@/lib/seismic'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -203,6 +204,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const monthly = parseMonthlyFigures(listing.descriptionJa)
   const grossYield = cardGrossYield(listing)
   const letRent = listing.currentStatus?.includes('賃貸中') ? monthly.rent : null
+  const netYield = netYieldFromRent(letRent, monthly.fees, Number(listing.price) || null)
   const stations = normalizeTransitStations(
     listing.stations as { name: string; name_en?: string | null; line?: string | null; line_en?: string | null; walk_minutes?: number | null }[] | null
   )
@@ -347,7 +349,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
             </a>
 
             <div id="property-facts" className="scroll-mt-4 md:scroll-mt-44">
-              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} monthly={monthly} grossYield={grossYield} />
+              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} monthly={monthly} grossYield={grossYield} netYield={netYield} />
             </div>
 
             {unitPrice && listing.city && <UnitPriceChart locale={locale} title={unitPriceCopy[locale]?.title ?? unitPriceCopy.en.title} note={unitPriceCopy[locale]?.note(unitPrice.count) ?? unitPriceCopy.en.note(unitPrice.count)} bars={[
