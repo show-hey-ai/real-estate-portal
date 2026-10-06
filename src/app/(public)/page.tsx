@@ -23,6 +23,8 @@ import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { createServiceClient } from '@/lib/supabase/server'
 import { absoluteUrl, getSchemaLanguage, getSiteCopy, shareMetadata } from '@/lib/site-config'
 import { withBuildingName } from '@/lib/building-name'
+import { homeSnippet } from '@/lib/home-snippet'
+import { cache } from 'react'
 
 export const dynamic = 'force-dynamic'
 
@@ -47,7 +49,8 @@ async function getLatestListings() {
   return data || []
 }
 
-async function getWardCounts() {
+// Shared by generateMetadata and the page so one request reads the inventory once.
+const getWardCounts = cache(async () => {
   const { data, error } = await createServiceClient()
     .from('listings')
     .select('city, price')
@@ -57,13 +60,13 @@ async function getWardCounts() {
     .is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0])
     .or(publicFreshnessFilters()[1])
-  if (error) { console.error('Failed to count listings by ward:', error); return { wards: {}, bands: countPriceBands([]) } }
-  return { wards: countByWard(data || []), bands: countPriceBands((data || []).map((row) => row.price)) }
-}
+  if (error) { console.error('Failed to count listings by ward:', error); return { total: 0, wards: {}, bands: countPriceBands([]) } }
+  return { total: (data || []).length, wards: countByWard(data || []), bands: countPriceBands((data || []).map((row) => row.price)) }
+})
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale()
-  const copy = getSiteCopy(locale)
+  const [locale, counts] = await Promise.all([getLocale(), getWardCounts()])
+  const copy = homeSnippet(locale, counts.total)
   const alternates = localeAlternates('/', locale)
   return { title: { absolute: copy.title }, description: copy.description,
     alternates,
