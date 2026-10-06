@@ -180,7 +180,7 @@ export function SearchResultsToolbar({
           <button
             type="button"
             onClick={() => navigate('')}
-            className="px-2 text-xs text-[#6a7e84] underline underline-offset-4"
+            className="px-2 text-xs text-[#56686e] underline underline-offset-4"
           >
             {copy.clear}
           </button>
@@ -205,7 +205,7 @@ export function SearchResultsToolbar({
           onClick={() => setShowSaved(!showSaved)}
           aria-expanded={showSaved}
           aria-controls="saved-searches"
-          className="inline-flex items-center gap-2 px-3 py-2 text-xs text-[#6a7e84]"
+          className="inline-flex items-center gap-2 px-3 py-2 text-xs text-[#56686e]"
         >
           {copy.saved}
           <span className="rounded-full bg-[#edf2f3] px-2 py-0.5 text-[10px]">
@@ -213,7 +213,7 @@ export function SearchResultsToolbar({
           </span>
         </button>
         {total > 0 && (page - 1) * perPage < total && (
-          <span className="ml-auto text-xs text-[#809097]">
+          <span className="ml-auto text-xs text-[#5f6e74]">
             {copy.range} {Math.min(total, (page - 1) * perPage + 1)}–
             {Math.min(total, page * perPage)}
           </span>

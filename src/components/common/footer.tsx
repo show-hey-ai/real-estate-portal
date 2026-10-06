@@ -32,7 +32,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-semibold mb-4">{t('nav.listings')}</h3>
+            <h2 className="font-semibold mb-4">{t('nav.listings')}</h2>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/listings" className="text-white/65 hover:text-white transition-colors">
@@ -62,7 +62,7 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="font-semibold mb-4">{t('common.contact')}</h3>
+            <h2 className="font-semibold mb-4">{t('common.contact')}</h2>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href={`https://ziyou-fudosan.com${privacyPath}`} className="text-white/65 hover:text-white transition-colors">

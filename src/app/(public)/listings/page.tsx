@@ -384,13 +384,13 @@ export default async function ListingsPage({
       <section className="border-b border-[#dce6e1] bg-[#eff6f2] py-7 md:py-9">
         <div className="container">
           <div className="max-w-4xl">
-            <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-[#628675] uppercase">
+            <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-[#4d6b5d] uppercase">
               ZIYOU / PROPERTY SEARCH
             </p>
             <h1 className="text-2xl font-medium tracking-tight text-[#264b3e] md:text-4xl">
               {copy.title}
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#6c8478]">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#566c61]">
               {searchCopy.intro}
             </p>
           </div>
