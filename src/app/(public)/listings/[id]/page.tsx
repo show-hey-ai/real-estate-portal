@@ -1,4 +1,5 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { QuickContact } from '@/components/listing/quick-contact'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { ListingMap } from '@/components/listing/listing-map'
 import { localeAlternates } from '@/lib/locale-url'
@@ -253,7 +254,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
   }
 
   return (
-    <div className="container py-8" data-public-listing={listing.id}>
+    <div className="container py-8 pb-24 lg:pb-8" data-public-listing={listing.id}>
+      <QuickContact variant="bar" listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
       <JsonLd data={listingJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       <ViewTracker listingId={listing.id} />
@@ -359,6 +361,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
         <div className="lg:col-span-1 min-w-0">
           <div className="sticky top-44 space-y-4">
+            <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
             <PropertyChatLink listingId={formattedListing.id} />
             <ListingChat
               key={formattedListing.id}
