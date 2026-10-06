@@ -1,0 +1,31 @@
+name: Portal autonomy clock
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: portal-autonomy-clock
+  cancel-in-progress: false
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Wake the durable portal worker
+        env:
+          AUTONOMY_ORIGIN: ${{ vars.AUTONOMY_ORIGIN }}
+          AUTONOMY_CRON_SECRET: ${{ secrets.AUTONOMY_CRON_SECRET }}
+        shell: bash
+        run: |
+          if [[ -z "$AUTONOMY_ORIGIN" || -z "$AUTONOMY_CRON_SECRET" ]]; then
+            echo "Autonomy clock is waiting for its deployment connection."
+            exit 0
+          fi
+          if [[ "$AUTONOMY_ORIGIN" != https://* ]]; then
+            echo "Configure an HTTPS deployment origin."
+            exit 1
+          fi
+          curl --fail --silent --show-error --max-time 115 \
+            -X POST "${AUTONOMY_ORIGIN%/}/api/internal/autonomy/tick" \
+            -H "Authorization: Bearer $AUTONOMY_CRON_SECRET"

@@ -1,7 +1,10 @@
+import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import type { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import { absoluteUrl } from '@/lib/site-config'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
+import { getPublicArticles } from '@/lib/portal-articles'
+import { locales } from '@/i18n/config'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,8 +22,11 @@ function getLatestDate(values: Array<string | Date | null | undefined>) {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const portalLaunchAt = new Date('2026-09-29T00:00:00+09:00')
+  const articles = await getPublicArticles()
+  const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: Object.fromEntries(locales.map((language) => [language, absoluteUrl(`/articles/${article.slug}/${language}`)])) } })))
 
   const staticEntries: MetadataRoute.Sitemap = [
+    ...(articles.length ? [{ url: absoluteUrl('/articles'), lastModified: articles[0].updatedAt, changeFrequency: 'weekly' as const, priority: 0.65 }] : []),
     {
       url: absoluteUrl('/'),
       lastModified: portalLaunchAt,
@@ -35,13 +41,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     { url: absoluteUrl('/buying-guide'), lastModified: new Date('2026-09-29T00:00:00+09:00'), changeFrequency: 'monthly', priority: 0.85 },
     { url: absoluteUrl('/match'), lastModified: new Date('2026-09-29T00:00:00+09:00'), changeFrequency: 'monthly', priority: 0.8 },
+    { url: absoluteUrl('/help'), lastModified: new Date('2026-10-03T00:00:00+09:00'), changeFrequency: 'monthly', priority: 0.6 },
   ]
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !serviceRoleKey) {
-    return staticEntries
+    return [...staticEntries, ...articleEntries]
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey)
@@ -50,13 +57,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .select('id, updatedAt, publishedAt')
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
+    .eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
     .is('hospitalityCategory', null)
+    .or(publicFreshnessFilters()[0])
+    .or(publicFreshnessFilters()[1])
     .order('updatedAt', { ascending: false })
 
   if (error) {
     console.error('Failed to build sitemap from listings:', error.message)
-    return staticEntries
+    return [...staticEntries, ...articleEntries]
   }
 
   const latestListingModifiedAt = getLatestDate(
@@ -75,5 +85,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  return [...adjustedStaticEntries, ...listingEntries]
+  return [...adjustedStaticEntries, ...listingEntries, ...articleEntries]
 }

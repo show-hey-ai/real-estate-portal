@@ -1,13 +1,16 @@
 import { createServiceClient } from '@/lib/supabase/server'
 import { absoluteUrl } from '@/lib/site-config'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
+import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 
 export async function GET() {
   let count: number | null = null
   try {
     const result = await createServiceClient().from('listings').select('*', { count: 'exact', head: true })
       .eq('status', 'PUBLISHED').eq('adAllowed', true)
+    .eq('adConsentRequired', false)
       .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
+      .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])
     if (!result.error) count = result.count
   } catch { /* Inventory count can be unavailable without affecting the page. */ }
 
@@ -20,6 +23,7 @@ export async function GET() {
     `- [Home](${absoluteUrl('/')}): Tokyo property purchase overview and search.`,
     `- [Properties for sale](${absoluteUrl('/listings')}): Published investment, residential, and land listings.`,
     `- [Buying guide](${absoluteUrl('/buying-guide')}): The basic process from criteria to closing.`,
+    `- [Property insights](${absoluteUrl('/articles')}): Source-backed Tokyo property selections and comparisons.`,
     `- [Discuss your search](${absoluteUrl('/match')}): Share purchase purpose, area, budget, property type, and timing with Ziyou.`, '',
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
   ].join('\n')
