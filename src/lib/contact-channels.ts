@@ -4,8 +4,6 @@
 
 export const WHATSAPP_NUMBER = '818084927068'
 export const CONTACT_EMAIL = 'admin@ziyou-fudosan.com'
-export const OFFICE_PHONE = '+81356877120'
-export const OFFICE_PHONE_LABEL = '03-5687-7120'
 export const LINE_ID = '@569fyrhn'
 export const LINE_ADD_URL = `https://line.me/R/ti/p/${LINE_ID}`
 export const WECHAT_ID = 'sf930217'

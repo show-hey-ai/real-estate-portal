@@ -77,7 +77,6 @@ export function Footer() {
               <p className="font-medium text-white">{company.name}</p>
               <p>{company.license}</p>
               <p>{company.address}</p>
-              <p><a href="tel:+81356877120" className="hover:text-white">TEL 03-5687-7120</a></p>
               <p><a href="mailto:admin@ziyou-fudosan.com" className="hover:text-white">admin@ziyou-fudosan.com</a></p>
               <p className="flex flex-wrap gap-x-4 gap-y-1">
                 <a href={LINE_ADD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white">LINE {LINE_ID}</a>
