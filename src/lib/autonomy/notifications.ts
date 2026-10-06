@@ -2,11 +2,12 @@ import { readFile } from 'node:fs/promises'
 import nodemailer from 'nodemailer'
 import { prisma } from '../db'
 import { getPublicListingScope } from '../public-listing-scope'
+import { getExternalAnalyticsWhere } from '../site-analytics-data'
 import { getSiteUrl } from '../site-config'
 import { AUTONOMY_VERSION, PORTAL_VENTURE_ID } from './policy'
 import { latestSearchPerformance } from './search-sync'
 import {
-  EXPIRY_WARNING_HOURS, buildAlertMail, buildDigestMail, digestKey, isDigestDue, normalizeAppPassword, readNotificationConfig,
+  EXPIRY_WARNING_HOURS, buildAlertMail, rankListingInterest, buildDigestMail, digestKey, isDigestDue, normalizeAppPassword, readNotificationConfig,
   type NotificationConfig, type NotificationMail, type NotificationSnapshot,
 } from './notification-policy'
 
@@ -29,10 +30,27 @@ async function latestObservation() {
   return { pageViews: read('pageViews'), visitors: read('visitors'), contactClicks: read('contactClicks'), inquiries: read('inquiries') }
 }
 
+const INTEREST_LIMIT = 5
+
+async function listingInterest(since: Date) {
+  const audience = await getExternalAnalyticsWhere()
+  const events = await prisma.siteVisitEvent.findMany({
+    where: { ...audience, occurredAt: { gte: since }, listingId: { not: null }, pageType: { in: ['listing_detail', 'contact_click'] } },
+    select: { listingId: true, pageType: true, queryString: true },
+    take: 5000,
+  })
+  const ranked = rankListingInterest(events.map((event) => ({ listingId: event.listingId, pageType: event.pageType, channel: new URLSearchParams(event.queryString ?? '').get('channel') })), INTEREST_LIMIT)
+  const listings = await prisma.listing.findMany({ where: { id: { in: ranked.map((item) => item.id) } }, select: { id: true, city: true, addressPublic: true, price: true } })
+  return ranked.flatMap((item) => {
+    const listing = listings.find((row) => row.id === item.id)
+    return listing ? [{ ...item, label: listingLabel(listing) }] : []
+  })
+}
+
 export async function collectSnapshot(now = new Date()): Promise<NotificationSnapshot> {
   const since = new Date(now.getTime() - LOOKBACK_MS)
   const expiryLimit = new Date(now.getTime() + EXPIRY_WARNING_HOURS * 3600_000)
-  const [leads, messages, expiring, failedJobs, published, drafts, observation, search] = await Promise.all([
+  const [leads, messages, expiring, failedJobs, published, drafts, observation, search, interest] = await Promise.all([
     prisma.lead.findMany({ where: { createdAt: { gte: since } }, select: { id: true, listingId: true }, take: MAX_ITEMS }),
     prisma.propertyChatMessage.findMany({
       where: { createdAt: { gte: since } },
@@ -54,6 +72,7 @@ export async function collectSnapshot(now = new Date()): Promise<NotificationSna
     prisma.listing.count({ where: { status: 'DRAFT' } }),
     latestObservation(),
     latestSearchPerformance(),
+    listingInterest(since),
   ])
   return {
     now,
@@ -63,6 +82,7 @@ export async function collectSnapshot(now = new Date()): Promise<NotificationSna
     failedJobs,
     metrics: { published, drafts, ...observation },
     search,
+    listingInterest: interest,
   }
 }
 

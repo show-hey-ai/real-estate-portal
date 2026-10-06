@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildAlertMail, buildDigestMail, digestKey, isDigestDue, normalizeAppPassword, readNotificationConfig, type NotificationSnapshot } from '../src/lib/autonomy/notification-policy'
+import { buildAlertMail, buildDigestMail, digestKey, isDigestDue, normalizeAppPassword, rankListingInterest, readNotificationConfig, type NotificationSnapshot } from '../src/lib/autonomy/notification-policy'
 
 const now = new Date('2026-10-06T23:30:00Z') // 08:30 JST on 7 Oct
 const site = 'https://portal.example.com'
@@ -107,4 +107,31 @@ test('the digest warns when Google has not read the sitemap and reports index co
   assert.match(unread.text, /サイトマップ: 未読込/)
   const read = buildDigestMail(snapshot({ search: { ...base, sitemap: { submitted: true, lastDownloaded: '2026-10-07T03:00:00Z', errors: 0, warnings: 0 }, index: { indexed: 30, total: 48, missing: [] } } }), site)
   assert.match(read.text, /サイトマップ: 10\/7 12:00 読込/)
+})
+
+test('the digest lists the listings people viewed and asked about, with the contact channels', () => {
+  const mail = buildDigestMail(snapshot({
+    listingInterest: [
+      { id: 'l1', label: '港区 5,980万円', views: 7, clicks: { whatsapp: 2, phone: 1 } },
+      { id: 'l2', label: '豊島区 6,580万円', views: 3, clicks: {} },
+    ],
+  }), site)
+  assert.match(mail.text, /直近24時間の反応/)
+  assert.match(mail.text, /港区 5,980万円：閲覧7・相談クリック3（WhatsApp 2・電話 1）/)
+  assert.match(mail.text, /豊島区 6,580万円：閲覧3/)
+  assert.ok(mail.text.includes(`${site}/listings/l1`))
+})
+
+test('ranking listing interest puts contact clicks ahead of views', () => {
+  const ranked = rankListingInterest([
+    { listingId: 'a', pageType: 'listing_detail', channel: null },
+    { listingId: 'a', pageType: 'listing_detail', channel: null },
+    { listingId: 'b', pageType: 'listing_detail', channel: null },
+    { listingId: 'b', pageType: 'contact_click', channel: 'whatsapp' },
+    { listingId: null, pageType: 'listing_detail', channel: null },
+  ], 5)
+  assert.deepEqual(ranked, [
+    { id: 'b', views: 1, clicks: { whatsapp: 1 } },
+    { id: 'a', views: 2, clicks: {} },
+  ])
 })

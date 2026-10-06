@@ -5,6 +5,7 @@ import type { SitemapStatus } from './search-console'
 import type { IndexCoverage, SearchOpportunity, SearchSummary } from './search-policy'
 
 export interface NotificationSnapshot {
+  listingInterest?: { id: string; label: string; views: number; clicks: Partial<Record<ContactChannel, number>> }[]
   search?: { window: { startDate: string; endDate: string }; summary: SearchSummary; opportunities: SearchOpportunity[]; sitemap?: SitemapStatus | null; index?: IndexCoverage | null } | null
   now: Date
   leads: { id: string; listingId: string }[]
@@ -12,6 +13,42 @@ export interface NotificationSnapshot {
   expiringListings: { id: string; label: string; validUntil: Date }[]
   failedJobs: { id: string; kind: string; status: string }[]
   metrics: { published: number; drafts: number; pageViews: number | null; visitors: number | null; contactClicks: number | null; inquiries: number | null }
+}
+
+export type ContactChannel = 'whatsapp' | 'email' | 'phone'
+
+const CHANNEL_LABELS: Record<ContactChannel, string> = { whatsapp: 'WhatsApp', phone: '電話', email: 'メール' }
+
+/** Groups yesterday's listing views and contact clicks; listings with contact clicks rank first. */
+export function rankListingInterest(events: { listingId: string | null; pageType: string; channel: string | null }[], limit: number) {
+  const byListing = new Map<string, { id: string; views: number; clicks: Partial<Record<ContactChannel, number>> }>()
+  for (const event of events) {
+    if (!event.listingId) continue
+    const entry = byListing.get(event.listingId) ?? { id: event.listingId, views: 0, clicks: {} }
+    if (event.pageType === 'listing_detail') entry.views += 1
+    else if (event.pageType === 'contact_click' && event.channel && event.channel in CHANNEL_LABELS) {
+      const channel = event.channel as ContactChannel
+      entry.clicks[channel] = (entry.clicks[channel] ?? 0) + 1
+    }
+    byListing.set(event.listingId, entry)
+  }
+  const clickTotal = (entry: { clicks: Partial<Record<ContactChannel, number>> }) => Object.values(entry.clicks).reduce((sum, value) => sum + (value ?? 0), 0)
+  return [...byListing.values()]
+    .sort((left, right) => clickTotal(right) - clickTotal(left) || right.views - left.views || left.id.localeCompare(right.id))
+    .slice(0, limit)
+}
+
+function interestLines(interest: NotificationSnapshot['listingInterest'], siteUrl: string): string[] {
+  if (!interest?.length) return []
+  return [
+    '■ 直近24時間の反応（閲覧・相談クリックの多い物件）',
+    ...interest.map((item) => {
+      const channels = (Object.entries(item.clicks) as [ContactChannel, number][]).filter(([, count]) => count > 0)
+      const total = channels.reduce((sum, [, count]) => sum + count, 0)
+      const clickText = total ? `・相談クリック${total}（${channels.map(([channel, count]) => `${CHANNEL_LABELS[channel]} ${count}`).join('・')}）` : ''
+      return `- ${item.label}：閲覧${item.views}${clickText} ${siteUrl}/listings/${item.id}`
+    }),
+  ]
 }
 
 export interface NotificationMail {
@@ -137,6 +174,7 @@ export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string)
     `■ ${EXPIRY_WARNING_HOURS}時間以内に掲載期限: ${snapshot.expiringListings.length}件`,
     ...expiryLines(snapshot.expiringListings, siteUrl),
     `■ 失敗した自動処理（24時間）: ${snapshot.failedJobs.length}件`,
+    ...interestLines(snapshot.listingInterest, siteUrl),
     ...searchLines(snapshot.search, siteUrl),
     '',
     `管理画面: ${siteUrl}/admin`,
