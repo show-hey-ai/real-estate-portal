@@ -10,14 +10,15 @@ import { seismicStandard } from '@/lib/seismic'
 import Link from 'next/link'
 
 const SQFT_PER_M2 = 10.7639
+const GLOSSARY_GUIDE = 'japanese-property-listing-terms'
 const SEISMIC_GUIDE = 'japan-earthquake-standards-1981'
 const FEES_GUIDE = 'tokyo-condo-management-fee-repair-reserve'
 
 const monthlyCopy = {
-  ja: { more: '解説', seismic: '耐震基準（築年からの目安）', seismicValue: { new: '新耐震基準（1981年6月以降の基準）', check: '新旧の境目（建築確認日の確認が必要）', old: '旧耐震基準の可能性（耐震診断の有無を確認）' }, netYield: '実質利回り（管理費等控除後・概算）', management: '管理費（月額）', repair: '修繕積立金（月額）', fees: '管理費等（月額）', rent: '賃料（月額）', yield: '表面利回り', yen: (value: number) => `${value.toLocaleString('ja-JP')}円` },
-  en: { more: 'Guide', seismic: 'Earthquake standard (from built year)', seismicValue: { new: 'New standard (June 1981 or later)', check: 'Borderline: check the building permit date', old: 'Likely pre-1981 standard: ask about seismic checks' }, netYield: 'Net yield (after fees, estimate)', management: 'Management fee (monthly)', repair: 'Repair reserve (monthly)', fees: 'Management fees (monthly)', rent: 'Rent (monthly)', yield: 'Gross yield', yen: (value: number) => `¥${value.toLocaleString('en-US')}` },
-  'zh-TW': { more: '說明', seismic: '耐震基準（依屋齡推估）', seismicValue: { new: '新耐震基準（1981年6月以後）', check: '新舊交界（需確認建築許可日期）', old: '可能為舊耐震基準（請確認耐震診斷）' }, netYield: '實質投報率（扣除管理費等・概算）', management: '管理費（月）', repair: '修繕公積金（月）', fees: '管理費等（月）', rent: '租金（月）', yield: '表面投報率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日圓` },
-  'zh-CN': { more: '说明', seismic: '耐震标准（按房龄推估）', seismicValue: { new: '新耐震标准（1981年6月以后）', check: '新旧交界（需确认建筑许可日期）', old: '可能为旧耐震标准（请确认抗震诊断）' }, netYield: '实际收益率（扣除管理费等・估算）', management: '管理费（月）', repair: '修缮基金（月）', fees: '管理费等（月）', rent: '租金（月）', yield: '表面收益率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日元` },
+  ja: { glossary: '用語の説明', more: '解説', seismic: '耐震基準（築年からの目安）', seismicValue: { new: '新耐震基準（1981年6月以降の基準）', check: '新旧の境目（建築確認日の確認が必要）', old: '旧耐震基準の可能性（耐震診断の有無を確認）' }, netYield: '実質利回り（管理費等控除後・概算）', management: '管理費（月額）', repair: '修繕積立金（月額）', fees: '管理費等（月額）', rent: '賃料（月額）', yield: '表面利回り', yen: (value: number) => `${value.toLocaleString('ja-JP')}円` },
+  en: { glossary: 'Terms explained', more: 'Guide', seismic: 'Earthquake standard (from built year)', seismicValue: { new: 'New standard (June 1981 or later)', check: 'Borderline: check the building permit date', old: 'Likely pre-1981 standard: ask about seismic checks' }, netYield: 'Net yield (after fees, estimate)', management: 'Management fee (monthly)', repair: 'Repair reserve (monthly)', fees: 'Management fees (monthly)', rent: 'Rent (monthly)', yield: 'Gross yield', yen: (value: number) => `¥${value.toLocaleString('en-US')}` },
+  'zh-TW': { glossary: '用語說明', more: '說明', seismic: '耐震基準（依屋齡推估）', seismicValue: { new: '新耐震基準（1981年6月以後）', check: '新舊交界（需確認建築許可日期）', old: '可能為舊耐震基準（請確認耐震診斷）' }, netYield: '實質投報率（扣除管理費等・概算）', management: '管理費（月）', repair: '修繕公積金（月）', fees: '管理費等（月）', rent: '租金（月）', yield: '表面投報率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日圓` },
+  'zh-CN': { glossary: '用语说明', more: '说明', seismic: '耐震标准（按房龄推估）', seismicValue: { new: '新耐震标准（1981年6月以后）', check: '新旧交界（需确认建筑许可日期）', old: '可能为旧耐震标准（请确认抗震诊断）' }, netYield: '实际收益率（扣除管理费等・估算）', management: '管理费（月）', repair: '修缮基金（月）', fees: '管理费等（月）', rent: '租金（月）', yield: '表面收益率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日元` },
 } as const
 
 interface ListingSpecsProps {
@@ -92,8 +93,9 @@ export function ListingSpecs({ listing, monthly, grossYield, netYield }: Listing
 
   return (
     <Card className="mt-6">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between gap-3">
         <CardTitle>{t('overview')}</CardTitle>
+        <Link href={`/guides/${GLOSSARY_GUIDE}`} className="text-xs font-semibold text-[#274d7d] underline underline-offset-2">{text.glossary}</Link>
       </CardHeader>
       <CardContent>
         <dl className="grid grid-cols-2 gap-4">
