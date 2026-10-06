@@ -22,6 +22,7 @@ import { UnitPriceChart } from '@/components/listing/unit-price-chart'
 import { extractBuildingName } from '@/lib/building-name'
 import { withCardFacts } from '@/lib/card-facts'
 import { countedTitle } from '@/lib/home-snippet'
+import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -124,6 +125,8 @@ export default async function WardPage({ params }: Props) {
       </section>}
 
       {unitBars.length >= 2 && <UnitPriceChart locale={locale} title={text.unitTitle} note={text.unitNote} bars={unitBars} />}
+
+      {ward && <ListingAlertForm ward={ward} scopeLabel={label} />}
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold">
         {article && <Link href={`/articles/${article.slug}/${locale}`} className="inline-flex items-center gap-1 text-[#274d7d] hover:underline">{text.article}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>}

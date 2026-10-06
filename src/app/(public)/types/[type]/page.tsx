@@ -50,5 +50,5 @@ export default async function TypePage({ params }: Props) {
   const text = textFor(locale)
   const favorites = viewer ? await getFavoriteIdsForViewer(viewer.id, rows.map((row) => row.id)) : new Set<string>()
   const firstType = TYPE_COLLECTIONS[type].types[0]
-  return <CollectionView locale={locale} path={`/types/${type}`} title={text.title(label)} intro={text.intro(label, rows.length)} Icon={Building2} rows={rows} filterHref={`/listings?${new URLSearchParams({ type: firstType })}`} userId={viewer?.id ?? null} favorites={favorites} />
+  return <CollectionView locale={locale} path={`/types/${type}`} alert={{ type, scopeLabel: label }} title={text.title(label)} intro={text.intro(label, rows.length)} Icon={Building2} rows={rows} filterHref={`/listings?${new URLSearchParams({ type: firstType })}`} userId={viewer?.id ?? null} favorites={favorites} />
 }

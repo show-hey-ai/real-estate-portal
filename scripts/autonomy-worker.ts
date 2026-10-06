@@ -10,6 +10,7 @@ async function main() {
   const { reinsIntake, maisokuImport } = await import('../src/lib/autonomy/intake')
   const { runNotifications } = await import('../src/lib/autonomy/notifications')
   const { runSearchSync } = await import('../src/lib/autonomy/search-sync')
+  const { runListingAlerts } = await import('../src/lib/listing-alerts-worker')
   const once = process.argv.includes('--once')
   const notificationIntervalMs = 5 * 60_000
   let lastNotificationAt = 0
@@ -27,6 +28,8 @@ async function main() {
         catch (error) { console.error('Search Console sync failed; it will be retried.', error instanceof Error ? error.message : 'unknown error') }
         try { console.log(JSON.stringify({ notifications: await runNotifications() })) }
         catch (error) { console.error('Notification check failed; it will be retried.', error instanceof Error ? error.message : 'unknown error') }
+        try { console.log(JSON.stringify({ listingAlerts: await runListingAlerts() })) }
+        catch (error) { console.error('Listing alerts failed; they will be retried.', error instanceof Error ? error.message : 'unknown error') }
       }
       if (!once && !stopped) await new Promise((resolveWait) => setTimeout(resolveWait, 30_000))
     } while (!once && !stopped)

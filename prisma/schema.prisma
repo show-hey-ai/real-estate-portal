@@ -478,3 +478,23 @@ model BuyerFeedback {
   @@id([profileId,listingId])
   @@map("buyer_feedback")
 }
+
+/// New-listing email alerts without an account. Double opt-in: pending until the emailed link is confirmed.
+model ListingAlertSubscription {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  locale             String    @default("en")
+  /// Optional filters: { ward?: string, type?: TypeSlug, budget?: BudgetSlug }
+  criteria           Json      @default("{}")
+  status             String    @default("pending")
+  /// Random token for the confirm and unsubscribe links in emails.
+  token              String    @unique
+  createdAt          DateTime  @default(now())
+  confirmationSentAt DateTime?
+  confirmedAt        DateTime?
+  lastDigestAt       DateTime?
+  unsubscribedAt     DateTime?
+
+  @@index([status])
+  @@map("listing_alert_subscriptions")
+}

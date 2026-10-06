@@ -12,6 +12,8 @@ import { WARD_SLUGS, countByWard, summarizeWard, wardLabel } from '@/lib/ward-ti
 import { formatYenWords } from '@/lib/yen-words'
 import { extractBuildingName } from '@/lib/building-name'
 import { withCardFacts } from '@/lib/card-facts'
+import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
+import type { BudgetSlug, TypeSlug } from '@/lib/collections'
 
 const labels = {
   ja: { home: 'ホーム', range: '掲載価格の範囲', types: '物件の種類', wards: 'エリア別', listings: '公開中の物件', unitTitle: '物件ごとの㎡単価', unitNote: '公開中の物件の売出価格を面積で割った参考値です。成約価格や相場ではありません。', all: '条件を指定して探す', match: '購入条件を整理する', count: (count: number) => `${count}件` },
@@ -30,9 +32,11 @@ interface CollectionViewProps {
   filterHref: string
   userId: string | null
   favorites: Set<string>
+  /** Filters for the new-listing email form on this page. */
+  alert?: { type?: TypeSlug; budget?: BudgetSlug; scopeLabel: string }
 }
 
-export function CollectionView({ locale, path, title, intro, Icon, rows, filterHref, userId, favorites }: CollectionViewProps) {
+export function CollectionView({ locale, path, title, intro, Icon, rows, filterHref, userId, favorites, alert }: CollectionViewProps) {
   const text = labels[locale as keyof typeof labels] ?? labels.en
   const summary = summarizeWard(rows)
   const listings = rows.map(toCardListing)
@@ -76,6 +80,8 @@ export function CollectionView({ locale, path, title, intro, Icon, rows, filterH
       </section>}
 
       {unitBars.length >= 2 && <UnitPriceChart locale={locale} title={text.unitTitle} note={text.unitNote} bars={unitBars} />}
+
+      {alert && <ListingAlertForm type={alert.type} budget={alert.budget} scopeLabel={alert.scopeLabel} />}
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold">
         <Link href={filterHref} className="inline-flex items-center gap-1 text-[#274d7d] hover:underline">{text.all}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>

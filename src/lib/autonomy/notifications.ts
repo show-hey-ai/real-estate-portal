@@ -119,7 +119,7 @@ async function sendAndRecord(config: NotificationConfig, mail: NotificationMail)
 }
 
 // The app password may live in its own file so it can be pasted without editing the main settings.
-async function withPasswordFile(env: Record<string, string | undefined>): Promise<Record<string, string | undefined>> {
+export async function withPasswordFile(env: Record<string, string | undefined>): Promise<Record<string, string | undefined>> {
   if (env.SMTP_PASS || !env.SMTP_PASS_FILE) return env
   try {
     return { ...env, SMTP_PASS: normalizeAppPassword(await readFile(env.SMTP_PASS_FILE, 'utf8')) || undefined }

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { getLocale } from 'next-intl/server'
 import { Wallet } from 'lucide-react'
 import { CollectionView } from '@/components/listing/collection-view'
-import { budgetBand, inBudget } from '@/lib/collections'
+import { budgetBand, budgetSlugFor, inBudget } from '@/lib/collections'
 import { priceBandQuery, priceBandRange, type PriceBand } from '@/lib/price-bands'
 import { getPublicListingRows } from '@/lib/public-listing-cards'
 import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
@@ -46,5 +46,5 @@ export default async function BudgetPage({ params }: Props) {
   const range = priceBandRange(band, locale)
   const text = textFor(locale)
   const favorites = viewer ? await getFavoriteIdsForViewer(viewer.id, rows.map((row) => row.id)) : new Set<string>()
-  return <CollectionView locale={locale} path={`/budget/${slug}`} title={text.title(range)} intro={text.intro(range, rows.length)} Icon={Wallet} rows={rows} filterHref={`/listings?${priceBandQuery(band)}`} userId={viewer?.id ?? null} favorites={favorites} />
+  return <CollectionView locale={locale} path={`/budget/${slug}`} alert={{ budget: budgetSlugFor(band), scopeLabel: range }} title={text.title(range)} intro={text.intro(range, rows.length)} Icon={Wallet} rows={rows} filterHref={`/listings?${priceBandQuery(band)}`} userId={viewer?.id ?? null} favorites={favorites} />
 }

@@ -27,6 +27,7 @@ import { homeSnippet } from '@/lib/home-snippet'
 import { ArticleStrip } from '@/components/common/article-strip'
 import { getPublicArticles } from '@/lib/portal-articles'
 import { cache } from 'react'
+import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -140,6 +141,8 @@ export default async function HomePage() {
         {listings.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((listing) => <ListingCard key={listing.id} listing={withCardFacts(listing)} isFavorite={favorites.has(listing.id)} userId={viewer?.id ?? null} />)}</div> :
           <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-6 md:p-8"><h3 className="text-lg font-semibold">{copy.emptyTitle}</h3><p className="mt-2 max-w-2xl text-sm leading-7 text-[#657487]">{copy.emptyDescription}</p><Link href="/match" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]"><FunnelText field="consult" baseline={copy.consult} /><ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>}
       </section>
+
+      <ListingAlertForm />
 
       <RecentlyViewed />
 
