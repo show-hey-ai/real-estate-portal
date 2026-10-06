@@ -9,10 +9,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const copy = getHelpCopy(locale)
   return {
-    title: `${copy.nav} | ZIYOU`,
+    title: copy.nav,
     description: copy.subtitle,
     alternates: localeAlternates('/help', locale),
-    ...shareMetadata({ title: `${copy.nav} | ZIYOU`, description: copy.subtitle, url: localeAlternates('/help', locale).canonical, locale }),
+    ...shareMetadata({ title: `${copy.nav} | Welcome Home Tokyo`, description: copy.subtitle, url: localeAlternates('/help', locale).canonical, locale }),
   }
 }
 

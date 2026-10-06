@@ -31,8 +31,8 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="mb-4 flex items-end gap-3">
-              <span className="text-2xl font-semibold tracking-[0.12em]">ZIYOU</span>
-              <span className="pb-1 text-xs text-white/60">{t('common.appName')}</span>
+              <span className="text-2xl font-semibold tracking-[0.08em]">WELCOME HOME</span>
+              <span className="pb-1 text-xs font-semibold tracking-[0.16em] text-white/60">TOKYO</span>
             </Link>
             <p className="text-sm leading-7 text-white/65 max-w-md">
               {t('home.heroDescription')}

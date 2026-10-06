@@ -9,7 +9,7 @@ const portalCopy = {
   ja: {
     eyebrow: '東京の不動産を、目的から探す',
     heroTitle: '東京の物件を、目的から探す。',
-    heroDescription: '投資用、居住用、土地。自由不動産は、目的に合う東京の物件探しと購入を、日本語・英語・中国語でお手伝いします。',
+    heroDescription: '投資用、居住用、土地。Welcome Home Tokyoは、目的に合う東京の物件探しと購入を、日本語・英語・中国語でお手伝いします。',
     browse: '物件を探す',
     consult: '購入条件を相談する',
     searchTitle: '東京の売買物件を探す',
@@ -46,7 +46,7 @@ const portalCopy = {
   en: {
     eyebrow: 'Find Tokyo property by purpose',
     heroTitle: 'Find the right property in Tokyo.',
-    heroDescription: 'Investment property, a place to live, or land. Ziyou Real Estate helps you search and buy in Tokyo in Japanese, English, or Chinese.',
+    heroDescription: 'Investment property, a place to live, or land. Welcome Home Tokyo helps you search and buy in Tokyo in Japanese, English, or Chinese.',
     browse: 'Browse properties',
     consult: 'Discuss my criteria',
     searchTitle: 'Search Tokyo properties',
@@ -83,7 +83,7 @@ const portalCopy = {
   'zh-TW': {
     eyebrow: '依目的尋找東京不動產',
     heroTitle: '在東京，找到適合的物件。',
-    heroDescription: '投資用、居住用或土地。自由不動產以日語、英語和中文協助您在東京尋找並購買物件。',
+    heroDescription: '投資用、居住用或土地。Welcome Home Tokyo以日語、英語和中文協助您在東京尋找並購買物件。',
     browse: '尋找物件',
     consult: '諮詢購屋條件',
     searchTitle: '搜尋東京待售物件',
@@ -120,7 +120,7 @@ const portalCopy = {
   'zh-CN': {
     eyebrow: '按目的寻找东京房产',
     heroTitle: '在东京，找到合适的房产。',
-    heroDescription: '投资用、居住用或土地。自由不动产以日语、英语和中文协助您在东京寻找并购买房产。',
+    heroDescription: '投资用、居住用或土地。Welcome Home Tokyo以日语、英语和中文协助您在东京寻找并购买房产。',
     browse: '寻找房产',
     consult: '咨询购房条件',
     searchTitle: '搜索东京待售房产',

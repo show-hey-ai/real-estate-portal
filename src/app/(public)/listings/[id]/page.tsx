@@ -40,6 +40,9 @@ import {
   absoluteUrl,
   buildListingDescription,
   buildListingHeading,
+  OPERATOR_NAME,
+  OPERATOR_NAME_JA,
+  SITE_NAME,
   buildListingTitle,
   getOpenGraphLocale,
   getPrimaryListingImage,
@@ -248,7 +251,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
           availability: 'https://schema.org/InStock',
           businessFunction: 'http://purl.org/goodrelations/v1#Sell',
           url: pageUrl,
-          seller: { '@type': 'RealEstateAgent', name: 'Ziyou Real Estate', url: absoluteUrl('/') },
+          seller: { '@type': 'RealEstateAgent', name: OPERATOR_NAME, alternateName: [OPERATOR_NAME_JA, SITE_NAME], url: absoluteUrl('/') },
           itemOffered: {
             '@type': schemaPropertyType(formattedListing.propertyType),
             name: buildListingTitle(formattedListing, locale),

@@ -21,7 +21,7 @@ export default async function BuyingGuidePage() {
   return (
     <main className="min-h-[70vh] bg-white py-12 text-[#1b293a] md:py-16">
       <div className="container max-w-6xl">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#57769b]">ZIYOU / BUYER GUIDE</p>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#57769b]">WELCOME HOME TOKYO / BUYER GUIDE</p>
         <h1 className="mt-5 text-3xl font-semibold tracking-tight md:text-5xl">{copy.guideTitle}</h1>
         <p className="mt-5 max-w-3xl leading-8 text-[#657487]">{copy.guideIntro}</p>
         <div className="mt-10 rounded-3xl bg-[#f4f7fa] p-5 sm:p-8">

@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Ziyou Real Estate",
+    "appName": "Welcome Home Tokyo",
     "login": "Login",
     "logout": "Logout",
     "register": "Register",
@@ -17,7 +17,7 @@
     "loading": "Loading...",
     "error": "An error occurred",
     "success": "Success",
-    "copyright": "© {year} Ziyou Real Estate. All rights reserved.",
+    "copyright": "© {year} Welcome Home Tokyo. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "contact": "Contact"

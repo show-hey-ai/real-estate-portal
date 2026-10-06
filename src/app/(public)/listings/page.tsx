@@ -385,7 +385,7 @@ export default async function ListingsPage({
         <div className="container">
           <div className="max-w-4xl">
             <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-[#4d6b5d] uppercase">
-              ZIYOU / PROPERTY SEARCH
+              WELCOME HOME TOKYO / PROPERTY SEARCH
             </p>
             <h1 className="text-2xl font-medium tracking-tight text-[#264b3e] md:text-4xl">
               {copy.title}

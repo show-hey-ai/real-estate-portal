@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: titleTemplate(locale),
     },
     description: siteCopy.description,
-    applicationName: 'Ziyou Real Estate',
+    applicationName: 'Welcome Home Tokyo',
     keywords: [
       'Tokyo property for sale',
       'Tokyo condominium for sale',
@@ -49,7 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       url: absoluteUrl('/'),
-      siteName: 'Ziyou Real Estate',
+      siteName: 'Welcome Home Tokyo',
       title: siteCopy.title,
       description: siteCopy.description,
       locale: getOpenGraphLocale(locale),

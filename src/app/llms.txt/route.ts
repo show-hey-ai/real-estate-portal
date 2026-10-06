@@ -15,8 +15,8 @@ export async function GET() {
   } catch { /* Inventory count can be unavailable without affecting the page. */ }
 
   const markdown = [
-    '# Ziyou Real Estate', '',
-    '> Multilingual portal for buying investment property, a home, or land in Tokyo, Japan.', '',
+    '# Welcome Home Tokyo', '',
+    '> Multilingual portal for international buyers of investment property, homes and land in Tokyo, Japan, operated by Ziyou Real Estate LLC (自由不動産合同会社), a licensed Tokyo brokerage.', '',
     count == null ? 'See the live listings page for current properties.' : `Currently published properties: ${count}.`,
     'Only listings with advertising permission are shown. Availability may change; ask the brokerage to confirm.',
     'Pages are available in English (plain URL), Japanese (?lang=ja), Traditional Chinese (?lang=zh-TW) and Simplified Chinese (?lang=zh-CN). The full inventory with prices is in llms-full.txt.', '',

@@ -110,12 +110,12 @@ export default async function GuideDetailPage({
     },
     author: {
       '@type': 'Organization',
-      name: 'Ziyou Hospitality',
+      name: 'Welcome Home Tokyo',
       url: absoluteUrl('/'),
     },
     publisher: {
       '@type': 'Organization',
-      name: 'Ziyou Hospitality',
+      name: 'Welcome Home Tokyo',
       url: absoluteUrl('/'),
     },
   }

@@ -130,7 +130,7 @@ export function buildAlertMail(snapshot: NotificationSnapshot, siteUrl: string):
 
   if (!sections.length) return null
   return {
-    subject: '【自由不動産ポータル】対応が必要な項目があります',
+    subject: '【Welcome Home Tokyo】対応が必要な項目があります',
     text: [...sections, '', 'このメールはポータルの自動通知です。'].join('\n\n'),
     keys,
   }
@@ -180,7 +180,7 @@ export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string)
     `管理画面: ${siteUrl}/admin`,
   ]
   return {
-    subject: `【自由不動産ポータル】${year}/${month}/${day} の状況`,
+    subject: `【Welcome Home Tokyo】${year}/${month}/${day} の状況`,
     text: lines.join('\n'),
     keys: [digestKey(snapshot.now)],
   }

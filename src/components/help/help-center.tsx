@@ -32,7 +32,7 @@ export function HelpCenter({ locale }: { locale: string }) {
       <div className="border-b border-[#dbe2e9] bg-white">
         <div className="container max-w-5xl py-10 sm:py-14">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#647487]">
-            ZIYOU / {copy.nav}
+            WELCOME HOME TOKYO / {copy.nav}
           </p>
           <h1 className="text-3xl font-semibold leading-tight text-[#142337] sm:text-4xl">
             {copy.title}

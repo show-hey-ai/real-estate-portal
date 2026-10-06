@@ -41,6 +41,11 @@ type SeoListingLike = {
 }
 
 const DEFAULT_SITE_URL = 'https://portal.ziyou-fudosan.com'
+
+/** Public site name. The licensed operator stays visible in the footer and structured data. */
+export const SITE_NAME = 'Welcome Home Tokyo'
+export const OPERATOR_NAME = 'Ziyou Real Estate LLC'
+export const OPERATOR_NAME_JA = '自由不動産合同会社'
 const VERCEL_PREVIEW_HOST_SUFFIX = '.vercel.app'
 
 const siteCopy: Record<
@@ -53,34 +58,34 @@ const siteCopy: Record<
   }
 > = {
   ja: {
-    title: '東京の投資用・居住用・土地を探す｜自由不動産',
+    title: '東京の投資用・居住用・土地を探す｜Welcome Home Tokyo',
     description:
-      '東京の投資用物件、居住用住宅、土地を探す方へ。自由不動産が日本語・英語・中国語で物件探しから売買までお手伝いします。',
+      '東京の投資用物件、居住用住宅、土地を探す方へ。Welcome Home Tokyoが日本語・英語・中国語で物件探しから売買までお手伝いします。',
     listingsTitle: '東京の投資用・居住用・土地を探す',
     listingsDescription:
       '東京の収益物件、マンション、戸建て、土地を検索。掲載物件がない場合も希望条件からご相談いただけます。',
   },
   en: {
-    title: 'Tokyo Property for Sale | Ziyou Real Estate',
+    title: 'Tokyo Property for Sale | Welcome Home Tokyo',
     description:
-      'Find investment property, residential homes, and land in Tokyo with Ziyou Real Estate. Discuss your purchase in Japanese, English, or Chinese.',
-    listingsTitle: 'Tokyo Property for Sale | Ziyou Real Estate',
+      'Find investment property, residential homes, and land in Tokyo with Welcome Home Tokyo. Discuss your purchase in Japanese, English, or Chinese.',
+    listingsTitle: 'Tokyo Property for Sale | Welcome Home Tokyo',
     listingsDescription:
       'Browse Tokyo income properties, condominiums, houses, and land. Tell us your criteria if a suitable property is not yet published.',
   },
   'zh-TW': {
-    title: '東京投資用、居住用及土地物件｜自由不動產',
+    title: '東京投資用、居住用及土地物件｜Welcome Home Tokyo',
     description:
-      '自由不動產協助您在東京尋找投資物件、居住用住宅及土地。提供日語、英語與中文溝通。',
-    listingsTitle: '東京待售物件｜自由不動產',
+      'Welcome Home Tokyo協助您在東京尋找投資物件、居住用住宅及土地。提供日語、英語與中文溝通。',
+    listingsTitle: '東京待售物件｜Welcome Home Tokyo',
     listingsDescription:
       '搜尋東京收益物件、公寓、獨棟住宅與土地。若沒有合適的公開物件，也可以傳送購買條件。',
   },
   'zh-CN': {
-    title: '东京投资、居住及土地房产｜自由不动产',
+    title: '东京投资、居住及土地房产｜Welcome Home Tokyo',
     description:
-      '自由不动产协助您在东京寻找投资房产、居住用住宅及土地。提供日语、英语和中文沟通。',
-    listingsTitle: '东京待售房产｜自由不动产',
+      'Welcome Home Tokyo协助您在东京寻找投资房产、居住用住宅及土地。提供日语、英语和中文沟通。',
+    listingsTitle: '东京待售房产｜Welcome Home Tokyo',
     listingsDescription:
       '搜索东京收益房产、公寓、独栋住宅和土地。如果没有合适的公开房源，也可以发送购买条件。',
   },
@@ -276,7 +281,8 @@ export function buildOrganizationJsonLd(locale: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
-    name: 'Ziyou Real Estate',
+    name: OPERATOR_NAME,
+    alternateName: [OPERATOR_NAME_JA, SITE_NAME],
     url: getSiteUrl(),
     email: 'admin@ziyou-fudosan.com',
     telephone: '+81-80-8492-7068',
@@ -298,7 +304,8 @@ export function buildWebsiteJsonLd(locale: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Ziyou Real Estate',
+    name: SITE_NAME,
+    publisher: { '@type': 'RealEstateAgent', name: OPERATOR_NAME, alternateName: OPERATOR_NAME_JA },
     url: getSiteUrl(),
     inLanguage: getSchemaLanguage(locale),
     potentialAction: {
@@ -318,7 +325,7 @@ export function defaultShareImages(alt: string) {
 export function shareMetadata({ title, description, url, locale, image }: { title: string; description: string; url: string; locale: string; image?: string | null }) {
   const images = image ? [{ url: image, alt: title }] : defaultShareImages(title)
   return {
-    openGraph: { type: 'website' as const, siteName: 'Ziyou Real Estate', title, description, url, locale: getOpenGraphLocale(locale), images },
+    openGraph: { type: 'website' as const, siteName: SITE_NAME, title, description, url, locale: getOpenGraphLocale(locale), images },
     twitter: { card: 'summary_large_image' as const, title, description, images: images.map((item) => item.url) },
   }
 }
