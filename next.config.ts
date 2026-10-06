@@ -7,6 +7,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 const projectRoot = path.dirname(fileURLToPath(import.meta.url))
 
 const nextConfig: NextConfig = {
+  // Put metadata in <head> for every client, not only the bots Next.js recognises, so AI crawlers read descriptions.
+  htmlLimitedBots: /.*/,
   serverExternalPackages: ['pdf-to-img', 'sharp'],
   turbopack: {
     root: projectRoot,

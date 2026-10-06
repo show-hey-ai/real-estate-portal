@@ -252,7 +252,7 @@ export function ListingChat({
             <ArrowUp aria-hidden="true" className="h-5 w-5" />
           </button>
         </form>
-        <p className="mt-3 text-[11px] leading-5 text-[#7a8e83]">
+        <p className="mt-3 text-[11px] leading-5 text-[#5a6e63]">
           {copy.privacy}
         </p>
         <a

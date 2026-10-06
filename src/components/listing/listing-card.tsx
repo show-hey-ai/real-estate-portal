@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { parseDbTimestamp } from '@/lib/db-timestamp'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import {
@@ -92,7 +93,7 @@ export function ListingCard({
   const viewCount = listing.viewCount || 0
   const favoriteCount = listing.favoriteCount || 0
   const isPopular = viewCount > 100 || favoriteCount > 5
-  const publishedAtTime = listing.publishedAt ? new Date(listing.publishedAt).getTime() : null
+  const publishedAtTime = parseDbTimestamp(listing.publishedAt)?.getTime() ?? null
   const isNew = publishedAtTime != null && publishedAtTime > NEW_LISTING_CUTOFF
 
   return (

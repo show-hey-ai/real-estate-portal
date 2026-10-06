@@ -27,7 +27,7 @@ export function LocaleSwitcher() {
 
   return (
     <Select value={locale} onValueChange={handleLocaleChange} disabled={isPending}>
-      <SelectTrigger className="w-[130px]">
+      <SelectTrigger className="w-[130px]" aria-label="Language / 言語 / 語言">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
