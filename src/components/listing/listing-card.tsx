@@ -30,6 +30,8 @@ import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, translateAddress, translateZoning } from '@/lib/translate-fields'
 import { FavoriteIconButton } from './favorite-icon-button'
 import { CompareToggle } from './browser-lists-client'
+import { useFxRates } from '@/components/fx/fx-rates-context'
+import { formatApproxPrice } from '@/lib/fx'
 import { getTradeChatCopy } from '@/lib/trade-chat'
 
 const YIELD_LABEL: Record<string, string> = { ja: '表面利回り', en: 'Gross yield', 'zh-TW': '表面投報率', 'zh-CN': '表面收益率' }
@@ -85,6 +87,7 @@ export function ListingCard({
   const t = useTranslations('listing')
   const tCard = useTranslations('card')
   const locale = useLocale()
+  const approxPrice = formatApproxPrice(Number(listing.price) || 0, locale, useFxRates())
   const propertyTypeLabel =
     getPortalPropertyTypes(locale).find((type) => type.value === listing.propertyType)
       ?.label || listing.propertyType
@@ -170,6 +173,7 @@ export function ListingCard({
             <p className="mt-1 text-xl font-semibold tracking-normal text-[#1b293a]">
               {listing.price ? formatPrice(listing.price, locale) : '-'}
             </p>
+            {approxPrice && <p className="text-xs font-medium text-[#536274]">{approxPrice}</p>}
             {listing.grossYield ? <p className="mt-1 inline-flex rounded-md bg-[#edf3e7] px-2 py-0.5 text-xs font-semibold text-[#3f5f39]">{YIELD_LABEL[locale] ?? YIELD_LABEL.en} {listing.grossYield}%</p> : null}
           </div>
           <div className="flex shrink-0 items-center gap-1">

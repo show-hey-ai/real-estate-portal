@@ -3,21 +3,25 @@ import { Footer } from '@/components/common/footer'
 import { CompareBar } from '@/components/listing/browser-lists-client'
 import { PublicPageviewTracker } from '@/components/analytics/public-pageview-tracker'
 import { getOptionalPublicViewer } from '@/lib/public-viewer'
+import { getJpyRates } from '@/lib/fx'
+import { FxRatesProvider } from '@/components/fx/fx-rates-context'
 
 export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const user = await getOptionalPublicViewer()
+  const [user, rates] = await Promise.all([getOptionalPublicViewer(), getJpyRates()])
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <PublicPageviewTracker />
-      <Header user={user} />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <CompareBar />
-    </div>
+    <FxRatesProvider rates={rates}>
+      <div className="flex min-h-screen flex-col">
+        <PublicPageviewTracker />
+        <Header user={user} />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <CompareBar />
+      </div>
+    </FxRatesProvider>
   )
 }

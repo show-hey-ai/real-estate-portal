@@ -15,14 +15,17 @@ import { formatUnitPrice, unitPriceOf } from '@/lib/unit-price'
 import { wardLabel } from '@/lib/ward-tile-map'
 import { absoluteUrl } from '@/lib/site-config'
 import { formatYenWords } from '@/lib/yen-words'
+import { parseMonthlyFigures } from '@/lib/monthly-costs'
+import { cardGrossYield } from '@/lib/card-facts'
+import { seismicStandard } from '@/lib/seismic'
 
 export const dynamic = 'force-dynamic'
 
 const copy = {
-  ja: { title: '物件を比較', intro: '比較リストに追加した物件を並べています。物件ページの「比較に追加」で最大3件まで選べます。', empty: '比較リストに物件がありません。物件ページの「比較に追加」を押してください。', browse: '物件を探す', price: '価格', unit: '㎡単価', area: '面積', type: '種別', ward: 'エリア', built: '築年', station: '最寄駅', status: '現況', floors: '階数', detail: '物件ページへ', best: { price: '最安', unit: '㎡単価が最安', built: '最も新しい', walk: '駅に最も近い', area: '最も広い' }, walk: (minutes: number) => `徒歩${minutes}分`, age: (year: number, age: number) => `${year}年（築${age}年）`, floorsValue: (count: number) => `${count}階建` },
-  en: { title: 'Compare properties', intro: 'Listings you added to the compare list, side by side. Add up to three from any listing page.', empty: 'Your compare list is empty. Use “Add to compare” on a listing page.', browse: 'Browse properties', price: 'Price', unit: 'Price per m²', area: 'Area', type: 'Type', ward: 'Area', built: 'Built', station: 'Nearest station', status: 'Status', floors: 'Floors', detail: 'View listing', best: { price: 'Lowest price', unit: 'Lowest per m²', built: 'Newest', walk: 'Closest to station', area: 'Largest' }, walk: (minutes: number) => `${minutes} min walk`, age: (year: number, age: number) => `${year} (${age} yrs)`, floorsValue: (count: number) => `${count} floors` },
-  'zh-TW': { title: '比較物件', intro: '並列顯示加入比較清單的物件。可在物件頁面加入最多3筆。', empty: '比較清單中沒有物件。請在物件頁面按「加入比較」。', browse: '尋找物件', price: '價格', unit: '每平方公尺單價', area: '面積', type: '類型', ward: '區域', built: '屋齡', station: '最近車站', status: '現況', floors: '樓層', detail: '查看物件', best: { price: '最低價', unit: '單價最低', built: '最新', walk: '離車站最近', area: '最寬敞' }, walk: (minutes: number) => `步行${minutes}分鐘`, age: (year: number, age: number) => `${year}年（屋齡${age}年）`, floorsValue: (count: number) => `${count}層樓` },
-  'zh-CN': { title: '比较房源', intro: '并列显示加入比较清单的房源。可在房源页面加入最多3套。', empty: '比较清单中没有房源。请在房源页面点击“加入比较”。', browse: '查找房源', price: '价格', unit: '每平方米单价', area: '面积', type: '类型', ward: '区域', built: '房龄', station: '最近车站', status: '现状', floors: '楼层', detail: '查看房源', best: { price: '最低价', unit: '单价最低', built: '最新', walk: '离车站最近', area: '最宽敞' }, walk: (minutes: number) => `步行${minutes}分钟`, age: (year: number, age: number) => `${year}年（房龄${age}年）`, floorsValue: (count: number) => `${count}层` },
+  ja: { fees: '管理費等（月額）', grossYield: '表面利回り', seismic: '耐震基準（目安）', seismicValue: { new: '新耐震', check: '要確認', old: '旧耐震の可能性' }, rights: '土地権利', title: '物件を比較', intro: '比較リストに追加した物件を並べています。物件ページの「比較に追加」で最大3件まで選べます。', empty: '比較リストに物件がありません。物件ページの「比較に追加」を押してください。', browse: '物件を探す', price: '価格', unit: '㎡単価', area: '面積', type: '種別', ward: 'エリア', built: '築年', station: '最寄駅', status: '現況', floors: '階数', detail: '物件ページへ', best: { price: '最安', unit: '㎡単価が最安', built: '最も新しい', walk: '駅に最も近い', area: '最も広い', grossYield: '利回りが最高' }, walk: (minutes: number) => `徒歩${minutes}分`, age: (year: number, age: number) => `${year}年（築${age}年）`, floorsValue: (count: number) => `${count}階建` },
+  en: { fees: 'Building fees (monthly)', grossYield: 'Gross yield', seismic: 'Earthquake standard (hint)', seismicValue: { new: 'New (1981+)', check: 'Check permit date', old: 'Likely pre-1981' }, rights: 'Land rights', title: 'Compare properties', intro: 'Listings you added to the compare list, side by side. Add up to three from any listing page.', empty: 'Your compare list is empty. Use “Add to compare” on a listing page.', browse: 'Browse properties', price: 'Price', unit: 'Price per m²', area: 'Area', type: 'Type', ward: 'Area', built: 'Built', station: 'Nearest station', status: 'Status', floors: 'Floors', detail: 'View listing', best: { price: 'Lowest price', unit: 'Lowest per m²', built: 'Newest', walk: 'Closest to station', area: 'Largest', grossYield: 'Highest yield' }, walk: (minutes: number) => `${minutes} min walk`, age: (year: number, age: number) => `${year} (${age} yrs)`, floorsValue: (count: number) => `${count} floors` },
+  'zh-TW': { fees: '管理費等（月）', grossYield: '表面投報率', seismic: '耐震基準（參考）', seismicValue: { new: '新耐震', check: '需確認', old: '可能為舊耐震' }, rights: '土地權利', title: '比較物件', intro: '並列顯示加入比較清單的物件。可在物件頁面加入最多3筆。', empty: '比較清單中沒有物件。請在物件頁面按「加入比較」。', browse: '尋找物件', price: '價格', unit: '每平方公尺單價', area: '面積', type: '類型', ward: '區域', built: '屋齡', station: '最近車站', status: '現況', floors: '樓層', detail: '查看物件', best: { price: '最低價', unit: '單價最低', built: '最新', walk: '離車站最近', area: '最寬敞', grossYield: '投報率最高' }, walk: (minutes: number) => `步行${minutes}分鐘`, age: (year: number, age: number) => `${year}年（屋齡${age}年）`, floorsValue: (count: number) => `${count}層樓` },
+  'zh-CN': { fees: '管理费等（月）', grossYield: '表面收益率', seismic: '耐震标准（参考）', seismicValue: { new: '新耐震', check: '需确认', old: '可能为旧耐震' }, rights: '土地权利', title: '比较房源', intro: '并列显示加入比较清单的房源。可在房源页面加入最多3套。', empty: '比较清单中没有房源。请在房源页面点击“加入比较”。', browse: '查找房源', price: '价格', unit: '每平方米单价', area: '面积', type: '类型', ward: '区域', built: '房龄', station: '最近车站', status: '现状', floors: '楼层', detail: '查看房源', best: { price: '最低价', unit: '单价最低', built: '最新', walk: '离车站最近', area: '最宽敞', grossYield: '收益率最高' }, walk: (minutes: number) => `步行${minutes}分钟`, age: (year: number, age: number) => `${year}年（房龄${age}年）`, floorsValue: (count: number) => `${count}层` },
 } as const
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -37,7 +40,7 @@ async function getCompared(ids: string[]) {
   if (!ids.length) return []
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('id, city, propertyType, price, buildingArea, landArea, builtYear, floorCount, currentStatus, stations, media (url, category, isAdopted, sortOrder)')
+    .select('id, city, propertyType, price, buildingArea, landArea, builtYear, floorCount, currentStatus, landRights, yieldGross, descriptionJa, stations, media (url, category, isAdopted, sortOrder)')
     .in('id', ids)
     .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
@@ -65,7 +68,8 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     const stations = normalizeTransitStations(row.stations as never)
     const nearest = [...stations].sort((left, right) => (left.walk_minutes ?? 99) - (right.walk_minutes ?? 99))[0]
     const area = Number(row.propertyType === '土地' ? row.landArea : row.buildingArea) || null
-    return { row, area, unit: unitPriceOf(row), price: Number(row.price) || null, nearest, walk: nearest?.walk_minutes ?? null, cover: pickCoverImage((row.media || []).filter((item) => item.isAdopted)) }
+    const monthly = parseMonthlyFigures(row.descriptionJa)
+    return { row, area, unit: unitPriceOf(row), price: Number(row.price) || null, nearest, walk: nearest?.walk_minutes ?? null, fees: monthly.fees, grossYield: cardGrossYield(row), seismic: row.propertyType === '土地' ? null : seismicStandard(row.builtYear), cover: pickCoverImage((row.media || []).filter((item) => item.isAdopted)) }
   })
   const best = {
     price: bestIndex(facts.map((item) => item.price), 'min'),
@@ -73,6 +77,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     built: bestIndex(facts.map((item) => item.row.builtYear), 'max'),
     walk: bestIndex(facts.map((item) => item.walk), 'min'),
     area: bestIndex(facts.map((item) => item.area), 'max'),
+    grossYield: bestIndex(facts.map((item) => item.grossYield), 'max'),
   }
   const badge = (key: keyof typeof best, index: number) => best[key] === index
     ? <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-[#fff4e5] px-2 py-0.5 text-[11px] font-semibold text-[#9a4d00]"><Trophy aria-hidden="true" className="h-3 w-3" />{text.best[key]}</span>
@@ -87,6 +92,10 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: text.station, render: (item, index) => item.nearest ? <>{formatTransitAccessLabel(item.nearest, locale)}{item.walk !== null && ` · ${text.walk(item.walk)}`}{badge('walk', index)}</> : '—' },
     { label: text.floors, render: (item) => item.row.floorCount ? text.floorsValue(item.row.floorCount) : '—' },
     { label: text.status, render: (item) => translateCurrentStatus(item.row.currentStatus, locale) ?? '—' },
+    { label: text.fees, render: (item) => item.fees ? formatYenWords(item.fees, locale) : '—' },
+    { label: text.grossYield, render: (item, index) => item.grossYield ? <>{`${item.grossYield}%`}{badge('grossYield', index)}</> : '—' },
+    { label: text.seismic, render: (item) => item.seismic ? text.seismicValue[item.seismic] : '—' },
+    { label: text.rights, render: (item) => item.row.landRights ? (locale === 'en' ? (/借地/.test(item.row.landRights) ? 'Leasehold' : /所有/.test(item.row.landRights) ? 'Freehold' : item.row.landRights) : item.row.landRights) : '—' },
   ]
 
   return <div className="container py-10 text-[#1b293a]" data-testid="compare-page">
