@@ -9,6 +9,7 @@ import { locales } from '@/i18n/config'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { localizedSitemapUrls } from '@/lib/locale-url'
 import { WARD_SLUGS } from '@/lib/ward-tile-map'
+import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, inBudget, typeSlugFor, type TypeSlug } from '@/lib/collections'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(supabaseUrl, serviceRoleKey)
   const { data, error } = await supabase
     .from('listings')
-    .select('id, city, updatedAt, publishedAt')
+    .select('id, city, propertyType, price, updatedAt, publishedAt')
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
     .eq('adConsentRequired', false)
@@ -86,5 +87,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const wardEntries: MetadataRoute.Sitemap = [...new Set((data || []).map((listing) => listing.city).filter((city): city is string => !!city && !!WARD_SLUGS[city]))]
     .flatMap((city) => localized(`/areas/${WARD_SLUGS[city]}`, getLatestDate((data || []).filter((listing) => listing.city === city).map((listing) => listing.updatedAt)), 'daily', 0.85))
 
-  return [...adjustedStaticEntries, ...wardEntries, ...guideEntries, ...listingEntries, ...articleEntries]
+  // Type and budget collections that currently hold listings; empty ones are noindex.
+  const rows = data || []
+  const typeEntries: MetadataRoute.Sitemap = (Object.keys(TYPE_COLLECTIONS) as TypeSlug[])
+    .filter((slug) => rows.some((row) => typeSlugFor(row.propertyType) === slug))
+    .flatMap((slug) => localized(`/types/${slug}`, getLatestDate(rows.filter((row) => typeSlugFor(row.propertyType) === slug).map((row) => row.updatedAt)), 'daily', 0.85))
+  const budgetEntries: MetadataRoute.Sitemap = BUDGET_SLUGS
+    .filter((slug) => rows.some((row) => inBudget(row.price, budgetBand(slug)!)))
+    .flatMap((slug) => localized(`/budget/${slug}`, getLatestDate(rows.filter((row) => inBudget(row.price, budgetBand(slug)!)).map((row) => row.updatedAt)), 'daily', 0.8))
+
+  return [...adjustedStaticEntries, ...wardEntries, ...typeEntries, ...budgetEntries, ...guideEntries, ...listingEntries, ...articleEntries]
 }

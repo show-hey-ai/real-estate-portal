@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from 'next-intl'
 import { getHelpCopy } from '@/content/help'
 import { Separator } from '@/components/ui/separator'
 import { WARD_SLUGS, WARD_TILES, wardLabel } from '@/lib/ward-tile-map'
+import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, type TypeSlug } from '@/lib/collections'
+import { priceBandRange } from '@/lib/price-bands'
 
 export function Footer() {
   const t = useTranslations()
@@ -16,11 +18,11 @@ export function Footer() {
     : '/privacy.html'
   const currentYear = new Date().getFullYear()
   const company = {
-    ja: { name: '自由不動産合同会社', license: '宅地建物取引業 東京都知事（1）第108831号', address: '〒111-0052 東京都台東区柳橋1丁目11番5号 柳橋ビル305号室', wards: '東京23区から探す' },
-    en: { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage licence: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards" },
-    'zh-TW': { name: '自由不動產合同會社', license: '宅地建物交易業 東京都知事（1）第108831號', address: '〒111-0052 東京都台東區柳橋1丁目11番5號 柳橋大樓305號室', wards: '依東京23區尋找' },
-    'zh-CN': { name: '自由不动产合同会社', license: '宅地建物交易业 东京都知事（1）第108831号', address: '〒111-0052 东京都台东区柳桥1丁目11番5号 柳桥大楼305号室', wards: '按东京23区查找' },
-  }[locale] ?? { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage licence: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards" }
+    ja: { name: '自由不動産合同会社', license: '宅地建物取引業 東京都知事（1）第108831号', address: '〒111-0052 東京都台東区柳橋1丁目11番5号 柳橋ビル305号室', wards: '東京23区から探す', types: '種類から探す', budget: '予算から探す' },
+    en: { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage licence: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards", types: 'Browse by property type', budget: 'Browse by budget' },
+    'zh-TW': { name: '自由不動產合同會社', license: '宅地建物交易業 東京都知事（1）第108831號', address: '〒111-0052 東京都台東區柳橋1丁目11番5號 柳橋大樓305號室', wards: '依東京23區尋找', types: '依類型尋找', budget: '依預算尋找' },
+    'zh-CN': { name: '自由不动产合同会社', license: '宅地建物交易业 东京都知事（1）第108831号', address: '〒111-0052 东京都台东区柳桥1丁目11番5号 柳桥大楼305号室', wards: '按东京23区查找', types: '按类型查找', budget: '按预算查找' },
+  }[locale] ?? { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage licence: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards", types: 'Browse by property type', budget: 'Browse by budget' }
 
   return (
     <footer className="border-t border-[#dbe2e9] bg-[#142337] text-white">
@@ -98,6 +100,17 @@ export function Footer() {
             {WARD_TILES.map(({ ward }) => <li key={ward}><Link href={`/areas/${WARD_SLUGS[ward]}`} className="text-white/65 transition-colors hover:text-white">{wardLabel(ward, locale)}</Link></li>)}
           </ul>
         </nav>
+
+        <div className="mt-8 grid gap-8 md:grid-cols-2">
+          <nav aria-label={company.types}>
+            <h2 className="mb-3 text-sm font-semibold">{company.types}</h2>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{(Object.keys(TYPE_COLLECTIONS) as TypeSlug[]).map((slug) => <li key={slug}><Link href={`/types/${slug}`} className="text-white/65 transition-colors hover:text-white">{TYPE_COLLECTIONS[slug].label[locale as keyof (typeof TYPE_COLLECTIONS)[TypeSlug]['label']] ?? TYPE_COLLECTIONS[slug].label.en}</Link></li>)}</ul>
+          </nav>
+          <nav aria-label={company.budget}>
+            <h2 className="mb-3 text-sm font-semibold">{company.budget}</h2>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{BUDGET_SLUGS.map((slug) => <li key={slug}><Link href={`/budget/${slug}`} className="text-white/65 transition-colors hover:text-white">{priceBandRange(budgetBand(slug)!, locale)}</Link></li>)}</ul>
+          </nav>
+        </div>
 
         <Separator className="my-8 bg-white/12" />
 

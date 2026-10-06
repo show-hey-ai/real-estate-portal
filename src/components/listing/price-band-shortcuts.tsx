@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Wallet } from 'lucide-react'
-import { PRICE_BANDS, priceBandLabel, priceBandQuery } from '@/lib/price-bands'
+import { PRICE_BANDS, priceBandLabel } from '@/lib/price-bands'
+import { budgetSlugFor } from '@/lib/collections'
 
 const copy = {
   ja: { title: '予算から探す', note: '数字は公開中の物件数です。', unit: '件' },
@@ -29,7 +30,7 @@ export function PriceBandShortcuts({ locale, counts }: PriceBandShortcutsProps) 
           <span className="mt-1.5 block text-xs tabular-nums text-[#536274]">{count}{text.unit && ` ${text.unit}`}</span>
         </>
         return <li key={band.min}>{count > 0
-          ? <Link href={`/listings?${priceBandQuery(band)}`} prefetch={false} className="block rounded-xl border border-[#dbe2e9] bg-white p-3 transition-colors hover:border-[#274d7d] hover:bg-[#f4f7fb]">{content}</Link>
+          ? <Link href={`/budget/${budgetSlugFor(band)}`} prefetch={false} className="block rounded-xl border border-[#dbe2e9] bg-white p-3 transition-colors hover:border-[#274d7d] hover:bg-[#f4f7fb]">{content}</Link>
           : <div className="rounded-xl border border-[#e5eaf0] bg-[#f6f8fa] p-3 text-[#5f6b78]">{content}</div>}</li>
       })}
     </ul>

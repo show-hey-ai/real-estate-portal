@@ -33,3 +33,15 @@ export function priceBandLabel(band: PriceBand, locale: string): string {
   if (band.max === null) return locale === 'en' ? `${unit(band.min)}+` : `${unit(band.min)}〜`
   return `${unit(band.min)}–${unit(band.max)}`
 }
+
+/** Band label including the currency unit, for titles: 2,000万〜4,000万円 / 1億円〜 / ¥20M–¥40M. */
+export function priceBandRange(band: PriceBand, locale: string): string {
+  if (locale === 'en') return priceBandLabel(band, locale)
+  const currency = locale === 'zh-TW' ? '日圓' : locale === 'zh-CN' ? '日元' : '円'
+  const oku = locale === 'zh-CN' ? '亿' : '億'
+  const man = locale === 'zh-TW' ? '萬' : '万'
+  const unit = (value: number) => value >= 100_000_000 ? `${value / 100_000_000}${oku}` : `${(value / 10_000).toLocaleString('ja-JP')}${man}`
+  if (band.min === 0) return `〜${unit(band.max!)}${currency}`
+  if (band.max === null) return `${unit(band.min)}${currency}〜`
+  return `${unit(band.min)}〜${unit(band.max)}${currency}`
+}

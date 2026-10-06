@@ -3,6 +3,7 @@ import { ArrowRight, Building2, House, Landmark, Map, MapPin, TrendingUp } from 
 import { getMarketplaceCopy } from '@/lib/marketplace-copy'
 import { getPortalHomeCopy, getPortalPropertyTypes } from '@/lib/portal-copy'
 import { translateCityName } from '@/lib/translate-fields'
+import { typeSlugFor } from '@/lib/collections'
 
 const purposeIcons = { investment: TrendingUp, residential: House, land: Map }
 const tones = ['bg-[#e8f1fb] text-[#274d7d]', 'bg-[#fcece8] text-[#aa5746]', 'bg-[#edf3e7] text-[#557447]']
@@ -16,7 +17,7 @@ export function MarketShortcuts({ locale, wards, showAreas = true }: { locale: s
       href: `/listings?category=${value}`, label, Icon: purposeIcons[value], tone: tones[index],
     })),
     ...(['区分マンション', '戸建', '一棟マンション'] as const).map((value, index) => ({
-      href: `/listings?${new URLSearchParams({ type: value })}`,
+      href: `/types/${typeSlugFor(value)}`,
       label: types.find((type) => type.value === value)!.label,
       Icon: index === 1 ? House : index === 2 ? Landmark : Building2,
       tone: tones[index],

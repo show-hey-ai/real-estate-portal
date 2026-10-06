@@ -6,6 +6,8 @@ import { getPublicArticles } from '@/lib/portal-articles'
 import { guideArticles } from '@/content/guides'
 import { formatLlmsListing, type LlmsListing } from '@/lib/llms-listings'
 import { WARD_SLUGS, countByWard, wardLabel } from '@/lib/ward-tile-map'
+import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, inBudget, typeSlugFor, type TypeSlug } from '@/lib/collections'
+import { priceBandRange } from '@/lib/price-bands'
 
 export const dynamic = 'force-dynamic'
 const MAX_LISTED = 200
@@ -43,6 +45,10 @@ export async function GET() {
     ...(listings.length ? listings.map((listing) => formatLlmsListing(listing, absoluteUrl(`/listings/${listing.id}`))) : ['See the properties page for the current inventory.']), '',
     '## Properties by ward', '',
     ...Object.entries(countByWard(listings)).sort((left, right) => right[1] - left[1]).filter(([ward]) => WARD_SLUGS[ward]).map(([ward, count]) => `- [${wardLabel(ward, 'en')}, Tokyo: ${count} for sale](${absoluteUrl(`/areas/${WARD_SLUGS[ward]}`)})`), '',
+    '## Properties by type', '',
+    ...(Object.keys(TYPE_COLLECTIONS) as TypeSlug[]).map((slug) => ({ slug, count: listings.filter((listing) => typeSlugFor(listing.propertyType) === slug).length })).filter((item) => item.count).map((item) => `- [${TYPE_COLLECTIONS[item.slug].label.en} for sale in Tokyo: ${item.count}](${absoluteUrl(`/types/${item.slug}`)})`), '',
+    '## Properties by budget', '',
+    ...BUDGET_SLUGS.map((slug) => ({ slug, count: listings.filter((listing) => inBudget(listing.price, budgetBand(slug)!)).length })).filter((item) => item.count).map((item) => `- [${priceBandRange(budgetBand(item.slug)!, 'en')}: ${item.count}](${absoluteUrl(`/budget/${item.slug}`)})`), '',
     '## Articles', '',
     ...articles.map((article) => `- [${article.locales.en.title}](${absoluteUrl(`/articles/${article.slug}/en`)}): ${article.locales.en.description}`),
     ...guideArticles.map((guide) => `- [${guide.locales.en.title}](${absoluteUrl(`/guides/${guide.slug}`)}): ${guide.locales.en.seoDescription}`), '',

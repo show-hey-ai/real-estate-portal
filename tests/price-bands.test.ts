@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { PRICE_BANDS, countPriceBands, priceBandLabel, priceBandQuery } from '../src/lib/price-bands'
+import { PRICE_BANDS, countPriceBands, priceBandLabel, priceBandQuery, priceBandRange } from '../src/lib/price-bands'
 
 test('prices fall into exactly one band, boundaries going to the higher band', () => {
   assert.deepEqual(countPriceBands([6_500_000, 20_000_000, 23_800_000, 59_800_000, 60_000_000, 385_000_000, null]), [1, 2, 1, 1, 1])
@@ -17,4 +17,12 @@ test('band labels read naturally in each language', () => {
   assert.equal(priceBandLabel(PRICE_BANDS[3], 'ja'), '6,000万–1億')
   assert.equal(priceBandLabel(PRICE_BANDS[4], 'zh-CN'), '1亿〜')
   assert.equal(priceBandLabel(PRICE_BANDS[0], 'en'), 'Under ¥20M')
+})
+
+test('titles carry the currency unit in the natural position', () => {
+  assert.equal(priceBandRange(PRICE_BANDS[0], 'ja'), '〜2,000万円')
+  assert.equal(priceBandRange(PRICE_BANDS[1], 'ja'), '2,000万〜4,000万円')
+  assert.equal(priceBandRange(PRICE_BANDS[4], 'ja'), '1億円〜')
+  assert.equal(priceBandRange(PRICE_BANDS[4], 'zh-TW'), '1億日圓〜')
+  assert.equal(priceBandRange(PRICE_BANDS[1], 'en'), '¥20M–¥40M')
 })
