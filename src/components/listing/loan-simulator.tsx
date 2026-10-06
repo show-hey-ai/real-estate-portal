@@ -7,10 +7,10 @@ import { estimateLoan } from '@/lib/loan'
 import { formatYenWords } from '@/lib/yen-words'
 
 const copy = {
-  ja: { title: '月々の返済シミュレーション', down: '頭金', rate: '金利（年）', years: '返済期間', yearsUnit: '年', monthly: '月々の返済額', loan: '借入額', interest: '利息の合計', price: '物件価格', note: '元利均等返済の概算です。諸費用・税金・管理費は含みません。融資の可否や金利は金融機関の審査で決まり、海外にお住まいの方は条件が異なります。' },
-  en: { title: 'Monthly payment estimate', down: 'Down payment', rate: 'Interest rate (annual)', years: 'Loan term', yearsUnit: 'years', monthly: 'Monthly payment', loan: 'Loan amount', interest: 'Total interest', price: 'Price', note: 'Level-payment estimate excluding fees, taxes and management costs. Lenders decide eligibility and rates; conditions differ for non-residents.' },
-  'zh-TW': { title: '每月還款試算', down: '頭期款', rate: '年利率', years: '還款期間', yearsUnit: '年', monthly: '每月還款', loan: '貸款金額', interest: '利息合計', price: '物件價格', note: '本息平均攤還的概算，不含各項費用、稅金與管理費。是否核貸及利率由金融機構審查決定，海外居住者條件不同。' },
-  'zh-CN': { title: '月供试算', down: '首付', rate: '年利率', years: '还款期限', yearsUnit: '年', monthly: '每月还款', loan: '贷款金额', interest: '利息合计', price: '房产价格', note: '等额本息的概算，不含各项费用、税金与管理费。能否获批及利率由金融机构审核决定，海外居住者条件不同。' },
+  ja: { title: '月々の返済シミュレーション', down: '頭金', rate: '金利（年）', years: '返済期間', yearsUnit: '年', monthly: '月々の返済額', loan: '借入額', interest: '利息の合計', price: '物件価格', note: '元利均等返済の概算です。諸費用・税金・管理費は含みません。融資の可否や金利は金融機関の審査で決まります。外国籍の方も、日本の在留資格（ビザ）がある場合や日本法人で借りる場合は利用できることがあります。' },
+  en: { title: 'Monthly payment estimate', down: 'Down payment', rate: 'Interest rate (annual)', years: 'Loan term', yearsUnit: 'years', monthly: 'Monthly payment', loan: 'Loan amount', interest: 'Total interest', price: 'Price', note: 'Level-payment estimate excluding fees, taxes and management costs. Lenders decide eligibility and rates. Foreign nationals can often borrow if they hold Japanese residence status or buy through a Japanese company.' },
+  'zh-TW': { title: '每月還款試算', down: '頭期款', rate: '年利率', years: '還款期間', yearsUnit: '年', monthly: '每月還款', loan: '貸款金額', interest: '利息合計', price: '物件價格', note: '本息平均攤還的概算，不含各項費用、稅金與管理費。是否核貸及利率由金融機構審查決定。外國籍人士若持有日本在留資格（簽證）或以日本法人借款，也有機會申請。' },
+  'zh-CN': { title: '月供试算', down: '首付', rate: '年利率', years: '还款期限', yearsUnit: '年', monthly: '每月还款', loan: '贷款金额', interest: '利息合计', price: '房产价格', note: '等额本息的概算，不含各项费用、税金与管理费。能否获批及利率由金融机构审核决定。外国籍人士若持有日本在留资格（签证）或以日本法人借款，也有机会申请。' },
 } as const
 
 const DEFAULTS = { downPaymentRate: 0.2, annualRatePercent: 1, years: 35 }

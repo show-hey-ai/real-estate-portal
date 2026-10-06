@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, CalendarClock, Clock } from 'lucide-react'
 import type { Locale } from '@/i18n/config'
 import { getGuideArticles } from '@/content/guides'
 import { PurchaseCosts } from '@/components/listing/purchase-costs'
+import { BuyingCostsOverview } from '@/components/buyer/buying-costs-overview'
 
 /** Worked example for the cost breakdown on the guide page. */
 const EXAMPLE_PRICE = 50_000_000
@@ -10,7 +11,7 @@ const EXAMPLE_PRICE = 50_000_000
 const copy = {
   ja: {
     timelineTitle: '購入申込から引渡しまでの目安',
-    timelineNote: '住宅ローンを使う場合の一般的な目安です。現金購入や売主の事情で短くも長くもなります。',
+    timelineNote: '住宅ローンを使う場合の一般的な目安です。現金購入や売主の事情で短くも長くもなります。外国籍の方のローンは下の説明をご覧ください。',
     timeline: [
       { label: '購入申込', duration: '1日', detail: '価格や条件を書面で伝えます。' },
       { label: '重要事項説明・売買契約', duration: '申込から約1〜2週間', detail: '物件の権利・法令・管理の説明を受けて契約し、手付金を払います。' },
@@ -23,7 +24,7 @@ const copy = {
   },
   en: {
     timelineTitle: 'From offer to handover: a typical timeline',
-    timelineNote: 'A typical schedule with a mortgage. Cash purchases or seller circumstances can make it shorter or longer.',
+    timelineNote: 'A typical schedule with a mortgage. Cash purchases or seller circumstances can make it shorter or longer. Mortgages for foreign nationals are explained below.',
     timeline: [
       { label: 'Purchase application', duration: '1 day', detail: 'You put your price and conditions in writing.' },
       { label: 'Disclosure and contract', duration: 'About 1–2 weeks after', detail: 'You hear the legal and management disclosure, sign, and pay the deposit.' },
@@ -36,7 +37,7 @@ const copy = {
   },
   'zh-TW': {
     timelineTitle: '從購買申請到交屋的時程',
-    timelineNote: '使用房貸時的一般時程。全額現金或賣方情況可能使時程縮短或延長。',
+    timelineNote: '使用房貸時的一般時程。全額現金或賣方情況可能使時程縮短或延長。外國籍買家的貸款請見下方說明。',
     timeline: [
       { label: '購買申請', duration: '1天', detail: '以書面提出價格與條件。' },
       { label: '重要事項說明・簽約', duration: '申請後約1〜2週', detail: '聽取權利、法規與管理說明後簽約並支付訂金。' },
@@ -49,7 +50,7 @@ const copy = {
   },
   'zh-CN': {
     timelineTitle: '从购买申请到交房的时间表',
-    timelineNote: '使用房贷时的一般时间表。全款购买或卖方情况可能使时间缩短或延长。',
+    timelineNote: '使用房贷时的一般时间表。全款购买或卖方情况可能使时间缩短或延长。外国籍买家的贷款请见下方说明。',
     timeline: [
       { label: '购买申请', duration: '1天', detail: '以书面提出价格与条件。' },
       { label: '重要事项说明・签约', duration: '申请后约1〜2周', detail: '听取权利、法规与管理说明后签约并支付定金。' },
@@ -83,6 +84,8 @@ export function BuyingGuideExtras({ locale }: BuyingGuideExtrasProps) {
       </ol>
       <p className="mt-3 text-xs leading-5 text-[#536274]">{text.timelineNote}</p>
     </section>
+
+    <BuyingCostsOverview locale={lang} />
 
     <div className="mt-6 max-w-3xl">
       <PurchaseCosts price={EXAMPLE_PRICE} locale={lang} title={text.costsTitle} showGuideLink={false} />
