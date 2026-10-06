@@ -8,7 +8,8 @@ export function isLocalAnalyticsHost(host: string | null | undefined) {
 }
 
 export function isAutomatedAnalyticsAgent(userAgent: string | null) {
-  return !!userAgent && /bot\b|crawler|spider|HeadlessChrome|Playwright|Ziyou-Autonomy/i.test(userAgent)
+  // Crawlers (…Bot/1.0), audit tools such as Lighthouse / PageSpeed Insights, and our own health checks.
+  return !!userAgent && /bot\b|bot\/|crawler|spider|HeadlessChrome|Playwright|Lighthouse|InspectionTool|PageSpeed|Ziyou-Autonomy/i.test(userAgent)
 }
 
 export type SiteAnalyticsPageType =
