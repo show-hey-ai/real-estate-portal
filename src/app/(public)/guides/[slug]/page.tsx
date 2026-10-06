@@ -226,7 +226,7 @@ export default async function GuideDetailPage({
           <Card className="mt-8 border-primary/15 bg-primary/5">
             <CardContent className="p-6">
               <h2 className="text-lg font-semibold">{guideCopy.keyTakeaways}</h2>
-              <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+              <ul className="mt-4 space-y-3 text-sm leading-relaxed text-[#3d4a5a]">
                 {article.keyTakeaways.map((point) => (
                   <li key={point} className="flex gap-3">
                     <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
