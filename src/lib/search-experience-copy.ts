@@ -17,6 +17,8 @@ const copy = {
     apply: '範囲を適用',
     invalidRange: '下限は上限以下にしてください。',
     distribution: '公開物件の売出価格の分布',
+    areaDistribution: '公開物件の面積の分布',
+    pickRange: '棒を押すとその範囲で絞り込みます',
     allListings: '公開物件',
     matches: '条件に一致',
     criteria: '選択中の条件',
@@ -62,6 +64,8 @@ const copy = {
     apply: 'Apply range',
     invalidRange: 'The minimum must not exceed the maximum.',
     distribution: 'Asking-price distribution of published listings',
+    areaDistribution: 'Floor-area distribution of published listings',
+    pickRange: 'Tap a bar to filter to that range',
     allListings: 'Published',
     matches: 'Matching',
     criteria: 'Selected filters',
@@ -106,6 +110,8 @@ const copy = {
     apply: '套用範圍',
     invalidRange: '最低值不能高於最高值。',
     distribution: '公開物件的開價分布',
+    areaDistribution: '公開物件的面積分布',
+    pickRange: '點選長條即可篩選該範圍',
     allListings: '公開物件',
     matches: '符合條件',
     criteria: '已選條件',
@@ -150,6 +156,8 @@ const copy = {
     apply: '应用范围',
     invalidRange: '最低值不能高于最高值。',
     distribution: '公开房源的挂牌价格分布',
+    areaDistribution: '公开房源的面积分布',
+    pickRange: '点击柱状条即可筛选该范围',
     allListings: '公开房源',
     matches: '符合条件',
     criteria: '已选条件',
@@ -186,4 +194,14 @@ export function formatSearchPrice(value: number, locale: string) {
   if (locale === 'en')
     return `¥${(value / 1_000_000).toLocaleString('en', { maximumFractionDigits: 2 })}M`
   return `¥${(value / 10_000).toLocaleString('ja-JP', { maximumFractionDigits: 0 })}${locale === 'zh-TW' ? '萬' : '万'}`
+}
+
+/** Short axis labels: 2,000万 / 1.5億 in Japanese and Chinese, ¥20M in English. */
+export function formatCompactPrice(value: number, locale: string): string {
+  if (locale === 'en') return `¥${(value / 1_000_000).toLocaleString('en', { maximumFractionDigits: 1 })}M`
+  const tenThousand = locale === 'zh-TW' ? '萬' : '万'
+  const hundredMillion = locale === 'zh-TW' ? '億' : locale === 'zh-CN' ? '亿' : '億'
+  return value >= 100_000_000
+    ? `${(value / 100_000_000).toLocaleString('ja-JP', { maximumFractionDigits: 1 })}${hundredMillion}`
+    : `${(value / 10_000).toLocaleString('ja-JP', { maximumFractionDigits: 0 })}${tenThousand}`
 }

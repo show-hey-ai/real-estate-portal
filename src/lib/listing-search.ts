@@ -128,6 +128,30 @@ export function priceDistribution(
   return { count: prices.length, min, max, bins }
 }
 
+// Readable purchase ranges (JPY) and floor-area ranges (m²) for inventory histograms.
+export const PRICE_BUCKET_EDGES = [0, 10_000_000, 20_000_000, 30_000_000, 40_000_000, 50_000_000, 60_000_000, 80_000_000, 100_000_000, 150_000_000, 200_000_000, 300_000_000, 500_000_000] as const
+export const AREA_BUCKET_EDGES = [0, 20, 30, 40, 50, 60, 70, 80, 100, 150, 200, 300] as const
+const MIN_DISTRIBUTION_VALUES = 3
+
+/** Counts visible listings per fixed range; ranges after the highest occupied one are dropped. */
+export function bucketDistribution(
+  values: (number | string | null)[],
+  edges: readonly number[]
+): PriceDistribution | null {
+  const numbers = values
+    .filter((value) => value !== null)
+    .map(Number)
+    .filter((value) => Number.isFinite(value) && value > 0)
+  if (numbers.length < MIN_DISTRIBUTION_VALUES) return null
+  const bins = edges.map((from, index) => ({ from, to: edges[index + 1] ?? Number.MAX_SAFE_INTEGER, count: 0 }))
+  for (const value of numbers) {
+    const index = bins.findIndex((bin) => value >= bin.from && value < bin.to)
+    bins[index === -1 ? bins.length - 1 : index].count++
+  }
+  const lastOccupied = bins.reduce((last, bin, index) => (bin.count > 0 ? index : last), 0)
+  return { count: numbers.length, min: Math.min(...numbers), max: Math.max(...numbers), bins: bins.slice(0, lastOccupied + 1) }
+}
+
 export interface SavedSearch {
   query: string
   savedAt: string

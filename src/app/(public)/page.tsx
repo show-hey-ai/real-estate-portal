@@ -7,6 +7,8 @@ import { getLocale } from 'next-intl/server'
 import { ArrowRight, ArrowUpRight, Check, ChevronDown, Search } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { MarketShortcuts } from '@/components/listing/market-shortcuts'
+import { WardMap } from '@/components/listing/ward-map'
+import { countByWard } from '@/lib/ward-tile-map'
 import { getMarketplaceCopy } from '@/lib/marketplace-copy'
 import { HomeSearchForm } from '@/components/listing/home-search-form'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -34,6 +36,20 @@ async function getLatestListings() {
   return data || []
 }
 
+async function getWardCounts() {
+  const { data, error } = await createServiceClient()
+    .from('listings')
+    .select('city')
+    .eq('status', 'PUBLISHED').eq('adAllowed', true)
+    .eq('adConsentRequired', false)
+    .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
+    .is('hospitalityCategory', null)
+    .or(publicFreshnessFilters()[0])
+    .or(publicFreshnessFilters()[1])
+  if (error) { console.error('Failed to count listings by ward:', error); return {} }
+  return countByWard(data || [])
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const copy = getSiteCopy(await getLocale())
   return { title: { absolute: copy.title }, description: copy.description,
@@ -45,8 +61,8 @@ export default async function HomePage() {
   const locale = await getLocale()
   const copy = getPortalHomeCopy(locale)
   const market = getMarketplaceCopy(locale)
-  const [homes, viewer, locationIndex] = await Promise.all([
-    getLatestListings(), getOptionalPublicViewer(), getPublicSearchLocationIndex(),
+  const [homes, viewer, locationIndex, wardCounts] = await Promise.all([
+    getLatestListings(), getOptionalPublicViewer(), getPublicSearchLocationIndex(), getWardCounts(),
   ])
   const listings = homes.map((home) => ({ ...home,
     price: home.price ? BigInt(home.price) : null,
@@ -85,7 +101,8 @@ export default async function HomePage() {
       </section>
 
       <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#657487]">{copy.trust.map((item) => <span key={item} className="inline-flex items-center gap-1.5"><Check aria-hidden="true" className="h-3.5 w-3.5 text-[#57769b]" />{item}</span>)}</div>
-      <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} /></div>
+      <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} showAreas={false} /></div>
+      <div className="mt-9"><WardMap locale={locale} counts={wardCounts} /></div>
 
       <section data-testid="home-search-panel" className="mt-8 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] px-4 md:px-5">
         <details className="group">

@@ -7,7 +7,7 @@ import { translateCityName } from '@/lib/translate-fields'
 const purposeIcons = { investment: TrendingUp, residential: House, land: Map }
 const tones = ['bg-[#e8f1fb] text-[#274d7d]', 'bg-[#fcece8] text-[#aa5746]', 'bg-[#edf3e7] text-[#557447]']
 
-export function MarketShortcuts({ locale, wards }: { locale: string; wards: readonly string[] }) {
+export function MarketShortcuts({ locale, wards, showAreas = true }: { locale: string; wards: readonly string[]; showAreas?: boolean }) {
   const copy = getMarketplaceCopy(locale)
   const home = getPortalHomeCopy(locale)
   const types = getPortalPropertyTypes(locale)
@@ -37,7 +37,7 @@ export function MarketShortcuts({ locale, wards }: { locale: string; wards: read
         </Link>)}
       </div>
     </section>
-    {areas.length > 0 && <section aria-labelledby="area-shortcuts-title">
+    {showAreas && areas.length > 0 && <section aria-labelledby="area-shortcuts-title">
       <div className="flex items-center justify-between gap-4"><h2 id="area-shortcuts-title" className="text-lg font-semibold md:text-xl">{copy.areaTitle}</h2><Link href="/listings" className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[#274d7d]">{copy.all}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>
       <div className="mt-3 flex flex-wrap gap-2 md:gap-3">
         {areas.map((ward) => <Link key={ward} href={`/listings?${new URLSearchParams({ ward })}`} prefetch={false} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#dbe2e9] bg-white px-4 text-sm transition-colors hover:border-[#274d7d] hover:bg-[#f1f6fb]"><MapPin aria-hidden="true" className="h-4 w-4 text-[#57769b]" />{translateCityName(ward, locale) || ward}</Link>)}

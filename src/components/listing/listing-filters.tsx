@@ -26,7 +26,7 @@ import { useListingSearch } from './use-listing-search'
 interface ListingFiltersProps {
   locationIndex: PublicSearchLocationIndex
   total: number
-  distribution: PriceDistribution | null
+  distribution: { price: PriceDistribution | null; area: PriceDistribution | null }
 }
 
 function FilterSelect({
@@ -151,7 +151,7 @@ export function ListingFilters({
             kind="price"
             min={searchParams.get('priceMin')}
             max={searchParams.get('priceMax')}
-            distribution={distribution}
+            distribution={distribution.price}
             onApply={(min, max) => update({ priceMin: min, priceMax: max })}
           />
         </div>
@@ -162,6 +162,7 @@ export function ListingFilters({
             kind="area"
             min={searchParams.get('areaMin')}
             max={searchParams.get('areaMax')}
+            distribution={distribution.area}
             onApply={(min, max) => update({ areaMin: min, areaMax: max })}
           />
         </div>

@@ -3,7 +3,7 @@
 import { useId, useRef, useState } from 'react'
 import type { PriceDistribution } from '@/lib/listing-search'
 import {
-  formatSearchPrice,
+  formatCompactPrice,
   getSearchExperienceCopy,
 } from '@/lib/search-experience-copy'
 
@@ -96,6 +96,10 @@ export function SearchRange({
     1,
     ...(distribution?.bins.map((bin) => bin.count) || [])
   )
+  function formatBound(value: number) {
+    if (value === 0) return '0'
+    return kind === 'price' ? formatCompactPrice(value, locale) : `${value}m²`
+  }
   function apply(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (lower && upper && Number(lower) > Number(upper)) {
@@ -116,24 +120,42 @@ export function SearchRange({
         <h3 className="text-sm font-semibold text-[#243b45]">{title}</h3>
         <span className="text-xs text-[#73848a]">{unit}</span>
       </div>
-      {distribution && kind === 'price' && (
-        <div className="space-y-2">
+      {distribution && (
+        <div className="space-y-1.5">
           <div
-            className="flex h-14 items-end gap-1"
-            role="img"
-            aria-label={`${copy.distribution}: ${distribution.count} ${copy.results}`}
+            className="flex h-24 items-end gap-[3px] border-b border-[#cfdcd8]"
+            role="group"
+            aria-label={`${kind === 'price' ? copy.distribution : copy.areaDistribution}: ${distribution.count} ${copy.results}`}
           >
-            {distribution.bins.map((bin, index) => (
-              <div
-                key={index}
-                className="flex-1 rounded-t-sm bg-[#8cbcb2]"
-                style={{ height: `${(bin.count / maxBin) * 100}%` }}
-                title={`${formatSearchPrice(bin.from, locale)} – ${formatSearchPrice(bin.to, locale)}: ${bin.count}`}
-              />
-            ))}
+            {distribution.bins.map((bin) => {
+              const selected = bin.to > lowerValue * scale && bin.from < upperValue * scale
+              const label = `${formatBound(bin.from)} – ${bin.to >= Number.MAX_SAFE_INTEGER ? '' : formatBound(bin.to)}: ${bin.count} ${copy.results}`
+              return (
+                <button
+                  key={bin.from}
+                  type="button"
+                  disabled={bin.count === 0}
+                  onClick={() => onApply(bin.from > 0 ? String(bin.from) : '', bin.to < Number.MAX_SAFE_INTEGER ? String(bin.to) : '')}
+                  className="group relative flex h-full flex-1 flex-col justify-end disabled:cursor-default"
+                  aria-label={label}
+                  title={label}
+                >
+                  {bin.count > 0 && <span className="mb-0.5 text-center text-[9px] font-semibold tabular-nums text-[#4b6a62]">{bin.count}</span>}
+                  <span
+                    className={`block w-full rounded-t-[3px] transition-colors ${selected ? 'bg-[#39786e] group-hover:bg-[#2b655b]' : 'bg-[#cddbd7] group-hover:bg-[#9fbdb5]'}`}
+                    style={{ height: `${bin.count ? Math.max(6, (bin.count / maxBin) * 72) : 2}%` }}
+                  />
+                </button>
+              )
+            })}
+          </div>
+          <div className="flex justify-between text-[10px] tabular-nums text-[#73848a]">
+            <span>{formatBound(distribution.bins[0].from)}</span>
+            <span>{formatBound(distribution.bins[Math.floor(distribution.bins.length / 2)].from)}</span>
+            <span>{distribution.bins.at(-1)!.to >= Number.MAX_SAFE_INTEGER ? `${formatBound(distribution.bins.at(-1)!.from)}+` : formatBound(distribution.bins.at(-1)!.to)}</span>
           </div>
           <p className="text-[11px] leading-4 text-[#73848a]">
-            {copy.distribution}
+            {kind === 'price' ? copy.distribution : copy.areaDistribution}・{copy.pickRange}
           </p>
         </div>
       )}

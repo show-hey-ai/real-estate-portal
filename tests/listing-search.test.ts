@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  AREA_BUCKET_EDGES,
+  PRICE_BUCKET_EDGES,
+  bucketDistribution,
   canonicalSearchQuery,
   matchesListingDetails,
   priceDistribution,
   readSavedSearches,
 } from '../src/lib/listing-search'
+import { formatCompactPrice } from '../src/lib/search-experience-copy'
 
 const listing = {
   propertyType: '区分マンション',
@@ -96,4 +100,31 @@ test('price distribution is based on measured asking prices, omits sparse data a
   )
   assert.equal(distribution.bins.at(-1)?.count, 1)
   assert.equal(priceDistribution([100, 100, 100, 100, 100])?.bins[0].count, 5)
+})
+
+test('bucketed distributions use readable fixed ranges and stop after the highest occupied range', () => {
+  const distribution = bucketDistribution([15_000_000, 18_000_000, 59_800_000, 61_800_000, 385_000_000, null], PRICE_BUCKET_EDGES)!
+  assert.equal(distribution.count, 5)
+  assert.deepEqual(distribution.bins.map((bin) => bin.count), [0, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1])
+  assert.equal(distribution.bins[1].from, 10_000_000)
+  assert.equal(distribution.bins[1].to, 20_000_000)
+  assert.equal(distribution.bins.at(-1)?.to, 500_000_000)
+})
+
+test('values above the last edge fall into an open-ended range', () => {
+  const distribution = bucketDistribution([25, 35, 45, 400], AREA_BUCKET_EDGES)!
+  assert.equal(distribution.bins.at(-1)?.count, 1)
+  assert.equal(distribution.bins.at(-1)?.to, Number.MAX_SAFE_INTEGER)
+})
+
+test('too few values produce no bucketed distribution', () => {
+  assert.equal(bucketDistribution([10, 20], AREA_BUCKET_EDGES), null)
+})
+
+test('compact price labels switch to 億 above one hundred million yen', () => {
+  assert.equal(formatCompactPrice(60_000_000, 'ja'), '6,000万')
+  assert.equal(formatCompactPrice(150_000_000, 'ja'), '1.5億')
+  assert.equal(formatCompactPrice(500_000_000, 'zh-CN'), '5亿')
+  assert.equal(formatCompactPrice(20_000_000, 'zh-TW'), '2,000萬')
+  assert.equal(formatCompactPrice(150_000_000, 'en'), '¥150M')
 })

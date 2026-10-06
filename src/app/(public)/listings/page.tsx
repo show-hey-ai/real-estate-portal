@@ -21,7 +21,10 @@ import {
 } from '@/lib/market-category'
 import {
   matchesListingDetails,
-  priceDistribution,
+  AREA_BUCKET_EDGES,
+  PRICE_BUCKET_EDGES,
+  bucketDistribution,
+  type PriceDistribution,
   searchNumber,
 } from '@/lib/listing-search'
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
@@ -160,17 +163,17 @@ interface ListingRow {
   media: { url: string; category: string; isAdopted: boolean }[] | null
 }
 
-async function getPriceDistribution(
+async function getInventoryDistributions(
   supabase: Awaited<ReturnType<typeof createServiceClient>>
-) {
-  const prices: (number | string | null)[] = []
+): Promise<{ price: PriceDistribution | null; area: PriceDistribution | null }> {
+  const rows: { price: number | string | null; propertyType: string | null; buildingArea: number | string | null; landArea: number | string | null }[] = []
   // Apply the public scope explicitly, including for administrator viewers.
   // Large inventories keep filters available without publishing partial distributions.
   const batchSize = 500
   for (let from = 0; from < 5000; from += batchSize) {
     const { data, count, error } = await supabase
       .from('listings')
-      .select('price', { count: 'exact' })
+      .select('price, propertyType, buildingArea, landArea', { count: 'exact' })
       .eq('status', 'PUBLISHED')
       .eq('adAllowed', true)
       .eq('adConsentRequired', false)
@@ -180,11 +183,15 @@ async function getPriceDistribution(
       .is('hospitalityCategory', null)
       .order('id')
       .range(from, from + batchSize - 1)
-    if (error || count === null || count > 5000) return null
-    prices.push(...(data || []).map((row) => row.price))
-    if (!data || data.length < batchSize) return priceDistribution(prices)
+    if (error || count === null || count > 5000) return { price: null, area: null }
+    rows.push(...(data || []))
+    if (!data || data.length < batchSize) break
   }
-  return priceDistribution(prices)
+  return {
+    price: bucketDistribution(rows.map((row) => row.price), PRICE_BUCKET_EDGES),
+    // Land is searched by land area, every other type by building area.
+    area: bucketDistribution(rows.map((row) => (row.propertyType === '土地' ? row.landArea : row.buildingArea)), AREA_BUCKET_EDGES),
+  }
 }
 
 export default async function ListingsPage({
@@ -195,7 +202,7 @@ export default async function ListingsPage({
   const supabase = createServiceClient()
   const viewerPromise = getOptionalPublicViewer()
   const locationIndexPromise = getPublicSearchLocationIndex()
-  const distributionPromise = getPriceDistribution(supabase)
+  const distributionPromise = getInventoryDistributions(supabase)
 
   const page = Math.max(1, Number.parseInt(params.page || '1', 10) || 1)
   const perPage = 12
