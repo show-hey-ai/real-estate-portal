@@ -6,16 +6,13 @@ import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { getPublicArticles } from '@/lib/portal-articles'
 import { guideArticles } from '@/content/guides'
 import { locales } from '@/i18n/config'
+import { parseDbTimestamp } from '@/lib/db-timestamp'
 
 export const dynamic = 'force-dynamic'
 
 function getLatestDate(values: Array<string | Date | null | undefined>) {
   const timestamps = values
-    .map((value) => {
-      if (!value) return null
-      const date = value instanceof Date ? value : new Date(value)
-      return Number.isNaN(date.getTime()) ? null : date.getTime()
-    })
+    .map((value) => parseDbTimestamp(value)?.getTime() ?? null)
     .filter((value): value is number => value != null)
 
   return timestamps.length > 0 ? new Date(Math.max(...timestamps)) : new Date('2026-04-09T00:00:00.000Z')
@@ -85,7 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const listingEntries: MetadataRoute.Sitemap = (data || []).map((listing) => ({
     url: absoluteUrl(`/listings/${listing.id}`),
-    lastModified: listing.updatedAt || listing.publishedAt || new Date(),
+    lastModified: parseDbTimestamp(listing.updatedAt) || parseDbTimestamp(listing.publishedAt) || new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
   }))
