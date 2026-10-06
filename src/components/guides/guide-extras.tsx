@@ -94,7 +94,7 @@ export function GuideDiagramView({ diagram }: { diagram: GuideDiagram }) {
       {diagram.steps.map((step, index) => <li key={step.label} className="relative rounded-xl bg-[#f4f7fb] p-4">
         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#274d7d] text-xs font-bold text-white">{index + 1}</span>
         <p className="mt-2 text-sm font-semibold leading-5">{step.label}</p>
-        {step.detail && <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.detail}</p>}
+        {step.detail && <p className="mt-1 text-xs leading-5 text-[#4a5a6c]">{step.detail}</p>}
       </li>)}
     </ol>
   </figure>
