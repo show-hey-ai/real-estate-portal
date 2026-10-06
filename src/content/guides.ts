@@ -5,11 +5,31 @@ import { extraGuideArticles3 } from './guides-extra-3'
 import { extraGuideArticles4 } from './guides-extra-4'
 import { extraGuideArticles5 } from './guides-extra-5'
 
+export interface GuideTable {
+  caption?: string
+  headers: string[]
+  rows: string[][]
+}
+
+/** A worked example with concrete numbers, shown as a highlighted box. */
+export interface GuideExample {
+  title: string
+  lines: string[]
+  note?: string
+}
+
+export interface GuideSource {
+  label: string
+  url: string
+}
+
 export interface GuideSection {
   id: string
   heading: string
   paragraphs: string[]
   bullets?: string[]
+  table?: GuideTable
+  example?: GuideExample
 }
 
 export interface GuideFaqItem {
@@ -28,6 +48,8 @@ export interface GuideLocaleContent {
   faq: GuideFaqItem[]
   ctaTitle: string
   ctaDescription: string
+  /** Primary sources (ministries, tax agency, laws) the article relies on. */
+  sources?: GuideSource[]
 }
 
 export interface GuideArticle {

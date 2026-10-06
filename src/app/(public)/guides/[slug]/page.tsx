@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { GuideCard } from '@/components/guides/guide-card'
+import { GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -220,6 +221,8 @@ export default async function GuideDetailPage({
             </div>
           </header>
 
+          <GuideReviewer locale={locale} />
+
           <Card className="mt-8 border-primary/15 bg-primary/5">
             <CardContent className="p-6">
               <h2 className="text-lg font-semibold">{guideCopy.keyTakeaways}</h2>
@@ -243,6 +246,8 @@ export default async function GuideDetailPage({
                     <p key={`${section.id}-paragraph-${index}`}>{paragraph}</p>
                   ))}
                 </div>
+                {section.table && <GuideTableView table={section.table} />}
+                {section.example && <GuideExampleView example={section.example} locale={locale} />}
                 {section.bullets && section.bullets.length > 0 && (
                   <ul className="space-y-3 rounded-2xl border bg-muted/20 p-5 text-sm leading-7 text-muted-foreground">
                     {section.bullets.map((bullet) => (
@@ -256,6 +261,8 @@ export default async function GuideDetailPage({
               </section>
             ))}
           </div>
+
+          {article.sources && <GuideSources sources={article.sources} locale={locale} />}
 
           <section id="faq" className="mt-12 scroll-mt-4 md:scroll-mt-44">
             <h2 className="text-2xl font-semibold tracking-tight">{guideCopy.faq}</h2>
