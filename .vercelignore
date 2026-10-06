@@ -11,4 +11,9 @@ tmp-split
 TP-*.png
 *.log
 *.tsbuildinfo
-.eslintcache
+.eslintcache*
+docx_work
+japanpost_tracking_result.html
+運用
+.autonomy-sources/
+output/
