@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { ANALYTICS_VISITOR_COOKIE } from '@/lib/site-analytics'
+import { skipInternalAnalytics } from '@/lib/site-analytics-server'
 
 const eventSchema = z.object({ locale: z.string().max(16).optional(), search: z.string().max(500).optional() }).strict()
 
@@ -15,6 +16,8 @@ export async function POST(request: NextRequest) {
 
   const search = new URLSearchParams(parsed.data.search?.replace(/^\?/, '') || '')
   try {
+    const excluded = await skipInternalAnalytics(request)
+    if (excluded) return excluded
     await prisma.siteVisitEvent.create({ data: {
       visitorId: request.cookies.get(ANALYTICS_VISITOR_COOKIE)?.value?.slice(0, 128) || crypto.randomUUID(),
       pathname: '/match',

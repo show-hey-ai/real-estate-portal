@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/db'
+import { getPublicListingScope } from '@/lib/public-listing-scope'
 
 const favoriteRequestSchema = z.object({
   listingId: z.string().trim().min(1),
@@ -34,8 +35,7 @@ export async function POST(request: NextRequest) {
     const listing = await prisma.listing.findFirst({
       where: {
         id: parsed.data.listingId,
-        status: 'PUBLISHED',
-        adAllowed: true,
+        ...getPublicListingScope(),
       },
       select: { id: true },
     })

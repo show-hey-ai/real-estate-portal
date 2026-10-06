@@ -1,8 +1,10 @@
+import { confirmedFunnelEvent } from '@/lib/buyer-funnel-server'
 import { NextRequest, NextResponse } from 'next/server'
 import { ContactMethod } from '@prisma/client'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/db'
+import { getPublicListingScope } from '@/lib/public-listing-scope'
 
 const leadRequestSchema = z.object({
   listingId: z.string().trim().min(1),
@@ -38,8 +40,7 @@ export async function POST(request: NextRequest) {
     const listing = await prisma.listing.findFirst({
       where: {
         id: parsed.data.listingId,
-        status: 'PUBLISHED',
-        adAllowed: true,
+        ...getPublicListingScope(),
       },
       select: { id: true },
     })
@@ -58,6 +59,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    if (dbUser.role === 'USER') await confirmedFunnelEvent(authUser, 'consultation', lead.createdAt, request.headers)
     return NextResponse.json(lead)
   } catch (error) {
     console.error('Lead creation error:', error)

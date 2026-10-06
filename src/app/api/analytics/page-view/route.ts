@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import {
@@ -8,6 +8,7 @@ import {
   isBotReferrer,
   normalizeAnalyticsPathname,
 } from '@/lib/site-analytics'
+import { skipInternalAnalytics } from '@/lib/site-analytics-server'
 
 const pageViewSchema = z.object({
   visitorId: z.string().min(8).max(128),
@@ -17,13 +18,16 @@ const pageViewSchema = z.object({
   referrer: z.string().max(2000).optional().nullable(),
 })
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    if (request.headers.get('origin') !== request.nextUrl.origin) return new NextResponse(null, { status: 403 })
     const body = await request.json()
     const parsed = pageViewSchema.safeParse(body)
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
+    const excluded = await skipInternalAnalytics(request, parsed.data.referrer)
+    if (excluded) return excluded
 
     const pathname = normalizeAnalyticsPathname(parsed.data.pathname)
     if (!pathname || pathname.startsWith('/admin') || pathname.startsWith('/api')) {

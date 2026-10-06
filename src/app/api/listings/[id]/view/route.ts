@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { skipInternalAnalytics } from '@/lib/site-analytics-server'
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (request.headers.get('origin') !== request.nextUrl.origin) return new NextResponse(null, { status: 403 })
+  const excluded = await skipInternalAnalytics(request)
+  if (excluded) return excluded
   const { id } = await params
   const supabase = await createClient()
 

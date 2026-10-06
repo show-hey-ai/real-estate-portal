@@ -4,11 +4,16 @@ import { getTranslations } from 'next-intl/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { prisma } from '@/lib/db'
+import { cookies } from 'next/headers'
+import { getAdminUserFromSession } from '@/lib/admin-auth'
+import { ANALYTICS_VISITOR_COOKIE } from '@/lib/site-analytics'
+import { excludeAdministratorVisitor } from '@/lib/site-analytics-server'
 
 type SummaryRow = {
   pageviews7d: number
   uniqueVisitors7d: number
   listingViews7d: number
+  contactClicks7d: number
   totalTrackedPageviews: number
 }
 
@@ -65,6 +70,9 @@ function getMaxValue(values: number[]) {
 }
 
 export default async function AdminAnalyticsPage() {
+  if (await getAdminUserFromSession()) {
+    await excludeAdministratorVisitor((await cookies()).get(ANALYTICS_VISITOR_COOKIE)?.value)
+  }
   const t = await getTranslations('admin.analytics')
   const now = new Date()
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
@@ -83,26 +91,27 @@ export default async function AdminAnalyticsPage() {
   ] = await Promise.all([
     prisma.$queryRaw<SummaryRow[]>(Prisma.sql`
       SELECT
-        COUNT(*) FILTER (WHERE "occurredAt" >= ${sevenDaysAgo})::int AS "pageviews7d",
-        COUNT(DISTINCT CASE WHEN "occurredAt" >= ${sevenDaysAgo} THEN "visitorId" END)::int AS "uniqueVisitors7d",
+        COUNT(*) FILTER (WHERE "occurredAt" >= ${sevenDaysAgo} AND "pageType" <> 'contact_click')::int AS "pageviews7d",
+        COUNT(DISTINCT CASE WHEN "occurredAt" >= ${sevenDaysAgo} AND "pageType" <> 'contact_click' THEN "visitorId" END)::int AS "uniqueVisitors7d",
         COUNT(*) FILTER (
           WHERE "occurredAt" >= ${sevenDaysAgo}
             AND "pageType" = 'listing_detail'
         )::int AS "listingViews7d",
-        COUNT(*)::int AS "totalTrackedPageviews"
-      FROM "site_visit_events"
+        COUNT(*) FILTER (WHERE "occurredAt" >= ${sevenDaysAgo} AND "pageType" = 'contact_click')::int AS "contactClicks7d",
+        COUNT(*) FILTER (WHERE "pageType" <> 'contact_click')::int AS "totalTrackedPageviews"
+      FROM "external_site_visit_events"
     `),
     prisma.$queryRaw<TrackedSinceRow[]>(Prisma.sql`
       SELECT MIN("occurredAt") AS "trackedSince"
-      FROM "site_visit_events"
+      FROM "external_site_visit_events"
     `),
     prisma.$queryRaw<TrendRow[]>(Prisma.sql`
       SELECT
         date_trunc('day', timezone('Asia/Tokyo', "occurredAt"))::date AS "day",
         COUNT(*)::int AS "pageviews",
         COUNT(DISTINCT "visitorId")::int AS "uniqueVisitors"
-      FROM "site_visit_events"
-      WHERE "occurredAt" >= ${fourteenDaysAgo}
+      FROM "external_site_visit_events"
+      WHERE "occurredAt" >= ${fourteenDaysAgo} AND "pageType" <> 'contact_click'
       GROUP BY 1
       ORDER BY 1 ASC
     `),
@@ -112,8 +121,8 @@ export default async function AdminAnalyticsPage() {
         "pageType",
         COUNT(*)::int AS "pageviews",
         COUNT(DISTINCT "visitorId")::int AS "uniqueVisitors"
-      FROM "site_visit_events"
-      WHERE "occurredAt" >= ${thirtyDaysAgo}
+      FROM "external_site_visit_events"
+      WHERE "occurredAt" >= ${thirtyDaysAgo} AND "pageType" <> 'contact_click'
       GROUP BY 1, 2
       ORDER BY "pageviews" DESC, "pathname" ASC
       LIMIT 10
@@ -122,8 +131,8 @@ export default async function AdminAnalyticsPage() {
       SELECT
         COALESCE(NULLIF("referrerHost", ''), 'direct') AS "referrerHost",
         COUNT(*)::int AS "pageviews"
-      FROM "site_visit_events"
-      WHERE "occurredAt" >= ${thirtyDaysAgo}
+      FROM "external_site_visit_events"
+      WHERE "occurredAt" >= ${thirtyDaysAgo} AND "pageType" <> 'contact_click'
       GROUP BY 1
       ORDER BY "pageviews" DESC, "referrerHost" ASC
       LIMIT 10
@@ -134,7 +143,7 @@ export default async function AdminAnalyticsPage() {
         l."managementId",
         l."addressPublic",
         COUNT(*)::int AS "pageviews"
-      FROM "site_visit_events" s
+      FROM "external_site_visit_events" s
       LEFT JOIN "listings" l
         ON l."id" = s."listingId"
       WHERE s."occurredAt" >= ${thirtyDaysAgo}
@@ -149,13 +158,14 @@ export default async function AdminAnalyticsPage() {
         "utmMedium",
         "utmCampaign",
         COUNT(*)::int AS "pageviews"
-      FROM "site_visit_events"
+      FROM "external_site_visit_events"
       WHERE "occurredAt" >= ${thirtyDaysAgo}
         AND (
           "utmSource" IS NOT NULL
           OR "utmMedium" IS NOT NULL
           OR "utmCampaign" IS NOT NULL
         )
+        AND "pageType" <> 'contact_click'
       GROUP BY 1, 2, 3
       ORDER BY "pageviews" DESC
       LIMIT 10
@@ -173,6 +183,7 @@ export default async function AdminAnalyticsPage() {
     pageviews7d: 0,
     uniqueVisitors7d: 0,
     listingViews7d: 0,
+    contactClicks7d: 0,
     totalTrackedPageviews: 0,
   }
   const trackedSince = trackedSinceRows[0]?.trackedSince ?? null
@@ -188,6 +199,7 @@ export default async function AdminAnalyticsPage() {
     { title: t('cards.pageviews7d'), value: summary.pageviews7d.toLocaleString() },
     { title: t('cards.uniqueVisitors7d'), value: summary.uniqueVisitors7d.toLocaleString() },
     { title: t('cards.listingViews7d'), value: summary.listingViews7d.toLocaleString() },
+    { title: t('cards.contactClicks7d'), value: summary.contactClicks7d.toLocaleString() },
     { title: t('cards.leads7d'), value: leads7d.toLocaleString() },
   ]
 
@@ -195,6 +207,8 @@ export default async function AdminAnalyticsPage() {
     switch (pageType) {
       case 'home':
         return t('pageTypes.home')
+      case 'youtube_landing':
+        return t('pageTypes.youtubeLanding')
       case 'listing_index':
         return t('pageTypes.listingIndex')
       case 'listing_detail':
@@ -224,7 +238,9 @@ export default async function AdminAnalyticsPage() {
         </Badge>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <p className="text-sm text-muted-foreground">{t('internalExcluded')}</p>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {metricCards.map((card) => (
           <Card key={card.title}>
             <CardHeader className="pb-2">
