@@ -13,6 +13,7 @@ import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, translateCurrentStatus, translatePropertyType } from '@/lib/translate-fields'
 import { formatUnitPrice, unitPriceOf } from '@/lib/unit-price'
 import { wardLabel } from '@/lib/ward-tile-map'
+import { absoluteUrl } from '@/lib/site-config'
 import { formatYenWords } from '@/lib/yen-words'
 
 export const dynamic = 'force-dynamic'
@@ -27,7 +28,7 @@ const copy = {
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
-  return { title: text.title, robots: { index: false, follow: true } }
+  return { title: text.title, robots: { index: false, follow: true }, alternates: { canonical: absoluteUrl('/compare') } }
 }
 
 const ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/
@@ -97,7 +98,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
         <thead><tr>
           <th scope="col" className="w-28 md:w-36" />
           {facts.map((item) => <th key={item.row.id} scope="col" className="px-3 pb-4 text-left align-top font-normal">
-            <Link href={`/listings/${item.row.id}`} className="block overflow-hidden rounded-lg border border-[#dbe2e9]"><div className="relative aspect-[4/3] bg-[#eef2f6]">{item.cover && <Image src={item.cover.url} alt="" fill sizes="(max-width: 768px) 50vw, 30vw" className={item.cover.category === 'FLOORPLAN' ? 'bg-white object-contain p-2' : 'object-cover'} />}</div></Link>
+            <Link href={`/listings/${item.row.id}`} aria-label={`${translatePropertyType(item.row.propertyType, locale) ?? ""} ${item.price ? formatYenWords(item.price, locale) : ""}`.trim()} className="block overflow-hidden rounded-lg border border-[#dbe2e9]"><div className="relative aspect-[4/3] bg-[#eef2f6]">{item.cover && <Image src={item.cover.url} alt="" fill sizes="(max-width: 768px) 50vw, 30vw" className={item.cover.category === 'FLOORPLAN' ? 'bg-white object-contain p-2' : 'object-cover'} />}</div></Link>
             <div className="mt-2 flex items-center justify-between gap-2"><Link href={`/listings/${item.row.id}`} className="inline-flex items-center gap-1 font-semibold text-[#274d7d] hover:underline">{text.detail}<ArrowRight aria-hidden="true" className="h-3.5 w-3.5" /></Link><CompareToggle listingId={item.row.id} compact /></div>
           </th>)}
         </tr></thead>
