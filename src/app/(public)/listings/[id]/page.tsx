@@ -1,4 +1,5 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { LoanSimulator } from '@/components/listing/loan-simulator'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -342,8 +343,10 @@ export default async function ListingPage({ params }: ListingPageProps) {
             </a>
 
             <div id="property-facts" className="scroll-mt-44">
-              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} />
+              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} />
             </div>
+
+            {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} />}
 
             {publicAddress && <ListingMap locale={locale} publicAddress={publicAddress} />}
 

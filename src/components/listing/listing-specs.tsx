@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations, useLocale } from 'next-intl'
+import { formatUnitPrice } from '@/lib/unit-price'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatArea } from '@/lib/format'
 import { translatePropertyType, translateStructure, translateZoning, translateCurrentStatus } from '@/lib/translate-fields'
@@ -9,6 +10,7 @@ import { getMarketCategory } from '@/lib/market-category'
 interface ListingSpecsProps {
   listing: {
     propertyType: string | null
+    price?: bigint | number | string | null
     builtYear: number | null
     builtMonth: number | null
     structure: string | null
@@ -56,6 +58,7 @@ export function ListingSpecs({ listing }: ListingSpecsProps) {
     { label: t('buildingArea'), value: listing.buildingArea ? formatArea(Number(listing.buildingArea)) : null },
     { label: t('zoning'), value: translateZoning(listing.zoning, locale) },
     { label: t('currentStatus'), value: translateCurrentStatus(listing.currentStatus, locale) },
+    { label: locale === 'ja' ? '㎡単価' : locale === 'en' ? 'Price per m²' : locale === 'zh-TW' ? '每平方公尺單價' : '每平方米单价', value: formatUnitPrice(Number(listing.price) || null, Number(listing.propertyType === '土地' ? listing.landArea : listing.buildingArea) || null, locale) },
     ...(getMarketCategory(listing) === 'investment' && listing.yieldGross && Number(listing.yieldGross) > 0
       ? [{ label: locale === 'ja' ? '表面利回り' : locale === 'en' ? 'Gross yield' : locale === 'zh-TW' ? '表面投報率' : '表面收益率', value: `${Number(listing.yieldGross)}%` }]
       : []),
