@@ -409,7 +409,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
           </div>
         </div>
       </div>
-      <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingTitle(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing) }} />
+      <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingHeading(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing) }} />
       {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withBuildingName(item)} userId={userId} />)}</div>

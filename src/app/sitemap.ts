@@ -8,6 +8,7 @@ import { guideArticles } from '@/content/guides'
 import { locales } from '@/i18n/config'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { localizedSitemapUrls } from '@/lib/locale-url'
+import { pickCoverImage } from '@/lib/cover-image'
 import { WARD_SLUGS } from '@/lib/ward-tile-map'
 import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, inBudget, typeSlugFor, type TypeSlug } from '@/lib/collections'
 
@@ -23,14 +24,28 @@ function getLatestDate(values: Array<string | Date | null | undefined>) {
 
 type ChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>
 
-function localized(path: string, lastModified: Date | string, changeFrequency: ChangeFrequency, priority: number): MetadataRoute.Sitemap {
-  return localizedSitemapUrls(path).map(({ url, languages }) => ({ url, lastModified, changeFrequency, priority, alternates: { languages } }))
+const MAX_SITEMAP_IMAGES = 10
+
+const toAbsolute = (url: string) => (/^https?:\/\//.test(url) ? url : absoluteUrl(url))
+
+function localized(path: string, lastModified: Date | string, changeFrequency: ChangeFrequency, priority: number, images?: string[]): MetadataRoute.Sitemap {
+  return localizedSitemapUrls(path).map(({ url, languages }) => ({ url, lastModified, changeFrequency, priority, alternates: { languages }, ...(images?.length ? { images } : {}) }))
+}
+
+interface SitemapMedia { url: string; category: string; isAdopted: boolean; sortOrder: number | null }
+
+/** Adopted listing photos for the image sitemap, cover first, documents and maps left out. */
+function listingImages(media: SitemapMedia[] | null): string[] {
+  const usable = (media || []).filter((item) => item.isAdopted && !['DOCUMENT', 'TABLE', 'MAP'].includes(item.category))
+  const cover = pickCoverImage(usable)
+  const ordered = [...usable].sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
+  return [...new Set([cover?.url, ...ordered.map((item) => item.url)].filter((url): url is string => !!url))].slice(0, MAX_SITEMAP_IMAGES)
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const portalLaunchAt = new Date('2026-09-29T00:00:00+09:00')
   const articles = await getPublicArticles()
-  const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: Object.fromEntries(locales.map((language) => [getSchemaLanguage(language), absoluteUrl(`/articles/${article.slug}/${language}`)])) } })))
+  const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: Object.fromEntries(locales.map((language) => [getSchemaLanguage(language), absoluteUrl(`/articles/${article.slug}/${language}`)])) }, ...(article.locales[locale]?.hero ? { images: [toAbsolute(article.locales[locale].hero!.url)] } : {}) })))
   const guideEntries: MetadataRoute.Sitemap = [
     ...localized('/guides', getLatestDate(guideArticles.map((guide) => guide.updatedAt)), 'monthly', 0.6),
     ...guideArticles.flatMap((guide) => localized(`/guides/${guide.slug}`, new Date(guide.updatedAt), 'monthly', 0.6)),
@@ -59,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(supabaseUrl, serviceRoleKey)
   const { data, error } = await supabase
     .from('listings')
-    .select('id, city, propertyType, price, updatedAt, publishedAt')
+    .select('id, city, propertyType, price, updatedAt, publishedAt, media (url, category, isAdopted, sortOrder)')
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
     .eq('adConsentRequired', false)
@@ -81,7 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const adjustedStaticEntries = staticPages(staticLastModified)
 
   const listingEntries: MetadataRoute.Sitemap = (data || []).flatMap((listing) =>
-    localized(`/listings/${listing.id}`, parseDbTimestamp(listing.updatedAt) || parseDbTimestamp(listing.publishedAt) || new Date(), 'weekly', 0.8))
+    localized(`/listings/${listing.id}`, parseDbTimestamp(listing.updatedAt) || parseDbTimestamp(listing.publishedAt) || new Date(), 'weekly', 0.8, listingImages(listing.media)))
 
   // Ward pages with at least one published listing; empty wards are noindex.
   const wardEntries: MetadataRoute.Sitemap = [...new Set((data || []).map((listing) => listing.city).filter((city): city is string => !!city && !!WARD_SLUGS[city]))]

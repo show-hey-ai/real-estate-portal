@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useSyncExternalStore } from 'react'
 import { useLocale } from 'next-intl'
-import { ArrowRight, Columns3, History, X } from 'lucide-react'
+import { ArrowRight, Building2, Columns3, History, X } from 'lucide-react'
 import { COMPARE_LIMIT, LISTS_CHANGED_EVENT, readCompare, readRecent, recordRecent, toggleCompare, type RecentListing } from '@/lib/browser-lists'
 
 const copy = {
@@ -86,7 +86,7 @@ export function RecentlyViewed({ excludeId }: { excludeId?: string }) {
     <ul className="mt-4 flex gap-3 overflow-x-auto pb-2">
       {recent.map((item) => <li key={item.id} className="w-44 shrink-0">
         <Link href={`/listings/${item.id}`} className="block overflow-hidden rounded-lg border border-[#dbe2e9] bg-white hover:shadow-md">
-          <div className="relative aspect-[4/3] bg-[#eef2f6]">{item.image && <Image src={item.image} alt="" fill sizes="176px" className="object-cover" />}</div>
+          <div className="relative aspect-[4/3] bg-[#eef2f6]">{item.image ? <Image src={item.image} alt="" fill sizes="176px" className="object-cover" /> : <Building2 aria-hidden="true" className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 text-[#9fb2c6]" />}</div>
           <div className="p-2"><p className="text-sm font-bold text-[#1b293a]">{item.price}</p><p className="mt-0.5 line-clamp-2 text-xs text-[#536274]">{item.title}</p></div>
         </Link>
       </li>)}

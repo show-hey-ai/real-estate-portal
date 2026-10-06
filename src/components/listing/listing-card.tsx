@@ -117,7 +117,8 @@ export function ListingCard({
               priority={imagePriority}
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-[#657487]">
+            <div className="flex h-full flex-col items-center justify-center gap-2 bg-[linear-gradient(135deg,#eef3f8_0%,#dde7f1_100%)] text-sm text-[#536274]">
+              <Building2 aria-hidden="true" className="h-10 w-10 text-[#9fb2c6]" />
               {t('noImage')}
             </div>
           )}
