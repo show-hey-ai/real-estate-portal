@@ -1,4 +1,6 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { ListingCard } from '@/components/listing/listing-card'
+import { rankRelatedListings, type RelatedCandidate } from '@/lib/related-listings'
 import { QuickContact } from '@/components/listing/quick-contact'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { ListingMap } from '@/components/listing/listing-map'
@@ -128,6 +130,27 @@ function schemaPropertyType(propertyType: string | null | undefined): string {
   return 'Place'
 }
 
+async function getRelatedListings(current: RelatedCandidate) {
+  const { data, error } = await createServiceClient()
+    .from('listings')
+    .select('id, city, propertyType, price, addressPublic, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted)')
+    .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
+    .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
+    .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])
+    .limit(200)
+  if (error || !data) return []
+  return rankRelatedListings(current, data).map((home) => ({
+    ...home,
+    price: home.price ? BigInt(home.price) : null,
+    buildingArea: home.buildingArea ? Number(home.buildingArea) : null,
+    landArea: home.landArea ? Number(home.landArea) : null,
+    yieldGross: home.yieldGross ? Number(home.yieldGross) : null,
+    media: (home.media || []).filter((item) => item.isAdopted),
+  }))
+}
+
+const relatedTitle: Record<string, string> = { ja: '似ている物件', en: 'Similar properties', 'zh-TW': '類似物件', 'zh-CN': '类似房源' }
+
 export default async function ListingPage({ params }: ListingPageProps) {
   const { id } = await params
   const [t, locale] = await Promise.all([getTranslations('listing'), getLocale()])
@@ -147,6 +170,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
   const viewer = await viewerPromise
   const userId = viewer?.id ?? null
+  const related = await getRelatedListings({ id: listing.id, city: listing.city, propertyType: listing.propertyType, price: listing.price })
   const isFavorite = viewer ? await getIsFavoriteForViewer(viewer.id, id) : false
 
   const publicAddress = formatApprovedPublicAddress(listing.addressPublic)
@@ -375,6 +399,10 @@ export default async function ListingPage({ params }: ListingPageProps) {
           </div>
         </div>
       </div>
+      {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
+        <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={item} userId={userId} />)}</div>
+      </section>}
     </div>
   )
 }
