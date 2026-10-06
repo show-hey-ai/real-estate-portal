@@ -4,7 +4,7 @@ import { StationAccess } from '@/components/listing/station-access'
 import { UnitPriceChart } from '@/components/listing/unit-price-chart'
 import { compareUnitPrice, type UnitPriceSource } from '@/lib/unit-price'
 import { LoanSimulator } from '@/components/listing/loan-simulator'
-import { PurchaseCosts } from '@/components/listing/purchase-costs'
+import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -348,7 +348,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
             ]} />}
 
             {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} />}
-            {formattedListing.price && Number(formattedListing.price) > 0 && <PurchaseCosts price={Number(formattedListing.price)} locale={locale} />}
+            {formattedListing.price && Number(formattedListing.price) > 0 && <InitialCostSimulator price={Number(formattedListing.price)} />}
 
             {publicAddress && <ListingMap locale={locale} publicAddress={publicAddress} />}
 

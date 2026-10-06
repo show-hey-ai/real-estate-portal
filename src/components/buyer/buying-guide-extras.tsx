@@ -2,11 +2,8 @@ import Link from 'next/link'
 import { ArrowRight, BookOpen, CalendarClock, Clock } from 'lucide-react'
 import type { Locale } from '@/i18n/config'
 import { getGuideArticles } from '@/content/guides'
-import { PurchaseCosts } from '@/components/listing/purchase-costs'
+import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
 import { BuyingCostsOverview } from '@/components/buyer/buying-costs-overview'
-
-/** Worked example for the cost breakdown on the guide page. */
-const EXAMPLE_PRICE = 50_000_000
 
 const copy = {
   ja: {
@@ -18,7 +15,6 @@ const copy = {
       { label: 'ローン本審査・決済準備', duration: '契約から約3〜6週間', detail: '金融機関の審査、残代金と諸費用の準備、登記の手配をします。' },
       { label: '決済・引渡し', duration: '1日', detail: '残代金を払い、所有権移転登記をして鍵を受け取ります。' },
     ],
-    costsTitle: '諸費用の目安（例：5,000万円の物件）',
     guidesTitle: 'くわしいガイド',
     minutes: (count: number) => `${count}分で読めます`,
   },
@@ -31,7 +27,6 @@ const copy = {
       { label: 'Loan approval and preparation', duration: 'About 3–6 weeks after', detail: 'Final loan review, funds and fees, and registration arrangements.' },
       { label: 'Settlement and handover', duration: '1 day', detail: 'You pay the balance, ownership is registered, and you receive the keys.' },
     ],
-    costsTitle: 'Purchase costs at a glance (example: ¥50 million property)',
     guidesTitle: 'In-depth guides',
     minutes: (count: number) => `${count} min read`,
   },
@@ -44,7 +39,6 @@ const copy = {
       { label: '貸款正式審查・交割準備', duration: '簽約後約3〜6週', detail: '金融機構審查、準備尾款與雜費、安排登記。' },
       { label: '交割・交屋', duration: '1天', detail: '支付尾款、辦理所有權移轉登記並領取鑰匙。' },
     ],
-    costsTitle: '購屋雜費試算（例：5,000萬日圓物件）',
     guidesTitle: '詳細指南',
     minutes: (count: number) => `約${count}分鐘閱讀`,
   },
@@ -57,7 +51,6 @@ const copy = {
       { label: '贷款正式审批・交割准备', duration: '签约后约3〜6周', detail: '金融机构审批、准备尾款与杂费、安排登记。' },
       { label: '交割・交房', duration: '1天', detail: '支付尾款、办理所有权转移登记并领取钥匙。' },
     ],
-    costsTitle: '购房杂费估算（例：5,000万日元房产）',
     guidesTitle: '详细指南',
     minutes: (count: number) => `约${count}分钟阅读`,
   },
@@ -88,7 +81,7 @@ export function BuyingGuideExtras({ locale }: BuyingGuideExtrasProps) {
     <BuyingCostsOverview locale={lang} />
 
     <div className="mt-6 max-w-3xl">
-      <PurchaseCosts price={EXAMPLE_PRICE} locale={lang} title={text.costsTitle} showGuideLink={false} />
+      <InitialCostSimulator showGuideLink={false} />
     </div>
 
     {guides.length > 0 && <section className="mt-12" aria-labelledby="guide-list-title">
