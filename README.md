@@ -1,15 +1,17 @@
-# Ziyou Hospitality Portal
+# Ziyou Real Estate Portal
 
-宿泊業物件に特化した自由不動産の物件ポータルサイト。Next.js + Supabase + Prisma。
+東京の投資用・居住用・土地の売買を扱う自由不動産の多言語ポータルサイト。Next.js + Supabase + Prisma。
 
-## 現状（2026-04-07）
+## 構成（2026-09-29）
 
 - 本番公開先: `https://portal.ziyou-fudosan.com`
+- 3分類への更新はローカルで検証。本番への反映は別途行う
 - 公開側は 4言語対応（日 / 英 / 繁中 / 簡中）
-- 検索は `都心13区` と `路線 -> 駅` の両方に対応
+- 公開検索とマイソク取込の対象は東京23区。路線・駅マスタは23区向け同期が必要
 - 路線・駅候補は `transit_line_master` / `transit_station_master` を正として参照
 - 2026-03-30 の同期時点で、交通マスタは `46路線 / 447駅`
 - 管理画面 `/admin/analytics` で PV・流入元・UTM・人気ページ / 物件を確認可能
+- 購入相談のWhatsAppボタンを開いた回数も確認可能。送信済み・相談完了件数とは区別する
 - 管理画面 `/admin/leads` でリード（問合せ）管理
 - プレビュー `/preview/listings/[id]` で非公開物件の内部確認
 
@@ -17,7 +19,7 @@
 
 - **フロントエンド:** Next.js 16 (App Router) + Tailwind CSS + shadcn/ui
 - **DB:** Supabase (PostgreSQL) + Prisma ORM 7 + `@prisma/adapter-pg`
-- **AI:** OpenAI Vision + Structured Outputs（広告判定・帯切り取り・詳細抽出・翻訳）
+- **AI:** OpenAI Vision + Structured Outputs（広告判定・帯切り取り・詳細抽出・翻訳）、Jev（社内向けマイソク予備判定）
 - **ストレージ:** Supabase Storage (PDFs: `pdfs/`, 画像: `media/`)
 - **デプロイ:** Vercel
 
@@ -32,7 +34,7 @@ portal/
 │   ├── process-openai-vision.ts ← マイソク抽出・翻訳・DB登録
 │   ├── reins-auto.ts            ← REINS取得→解析→登録の一気通し
 │   ├── reins-download.ts        ← REINS自動ダウンロード
-│   └── sync-transit-master.ts   ← 都心13区の路線・駅マスタ同期
+│   └── sync-transit-master.ts   ← 東京23区の路線・駅マスタ同期
 ├── src/
 │   ├── app/
 │   │   ├── (admin)/     ← 管理画面 (/admin/listings, /admin/leads, /admin/analytics)
@@ -73,12 +75,14 @@ Step1: OpenAI Vision — 広告文言抽出 + 掲載可否判定 + 反証チェ�
   ↓
 Step2: OpenAI Vision — 詳細抽出（25+フィールド）
   ↓
-バリデーション: 価格範囲 → 住所有無 → 都心13区フィルタ
+バリデーション: 広告可否の再確認 → 価格範囲 → 住所有無 → 売買物件種別 → 東京23区フィルタ
+  ↓
+Jev: 投資用・居住用・土地の候補分類と人による確認優先度を予備判定（APIキー設定時のみ）
   ↓
 DB保存 + Storage（PDF・画像）
   └─ ALLOWEDのみ → ステータス DRAFT
   ↓
-管理画面 /admin/listings で確認 → REVIEWED → PUBLISHED
+管理画面 /admin/listings で資料と広告許可を確認 → REVIEWED → PUBLISHED
 ```
 
 ※ denied/not_mentioned をStep1で早期スキップすることで、Step2のAPI呼び出しを約77%削減。
@@ -123,7 +127,7 @@ open http://localhost:3000/admin/listings
 
 ### AIモデル設定
 
-人間レビューなし運用のため、広告判定は保守的に判定する。`ALLOWED` と高信頼で検証された物件だけDB保存し、それ以外（広告不可、要承諾、記載なし、矛盾、読みにくい）は自動スキップ。
+広告判定は保守的に行う。`ALLOWED` と高信頼で検証され、詳細抽出でも広告可と確認できた物件だけ下書き保存する。それ以外（広告不可、要承諾、記載なし、矛盾、読みにくい）は自動スキップ。Jevは広告許可や公開を決定しない。
 
 | 処理 | 環境変数 | 既定 |
 |---|---|---|
@@ -132,6 +136,9 @@ open http://localhost:3000/admin/listings
 | OCR補助 | `MAISOKU_OCR_MODEL` | `gpt-4.1-mini` |
 | 物件詳細抽出 | `MAISOKU_EXTRACT_MODEL` | `gpt-4.1-mini` |
 | 翻訳 | `MAISOKU_TRANSLATE_MODEL` | `gpt-4.1-mini` |
+| マイソク予備判定 | `JEV_MODEL` | `jev-latest` |
+
+Jevを利用するにはサーバー側の `.env` に `JEV_API_KEY` を設定する。未設定・通信失敗時も候補は下書きとして保存され、管理メモに「未実施」と記録される。APIキーをブラウザーへ渡さない。賃貸中の区分・戸建、一棟、店舗・事務所は投資用、空室・売主居住の区分・戸建は居住用、土地は土地へ分類する。取込は常に下書きで、広告許可・資料・分類・現況を人が確認してから公開する。
 
 ### 広告掲載許可の判定パターン（帯・オビを重点確認）
 
@@ -142,18 +149,20 @@ open http://localhost:3000/admin/listings
 | 「広告掲載：可」「広告掲載全媒介可」「承諾不要」 | ✅ allowed | true |
 | 「自社HP掲載可」「御社HP掲載可」「自社媒体のみ可」 | ✅ allowed | true |
 | 「1社HPのみ掲載可能」「1社HP可」 | ✅ allowed | true |
-| 「紙媒体・自社HPは可」「広告掲載申請（自社HPのみ）」 | ✅ allowed | true |
+| 「紙媒体・自社HPは可」 | ✅ allowed | true |
 | 「SUUMO等厳禁」でも「自社HP可」→ 自社ポータル該当 | ✅ allowed | true |
-| 「楽待不可」「健美家不可」等の特定媒体のみ不可 | ✅ allowed | true |
+| 「SUUMO以外可能」等の明確な許可範囲 | 自社ポータルが許可範囲内なら allowed | true |
+| 「楽待不可」「健美家不可」だけで許可の記載なし | 未確認として保留 | false |
 | 「広告掲載不可」+「※1社HPのみ掲載可能」→ 例外優先 | ✅ allowed | true |
 | 「広告承認」（帯に記載） | ⏸ approval_needed | false |
 | 「広告掲載はこちらから」（申込窓口あり） | ⏸ approval_needed | false |
+| 「広告掲載申請（自社HPのみ）」 | ⏸ approval_needed | false |
 | 「承諾書なき広告禁止」「承諾書をいただきますよう」 | ⏸ approval_needed | false |
 | 「広告転載不可」「広告掲載厳禁」「広告掲載一切不可」 | ❌ denied | false |
 | 何も書いてない | ❌ not_mentioned | false |
 | 「広告有効期限 YYYY/MM」→ REINS登録期限で無関係 | 無視 | — |
 
-正のファイル: `src/lib/maisoku-ai.ts`（広告判定・帯切り取り） / `src/lib/openai.ts`（詳細抽出・翻訳）
+共通判定基準: `src/lib/ad-publication-policy.ts`。広告抽出・独立検証・詳細抽出・Codex処理で同じ5原則を使い、最終公開チェックでも明確な許可原文を確認する。禁止と例外は文面全体で判断し、未解消の禁止・事前承諾条件・判読不能は保留。REINS詳細の広告転載区分も原資料として確認する。
 
 ### 管理画面のステータス
 
@@ -165,12 +174,11 @@ open http://localhost:3000/admin/listings
 | PUBLISHED | 緑色 | 公開中（ポータルに表示） |
 | ARCHIVED | 赤色 | アーカイブ済 |
 
-### 都心13区フィルタ
+### 対象エリア
 
-対象: 千代田・中央・港・新宿・渋谷・文京・目黒・品川・豊島・台東・墨田・江東・大田
-除外: 上記以外の東京23区・都下・他県
+マイソク取込・公開検索の区候補: 東京23区。既存の路線・駅マスタが旧対象エリアの場合は `npm run transit:sync` で更新する。REINS取得の既定は `売マンション`（種目は未指定）で、売一戸建は `REINS_PROPERTY_TYPE=売一戸建` を指定して別途取得する。現在の `reins-auto.ts` は `reins-config.json` の複数検索パターンを読み込まず、1回の実行で1つの物件種別だけを検索する。定期実行設定はなく、取得は手動開始。Finderの `運用/reins-fetch.command` は売マンションを最大2ページ取得して下書きまで進める。旧・宿泊向け一括公開は停止中。
 
-## 公開検索（都心13区 / 路線 / 駅）
+## 公開検索（東京23区 / 路線 / 駅）
 
 - ホーム `/` と一覧 `/listings` は `src/lib/public-search-server.ts` から検索候補を取得
 - 正のデータは DB の `transit_line_master` / `transit_station_master`
@@ -200,7 +208,7 @@ npm run build
 | スクリプト | 用途 |
 |---|---|
 | `process-openai-vision.ts` | マイソク抽出・翻訳・DB登録 |
-| `sync-transit-master.ts` | 都心13区の路線・駅マスタ同期 |
+| `sync-transit-master.ts` | 東京23区の路線・駅マスタ同期 |
 | `reins-download.ts` | REINS自動ダウンロード |
 | `reins-auto.ts` | REINS取得→解析→DB/Storage登録 |
 | `recheck-published-ad-policy.ts` | 公開済み物件の広告可否AI再チェック |
@@ -234,5 +242,11 @@ npm run dev            # http://localhost:3000
 | 管理会社帯切り取り | `src/lib/maisoku-ai.ts` |
 | 住所プライバシー（番地マスク） | `src/lib/address.ts` → `formatPublicAddress()` |
 | DBスキーマ | `prisma/schema.prisma` |
-| 都心13区フィルタ | `scripts/process-openai-vision.ts` → `TOKYO_13KU` |
+| 東京23区の取込フィルタ | `scripts/process-openai-vision.ts` → `TOKYO_23KU` |
+| Jevの予備判定 | `src/lib/jev-maisoku.ts` |
 | API構成 | 広告判定・帯切り取りは `gpt-4.1`、詳細抽出・翻訳は `gpt-4.1-mini` |
+# 自律運営
+
+既存ポータルの定期観測、REINS取込、広告・事実・翻訳の自動検査、合格候補の自動公開、公開後の復旧、根拠付き多言語記事、技術SEOの巡回を `/admin/autonomy` で管理します。初期状態は停止・有料予算ゼロです。設定後の通常処理に物件ごとの承認は不要です。
+
+専用ワーカーは `npm run autonomy:worker`、単発検証は `npm run autonomy:once`、隔離されたテストは `npm run test:autonomy`。本番の起動条件、費用予約と実費の区別、現行の取得範囲は [docs/AUTONOMY.md](docs/AUTONOMY.md) を参照してください。ローカル実装・テストは、本番の24時間稼働を意味しません。
