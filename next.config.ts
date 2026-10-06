@@ -34,6 +34,8 @@ const nextConfig: NextConfig = {
       { source: '/hotel-airbnb-checklist', destination: '/buying-guide', permanent: true },
       { source: '/youtube', destination: '/', permanent: true },
       { source: '/checklists/:path*', destination: '/buying-guide', permanent: true },
+      // The production alias on vercel.app duplicates the site; send it to the canonical domain.
+      { source: '/:path*', has: [{ type: 'host', value: 'real-estate-portal-omega.vercel.app' }], destination: 'https://portal.ziyou-fudosan.com/:path*', permanent: true },
     ]
   },
   experimental: {

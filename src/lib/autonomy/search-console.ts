@@ -110,9 +110,13 @@ export async function inspectIndexStatus(keyPath: string, siteUrl: string, urls:
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ inspectionUrl: url, siteUrl }),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    })
-    if (!response.ok) throw new Error(`Search Console inspection failed (HTTP ${response.status}).`)
-    const result = inspectionSchema.parse(await response.json()).inspectionResult?.indexStatusResult
+    }).catch(() => null)
+    if (!response) { states[url] = 'inspection_failed'; continue }
+    // One failed URL must not discard the whole coverage snapshot; quota exhaustion stops early.
+    if (response.status === 429) break
+    if (!response.ok) { states[url] = 'inspection_failed'; continue }
+    const parsed = inspectionSchema.safeParse(await response.json().catch(() => null))
+    const result = parsed.success ? parsed.data.inspectionResult?.indexStatusResult : undefined
     states[url] = result?.verdict === 'PASS' ? 'indexed' : result?.coverageState || 'unknown'
   }
   return states
