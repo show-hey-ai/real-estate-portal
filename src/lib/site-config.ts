@@ -1,5 +1,6 @@
 import { type Locale, defaultLocale, locales } from '@/i18n/config'
 import { formatApprovedPublicAddress } from '@/lib/address'
+import { pickCoverImage } from '@/lib/cover-image'
 import { formatPrice } from '@/lib/format'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import {
@@ -170,9 +171,7 @@ export function getSiteCopy(locale: string) {
 
 export function getPrimaryListingImage(listing: SeoListingLike): string | null {
   const adoptedMedia = listing.media?.filter((image) => image.isAdopted !== false)
-  const mainImage =
-    adoptedMedia?.find((image) => image.category === 'EXTERIOR') ||
-    adoptedMedia?.[0]
+  const mainImage = pickCoverImage(adoptedMedia)
 
   return mainImage?.url || null
 }

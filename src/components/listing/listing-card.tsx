@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { pickCoverImage } from '@/lib/cover-image'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
@@ -84,7 +85,7 @@ export function ListingCard({
       ?.label || listing.propertyType
   const category = getMarketCategory(listing)
 
-  const mainImage = listing.media.find((m) => m.category === 'EXTERIOR') || listing.media[0]
+  const mainImage = pickCoverImage(listing.media)
   const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
   const stations = normalizeTransitStations(listing.stations)
   const primaryStation = stations[0]
@@ -106,7 +107,7 @@ export function ListingCard({
               alt={safeAddress || t('noImage')}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className={mainImage.category === 'FLOORPLAN' ? 'bg-white object-contain p-3 pt-12' : 'object-cover transition-transform duration-500 group-hover:scale-105'}
               priority={imagePriority}
             />
           ) : (
@@ -115,7 +116,7 @@ export function ListingCard({
             </div>
           )}
 
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(12,28,24,0.82)_100%)]" />
+          {mainImage?.category !== 'FLOORPLAN' && <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(12,28,24,0.82)_100%)]" />}
 
           <div className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5">
             <Badge className="rounded-[4px] bg-[#142337]/88 px-2 text-[11px] font-medium text-white hover:bg-[#142337]/88">
