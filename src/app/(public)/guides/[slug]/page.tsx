@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { GuideCard } from '@/components/guides/guide-card'
-import { GUIDE_SUPERVISOR, GuideCases, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
+import { GUIDE_SUPERVISOR, GUIDE_SUPERVISOR_PHOTO, GuideCases, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -108,7 +108,7 @@ export default async function GuideDetailPage({
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': articleUrl,
-      reviewedBy: { '@type': 'Person', name: locale === 'en' ? GUIDE_SUPERVISOR.en : GUIDE_SUPERVISOR.ja, jobTitle: '宅地建物取引士', worksFor: { '@type': 'RealEstateAgent', name: 'Ziyou Real Estate LLC' } },
+      reviewedBy: { '@type': 'Person', name: locale === 'en' ? GUIDE_SUPERVISOR.en : GUIDE_SUPERVISOR.ja, image: absoluteUrl(GUIDE_SUPERVISOR_PHOTO), jobTitle: '宅地建物取引士', worksFor: { '@type': 'RealEstateAgent', name: 'Ziyou Real Estate LLC' } },
     },
     author: {
       '@type': 'Organization',

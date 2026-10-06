@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { AlertTriangle, BadgeCheck, Calculator, ExternalLink } from 'lucide-react'
 import type { GuideCase, GuideExample, GuideSource, GuideTable } from '@/content/guides'
 
@@ -44,12 +45,13 @@ export function GuideSources({ sources, locale }: { sources: GuideSource[]; loca
 /** Who wrote the guide and on what basis (E-E-A-T): the licensed operator. */
 /** The supervising licensed agent; the registration number is deliberately not published. */
 export const GUIDE_SUPERVISOR = { ja: '藤田翔平', en: 'Shohei Fujita' } as const
+export const GUIDE_SUPERVISOR_PHOTO = '/images/team/shohei-fujita.jpg'
 
 export function GuideReviewer({ locale }: { locale: string }) {
   const text = textFor(locale)
-  return <aside className="mt-8 flex gap-3 rounded-2xl border bg-muted/20 p-5" aria-label={text.reviewer}>
-    <BadgeCheck aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[#274d7d]" />
-    <div><p className="text-sm font-semibold">{text.reviewer}</p><p className="mt-1 text-sm font-semibold text-[#274d7d]">{text.supervisor}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{text.reviewerBody}</p></div>
+  return <aside className="mt-8 flex gap-4 rounded-2xl border bg-muted/20 p-5" aria-label={text.reviewer}>
+    <Image src={GUIDE_SUPERVISOR_PHOTO} alt={text.supervisor} width={64} height={64} className="h-16 w-16 shrink-0 rounded-full object-cover" />
+    <div><p className="flex items-center gap-1.5 text-sm font-semibold"><BadgeCheck aria-hidden="true" className="h-4 w-4 text-[#274d7d]" />{text.reviewer}</p><p className="mt-1 text-sm font-semibold text-[#274d7d]">{text.supervisor}</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{text.reviewerBody}</p></div>
   </aside>
 }
 
