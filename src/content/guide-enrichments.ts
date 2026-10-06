@@ -1,5 +1,5 @@
 import type { Locale } from '@/i18n/config'
-import type { GuideCase, GuideExample, GuideSource, GuideTable } from './guides'
+import type { GuideCase, GuideDiagram, GuideExample, GuideSource, GuideTable } from './guides'
 
 /**
  * Tables, worked examples and primary sources layered onto existing guides (see docs/CONTENT_STYLE_GUIDE.md).
@@ -9,6 +9,7 @@ import type { GuideCase, GuideExample, GuideSource, GuideTable } from './guides'
 interface SectionExtra {
   table?: GuideTable
   example?: GuideExample
+  diagram?: GuideDiagram
 }
 
 export interface GuideEnrichment {

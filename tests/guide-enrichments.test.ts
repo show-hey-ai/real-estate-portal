@@ -44,3 +44,18 @@ test('illustrative cases exist in every language of their guide', async () => {
     assert.equal(new Set(counts).size, 1, slug)
   }
 })
+
+test('diagrams target existing sections in all four languages', async () => {
+  const { guideDiagrams } = await import('../src/content/guide-diagrams')
+  for (const [slug, byLocale] of Object.entries(guideDiagrams)) {
+    const article = guideArticles.find((item) => item.slug === slug)
+    assert.ok(article, `unknown guide ${slug}`)
+    assert.equal(Object.keys(byLocale).length, 4, slug)
+    for (const [locale, sections] of Object.entries(byLocale)) {
+      for (const sectionId of Object.keys(sections ?? {})) {
+        const section = article.locales[locale as keyof typeof article.locales].sections.find((item) => item.id === sectionId)
+        assert.ok(section?.diagram, `${slug}/${locale}/${sectionId}`)
+      }
+    }
+  }
+})

@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { AlertTriangle, BadgeCheck, Calculator, ExternalLink } from 'lucide-react'
-import type { GuideCase, GuideExample, GuideSource, GuideTable } from '@/content/guides'
+import type { GuideCase, GuideDiagram, GuideExample, GuideSource, GuideTable } from '@/content/guides'
 
 const copy = {
   ja: { cases: 'よくあるケースと防ぎ方', casesNote: '実際の取引ではなく、海外のお客様によくある状況をもとにした想定例です。', lesson: '防ぐには：', sources: '出典・参考資料', reviewer: 'この記事について', supervisor: '監修：藤田翔平（宅地建物取引士）', reviewerBody: '東京都知事免許の不動産会社、自由不動産合同会社（宅地建物取引業 東京都知事（1）第108831号）が、実際の売買の手続きにもとづいて作成しています。制度や税率は変わることがあるため、契約前に最新の情報をご確認ください。個別の税務・法律の助言ではありません。', example: '計算例' },
@@ -67,4 +67,35 @@ export function GuideCases({ cases, locale }: { cases: GuideCase[]; locale: stri
       <p className="mt-3 rounded-lg bg-[#edf3e7] px-3 py-2 text-sm leading-6 text-[#2f4a2a]"><span className="font-semibold">{text.lesson}</span>{item.lesson}</p>
     </div>)}</div>
   </section>
+}
+
+const TIMELINE_TONES = { old: 'bg-[#f3d9c9] text-[#7a3a1d]', check: 'bg-[#fbe9b7] text-[#6b4b00]', new: 'bg-[#d6e8d2] text-[#2f4a2a]' } as const
+
+/** Step flows and year timelines, written as text so they translate and stay readable on phones. */
+export function GuideDiagramView({ diagram }: { diagram: GuideDiagram }) {
+  if (diagram.kind === 'timeline') {
+    const span = diagram.end - diagram.start
+    return <figure className="rounded-2xl border p-5">
+      <figcaption className="text-sm font-semibold">{diagram.title}</figcaption>
+      <div className="mt-4 flex h-12 overflow-hidden rounded-lg text-xs font-semibold" role="img" aria-label={diagram.segments.map((segment) => `${segment.from}–${segment.to}: ${segment.label}`).join(', ')}>
+        {diagram.segments.map((segment) => <div key={segment.label} className={`flex items-center justify-center px-1 text-center leading-4 ${TIMELINE_TONES[segment.tone]}`} style={{ width: `${((segment.to - segment.from) / span) * 100}%` }}>{segment.label}</div>)}
+      </div>
+      <div className="relative mt-1 h-4 text-[11px] text-muted-foreground tabular-nums" aria-hidden="true">
+        <span className="absolute left-0">{diagram.start}</span>
+        {diagram.segments.slice(1).map((segment) => <span key={segment.from} className="absolute -translate-x-1/2" style={{ left: `${((segment.from - diagram.start) / span) * 100}%` }}>{segment.from}</span>)}
+        <span className="absolute right-0">{diagram.end}</span>
+      </div>
+      {diagram.note && <p className="mt-3 text-xs leading-5 text-muted-foreground">{diagram.note}</p>}
+    </figure>
+  }
+  return <figure className="rounded-2xl border p-5">
+    <figcaption className="text-sm font-semibold">{diagram.title}</figcaption>
+    <ol className="mt-4 grid gap-3 md:grid-flow-col md:auto-cols-fr">
+      {diagram.steps.map((step, index) => <li key={step.label} className="relative rounded-xl bg-[#f4f7fb] p-4">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#274d7d] text-xs font-bold text-white">{index + 1}</span>
+        <p className="mt-2 text-sm font-semibold leading-5">{step.label}</p>
+        {step.detail && <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.detail}</p>}
+      </li>)}
+    </ol>
+  </figure>
 }

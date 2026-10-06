@@ -6,6 +6,7 @@ import { extraGuideArticles4 } from './guides-extra-4'
 import { extraGuideArticles5 } from './guides-extra-5'
 import { guideEnrichments } from './guide-enrichments'
 import { guideCases } from './guide-cases'
+import { guideDiagrams } from './guide-diagrams'
 
 export interface GuideTable {
   caption?: string
@@ -27,6 +28,11 @@ export interface GuideCase {
   lesson: string
 }
 
+/** Information diagrams: a step flow, or a timeline of year ranges. */
+export type GuideDiagram =
+  | { kind: 'flow'; title: string; steps: { label: string; detail?: string }[] }
+  | { kind: 'timeline'; title: string; start: number; end: number; segments: { label: string; from: number; to: number; tone: 'old' | 'check' | 'new' }[]; note?: string }
+
 export interface GuideSource {
   label: string
   url: string
@@ -39,6 +45,7 @@ export interface GuideSection {
   bullets?: string[]
   table?: GuideTable
   example?: GuideExample
+  diagram?: GuideDiagram
 }
 
 export interface GuideFaqItem {
@@ -1145,14 +1152,18 @@ const baseGuideArticles: GuideArticle[] = [
 function withEnrichment(article: GuideArticle): GuideArticle {
   const extra = guideEnrichments[article.slug]
   const cases = guideCases[article.slug]
-  if (!extra && !cases) return article
+  const diagrams = guideDiagrams[article.slug]
+  if (!extra && !cases && !diagrams) return article
   const locales = Object.fromEntries(Object.entries(article.locales).map(([locale, content]) => {
     const enrichment = extra?.[locale as Locale] ?? {}
     return [locale, {
       ...content,
       sources: enrichment.sources ?? content.sources,
       cases: cases?.[locale as Locale] ?? enrichment.cases ?? content.cases,
-      sections: content.sections.map((section) => ({ ...section, ...(enrichment.sections?.[section.id] ?? {}) })),
+      sections: content.sections.map((section) => {
+        const diagram = diagrams?.[locale as Locale]?.[section.id]
+        return { ...section, ...(enrichment.sections?.[section.id] ?? {}), ...(diagram ? { diagram } : {}) }
+      }),
     }]
   })) as Record<Locale, GuideLocaleContent>
   return { ...article, locales }

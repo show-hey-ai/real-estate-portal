@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { GuideCard } from '@/components/guides/guide-card'
-import { GUIDE_SUPERVISOR, GUIDE_SUPERVISOR_PHOTO, GuideCases, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
+import { GUIDE_SUPERVISOR, GUIDE_SUPERVISOR_PHOTO, GuideCases, GuideDiagramView, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -247,6 +247,7 @@ export default async function GuideDetailPage({
                     <p key={`${section.id}-paragraph-${index}`}>{paragraph}</p>
                   ))}
                 </div>
+                {section.diagram && <GuideDiagramView diagram={section.diagram} />}
                 {section.table && <GuideTableView table={section.table} />}
                 {section.example && <GuideExampleView example={section.example} locale={locale} />}
                 {section.bullets && section.bullets.length > 0 && (
