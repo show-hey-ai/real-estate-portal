@@ -5,6 +5,7 @@ import { normalizeTransitStations } from '@/lib/transit-normalization'
 import {
   formatTransitAccessLabel,
   translateAddress,
+  translateCityName,
   translatePropertyType,
 } from '@/lib/translate-fields'
 
@@ -188,6 +189,13 @@ export function buildListingTitle(listing: SeoListingLike, locale: string): stri
     ''
   const price = toNumber(listing.price)
   const formattedPrice = price != null ? formatPrice(price, normalizedLocale) : null
+
+  if (normalizedLocale === 'en') {
+    // English searchers look for "condominium in Minato, Tokyo"; a Japanese street address does not help them.
+    const ward = listing.city ? translateCityName(listing.city, 'en') || listing.city : null
+    const area = toNumber(listing.propertyType === '土地' ? listing.landArea : listing.buildingArea)
+    return [`${translatedType} in ${ward ? `${ward}, ` : ''}Tokyo`, area ? `${area} m²` : null, formattedPrice].filter(Boolean).join(' | ')
+  }
 
   return [translatedType, translatedAddress, formattedPrice].filter(Boolean).join(' | ')
 }
