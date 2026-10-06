@@ -70,6 +70,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           {searchParams.get('error') === 'auth_failed' && <p role="alert" className="mb-4 text-sm text-destructive">{loginCopy.failed}</p>}
+          <AuthAlternatives placement="top" redirect={redirect} disabled={isLoading} onBusyChange={setAlternativeBusy} />
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">{t('email')}</Label>
@@ -105,7 +106,6 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
-          <AuthAlternatives redirect={redirect} disabled={isLoading} onBusyChange={setAlternativeBusy} />
           <div className="mt-6 border-t pt-5 text-center">
             <p className="mb-3 text-sm text-muted-foreground">{t('noAccount')}</p>
             <Button asChild variant="outline" className="w-full min-h-11 border-primary text-primary">

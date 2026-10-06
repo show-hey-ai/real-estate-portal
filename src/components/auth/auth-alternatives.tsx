@@ -12,7 +12,7 @@ import { useBuyerFunnelHeaders } from '@/components/analytics/buyer-funnel'
 import { emailLoginRequest, loginMethod, parseLoginMethods, socialLoginRequest, type LoginMethods, type SocialMethodId } from '@/lib/login-methods'
 import { getLoginMethodsCopy, socialButtonLabel } from '@/lib/login-methods-copy'
 
-export function AuthAlternatives({ redirect, disabled = false, onBusyChange }: { redirect: string; disabled?: boolean; onBusyChange?: (busy: boolean) => void }) {
+export function AuthAlternatives({ redirect, disabled = false, onBusyChange, placement = 'bottom' }: { redirect: string; disabled?: boolean; onBusyChange?: (busy: boolean) => void; placement?: 'top' | 'bottom' }) {
   const locale = useLocale(), copy = getLoginMethodsCopy(locale), t = useTranslations('auth')
   const headers = useBuyerFunnelHeaders()
   const [methods, setMethods] = useState<LoginMethods>({ providers: [], emailLink: false })
@@ -60,8 +60,9 @@ export function AuthAlternatives({ redirect, disabled = false, onBusyChange }: {
 
   if (!methods.providers.length && !methods.emailLink) return null
   return (
-    <div data-testid="auth-alternatives" className="mt-6 space-y-4 border-t pt-5">
-      <p className="text-center text-xs text-muted-foreground">{copy.or}</p>
+    // At the top, one-tap providers come first and the "or" divider leads into the password form below.
+    <div data-testid="auth-alternatives" className={placement === 'top' ? 'mb-6 space-y-4 border-b pb-5' : 'mt-6 space-y-4 border-t pt-5'}>
+      {placement === 'bottom' && <p className="text-center text-xs text-muted-foreground">{copy.or}</p>}
       {methods.providers.length > 0 && <div className="space-y-2">
         {methods.providers.map(id => <Button key={id} type="button" variant="outline" className="min-h-11 w-full whitespace-normal" disabled={locked} onClick={() => void startSocial(id)}>
           {busy === id && <Loader2 aria-hidden="true" className="mr-2 h-4 w-4 animate-spin" />}
@@ -84,6 +85,7 @@ export function AuthAlternatives({ redirect, disabled = false, onBusyChange }: {
         </form>}
       </details>}
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      {placement === 'top' && <p className="text-center text-xs text-muted-foreground">{copy.or}</p>}
     </div>
   )
 }

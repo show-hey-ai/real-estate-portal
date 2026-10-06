@@ -84,6 +84,7 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <AuthAlternatives placement="top" redirect={redirect} disabled={isLoading} onBusyChange={setAlternativeBusy} />
           <form onSubmit={handleSubmit} className="space-y-4">
 
             <div className="space-y-2">
@@ -132,7 +133,6 @@ export default function RegisterPage() {
               )}
             </Button>
           </form>
-          <AuthAlternatives redirect={redirect} disabled={isLoading} onBusyChange={setAlternativeBusy} />
         </CardContent>
       </Card>
       </div>
