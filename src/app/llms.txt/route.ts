@@ -24,7 +24,8 @@ export async function GET() {
     `- [Properties for sale](${absoluteUrl('/listings')}): Published investment, residential, and land listings.`,
     `- [Buying guide](${absoluteUrl('/buying-guide')}): The basic process from criteria to closing.`,
     `- [Property insights](${absoluteUrl('/articles')}): Source-backed Tokyo property selections and comparisons.`,
-    `- [Discuss your search](${absoluteUrl('/match')}): Share purchase purpose, area, budget, property type, and timing with Ziyou.`, '',
+    `- [Personal search](${absoluteUrl('/match')}): Save purchase criteria and review matching published listings.`,
+    `- [Help center](${absoluteUrl('/help')}): Answers about searching, accounts, property chat, and buying steps.`, '',
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
   ].join('\n')
   return new Response(markdown, { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600' } })
