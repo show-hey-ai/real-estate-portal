@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { localeAlternates } from '@/lib/locale-url'
+import { localeAlternates, localizedPath } from '@/lib/locale-url'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { getLocale, getTranslations } from 'next-intl/server'
@@ -362,7 +362,7 @@ export default async function ListingsPage({
     '@type': 'CollectionPage',
     name: getSiteCopy(locale).listingsTitle,
     description: getSiteCopy(locale).listingsDescription,
-    url: absoluteUrl('/listings'),
+    url: localeAlternates('/listings', locale).canonical,
     inLanguage: getSchemaLanguage(locale),
     mainEntity: {
       '@type': 'ItemList',
@@ -370,7 +370,7 @@ export default async function ListingsPage({
       itemListElement: formattedListings.map((listing, index) => ({
         '@type': 'ListItem',
         position: from + index + 1,
-        url: absoluteUrl(`/listings/${listing.id}`),
+        url: absoluteUrl(localizedPath(`/listings/${listing.id}`, locale)),
         name: buildListingTitle(listing, locale),
         image: getPrimaryListingImage(listing) || undefined,
         description: buildListingDescription(listing, locale),

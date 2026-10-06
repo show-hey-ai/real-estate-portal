@@ -1,4 +1,5 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { ListingMap } from '@/components/listing/listing-map'
 import { localeAlternates } from '@/lib/locale-url'
 import type { Metadata } from 'next'
@@ -119,6 +120,13 @@ export async function generateMetadata({
   }
 }
 
+function schemaPropertyType(propertyType: string | null | undefined): string {
+  if (propertyType === '区分マンション') return 'Apartment'
+  if (propertyType === '戸建') return 'SingleFamilyResidence'
+  if (propertyType === '一棟マンション' || propertyType === '一棟アパート') return 'ApartmentComplex'
+  return 'Place'
+}
+
 export default async function ListingPage({ params }: ListingPageProps) {
   const { id } = await params
   const [t, locale] = await Promise.all([getTranslations('listing'), getLocale()])
@@ -171,64 +179,53 @@ export default async function ListingPage({ params }: ListingPageProps) {
     yieldGross: listing.yieldGross ? Number(listing.yieldGross) : null,
     media: sortedMedia,
   }
+  const pageUrl = localeAlternates(`/listings/${listing.id}`, locale).canonical
+  const publishedAt = parseDbTimestamp(listing.publishedAt)?.toISOString()
+  const modifiedAt = parseDbTimestamp(listing.updatedAt)?.toISOString()
+  // The page is a for-sale listing; the property itself is the offered item.
   const listingJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'WebPage',
+    '@type': 'RealEstateListing',
     name: buildListingTitle(formattedListing, locale),
     description: buildListingDescription(formattedListing, locale),
-    url: absoluteUrl(`/listings/${listing.id}`),
+    url: pageUrl,
     inLanguage: getSchemaLanguage(locale),
-    datePublished: listing.publishedAt || undefined,
-    dateModified: listing.updatedAt || undefined,
-    mainEntity: {
-      '@type': getMarketCategory(formattedListing) === 'residential'
-        ? (formattedListing.propertyType === '戸建' ? 'SingleFamilyResidence' : 'Residence')
-        : 'Product',
-      name: buildListingTitle(formattedListing, locale),
-      description: buildListingDescription(formattedListing, locale),
-      address: {
-        '@type': 'PostalAddress',
-        addressRegion: listing.prefecture || 'Tokyo',
-        addressLocality: listing.city || undefined,
-        streetAddress: publicAddress || undefined,
-        addressCountry: 'JP',
-      },
-      floorSize: formattedListing.buildingArea
-        ? {
-            '@type': 'QuantitativeValue',
-            value: formattedListing.buildingArea,
-            unitCode: 'MTK',
-          }
-        : undefined,
-      numberOfFloors: formattedListing.floorCount || undefined,
-      yearBuilt: formattedListing.builtYear || undefined,
-      additionalProperty: [
-        formattedListing.propertyType
-          ? {
-              '@type': 'PropertyValue',
-              name: 'Property type',
-              value: formattedListing.propertyType,
-            }
-          : null,
-        formattedListing.currentStatus
-          ? {
-              '@type': 'PropertyValue',
-              name: 'Current status',
-              value: formattedListing.currentStatus,
-            }
-          : null,
-      ].filter(Boolean),
-      image: formattedListing.media.map((item: { url: string }) => item.url),
-      offers: formattedListing.price
-        ? {
-            '@type': 'Offer',
-            priceCurrency: 'JPY',
-            price: Number(formattedListing.price),
-            availability: 'https://schema.org/InStock',
-            url: absoluteUrl(`/listings/${listing.id}`),
-          }
-        : undefined,
-    },
+    datePosted: publishedAt,
+    datePublished: publishedAt,
+    dateModified: modifiedAt,
+    image: formattedListing.media.map((item: { url: string }) => item.url),
+    offers: formattedListing.price
+      ? {
+          '@type': 'Offer',
+          priceCurrency: 'JPY',
+          price: Number(formattedListing.price),
+          availability: 'https://schema.org/InStock',
+          businessFunction: 'http://purl.org/goodrelations/v1#Sell',
+          url: pageUrl,
+          seller: { '@type': 'RealEstateAgent', name: 'Ziyou Real Estate', url: absoluteUrl('/') },
+          itemOffered: {
+            '@type': schemaPropertyType(formattedListing.propertyType),
+            name: buildListingTitle(formattedListing, locale),
+            address: {
+              '@type': 'PostalAddress',
+              addressRegion: listing.prefecture || 'Tokyo',
+              addressLocality: listing.city || undefined,
+              streetAddress: publicAddress || undefined,
+              addressCountry: 'JP',
+            },
+            floorSize: formattedListing.buildingArea
+              ? { '@type': 'QuantitativeValue', value: formattedListing.buildingArea, unitCode: 'MTK' }
+              : undefined,
+            numberOfFloors: formattedListing.floorCount || undefined,
+            yearBuilt: formattedListing.builtYear || undefined,
+            additionalProperty: [
+              formattedListing.propertyType ? { '@type': 'PropertyValue', name: 'Property type', value: formattedListing.propertyType } : null,
+              formattedListing.currentStatus ? { '@type': 'PropertyValue', name: 'Current status', value: formattedListing.currentStatus } : null,
+              formattedListing.landArea ? { '@type': 'PropertyValue', name: 'Land area', value: formattedListing.landArea, unitCode: 'MTK' } : null,
+            ].filter(Boolean),
+          },
+        }
+      : undefined,
   }
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
