@@ -18,3 +18,8 @@ test('address-only or descriptive openings are not treated as names', () => {
   assert.equal(extractBuildingName(''), null)
   assert.equal(extractBuildingName(null), null)
 })
+
+test('station and walking-time phrases are not building names', () => {
+  assert.equal(extractBuildingName('北池袋駅徒歩9分、2009年築の区分マンション。'), null)
+  assert.equal(extractBuildingName('池袋駅徒歩13分。75.96㎡の3LDK。'), null)
+})
