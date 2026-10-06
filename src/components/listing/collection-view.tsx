@@ -10,7 +10,7 @@ import { translatePropertyType } from '@/lib/translate-fields'
 import { unitPriceOf } from '@/lib/unit-price'
 import { WARD_SLUGS, countByWard, summarizeWard, wardLabel } from '@/lib/ward-tile-map'
 import { formatYenWords } from '@/lib/yen-words'
-import { withBuildingName } from '@/lib/building-name'
+import { extractBuildingName, withBuildingName } from '@/lib/building-name'
 
 const labels = {
   ja: { home: 'ホーム', range: '掲載価格の範囲', types: '物件の種類', wards: 'エリア別', listings: '公開中の物件', unitTitle: '物件ごとの㎡単価', unitNote: '公開中の物件の売出価格を面積で割った参考値です。成約価格や相場ではありません。', all: '条件を指定して探す', match: '購入条件を整理する', count: (count: number) => `${count}件` },
@@ -41,7 +41,7 @@ export function CollectionView({ locale, path, title, intro, Icon, rows, filterH
     .map((row) => ({ row, value: unitPriceOf(row) }))
     .filter((item): item is { row: PublicListingRow; value: number } => item.value !== null)
     .sort((left, right) => left.value - right.value)
-    .map(({ row, value }) => ({ label: `${row.city ? `${wardLabel(row.city, locale)} · ` : ''}${translatePropertyType(row.propertyType, locale)} · ${formatYenWords(Number(row.price), locale)}`, value, href: `/listings/${row.id}` }))
+    .map(({ row, value }) => ({ label: `${row.city ? `${wardLabel(row.city, locale)} · ` : ''}${(locale !== 'en' && extractBuildingName(row.descriptionJa)) || translatePropertyType(row.propertyType, locale)} · ${formatYenWords(Number(row.price), locale)}`, value, href: `/listings/${row.id}` }))
   const structured = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',

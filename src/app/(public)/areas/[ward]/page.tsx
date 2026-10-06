@@ -19,7 +19,7 @@ import { formatYenWords } from '@/lib/yen-words'
 import { pickCoverImage } from '@/lib/cover-image'
 import { unitPriceOf } from '@/lib/unit-price'
 import { UnitPriceChart } from '@/components/listing/unit-price-chart'
-import { withBuildingName } from '@/lib/building-name'
+import { extractBuildingName, withBuildingName } from '@/lib/building-name'
 import { countedTitle } from '@/lib/home-snippet'
 
 export const dynamic = 'force-dynamic'
@@ -87,7 +87,7 @@ export default async function WardPage({ params }: Props) {
     .map((row) => ({ row, value: unitPriceOf(row) }))
     .filter((item): item is { row: typeof wardRows[number]; value: number } => item.value !== null)
     .sort((left, right) => left.value - right.value)
-    .map(({ row, value }) => ({ label: `${translatePropertyType(row.propertyType, locale)} · ${formatYenWords(Number(row.price), locale)}`, value, href: `/listings/${row.id}` }))
+    .map(({ row, value }) => ({ label: `${(locale !== 'en' && extractBuildingName(row.descriptionJa)) || translatePropertyType(row.propertyType, locale)} · ${formatYenWords(Number(row.price), locale)}`, value, href: `/listings/${row.id}` }))
   const favorites = viewer ? await getFavoriteIdsForViewer(viewer.id, listings.map((home) => home.id)) : new Set<string>()
   const pageUrl = localeAlternates(`/areas/${slug}`, locale).canonical
   const structured = {
