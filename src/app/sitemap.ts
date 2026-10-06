@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { absoluteUrl } from '@/lib/site-config'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { getPublicArticles } from '@/lib/portal-articles'
+import { guideArticles } from '@/content/guides'
 import { locales } from '@/i18n/config'
 
 export const dynamic = 'force-dynamic'
@@ -24,6 +25,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const portalLaunchAt = new Date('2026-09-29T00:00:00+09:00')
   const articles = await getPublicArticles()
   const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: Object.fromEntries(locales.map((language) => [language, absoluteUrl(`/articles/${article.slug}/${language}`)])) } })))
+  const guideEntries: MetadataRoute.Sitemap = [
+    { url: absoluteUrl('/guides'), lastModified: getLatestDate(guideArticles.map((guide) => guide.updatedAt)), changeFrequency: 'monthly', priority: 0.6 },
+    ...guideArticles.map((guide) => ({ url: absoluteUrl(`/guides/${guide.slug}`), lastModified: new Date(guide.updatedAt), changeFrequency: 'monthly' as const, priority: 0.6 })),
+  ]
 
   const staticEntries: MetadataRoute.Sitemap = [
     ...(articles.length ? [{ url: absoluteUrl('/articles'), lastModified: articles[0].updatedAt, changeFrequency: 'weekly' as const, priority: 0.65 }] : []),
@@ -48,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !serviceRoleKey) {
-    return [...staticEntries, ...articleEntries]
+    return [...staticEntries, ...guideEntries, ...articleEntries]
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey)
@@ -66,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   if (error) {
     console.error('Failed to build sitemap from listings:', error.message)
-    return [...staticEntries, ...articleEntries]
+    return [...staticEntries, ...guideEntries, ...articleEntries]
   }
 
   const latestListingModifiedAt = getLatestDate(
@@ -85,5 +90,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  return [...adjustedStaticEntries, ...listingEntries, ...articleEntries]
+  return [...adjustedStaticEntries, ...guideEntries, ...listingEntries, ...articleEntries]
 }

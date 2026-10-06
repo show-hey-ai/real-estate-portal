@@ -168,6 +168,7 @@ export function formatGuideDate(value: string, locale: string | Locale) {
     year: 'numeric',
     month: normalizedLocale === 'en' ? 'short' : 'numeric',
     day: 'numeric',
+    timeZone: 'UTC',
   }).format(new Date(value))
 }
 

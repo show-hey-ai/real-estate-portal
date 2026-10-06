@@ -38,7 +38,7 @@ export const guideArticles: GuideArticle[] = [
   {
     slug: 'how-to-buy-japan-investment-property',
     publishedAt: '2026-04-09',
-    updatedAt: '2026-04-09',
+    updatedAt: '2026-10-06',
     readMinutes: 7,
     tags: ['foreign buyer', 'acquisition', 'japan real estate'],
     locales: {
@@ -61,7 +61,7 @@ export const guideArticles: GuideArticle[] = [
             id: 'why-japan',
             heading: 'なぜ日本不動産が海外投資家に選ばれるのか',
             paragraphs: [
-              '東京の中心部は、賃貸需要の厚さ、流動性、法的安定性が揃っているため、海外投資家にとって比較的読みやすい市場です。自由不動産の重点12区は特に、空室リスクと出口の両方を考えやすいエリアです。',
+              '東京の中心部は、賃貸需要の厚さ、流動性、法的安定性が揃っているため、海外投資家にとって比較的読みやすい市場です。なかでも都心部は、空室リスクと出口の両方を考えやすいエリアです。',
               '一方で、表面利回りだけを見て地方や築古に寄りすぎると、修繕・空室・再販で苦しくなります。最初の1件は、運用の再現性を取りやすいエリアと商品から入る方が現実的です。',
             ],
           },
@@ -133,7 +133,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: '公開中の東京投資物件を見る',
         ctaDescription:
-          '重点12区の収益物件を一覧で見ながら、利回り、駅距離、価格帯を比較できます。',
+          '東京23区の公開物件を、価格帯・駅距離・エリアで比較できます。収支の前提は物件ごとにお問い合わせください。',
       },
       en: {
         category: 'Acquisition Guide',
@@ -226,7 +226,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: 'Browse live Tokyo investment listings',
         ctaDescription:
-          'Compare central Tokyo opportunities by price, station access, and return assumptions before shortlisting your first candidates.',
+          'Compare published Tokyo listings by price, station access, and ward before shortlisting your first candidates. Ask about the income assumptions for each property.',
       },
       'zh-TW': {
         category: '購買指南',
@@ -319,7 +319,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: '查看東京投資物件',
         ctaDescription:
-          '可直接比較重點12區物件的價格、車站距離與表面投報率，建立第一輪候選名單。',
+          '可直接比較東京23區公開物件的價格、車站距離與所在區域，建立第一輪候選名單；收支前提請就個別物件詢問。',
       },
       'zh-CN': {
         category: '购买指南',
@@ -412,14 +412,14 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: '查看东京投资房源',
         ctaDescription:
-          '可以直接比较重点12区房源的价格、车站距离和表面收益率，先建立第一轮候选清单。',
+          '可以直接比较东京23区公开房源的价格、车站距离和所在区域，先建立第一轮候选清单；收益前提请针对具体房源咨询。',
       },
     },
   },
   {
     slug: 'tokyo-cap-rate-guide',
     publishedAt: '2026-04-09',
-    updatedAt: '2026-04-09',
+    updatedAt: '2026-10-06',
     readMinutes: 6,
     tags: ['return', 'tokyo market', 'underwriting'],
     locales: {
@@ -427,7 +427,7 @@ export const guideArticles: GuideArticle[] = [
         category: 'マーケット分析',
         title: '東京の利回り物件を見るときに知っておくべきこと',
         excerpt:
-          '4%、5%、6%という数字の違いを、重点12区の実務感覚に引き直して解説します。利回りの高さだけで判断しないための基準です。',
+          '4%、5%、6%という数字の違いを、東京都心の実務感覚に引き直して解説します。利回りの高さだけで判断しないための基準です。',
         seoDescription:
           '東京の投資用不動産で表面利回り4%、5%、6%が何を意味するか、立地・築年・出口の観点から整理します。',
         intro:
@@ -448,7 +448,7 @@ export const guideArticles: GuideArticle[] = [
           },
           {
             id: 'ranges',
-            heading: '重点12区で利回りの数字が意味するもの',
+            heading: '東京都心で利回りの数字が意味するもの',
             paragraphs: [
               'ざっくり言えば、都心の4%台は「安定性・流動性寄り」、5%台は「バランス型」、6%以上は「何らかのリスク説明が必要」と考えるのが実務的です。',
               'もちろん築年数、駅距離、再開発、規模、テナント属性で変わりますが、数字だけが突出している場合は理由を先に確認するべきです。',
@@ -492,7 +492,7 @@ export const guideArticles: GuideArticle[] = [
           {
             question: '東京で表面利回り6%は高いですか？',
             answer:
-              '重点12区では高めです。良い意味ではなく、まず高い理由を確認すべき数字です。築年、権利関係、修繕、空室、流動性を先に見てください。',
+              '東京都心では高めです。良い意味ではなく、まず高い理由を確認すべき数字です。築年、権利関係、修繕、空室、流動性を先に見てください。',
           },
           {
             question: '低利回りでも買う価値はありますか？',
@@ -505,9 +505,9 @@ export const guideArticles: GuideArticle[] = [
               '表面利回り単体ではなく、実質利回り、再募集賃料、修繕負担、出口価格の4点をセットで見るのが現実的です。',
           },
         ],
-        ctaTitle: '利回りで比較しやすい物件を見る',
+        ctaTitle: '公開中の東京物件を見る',
         ctaDescription:
-          '価格、駅距離、利回りを横並びで見ながら、数字の違いを重点12区の文脈で比較できます。',
+          '価格・駅距離・エリアを横並びで見ながら候補を絞り込めます。利回りなど収支の前提は物件ごとにお問い合わせください。',
       },
       en: {
         category: 'Market Analysis',
@@ -591,15 +591,15 @@ export const guideArticles: GuideArticle[] = [
               'A practical answer is not one number but a set: realistic net return, reletting rent, capex timing, and probable exit pricing.',
           },
         ],
-        ctaTitle: 'Compare Tokyo listings by return assumptions and station access',
+        ctaTitle: 'Compare live Tokyo listings by price and station access',
         ctaDescription:
-          'Use live listings to compare return assumptions in context instead of reacting to headline numbers alone.',
+          'Shortlist by price, station access, and ward, then ask about the income assumptions for each property instead of reacting to headline numbers alone.',
       },
       'zh-TW': {
         category: '市場分析',
         title: '看東京投資物件時，如何正確理解投報率',
         excerpt:
-          '用重點12區的實務角度理解 4%、5%、6% 的差異，避免只看表面報酬率就做判斷。',
+          '用東京核心區的實務角度理解 4%、5%、6% 的差異，避免只看表面報酬率就做判斷。',
         seoDescription:
           '說明東京投資不動產中 4%、5%、6% 表面投報率各自代表什麼，並分析立地、屋齡與退出風險。',
         intro:
@@ -620,7 +620,7 @@ export const guideArticles: GuideArticle[] = [
           },
           {
             id: 'ranges',
-            heading: '重點12區常見投報率區間的實務解讀',
+            heading: '東京核心區常見投報率區間的實務解讀',
             paragraphs: [
               '粗略來說，4% 左右通常代表穩定性與流動性較強，5% 是相對容易比較的平衡區間，6% 以上則應先找出折價原因。',
               '這些只是框架，不是結論。真正的判斷仍要回到屋齡、距站距離、權利關係與出租需求。',
@@ -662,7 +662,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         faq: [
           {
-            question: '重點12區 6% 的表面投報率算高嗎？',
+            question: '東京核心區 6% 的表面投報率算高嗎？',
             answer:
               '通常算高。這不一定代表不好，但一定代表需要先找出市場為何給它這個價格。',
           },
@@ -677,15 +677,15 @@ export const guideArticles: GuideArticle[] = [
               '更實務的做法是一起看實質投報率、再出租租金、修繕支出與退出價格，而不是只找單一指標。',
           },
         ],
-        ctaTitle: '用投報率與車站條件比較物件',
+        ctaTitle: '用價格與車站條件比較物件',
         ctaDescription:
-          '直接查看東京物件列表，從價格、距站與表面投報率的組合來做第一輪篩選。',
+          '直接查看東京物件列表，從價格、距站與所在區域做第一輪篩選；收支前提請就個別物件詢問。',
       },
       'zh-CN': {
         category: '市场分析',
         title: '看东京投资房产时，如何正确理解收益率',
         excerpt:
-          '用重点12区的实务视角理解 4%、5%、6% 的差异，避免只看表面收益率就做判断。',
+          '用东京核心区的实务视角理解 4%、5%、6% 的差异，避免只看表面收益率就做判断。',
         seoDescription:
           '说明东京投资房产中 4%、5%、6% 表面收益率分别意味着什么，并分析地段、房龄和退出风险。',
         intro:
@@ -706,7 +706,7 @@ export const guideArticles: GuideArticle[] = [
           },
           {
             id: 'ranges',
-            heading: '重点12区常见收益率区间的实务解读',
+            heading: '东京核心区常见收益率区间的实务解读',
             paragraphs: [
               '粗略来说，4% 左右通常代表稳定性和流动性较强，5% 是相对容易比较的平衡区间，6% 以上则应先找出折价原因。',
               '这些只是框架，不是结论。真正的判断仍应回到房龄、距站、权利关系和出租需求。',
@@ -748,7 +748,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         faq: [
           {
-            question: '重点12区 6% 的表面收益率算高吗？',
+            question: '东京核心区 6% 的表面收益率算高吗？',
             answer:
               '通常算高。这不一定代表不好，但一定意味着要先搞清楚市场为什么给它这样的价格。',
           },
@@ -763,16 +763,16 @@ export const guideArticles: GuideArticle[] = [
               '更实务的做法是同时看实际收益率、再出租租金、维修支出和退出价格，而不是只追单一指标。',
           },
         ],
-        ctaTitle: '按收益率和车站条件比较房源',
+        ctaTitle: '按价格和车站条件比较房源',
         ctaDescription:
-          '直接查看东京房源列表，从价格、距站和表面收益率的组合出发完成第一轮筛选。',
+          '直接查看东京房源列表，从价格、距站和所在区域完成第一轮筛选；收益前提请针对具体房源咨询。',
       },
     },
   },
   {
     slug: 'personal-vs-company-japan-property',
     publishedAt: '2026-04-09',
-    updatedAt: '2026-04-09',
+    updatedAt: '2026-10-06',
     readMinutes: 7,
     tags: ['structuring', 'company setup', 'tax planning'],
     locales: {
@@ -855,7 +855,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: '運用しやすい東京物件を先に見る',
         ctaDescription:
-          '購入主体を決める前に、価格帯、駅距離、利回り帯を見て、自分の投資方針に合う物件感を固められます。',
+          '購入主体を決める前に、価格帯、駅距離、エリアを見て、自分の投資方針に合う物件感を固められます。',
       },
       en: {
         category: 'Investment Structuring',
@@ -936,7 +936,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: 'Look at Tokyo listings that fit your target scale',
         ctaDescription:
-          'Review live opportunities by price, station access, and return assumptions so you can match ownership structure to the kind of assets you actually plan to buy.',
+          'Review live opportunities by price, station access, and ward so you can match ownership structure to the kind of assets you actually plan to buy.',
       },
       'zh-TW': {
         category: '投資架構',
@@ -1017,7 +1017,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: '先看符合你規模的東京物件',
         ctaDescription:
-          '在決定用個人或法人前，先透過價格、距站與投報率帶出你真正想買的資產類型。',
+          '在決定用個人或法人前，先透過價格、距站與區域帶出你真正想買的資產類型。',
       },
       'zh-CN': {
         category: '投资架构',
@@ -1098,7 +1098,7 @@ export const guideArticles: GuideArticle[] = [
         ],
         ctaTitle: '先看符合你规模的东京房源',
         ctaDescription:
-          '在决定用个人还是公司之前，先通过价格、距站和收益率筛出你真正会购买的资产类型。',
+          '在决定用个人还是公司之前，先通过价格、距站和区域筛出你真正会购买的资产类型。',
       },
     },
   },
