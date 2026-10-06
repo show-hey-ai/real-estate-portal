@@ -95,3 +95,16 @@ test('a pasted Gmail app password is normalised: spaces and line breaks are igno
   assert.equal(normalizeAppPassword(' abcd efgh ijkl mnop \n'), 'abcdefghijklmnop')
   assert.equal(normalizeAppPassword('   \n'), '')
 })
+
+test('the digest warns when Google has not read the sitemap and reports index coverage', () => {
+  const base = {
+    window: { startDate: '2026-09-07', endDate: '2026-10-04' },
+    summary: { impressions: 44, clicks: 0, ctr: 0, position: 17.5 },
+    opportunities: [],
+  }
+  const unread = buildDigestMail(snapshot({ search: { ...base, sitemap: { submitted: true, lastDownloaded: null, errors: 0, warnings: 0 }, index: { indexed: 6, total: 48, missing: [] } } }), site)
+  assert.match(unread.text, /Google登録: 6\/48ページ/)
+  assert.match(unread.text, /サイトマップ: 未読込/)
+  const read = buildDigestMail(snapshot({ search: { ...base, sitemap: { submitted: true, lastDownloaded: '2026-10-07T03:00:00Z', errors: 0, warnings: 0 }, index: { indexed: 30, total: 48, missing: [] } } }), site)
+  assert.match(read.text, /サイトマップ: 10\/7 12:00 読込/)
+})

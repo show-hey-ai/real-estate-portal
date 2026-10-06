@@ -1,10 +1,11 @@
 // Pure notification rules: what needs a person's attention and how it is worded.
 // Mails carry counts and admin links only, never buyer contact details or message bodies.
 
-import type { SearchOpportunity, SearchSummary } from './search-policy'
+import type { SitemapStatus } from './search-console'
+import type { IndexCoverage, SearchOpportunity, SearchSummary } from './search-policy'
 
 export interface NotificationSnapshot {
-  search?: { window: { startDate: string; endDate: string }; summary: SearchSummary; opportunities: SearchOpportunity[] } | null
+  search?: { window: { startDate: string; endDate: string }; summary: SearchSummary; opportunities: SearchOpportunity[]; sitemap?: SitemapStatus | null; index?: IndexCoverage | null } | null
   now: Date
   leads: { id: string; listingId: string }[]
   buyerMessages: { id: string; roomId: string }[]
@@ -115,7 +116,12 @@ function shortDate(isoDate: string): string {
 function searchLines(search: NotificationSnapshot['search'], siteUrl: string): string[] {
   if (!search) return []
   const { summary, window } = search
+  const sitemap = !search.sitemap ? null
+    : !search.sitemap.submitted ? '未送信'
+    : search.sitemap.lastDownloaded ? `${formatTokyoTime(new Date(search.sitemap.lastDownloaded))} 読込${search.sitemap.errors ? `・エラー${search.sitemap.errors}件` : ''}`
+    : '未読込'
   return [
+    ...(search.index ? [`■ Google登録: ${search.index.indexed}/${search.index.total}ページ${sitemap ? `（サイトマップ: ${sitemap}）` : ''}`] : []),
     `■ Google検索（${shortDate(window.startDate)}〜${shortDate(window.endDate)}）: 表示 ${summary.impressions} / クリック ${summary.clicks} / 平均順位 ${summary.position ?? '—'}`,
     ...search.opportunities.slice(0, 3).map((item) =>
       `- 改善候補（${OPPORTUNITY_LABELS[item.reason]}）: ${siteUrl}${item.path} 表示${item.impressions}・順位${item.position}${item.topQueries.length ? `・検索語「${item.topQueries.join('」「')}」` : ''}`),

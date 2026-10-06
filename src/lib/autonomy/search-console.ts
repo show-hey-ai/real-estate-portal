@@ -72,3 +72,48 @@ export async function querySearchAnalytics(keyPath: string, query: SearchQuery):
   if (!response.ok) throw new Error(`Search Console query failed (HTTP ${response.status}).`)
   return responseSchema.parse(await response.json()).rows ?? []
 }
+
+export interface SitemapStatus {
+  submitted: boolean
+  lastDownloaded: string | null
+  errors: number
+  warnings: number
+}
+
+const sitemapSchema = z.object({
+  lastDownloaded: z.string().optional(),
+  errors: z.union([z.string(), z.number()]).optional(),
+  warnings: z.union([z.string(), z.number()]).optional(),
+})
+
+export async function getSitemapStatus(keyPath: string, siteUrl: string, sitemapUrl: string): Promise<SitemapStatus> {
+  const token = await getAccessToken(keyPath)
+  const response = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/sitemaps/${encodeURIComponent(sitemapUrl)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  })
+  if (response.status === 404) return { submitted: false, lastDownloaded: null, errors: 0, warnings: 0 }
+  if (!response.ok) throw new Error(`Search Console sitemap lookup failed (HTTP ${response.status}).`)
+  const sitemap = sitemapSchema.parse(await response.json())
+  return { submitted: true, lastDownloaded: sitemap.lastDownloaded ?? null, errors: Number(sitemap.errors ?? 0), warnings: Number(sitemap.warnings ?? 0) }
+}
+
+const inspectionSchema = z.object({ inspectionResult: z.object({ indexStatusResult: z.object({ verdict: z.string().optional(), coverageState: z.string().optional() }).optional() }).optional() })
+
+// Google allows 2,000 inspections per property per day; the portal sitemap stays far below that.
+export async function inspectIndexStatus(keyPath: string, siteUrl: string, urls: string[]): Promise<Record<string, string>> {
+  const token = await getAccessToken(keyPath)
+  const states: Record<string, string> = {}
+  for (const url of urls.slice(0, 200)) {
+    const response = await fetch('https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inspectionUrl: url, siteUrl }),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    })
+    if (!response.ok) throw new Error(`Search Console inspection failed (HTTP ${response.status}).`)
+    const result = inspectionSchema.parse(await response.json()).inspectionResult?.indexStatusResult
+    states[url] = result?.verdict === 'PASS' ? 'indexed' : result?.coverageState || 'unknown'
+  }
+  return states
+}

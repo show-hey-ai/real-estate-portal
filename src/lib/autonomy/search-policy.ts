@@ -86,3 +86,18 @@ export function findSearchOpportunities(pages: SearchRow[], pageQueries: SearchR
         .map((query) => query.keys[1]),
     }))
 }
+
+export interface IndexCoverage {
+  indexed: number
+  total: number
+  missing: string[]
+}
+
+const MAX_MISSING_LISTED = 10
+
+export function summarizeIndex(states: Record<string, string>, siteUrl: string): IndexCoverage {
+  const origin = siteUrl.replace(/\/$/, '')
+  const urls = Object.keys(states)
+  const missing = urls.filter((url) => states[url] !== 'indexed').map((url) => (url.startsWith(origin) ? url.slice(origin.length) || '/' : url))
+  return { indexed: urls.length - missing.length, total: urls.length, missing: missing.slice(0, MAX_MISSING_LISTED) }
+}

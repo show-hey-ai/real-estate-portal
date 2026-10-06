@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { findSearchOpportunities, searchWindow, summarizeSearch } from '../src/lib/autonomy/search-policy'
+import { findSearchOpportunities, searchWindow, summarizeIndex, summarizeSearch } from '../src/lib/autonomy/search-policy'
 
 const host = 'https://portal.example.com'
 const row = (page: string, impressions: number, clicks: number, position: number) => ({ keys: [`${host}${page}`], impressions, clicks, ctr: impressions ? clicks / impressions : 0, position })
@@ -31,4 +31,13 @@ test('pages close to the first page and pages with weak CTR become opportunities
 
 test('nothing is suggested when there is too little data', () => {
   assert.deepEqual(findSearchOpportunities([row('/a', 5, 0, 12)], [], host), [])
+})
+
+test('index coverage counts indexed pages and lists a few missing paths', () => {
+  const coverage = summarizeIndex({
+    [`${host}/`]: 'indexed',
+    [`${host}/listings/a`]: 'URL is unknown to Google',
+    [`${host}/listings/b`]: 'Crawled - currently not indexed',
+  }, host)
+  assert.deepEqual(coverage, { indexed: 1, total: 3, missing: ['/listings/a', '/listings/b'] })
 })

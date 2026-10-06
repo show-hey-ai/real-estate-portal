@@ -2,13 +2,15 @@ import { access } from 'node:fs/promises'
 import { prisma } from '../db'
 import { getSiteUrl } from '../site-config'
 import { AUTONOMY_VERSION, PORTAL_VENTURE_ID } from './policy'
-import { querySearchAnalytics } from './search-console'
-import { findSearchOpportunities, searchWindow, summarizeSearch, type SearchOpportunity, type SearchSummary } from './search-policy'
+import { getSitemapStatus, inspectIndexStatus, querySearchAnalytics, type SitemapStatus } from './search-console'
+import { findSearchOpportunities, searchWindow, summarizeIndex, summarizeSearch, type IndexCoverage, type SearchOpportunity, type SearchSummary } from './search-policy'
 
 export interface SearchPerformance {
   window: { startDate: string; endDate: string }
   summary: SearchSummary
   opportunities: SearchOpportunity[]
+  sitemap: SitemapStatus | null
+  index: IndexCoverage | null
 }
 
 const DEFAULT_SITE = 'sc-domain:ziyou-fudosan.com'
@@ -21,6 +23,12 @@ async function readableFile(path: string | undefined): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+async function sitemapUrls(sitemapUrl: string): Promise<string[]> {
+  const response = await fetch(sitemapUrl, { signal: AbortSignal.timeout(20_000) })
+  if (!response.ok) throw new Error(`Sitemap unavailable (HTTP ${response.status}).`)
+  return [...(await response.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1])
 }
 
 // Once per Search Console data day: store a verified snapshot of portal search performance.
@@ -39,10 +47,18 @@ export async function runSearchSync(now = new Date(), env: Record<string, string
     querySearchAnalytics(keyPath, { ...query, dimensions: ['page'] }),
     querySearchAnalytics(keyPath, { ...query, dimensions: ['page', 'query'] }),
   ])
+  const sitemapUrl = `${siteUrl.replace(/\/$/, '')}/sitemap.xml`
+  // Coverage and sitemap state are diagnostics: a failure here must not lose the performance snapshot.
+  const [sitemap, index] = await Promise.all([
+    getSitemapStatus(keyPath, query.siteUrl, sitemapUrl).catch(() => null),
+    sitemapUrls(sitemapUrl).then((urls) => inspectIndexStatus(keyPath, query.siteUrl, urls)).then((states) => summarizeIndex(states, siteUrl)).catch(() => null),
+  ])
   const performance: SearchPerformance = {
     window,
     summary: summarizeSearch(pages),
     opportunities: findSearchOpportunities(pages, pageQueries, siteUrl),
+    sitemap,
+    index,
   }
   await prisma.autonomyRecord.create({
     data: {
