@@ -1,8 +1,9 @@
 'use client'
 
+import { FunnelText, useBuyerFunnelRecord, useBuyerFunnelHeaders } from '@/components/analytics/buyer-funnel'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,33 +12,45 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Building2, Loader2 } from 'lucide-react'
+import { safeAuthRedirect } from '@/lib/auth-redirect'
 import { AuthBrandPanel } from '@/components/auth/auth-brand-panel'
+import { AuthAlternatives } from '@/components/auth/auth-alternatives'
+import { authCallbackUrl } from '@/lib/login-methods'
 
 export default function RegisterPage() {
+  const recordFunnel = useBuyerFunnelRecord()
+  const funnelHeaders = useBuyerFunnelHeaders()
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = safeAuthRedirect(searchParams.get('redirect'))
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [alternativeBusy, setAlternativeBusy] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (alternativeBusy || isLoading) return
 
     if (password !== confirmPassword) {
       toast.error(t('passwordMismatch'))
       return
     }
 
+    recordFunnel('submit', 'registerButton')
     setIsLoading(true)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-
+      options: {
+        emailRedirectTo: authCallbackUrl(window.location.origin, redirect, funnelHeaders['x-ziyou-funnel-assignment']),
+      },
     })
 
     if (error) {
@@ -46,8 +59,10 @@ export default function RegisterPage() {
       return
     }
 
+    if (data.session) await fetch('/api/analytics/funnel/registration', { method: 'POST', headers: funnelHeaders }).catch(() => {})
     toast.success(t('registrationSuccess'))
-    router.push('/login')
+    router.push(data.session ? redirect : `/login?redirect=${encodeURIComponent(redirect)}`)
+    router.refresh()
   }
 
   return (
@@ -60,10 +75,10 @@ export default function RegisterPage() {
             <Building2 className="h-8 w-8" />
             <span className="font-bold text-xl">{tCommon('appName')}</span>
           </Link>
-          <CardTitle>{t('registerTitle')}</CardTitle>
+          <CardTitle><FunnelText field="registerTitle" baseline={t('registerTitle')} /></CardTitle>
           <CardDescription>
             {t('hasAccount')}{' '}
-            <Link href="/login" className="text-primary hover:underline">
+            <Link href={`/login?redirect=${encodeURIComponent(redirect)}`} className="text-primary hover:underline">
               {t('loginTitle')}
             </Link>
           </CardDescription>
@@ -78,7 +93,7 @@ export default function RegisterPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || alternativeBusy}
                 required
               />
             </div>
@@ -89,7 +104,7 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || alternativeBusy}
                 required
                 minLength={6}
               />
@@ -101,22 +116,23 @@ export default function RegisterPage() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || alternativeBusy}
                 required
                 minLength={6}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full" disabled={isLoading || alternativeBusy}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {tCommon('loading')}
                 </>
               ) : (
-                t('registerButton')
+                <FunnelText field="registerButton" baseline={t('registerButton')} />
               )}
             </Button>
           </form>
+          <AuthAlternatives redirect={redirect} disabled={isLoading} onBusyChange={setAlternativeBusy} />
         </CardContent>
       </Card>
       </div>

@@ -10,5 +10,6 @@ export const config = {
     '/admin/:path*',
     '/favorites/:path*',
     '/inquiry/:path*',
+    '/chats/:path*',
   ],
 }
