@@ -2,7 +2,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 
-const CARD_FIELDS = 'id, city, propertyType, price, addressPublic, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted, sortOrder)'
+const CARD_FIELDS = 'id, city, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted, sortOrder)'
 
 /** Newest published listings, shaped for ListingCard. Failures return an empty list. */
 export async function getLatestListingCards(limit: number) {
@@ -25,7 +25,7 @@ export async function getLatestListingCards(limit: number) {
   }))
 }
 
-const ROW_FIELDS = 'id, city, propertyType, price, addressPublic, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted, sortOrder)'
+const ROW_FIELDS = 'id, city, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted, sortOrder)'
 
 /** All published listings (up to 500) as raw rows for collection pages. */
 export async function getPublicListingRows() {

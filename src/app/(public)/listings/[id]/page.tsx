@@ -38,6 +38,7 @@ import { getPortalCategoryLabel } from '@/lib/portal-copy'
 import {
   absoluteUrl,
   buildListingDescription,
+  buildListingHeading,
   buildListingTitle,
   getOpenGraphLocale,
   getPrimaryListingImage,
@@ -140,7 +141,7 @@ function schemaPropertyType(propertyType: string | null | undefined): string {
 async function getRelatedListings(current: RelatedCandidate & UnitPriceSource) {
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('id, city, propertyType, price, addressPublic, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted)')
+    .select('id, city, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted)')
     .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])
@@ -299,6 +300,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                 {getPortalCategoryLabel(locale, getMarketCategory(formattedListing)!)}
               </Badge>
             )}
+            <h1 className="mb-3 text-xl font-semibold leading-snug text-[#1b293a] md:text-2xl">{buildListingHeading(formattedListing, locale)}</h1>
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <p className="text-3xl font-bold text-primary mb-2">

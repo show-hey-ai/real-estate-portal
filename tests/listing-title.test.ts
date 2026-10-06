@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildListingTitle } from '../src/lib/site-config'
+import { buildListingHeading, buildListingTitle } from '../src/lib/site-config'
 
 const listing = { propertyType: '区分マンション', price: 59_800_000, addressPublic: '東京都練馬区下石神井3丁目1-1 201号室', city: '練馬区', buildingArea: '75.40' }
 
@@ -16,4 +16,12 @@ test('Japanese titles keep the published address', () => {
 
 test('English land titles use land area and fall back to Tokyo without a ward', () => {
   assert.match(buildListingTitle({ propertyType: '土地', price: 80_000_000, landArea: 120, city: null }, 'en'), /^Land in Tokyo \| 120 m² \| /)
+})
+
+test('a known building name leads the Japanese title and becomes the heading', () => {
+  const named = { ...listing, descriptionJa: 'ライオンズグローベル石神井公園。75.40㎡の3LDK' }
+  assert.match(buildListingTitle(named, 'ja'), /^ライオンズグローベル石神井公園 \| 区分マンション \| /)
+  assert.equal(buildListingHeading(named, 'ja'), 'ライオンズグローベル石神井公園')
+  assert.equal(buildListingHeading(named, 'en'), 'Condominium in Nerima, Tokyo')
+  assert.equal(buildListingHeading(listing, 'ja'), '練馬区の区分マンション')
 })

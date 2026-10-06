@@ -211,6 +211,7 @@ export default async function ListingsPage({
       hospitalityCategory,
       price,
       addressPublic,
+      descriptionJa,
       stations,
       builtYear,
       buildingArea,

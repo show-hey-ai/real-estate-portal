@@ -15,7 +15,7 @@ const MAX_LISTED = 200
 async function publishedListings(): Promise<LlmsListing[]> {
   try {
     const { data, error } = await createServiceClient().from('listings')
-      .select('id, propertyType, city, price, buildingArea, landArea, builtYear')
+      .select('id, propertyType, city, price, buildingArea, landArea, builtYear, descriptionJa')
       .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
       .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
       .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])

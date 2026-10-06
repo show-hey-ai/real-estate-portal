@@ -38,7 +38,7 @@ function textFor(locale: string) {
 async function getPublicRows() {
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('id, city, propertyType, price, addressPublic, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted)')
+    .select('id, city, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted)')
     .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])

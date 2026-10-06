@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { pickCoverImage } from '@/lib/cover-image'
+import { extractBuildingName } from '@/lib/building-name'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
@@ -50,6 +51,7 @@ interface ListingCardProps {
     hospitalityCategory?: string | null
     price: bigint | null
     addressPublic: string | null
+    descriptionJa?: string | null
     stations?: Station[] | null
     builtYear: number | null
     buildingArea: number | null
@@ -88,6 +90,7 @@ export function ListingCard({
 
   const mainImage = pickCoverImage(listing.media)
   const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
+  const buildingName = extractBuildingName(listing.descriptionJa)
   const stations = normalizeTransitStations(listing.stations)
   const primaryStation = stations[0]
   const primaryTransitLabel = formatTransitAccessLabel(primaryStation, locale)
@@ -99,7 +102,10 @@ export function ListingCard({
   const isNew = publishedAtTime != null && publishedAtTime > NEW_LISTING_CUTOFF
 
   return (
-    <Card className="group overflow-hidden rounded-xl border-[#dbe2e9] bg-white py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="group relative overflow-hidden rounded-xl border-[#dbe2e9] bg-white py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+      <div className="absolute right-2 top-2 z-10 rounded-lg bg-white/90 shadow-sm backdrop-blur">
+        <CompareToggle listingId={listing.id} compact />
+      </div>
       <Link href={`/listings/${listing.id}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-[#e9f0f7]">
           {mainImage ? (
@@ -119,7 +125,7 @@ export function ListingCard({
 
           {mainImage?.category !== 'FLOORPLAN' && <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(12,28,24,0.82)_100%)]" />}
 
-          <div className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5">
+          <div className="absolute left-3 top-3 flex max-w-[calc(100%-4.5rem)] flex-wrap gap-1.5">
             <Badge className="rounded-[4px] bg-[#142337]/88 px-2 text-[11px] font-medium text-white hover:bg-[#142337]/88">
               {category === 'investment' ? <Building2 className="mr-1 h-3 w-3" /> : category === 'land' ? <Map className="mr-1 h-3 w-3" /> : <House className="mr-1 h-3 w-3" />}
               {category ? getPortalCategoryLabel(locale, category) : t('property')}
@@ -172,7 +178,6 @@ export function ListingCard({
               >
                 <Link href={`/chats?listing=${listing.id}&start=1`}><MessageCircle aria-hidden="true" className="h-4 w-4" /></Link>
               </Button>
-            <CompareToggle listingId={listing.id} compact />
             {showFavoriteButton && (
               <FavoriteIconButton
                 listingId={listing.id}
@@ -185,6 +190,7 @@ export function ListingCard({
         </div>
 
         <div className="mt-3 space-y-2">
+          {buildingName && locale !== 'en' && <p className="truncate text-sm font-semibold text-[#1b293a]" title={buildingName}>{buildingName}</p>}
           {safeAddress && (
             <div className="flex items-center gap-2 text-sm text-[#657487]">
               <MapPin className="h-3.5 w-3.5 shrink-0 text-[#57769b]" />
