@@ -34,7 +34,7 @@ export function Header({ user }: HeaderProps) {
 
   return <header data-testid="public-header" className="relative z-50 w-full border-b md:sticky md:top-0 border-[#dbe2e9] bg-white">
     <div className="container grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 py-3 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-5 md:py-4">
-      <Link href="/" className="flex items-center gap-2 text-[#142337]" aria-label={`ZIYOU ${t('common.appName')}`}>
+      <Link href="/" className="flex items-center gap-2 text-[#142337]" aria-label={`ZIYOU ${t('common.appName')} REAL ESTATE`}>
         <span className="text-[1.4rem] font-semibold tracking-[0.12em]">ZIYOU</span>
         <span className="hidden border-l border-[#cbd5df] pl-2 text-[10px] font-medium leading-4 text-[#64778b] xl:block">{t('common.appName')}<br />REAL ESTATE</span>
       </Link>

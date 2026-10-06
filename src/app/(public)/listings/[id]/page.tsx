@@ -294,7 +294,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
       <ViewTracker listingId={listing.id} />
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 min-w-0">
-          <ListingGallery media={formattedListing.media} />
+          <ListingGallery media={formattedListing.media} title={buildListingHeading(formattedListing, locale)} />
 
           <div className="mt-8">
             {getMarketCategory(formattedListing) && (
