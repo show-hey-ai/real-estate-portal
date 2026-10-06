@@ -69,6 +69,20 @@ test('the digest summarises supply, demand and items needing attention', () => {
   assert.deepEqual(mail.keys, ['notify:digest:2026-10-07'])
 })
 
+test('the digest reports Google Search results and the top improvement candidates when available', () => {
+  const mail = buildDigestMail(snapshot({
+    search: {
+      window: { startDate: '2026-09-07', endDate: '2026-10-04' },
+      summary: { impressions: 150, clicks: 1, ctr: 1 / 150, position: 22.2 },
+      opportunities: [{ path: '/guides/tokyo-cap-rate-guide', impressions: 18, clicks: 0, position: 10.9, reason: 'near_first_page', topQueries: ['tokyo cap rate'] }],
+    },
+  }), site)
+  assert.match(mail.text, /Google検索（9\/7〜10\/4）: 表示 150 \/ クリック 1 \/ 平均順位 22\.2/)
+  assert.match(mail.text, /1ページ目まであと少し/)
+  assert.match(mail.text, /\/guides\/tokyo-cap-rate-guide/)
+  assert.match(mail.text, /tokyo cap rate/)
+})
+
 test('mail settings are optional and incomplete settings disable sending', () => {
   assert.equal(readNotificationConfig({}), null)
   assert.equal(readNotificationConfig({ NOTIFY_EMAIL_TO: 'a@example.com', SMTP_USER: 'u' }), null)

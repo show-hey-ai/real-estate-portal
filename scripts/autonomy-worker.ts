@@ -9,6 +9,7 @@ async function main() {
   const { prisma } = await import('../src/lib/db')
   const { reinsIntake, maisokuImport } = await import('../src/lib/autonomy/intake')
   const { runNotifications } = await import('../src/lib/autonomy/notifications')
+  const { runSearchSync } = await import('../src/lib/autonomy/search-sync')
   const once = process.argv.includes('--once')
   const notificationIntervalMs = 5 * 60_000
   let lastNotificationAt = 0
@@ -22,6 +23,8 @@ async function main() {
       // Notifications run even while the loop is paused: expiring listings and inquiries still need a person.
       if (once || Date.now() - lastNotificationAt >= notificationIntervalMs) {
         lastNotificationAt = Date.now()
+        try { console.log(JSON.stringify({ search: await runSearchSync() })) }
+        catch (error) { console.error('Search Console sync failed; it will be retried.', error instanceof Error ? error.message : 'unknown error') }
         try { console.log(JSON.stringify({ notifications: await runNotifications() })) }
         catch (error) { console.error('Notification check failed; it will be retried.', error instanceof Error ? error.message : 'unknown error') }
       }

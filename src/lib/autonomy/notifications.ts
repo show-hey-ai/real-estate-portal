@@ -3,6 +3,7 @@ import { prisma } from '../db'
 import { getPublicListingScope } from '../public-listing-scope'
 import { getSiteUrl } from '../site-config'
 import { AUTONOMY_VERSION, PORTAL_VENTURE_ID } from './policy'
+import { latestSearchPerformance } from './search-sync'
 import {
   EXPIRY_WARNING_HOURS, buildAlertMail, buildDigestMail, digestKey, isDigestDue, readNotificationConfig,
   type NotificationConfig, type NotificationMail, type NotificationSnapshot,
@@ -30,7 +31,7 @@ async function latestObservation() {
 export async function collectSnapshot(now = new Date()): Promise<NotificationSnapshot> {
   const since = new Date(now.getTime() - LOOKBACK_MS)
   const expiryLimit = new Date(now.getTime() + EXPIRY_WARNING_HOURS * 3600_000)
-  const [leads, messages, expiring, failedJobs, published, drafts, observation] = await Promise.all([
+  const [leads, messages, expiring, failedJobs, published, drafts, observation, search] = await Promise.all([
     prisma.lead.findMany({ where: { createdAt: { gte: since } }, select: { id: true, listingId: true }, take: MAX_ITEMS }),
     prisma.propertyChatMessage.findMany({
       where: { createdAt: { gte: since } },
@@ -51,6 +52,7 @@ export async function collectSnapshot(now = new Date()): Promise<NotificationSna
     prisma.listing.count({ where: getPublicListingScope() }),
     prisma.listing.count({ where: { status: 'DRAFT' } }),
     latestObservation(),
+    latestSearchPerformance(),
   ])
   return {
     now,
@@ -59,6 +61,7 @@ export async function collectSnapshot(now = new Date()): Promise<NotificationSna
     expiringListings: expiring.map((listing) => ({ id: listing.id, label: listingLabel(listing), validUntil: listing.autonomyValidUntil! })),
     failedJobs,
     metrics: { published, drafts, ...observation },
+    search,
   }
 }
 

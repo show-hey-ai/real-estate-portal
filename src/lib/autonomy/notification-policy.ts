@@ -1,7 +1,10 @@
 // Pure notification rules: what needs a person's attention and how it is worded.
 // Mails carry counts and admin links only, never buyer contact details or message bodies.
 
+import type { SearchOpportunity, SearchSummary } from './search-policy'
+
 export interface NotificationSnapshot {
+  search?: { window: { startDate: string; endDate: string }; summary: SearchSummary; opportunities: SearchOpportunity[] } | null
   now: Date
   leads: { id: string; listingId: string }[]
   buyerMessages: { id: string; roomId: string }[]
@@ -99,6 +102,26 @@ function count(value: number | null, unit = ''): string {
   return value == null ? '未計測' : `${value}${unit}`
 }
 
+const OPPORTUNITY_LABELS: Record<SearchOpportunity['reason'], string> = {
+  near_first_page: '1ページ目まであと少し',
+  low_ctr: '表示のわりにクリックが少ない',
+}
+
+function shortDate(isoDate: string): string {
+  const [, month, day] = isoDate.split('-').map(Number)
+  return `${month}/${day}`
+}
+
+function searchLines(search: NotificationSnapshot['search'], siteUrl: string): string[] {
+  if (!search) return []
+  const { summary, window } = search
+  return [
+    `■ Google検索（${shortDate(window.startDate)}〜${shortDate(window.endDate)}）: 表示 ${summary.impressions} / クリック ${summary.clicks} / 平均順位 ${summary.position ?? '—'}`,
+    ...search.opportunities.slice(0, 3).map((item) =>
+      `- 改善候補（${OPPORTUNITY_LABELS[item.reason]}）: ${siteUrl}${item.path} 表示${item.impressions}・順位${item.position}${item.topQueries.length ? `・検索語「${item.topQueries.join('」「')}」` : ''}`),
+  ]
+}
+
 export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string): NotificationMail {
   const { year, month, day } = tokyoDate(snapshot.now)
   const { metrics } = snapshot
@@ -108,6 +131,7 @@ export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string)
     `■ ${EXPIRY_WARNING_HOURS}時間以内に掲載期限: ${snapshot.expiringListings.length}件`,
     ...expiryLines(snapshot.expiringListings, siteUrl),
     `■ 失敗した自動処理（24時間）: ${snapshot.failedJobs.length}件`,
+    ...searchLines(snapshot.search, siteUrl),
     '',
     `管理画面: ${siteUrl}/admin`,
   ]

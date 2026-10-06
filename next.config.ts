@@ -26,6 +26,14 @@ const nextConfig: NextConfig = {
 
     return config
   },
+  // Retired hospitality-era pages that still receive search impressions.
+  async redirects() {
+    return [
+      { source: '/hotel-airbnb-checklist', destination: '/buying-guide', permanent: true },
+      { source: '/youtube', destination: '/', permanent: true },
+      { source: '/checklists/:path*', destination: '/buying-guide', permanent: true },
+    ]
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '50mb',
