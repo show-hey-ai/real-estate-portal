@@ -13,9 +13,12 @@ const copy = {
 interface PurchaseCostsProps {
   price: number
   locale: string
+  /** Overrides the heading, e.g. for a worked example on the buying guide. */
+  title?: string
+  showGuideLink?: boolean
 }
 
-export function PurchaseCosts({ price, locale }: PurchaseCostsProps) {
+export function PurchaseCosts({ price, locale, title, showGuideLink = true }: PurchaseCostsProps) {
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const costs = estimatePurchaseCosts(price)
   const yen = (value: number) => formatYenWords(Math.round(value / 10_000) * 10_000, locale)
@@ -27,7 +30,7 @@ export function PurchaseCosts({ price, locale }: PurchaseCostsProps) {
     { label: text.other, value: otherMid, display: text.range(yen(costs.otherLow), yen(costs.otherHigh)), tone: 'bg-[#8fb0d6]' },
   ]
   return <section className="mt-6 rounded-xl border border-[#dbe2e9] bg-white p-4 md:p-6" aria-labelledby="purchase-costs-title" data-testid="purchase-costs">
-    <h2 id="purchase-costs-title" className="flex items-center gap-2 text-lg font-semibold"><Receipt aria-hidden="true" className="h-5 w-5 text-primary" />{text.title}</h2>
+    <h2 id="purchase-costs-title" className="flex items-center gap-2 text-lg font-semibold"><Receipt aria-hidden="true" className="h-5 w-5 text-primary" />{title ?? text.title}</h2>
     <div className="mt-4 rounded-lg bg-[#f4f7fb] p-4">
       <p className="text-xs font-semibold text-[#4a6789]">{text.total}</p>
       <p className="mt-1 text-2xl font-bold tabular-nums text-[#1b293a]">{text.range(yen(price + costs.totalLow), yen(price + costs.totalHigh))}</p>
@@ -40,6 +43,6 @@ export function PurchaseCosts({ price, locale }: PurchaseCostsProps) {
       </dl>
     </div>
     <p className="mt-4 text-xs leading-5 text-[#536274]">{text.note}{costs.lowPriceRule && ` ${text.lowPrice}`}</p>
-    <Link href="/buying-guide" className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-[#274d7d] hover:underline">{text.guide} →</Link>
+    {showGuideLink && <Link href="/buying-guide" className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-[#274d7d] hover:underline">{text.guide} →</Link>}
   </section>
 }
