@@ -53,6 +53,8 @@ import {
   translateRailwayLine,
 } from '@/lib/translate-fields'
 import { withBuildingName } from '@/lib/building-name'
+import { listingsSnippet, titleTemplate } from '@/lib/home-snippet'
+import { countPublicListings } from '@/lib/public-listing-cards'
 
 interface ListingsPageProps {
   searchParams: Promise<{
@@ -110,12 +112,15 @@ export async function generateMetadata({
           ? translatePropertyType(params.type, locale) || params.type
           : null
 
-  const title = filterLabel
-    ? `${filterLabel} - ${siteCopy.listingsTitle}`
-    : siteCopy.listingsTitle
-  const description = activeFilters
-    ? `${siteCopy.listingsDescription} ${filterLabel ? `${filterLabel}.` : ''}`.trim()
-    : siteCopy.listingsDescription
+  const overview = activeFilters ? null : listingsSnippet(locale, await countPublicListings())
+  const title = overview
+    ? titleTemplate(locale).replace('%s', overview.title)
+    : filterLabel
+      ? `${filterLabel} - ${siteCopy.listingsTitle}`
+      : siteCopy.listingsTitle
+  const description = overview
+    ? overview.description
+    : `${siteCopy.listingsDescription} ${filterLabel ? `${filterLabel}.` : ''}`.trim()
 
   return {
     title: { absolute: title },

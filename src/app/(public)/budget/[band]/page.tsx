@@ -9,6 +9,7 @@ import { getPublicListingRows } from '@/lib/public-listing-cards'
 import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 import { localeAlternates } from '@/lib/locale-url'
 import { shareMetadata } from '@/lib/site-config'
+import { countedTitle } from '@/lib/home-snippet'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const range = priceBandRange(band, locale)
   const text = textFor(locale)
   const alternates = localeAlternates(`/budget/${slug}`, locale)
-  return { title: text.title(range), description: text.description(range, rows.length), alternates, ...shareMetadata({ title: text.title(range), description: text.description(range, rows.length), url: alternates.canonical, locale }), robots: rows.length ? { index: true, follow: true } : { index: false, follow: true } }
+  return { title: countedTitle(text.title(range), rows.length, locale), description: text.description(range, rows.length), alternates, ...shareMetadata({ title: countedTitle(text.title(range), rows.length, locale), description: text.description(range, rows.length), url: alternates.canonical, locale }), robots: rows.length ? { index: true, follow: true } : { index: false, follow: true } }
 }
 
 export default async function BudgetPage({ params }: Props) {

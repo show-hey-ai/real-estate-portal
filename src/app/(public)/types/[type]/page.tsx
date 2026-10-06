@@ -9,6 +9,7 @@ import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-v
 import { localeAlternates } from '@/lib/locale-url'
 import { shareMetadata } from '@/lib/site-config'
 import { pickCoverImage } from '@/lib/cover-image'
+import { countedTitle } from '@/lib/home-snippet'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const text = textFor(locale)
   const alternates = localeAlternates(`/types/${type}`, locale)
   const cover = rows.map((row) => pickCoverImage((row.media || []).filter((item) => item.isAdopted))).find(Boolean)
-  return { title: text.title(label), description: text.description(label, rows.length), alternates, ...shareMetadata({ title: text.title(label), description: text.description(label, rows.length), url: alternates.canonical, locale, image: cover?.url }), robots: rows.length ? { index: true, follow: true } : { index: false, follow: true } }
+  return { title: countedTitle(text.title(label), rows.length, locale), description: text.description(label, rows.length), alternates, ...shareMetadata({ title: countedTitle(text.title(label), rows.length, locale), description: text.description(label, rows.length), url: alternates.canonical, locale, image: cover?.url }), robots: rows.length ? { index: true, follow: true } : { index: false, follow: true } }
 }
 
 export default async function TypePage({ params }: Props) {

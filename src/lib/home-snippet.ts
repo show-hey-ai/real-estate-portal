@@ -32,3 +32,35 @@ export function homeSnippet(locale: string, count: number): HomeSnippet {
       }
   }
 }
+
+const BRAND: Record<string, string> = { ja: '｜自由不動産', 'zh-TW': '｜自由不動產', 'zh-CN': '｜自由不动产' }
+
+/** Title template: Japanese and Chinese searchers see the local company name. */
+export function titleTemplate(locale: string): string {
+  return `%s${BRAND[locale] ?? ' | Ziyou Real Estate'}`
+}
+
+/** Appends the live count to a collection title, e.g. 「港区の売買物件（4件）」. Zero leaves the title as is. */
+export function countedTitle(title: string, count: number, locale: string): string {
+  if (count <= 0) return title
+  switch (locale) {
+    case 'ja': return `${title}（${count}件）`
+    case 'zh-TW': return `${title}（${count}筆）`
+    case 'zh-CN': return `${title}（${count}套）`
+    default: return `${title} (${count})`
+  }
+}
+
+/** Unfiltered /listings snippet. */
+export function listingsSnippet(locale: string, count: number): HomeSnippet {
+  switch (locale) {
+    case 'ja':
+      return { title: countedTitle('東京23区の売買物件一覧', count, locale), description: '東京23区の中古マンション・一棟ビル・アパート・土地を、エリア・駅・価格・面積・築年で絞り込み。写真・間取り・㎡単価を見比べて、登録なしで相談できます。' }
+    case 'zh-TW':
+      return { title: countedTitle('東京23區待售物件一覽', count, locale), description: '依區域、車站、價格、面積與屋齡篩選東京23區的公寓、整棟大樓、公寓樓與土地。比較照片、格局與單價，免註冊即可諮詢。' }
+    case 'zh-CN':
+      return { title: countedTitle('东京23区在售房源一览', count, locale), description: '按区域、车站、价格、面积和房龄筛选东京23区的公寓、整栋大楼、公寓楼和土地。比较照片、户型和单价，无需注册即可咨询。' }
+    default:
+      return { title: countedTitle("All properties for sale in Tokyo's 23 wards", count, locale), description: 'Filter Tokyo condos, whole buildings, apartment buildings and land by ward, station, price, size and age. Compare photos, floor plans and price per m², and ask without signing up.' }
+  }
+}

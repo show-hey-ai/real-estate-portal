@@ -14,6 +14,7 @@ import {
 } from '@/lib/site-config'
 import { BuyerFunnelProvider } from '@/components/analytics/buyer-funnel'
 import './globals.css'
+import { titleTemplate } from '@/lib/home-snippet'
 
 const notoSansJP = Noto_Sans_JP({
   variable: '--font-noto-sans-jp',
@@ -29,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(getSiteUrl()),
     title: {
       default: siteCopy.title,
-      template: '%s | Ziyou Real Estate',
+      template: titleTemplate(locale),
     },
     description: siteCopy.description,
     applicationName: 'Ziyou Real Estate',

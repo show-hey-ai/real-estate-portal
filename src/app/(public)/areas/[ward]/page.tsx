@@ -20,16 +20,17 @@ import { pickCoverImage } from '@/lib/cover-image'
 import { unitPriceOf } from '@/lib/unit-price'
 import { UnitPriceChart } from '@/components/listing/unit-price-chart'
 import { withBuildingName } from '@/lib/building-name'
+import { countedTitle } from '@/lib/home-snippet'
 
 export const dynamic = 'force-dynamic'
 
 type Props = { params: Promise<{ ward: string }> }
 
 const copy = {
-  ja: { unitTitle: '物件ごとの㎡単価', unitNote: '公開中の物件の売出価格を面積で割った参考値です。成約価格や相場ではありません。', title: (ward: string) => `${ward}の売買物件（マンション・戸建て・土地）`, intro: (ward: string, count: number) => `${ward}で公開中の売買物件は${count}件です。価格・広さ・駅距離を比べて、気になる物件は登録なしで相談できます。`, empty: (ward: string) => `${ward}で現在公開中の物件はありません。ご希望の条件をお知らせいただければ、紹介できる物件を確認します。`, range: '掲載価格の範囲', types: '物件の種類', listings: '公開中の物件', article: 'この区の物件比較記事を読む', all: '条件を指定して探す', match: '購入条件を整理する', home: 'ホーム', areas: 'エリア', description: (ward: string, count: number) => `${ward}の売買物件${count}件。中古マンション・戸建て・土地の価格、広さ、駅距離を比較。日本語・英語・中国語で購入相談に対応する自由不動産のポータル。` },
+  ja: { unitTitle: '物件ごとの㎡単価', unitNote: '公開中の物件の売出価格を面積で割った参考値です。成約価格や相場ではありません。', title: (ward: string) => `${ward}の中古マンション・戸建て・土地の売買物件`, intro: (ward: string, count: number) => `${ward}で公開中の売買物件は${count}件です。価格・広さ・駅距離を比べて、気になる物件は登録なしで相談できます。`, empty: (ward: string) => `${ward}で現在公開中の物件はありません。ご希望の条件をお知らせいただければ、紹介できる物件を確認します。`, range: '掲載価格の範囲', types: '物件の種類', listings: '公開中の物件', article: 'この区の物件比較記事を読む', all: '条件を指定して探す', match: '購入条件を整理する', home: 'ホーム', areas: 'エリア', description: (ward: string, count: number) => `${ward}の売買物件${count}件。中古マンション・戸建て・土地の価格、広さ、駅距離を比較。日本語・英語・中国語で購入相談に対応する自由不動産のポータル。` },
   en: { unitTitle: 'Price per m² by listing', unitNote: 'Asking price divided by area for each listing; not transaction prices or a market valuation.', title: (ward: string) => `Property for sale in ${ward}, Tokyo`, intro: (ward: string, count: number) => `${count} properties are for sale in ${ward} now. Compare prices, sizes and station access, and ask about any of them without signing up.`, empty: (ward: string) => `No properties are listed in ${ward} right now. Tell us what you are looking for and we will check what we can introduce.`, range: 'Asking-price range', types: 'Property types', listings: 'Properties for sale', article: 'Read the property comparison for this ward', all: 'Search with filters', match: 'Set your purchase criteria', home: 'Home', areas: 'Areas', description: (ward: string, count: number) => `${count} properties for sale in ${ward}, Tokyo. Compare condominium, house and land prices, sizes and station access, with support in English, Japanese and Chinese.` },
-  'zh-TW': { unitTitle: '各物件每平方公尺單價', unitNote: '以刊登物件的開價除以面積計算的參考值，並非成交價或市場行情。', title: (ward: string) => `${ward}待售物件（公寓・獨棟・土地）`, intro: (ward: string, count: number) => `${ward}目前刊登中的待售物件共${count}筆。可比較價格、面積與車站距離，有興趣的物件免註冊即可諮詢。`, empty: (ward: string) => `${ward}目前沒有刊登中的物件。請告訴我們您的條件，我們會確認可介紹的物件。`, range: '刊登價格範圍', types: '物件類型', listings: '刊登中的物件', article: '閱讀本區物件比較文章', all: '指定條件搜尋', match: '整理購屋條件', home: '首頁', areas: '區域', description: (ward: string, count: number) => `東京${ward}待售物件${count}筆。比較公寓、獨棟與土地的價格、面積與車站距離，提供中文、日文、英文購屋諮詢。` },
-  'zh-CN': { unitTitle: '各房源每平方米单价', unitNote: '以在售房源的挂牌价除以面积计算的参考值，并非成交价或市场行情。', title: (ward: string) => `${ward}在售房源（公寓・独栋・土地）`, intro: (ward: string, count: number) => `${ward}当前在售房源共${count}套。可比较价格、面积与车站距离，感兴趣的房源免注册即可咨询。`, empty: (ward: string) => `${ward}目前没有在售房源。请告诉我们您的条件，我们会确认可介绍的房源。`, range: '挂牌价格范围', types: '房源类型', listings: '在售房源', article: '阅读本区房源比较文章', all: '指定条件搜索', match: '整理购房条件', home: '首页', areas: '区域', description: (ward: string, count: number) => `东京${ward}在售房源${count}套。比较公寓、独栋与土地的价格、面积与车站距离，提供中文、日文、英文购房咨询。` },
+  'zh-TW': { unitTitle: '各物件每平方公尺單價', unitNote: '以刊登物件的開價除以面積計算的參考值，並非成交價或市場行情。', title: (ward: string) => `${ward}公寓・獨棟・土地待售物件`, intro: (ward: string, count: number) => `${ward}目前刊登中的待售物件共${count}筆。可比較價格、面積與車站距離，有興趣的物件免註冊即可諮詢。`, empty: (ward: string) => `${ward}目前沒有刊登中的物件。請告訴我們您的條件，我們會確認可介紹的物件。`, range: '刊登價格範圍', types: '物件類型', listings: '刊登中的物件', article: '閱讀本區物件比較文章', all: '指定條件搜尋', match: '整理購屋條件', home: '首頁', areas: '區域', description: (ward: string, count: number) => `東京${ward}待售物件${count}筆。比較公寓、獨棟與土地的價格、面積與車站距離，提供中文、日文、英文購屋諮詢。` },
+  'zh-CN': { unitTitle: '各房源每平方米单价', unitNote: '以在售房源的挂牌价除以面积计算的参考值，并非成交价或市场行情。', title: (ward: string) => `${ward}公寓・独栋・土地在售房源`, intro: (ward: string, count: number) => `${ward}当前在售房源共${count}套。可比较价格、面积与车站距离，感兴趣的房源免注册即可咨询。`, empty: (ward: string) => `${ward}目前没有在售房源。请告诉我们您的条件，我们会确认可介绍的房源。`, range: '挂牌价格范围', types: '房源类型', listings: '在售房源', article: '阅读本区房源比较文章', all: '指定条件搜索', match: '整理购房条件', home: '首页', areas: '区域', description: (ward: string, count: number) => `东京${ward}在售房源${count}套。比较公寓、独栋与土地的价格、面积与车站距离，提供中文、日文、英文购房咨询。` },
 } as const
 
 function textFor(locale: string) {
@@ -61,7 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const cover = wardRows.map((row) => pickCoverImage((row.media || []).filter((item) => item.isAdopted))).find(Boolean)
   const alternates = localeAlternates(`/areas/${slug}`, locale)
   // Empty wards stay reachable from the map but are not offered to search engines as thin pages.
-  return { title: text.title(label), description: text.description(label, count), alternates, ...shareMetadata({ title: text.title(label), description: text.description(label, count), url: alternates.canonical, locale, image: cover?.url }), robots: count ? { index: true, follow: true } : { index: false, follow: true } }
+  return { title: countedTitle(text.title(label), count, locale), description: text.description(label, count), alternates, ...shareMetadata({ title: countedTitle(text.title(label), count, locale), description: text.description(label, count), url: alternates.canonical, locale, image: cover?.url }), robots: count ? { index: true, follow: true } : { index: false, follow: true } }
 }
 
 export default async function WardPage({ params }: Props) {
