@@ -93,7 +93,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden rounded-2xl bg-[#edf3f9]">
         <div className="grid md:grid-cols-[1.1fr_0.9fr]">
           <div className="relative z-10 px-6 py-8 md:px-10 md:py-10">
-            <p className="text-xs font-semibold tracking-wider text-[#57769b]">{copy.eyebrow}</p>
+            <p className="text-xs font-semibold tracking-wider text-[#4a6789]">{copy.eyebrow}</p>
             <h1 className="mt-3 max-w-xl text-balance text-2xl font-semibold leading-snug tracking-tight md:text-4xl">{market.personalTitle}</h1>
             <p className="mt-4 max-w-lg text-sm leading-7 text-[#536274]">{market.personalDescription}</p>
             <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">

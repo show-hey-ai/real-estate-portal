@@ -10,7 +10,7 @@ const copy = {
 } as const
 
 function tone(count: number, max: number): string {
-  if (count === 0) return 'border-[#e5eaf0] bg-[#f6f8fa] text-[#9aa6b2]'
+  if (count === 0) return 'border-[#e5eaf0] bg-[#f6f8fa] text-[#5f6b78]'
   const share = count / Math.max(max, 1)
   if (share > 0.66) return 'border-[#18375f] bg-[#274d7d] text-white hover:bg-[#18375f]'
   if (share > 0.33) return 'border-[#5f84b0] bg-[#8fb0d6] text-[#0f2744] hover:bg-[#7aa0cc]'
@@ -43,11 +43,12 @@ export function WardMap({ locale, counts }: WardMapProps) {
         const content = <>
           <span className="w-full break-words text-[9px] font-semibold leading-tight sm:text-xs md:text-sm">{label}</span>
           <span className="mt-0.5 text-[10px] font-bold tabular-nums sm:text-sm md:text-base">{count}</span>
+          {count === 0 && <span className="sr-only">{text.empty}</span>}
         </>
         const style = { gridRow: row + 1, gridColumn: col + 1 }
         return count > 0
-          ? <Link key={ward} href={`/listings?${new URLSearchParams({ ward })}`} prefetch={false} style={style} className={className} aria-label={`${label} ${count}`}>{content}</Link>
-          : <div key={ward} style={style} className={className} aria-label={`${label} ${text.empty}`}>{content}</div>
+          ? <Link key={ward} href={`/listings?${new URLSearchParams({ ward })}`} prefetch={false} style={style} className={className}>{content}</Link>
+          : <div key={ward} style={style} className={className}>{content}</div>
       })}
     </div>
   </section>
