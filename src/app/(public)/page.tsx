@@ -10,6 +10,8 @@ import { JsonLd } from '@/components/common/json-ld'
 import { MarketShortcuts } from '@/components/listing/market-shortcuts'
 import { WardMap } from '@/components/listing/ward-map'
 import { countByWard } from '@/lib/ward-tile-map'
+import { countPriceBands } from '@/lib/price-bands'
+import { PriceBandShortcuts } from '@/components/listing/price-band-shortcuts'
 import { getMarketplaceCopy } from '@/lib/marketplace-copy'
 import { HomeSearchForm } from '@/components/listing/home-search-form'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -46,15 +48,15 @@ async function getLatestListings() {
 async function getWardCounts() {
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('city')
+    .select('city, price')
     .eq('status', 'PUBLISHED').eq('adAllowed', true)
     .eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
     .is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0])
     .or(publicFreshnessFilters()[1])
-  if (error) { console.error('Failed to count listings by ward:', error); return {} }
-  return countByWard(data || [])
+  if (error) { console.error('Failed to count listings by ward:', error); return { wards: {}, bands: countPriceBands([]) } }
+  return { wards: countByWard(data || []), bands: countPriceBands((data || []).map((row) => row.price)) }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -111,7 +113,10 @@ export default async function HomePage() {
 
       <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#657487]">{copy.trust.map((item) => <span key={item} className="inline-flex items-center gap-1.5"><Check aria-hidden="true" className="h-3.5 w-3.5 text-[#57769b]" />{item}</span>)}</div>
       <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} showAreas={false} /></div>
-      <div className="mt-9"><WardMap locale={locale} counts={wardCounts} /></div>
+      <div className="mt-9 grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
+        <WardMap locale={locale} counts={wardCounts.wards} />
+        <PriceBandShortcuts locale={locale} counts={wardCounts.bands} />
+      </div>
 
       <section data-testid="home-search-panel" className="mt-8 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] px-4 md:px-5">
         <details className="group">
