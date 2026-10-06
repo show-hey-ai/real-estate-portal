@@ -1,5 +1,5 @@
 import type { Locale } from '@/i18n/config'
-import type { GuideExample, GuideSource, GuideTable } from './guides'
+import type { GuideCase, GuideExample, GuideSource, GuideTable } from './guides'
 
 /**
  * Tables, worked examples and primary sources layered onto existing guides (see docs/CONTENT_STYLE_GUIDE.md).
@@ -14,6 +14,7 @@ interface SectionExtra {
 export interface GuideEnrichment {
   sources?: GuideSource[]
   sections?: Record<string, SectionExtra>
+  cases?: GuideCase[]
 }
 
 const NTA_CAPITAL_GAINS = 'https://www.nta.go.jp/taxes/shiraberu/taxanswer/joto/3202.htm'

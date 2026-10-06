@@ -5,6 +5,7 @@ import { extraGuideArticles3 } from './guides-extra-3'
 import { extraGuideArticles4 } from './guides-extra-4'
 import { extraGuideArticles5 } from './guides-extra-5'
 import { guideEnrichments } from './guide-enrichments'
+import { guideCases } from './guide-cases'
 
 export interface GuideTable {
   caption?: string
@@ -17,6 +18,13 @@ export interface GuideExample {
   title: string
   lines: string[]
   note?: string
+}
+
+/** A typical situation buyers run into, written as an illustrative case (never presented as a real deal). */
+export interface GuideCase {
+  title: string
+  situation: string
+  lesson: string
 }
 
 export interface GuideSource {
@@ -51,6 +59,7 @@ export interface GuideLocaleContent {
   ctaDescription: string
   /** Primary sources (ministries, tax agency, laws) the article relies on. */
   sources?: GuideSource[]
+  cases?: GuideCase[]
 }
 
 export interface GuideArticle {
@@ -1135,13 +1144,14 @@ const baseGuideArticles: GuideArticle[] = [
 /** Adds the tables, worked examples and sources from guide-enrichments to each language version. */
 function withEnrichment(article: GuideArticle): GuideArticle {
   const extra = guideEnrichments[article.slug]
-  if (!extra) return article
+  const cases = guideCases[article.slug]
+  if (!extra && !cases) return article
   const locales = Object.fromEntries(Object.entries(article.locales).map(([locale, content]) => {
-    const enrichment = extra[locale as Locale]
-    if (!enrichment) return [locale, content]
+    const enrichment = extra?.[locale as Locale] ?? {}
     return [locale, {
       ...content,
       sources: enrichment.sources ?? content.sources,
+      cases: cases?.[locale as Locale] ?? enrichment.cases ?? content.cases,
       sections: content.sections.map((section) => ({ ...section, ...(enrichment.sections?.[section.id] ?? {}) })),
     }]
   })) as Record<Locale, GuideLocaleContent>

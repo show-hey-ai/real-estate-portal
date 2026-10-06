@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { GuideCard } from '@/components/guides/guide-card'
-import { GUIDE_SUPERVISOR, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
+import { GUIDE_SUPERVISOR, GuideCases, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -263,6 +263,7 @@ export default async function GuideDetailPage({
             ))}
           </div>
 
+          {article.cases && <GuideCases cases={article.cases} locale={locale} />}
           {article.sources && <GuideSources sources={article.sources} locale={locale} />}
 
           <section id="faq" className="mt-12 scroll-mt-4 md:scroll-mt-44">

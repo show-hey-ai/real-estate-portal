@@ -34,3 +34,13 @@ test('every language of an enriched guide gets the same tables and examples', ()
     assert.equal(new Set(shapes).size, 1, slug)
   }
 })
+
+test('illustrative cases exist in every language of their guide', async () => {
+  const { guideCases } = await import('../src/content/guide-cases')
+  for (const [slug, byLocale] of Object.entries(guideCases)) {
+    assert.ok(guideArticles.some((item) => item.slug === slug), `unknown guide ${slug}`)
+    const counts = Object.values(byLocale).map((cases) => cases?.length)
+    assert.equal(Object.keys(byLocale).length, 4, slug)
+    assert.equal(new Set(counts).size, 1, slug)
+  }
+})
