@@ -11,6 +11,7 @@ async function main() {
   const { runNotifications } = await import('../src/lib/autonomy/notifications')
   const { runSearchSync } = await import('../src/lib/autonomy/search-sync')
   const { runListingAlerts } = await import('../src/lib/listing-alerts-worker')
+  const { runIndexNowSync } = await import('../src/lib/indexnow-sync')
   const once = process.argv.includes('--once')
   const notificationIntervalMs = 5 * 60_000
   let lastNotificationAt = 0
@@ -30,6 +31,8 @@ async function main() {
         catch (error) { console.error('Notification check failed; it will be retried.', error instanceof Error ? error.message : 'unknown error') }
         try { console.log(JSON.stringify({ listingAlerts: await runListingAlerts() })) }
         catch (error) { console.error('Listing alerts failed; they will be retried.', error instanceof Error ? error.message : 'unknown error') }
+        try { console.log(JSON.stringify({ indexNow: await runIndexNowSync() })) }
+        catch (error) { console.error('IndexNow submission failed; it will be retried.', error instanceof Error ? error.message : 'unknown error') }
       }
       if (!once && !stopped) await new Promise((resolveWait) => setTimeout(resolveWait, 30_000))
     } while (!once && !stopped)
