@@ -31,6 +31,13 @@ import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
 
 export const dynamic = 'force-dynamic'
 
+const INTERNATIONAL_CTA: Record<string, { title: string; body: string }> = {
+  ja: { title: '海外にお住まいの方・外国籍の方へ', body: 'ビザ・ローン・費用・流れを最初にまとめて確認できます。' },
+  en: { title: 'Buying from abroad? Start here', body: 'Can foreigners buy, visas, mortgages, costs and steps, answered in one page.' },
+  'zh-TW': { title: '海外買家請從這裡開始', body: '一次了解外國人能否購買、簽證、貸款、費用與流程。' },
+  'zh-CN': { title: '海外买家请从这里开始', body: '一次了解外国人能否购买、签证、贷款、费用与流程。' },
+}
+
 const stepVisuals = [
   { Icon: ClipboardList, tone: 'bg-[#e8f1fb] text-[#274d7d]' },
   { Icon: Scale, tone: 'bg-[#edf3e7] text-[#557447]' },
@@ -120,6 +127,10 @@ export default async function HomePage() {
       </section>
 
       <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#657487]">{copy.trust.map((item) => <span key={item} className="inline-flex items-center gap-1.5"><Check aria-hidden="true" className="h-3.5 w-3.5 text-[#57769b]" />{item}</span>)}</div>
+      <Link href="/buy-property-in-tokyo" className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-[#cfd9e3] bg-white px-5 py-4 transition-shadow hover:shadow-md" data-testid="home-international-link">
+        <span><span className="block font-semibold text-[#1b293a]">{INTERNATIONAL_CTA[locale]?.title ?? INTERNATIONAL_CTA.en.title}</span><span className="mt-0.5 block text-sm text-[#536274]">{INTERNATIONAL_CTA[locale]?.body ?? INTERNATIONAL_CTA.en.body}</span></span>
+        <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
+      </Link>
       <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} showAreas={false} /></div>
       <div className="mt-9 grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
         <WardMap locale={locale} counts={wardCounts.wards} />

@@ -41,3 +41,26 @@ export function formatApproxPrice(yen: number, locale: string, rates: JpyRates |
   if (currency === 'TWD') return `約 NT$${value}`
   return `约 人民币${value}元`
 }
+
+/** Short local-currency amount for titles: "US$127k", "US$1.3M", "NT$402萬", "人民币85万". */
+export function formatCompactLocal(yen: number, locale: string, rates: JpyRates | null): string | null {
+  const currency = LOCALE_CURRENCY[locale]
+  if (!currency || !rates || !(yen > 0)) return null
+  const value = yen * rates[currency]
+  if (currency === 'USD') return value >= 1_000_000 ? `US$${(Math.round(value / 100_000) / 10).toLocaleString('en-US')}M` : `US$${Math.round(value / 1_000).toLocaleString('en-US')}k`
+  const wan = Math.round(value / 10_000).toLocaleString('en-US')
+  return currency === 'TWD' ? `NT$${wan}萬` : `人民币${wan}万`
+}
+
+/** Approximate local-currency range for a yen price band, e.g. "US$127k–253k"; null without rates. */
+export function approxBandLabel(band: { min: number; max: number | null }, locale: string, rates: JpyRates | null): string | null {
+  const low = band.min > 0 ? formatCompactLocal(band.min, locale, rates) : null
+  const high = band.max ? formatCompactLocal(band.max, locale, rates) : null
+  if (!low && !high) return null
+  const words = { en: { under: 'under', over: '+' }, 'zh-TW': { under: '以下', over: '以上' }, 'zh-CN': { under: '以下', over: '以上' } }[locale as 'en' | 'zh-TW' | 'zh-CN']
+  if (!words) return null
+  const prefix = locale === 'en' ? 'about ' : locale === 'zh-TW' ? '約' : '约'
+  if (!low) return locale === 'en' ? `${words.under} ${high}` : `${prefix}${high}${words.under}`
+  if (!high) return locale === 'en' ? `${low}${words.over}` : `${prefix}${low}${words.over}`
+  return `${prefix}${low}–${high!.replace(/^(US\$|NT\$|人民币)/, '')}`
+}

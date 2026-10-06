@@ -29,3 +29,15 @@ test('foreign-currency prices follow the language and round to three figures', (
   assert.equal(formatApproxPrice(20_800_000, 'en', null), null)
   assert.equal(parseRates({ result: 'error' }), null)
 })
+
+test('budget bands get a short local-currency range', async () => {
+  const { approxBandLabel, formatCompactLocal } = await import('../src/lib/fx')
+  const rates = { USD: 0.00633, TWD: 0.200968, CNY: 0.042499 }
+  assert.equal(formatCompactLocal(20_000_000, 'en', rates), 'US$127k')
+  assert.equal(formatCompactLocal(385_000_000, 'en', rates), 'US$2.4M')
+  assert.equal(approxBandLabel({ min: 20_000_000, max: 40_000_000 }, 'en', rates), 'about US$127k–253k')
+  assert.equal(approxBandLabel({ min: 0, max: 20_000_000 }, 'en', rates), 'under US$127k')
+  assert.equal(approxBandLabel({ min: 100_000_000, max: null }, 'zh-TW', rates), '約NT$2,010萬以上')
+  assert.equal(approxBandLabel({ min: 20_000_000, max: 40_000_000 }, 'zh-CN', rates), '约人民币85万–170万')
+  assert.equal(approxBandLabel({ min: 20_000_000, max: 40_000_000 }, 'ja', rates), null)
+})

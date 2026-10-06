@@ -10,6 +10,7 @@ import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-v
 import { localeAlternates } from '@/lib/locale-url'
 import { shareMetadata } from '@/lib/site-config'
 import { countedTitle } from '@/lib/home-snippet'
+import { approxBandLabel, getJpyRates } from '@/lib/fx'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!band) return { robots: { index: false, follow: false } }
   const locale = await getLocale()
   const rows = await rowsFor(band)
-  const range = priceBandRange(band, locale)
+  // Searchers abroad think in their own currency, so the title carries an approximate local range.
+  const local = approxBandLabel(band, locale, await getJpyRates())
+  const range = local ? `${priceBandRange(band, locale)}${locale === 'en' ? ` (${local})` : `・${local}`}` : priceBandRange(band, locale)
   const text = textFor(locale)
   const alternates = localeAlternates(`/budget/${slug}`, locale)
   return { title: countedTitle(text.title(range), rows.length, locale), description: text.description(range, rows.length), alternates, ...shareMetadata({ title: countedTitle(text.title(range), rows.length, locale), description: text.description(range, rows.length), url: alternates.canonical, locale }), robots: rows.length ? { index: true, follow: true } : { index: false, follow: true } }
