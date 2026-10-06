@@ -11,7 +11,7 @@ import {
 } from '@/lib/public-search'
 import {
   SEARCH_FILTER_KEYS,
-  type PriceDistribution,
+  type InventoryDistributions,
 } from '@/lib/listing-search'
 import { getSearchExperienceCopy } from '@/lib/search-experience-copy'
 import {
@@ -26,7 +26,7 @@ import { useListingSearch } from './use-listing-search'
 interface ListingFiltersProps {
   locationIndex: PublicSearchLocationIndex
   total: number
-  distribution: { price: PriceDistribution | null; area: PriceDistribution | null }
+  distribution: InventoryDistributions
 }
 
 function FilterSelect({
@@ -139,7 +139,12 @@ export function ListingFilters({
                 }
                 className={`rounded-lg border px-1 py-2.5 text-xs font-medium transition ${searchParams.get('category') === value ? 'border-[#39786e] bg-[#39786e] text-white' : 'border-[#d4e0dc] bg-white text-[#567168] hover:bg-[#edf5f1]'}`}
               >
-                {label}
+                <span className="block">{label}</span>
+                {distribution.categories && (
+                  <span className={`mt-0.5 block text-[10px] tabular-nums ${searchParams.get('category') === value ? 'text-white/80' : 'text-[#7b8f88]'}`}>
+                    {distribution.categories[value]} {copy.results}
+                  </span>
+                )}
               </button>
             ))}
           </div>

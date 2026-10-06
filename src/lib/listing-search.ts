@@ -152,6 +152,12 @@ export function bucketDistribution(
   return { count: numbers.length, min: Math.min(...numbers), max: Math.max(...numbers), bins: bins.slice(0, lastOccupied + 1) }
 }
 
+export interface InventoryDistributions {
+  price: PriceDistribution | null
+  area: PriceDistribution | null
+  categories: Record<'investment' | 'residential' | 'land', number> | null
+}
+
 export interface SavedSearch {
   query: string
   savedAt: string
