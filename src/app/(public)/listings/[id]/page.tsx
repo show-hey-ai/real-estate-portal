@@ -11,6 +11,8 @@ import { netYieldFromRent } from '@/lib/seismic'
 import { formatApproxPrice, getJpyRates } from '@/lib/fx'
 import { geocodeAddress } from '@/lib/geocode'
 import { HazardLinks } from '@/components/listing/hazard-links'
+import { ListingHighlightChips } from '@/components/listing/listing-highlights'
+import { listingHighlights } from '@/lib/listing-highlights'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -67,7 +69,7 @@ async function getPublicListing(id: string) {
     .select(`
       id, status, propertyType, price, priceCurrency, prefecture, city, addressPublic,
       stations, builtYear, builtMonth, currentStatus, buildingArea, landArea, floorCount,
-      structure, zoning, yieldGross, features, featuresEn, featuresZhTw, featuresZhCn,
+      structure, zoning, landRights, yieldGross, features, featuresEn, featuresZhTw, featuresZhCn,
       descriptionJa, descriptionEn, descriptionZhTw, descriptionZhCn, publishedAt,
       updatedAt, viewCount, hospitalityCategory,
       media (id, url, category, isAdopted, sortOrder)
@@ -214,6 +216,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
     listing.stations as { name: string; name_en?: string | null; line?: string | null; line_en?: string | null; walk_minutes?: number | null }[] | null
   )
   const features = (listing.features as string[]) || []
+  const walkTimes = stations.map((station) => station.walk_minutes).filter((value): value is number => typeof value === 'number' && value > 0)
+  const highlights = listingHighlights({ descriptionJa: listing.descriptionJa, features: listing.features, builtYear: listing.builtYear, propertyType: listing.propertyType, landRights: listing.landRights, walkMinutes: walkTimes.length ? Math.min(...walkTimes) : null })
 
   // 言語に応じた説明文を取得
   const getDescription = () => {
@@ -353,6 +357,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               {getTradeChatCopy(locale).start}
             </a>
+
+            <ListingHighlightChips locale={locale} result={highlights} />
 
             <div id="property-facts" className="scroll-mt-4 md:scroll-mt-44">
               <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} monthly={monthly} grossYield={grossYield} netYield={netYield} />
