@@ -44,7 +44,7 @@ export function ListingSpecs({ listing }: ListingSpecsProps) {
     }
     // ja
     const base = `${year}年（築${age}年）`
-    return month ? `${base} ${month}月` : base
+    return month ? `${year}年${month}月（築${age}年）` : base
   }
 
   const specs = [

@@ -1,4 +1,5 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { ListingMap } from '@/components/listing/listing-map'
 import { localeAlternates } from '@/lib/locale-url'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -315,6 +316,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
             <div id="property-facts" className="scroll-mt-44">
               <ListingSpecs listing={{ propertyType: formattedListing.propertyType, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} />
             </div>
+
+            {publicAddress && <ListingMap locale={locale} publicAddress={publicAddress} />}
 
             {/* アピールポイント */}
             {(description || features.length > 0) && (
