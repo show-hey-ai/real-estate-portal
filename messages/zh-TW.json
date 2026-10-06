@@ -27,7 +27,8 @@
     "guides": "購屋指南",
     "favorites": "收藏",
     "admin": "管理後台",
-    "match": "購屋諮詢"
+    "match": "購屋諮詢",
+    "articles": "購屋資訊"
   },
   "listing": {
     "price": "價格",
@@ -160,7 +161,22 @@
       "checks": "購屋指南",
       "sourcing": "尋找物件",
       "focus": "購屋諮詢"
-    }
+    },
+    "forgotPassword": "忘記密碼？",
+    "resetPasswordTitle": "重設密碼",
+    "resetEmailHelp": "請輸入註冊信箱。請在發送請求的瀏覽器中開啟重設連結。",
+    "resetEmailSent": "如果該帳號存在，將發送重設郵件。請檢查垃圾郵件。",
+    "newPassword": "新密碼",
+    "newPasswordHelp": "請輸入至少8個字元的新密碼。",
+    "sendResetEmail": "發送重設郵件",
+    "saveNewPassword": "儲存新密碼",
+    "passwordResetSuccess": "密碼已更改，請使用新密碼登入。",
+    "resetLinkInvalid": "連結無效或已過期，請重新發送郵件。",
+    "recoveryError": "暫時無法處理，請稍後重試。",
+    "recoveryLoading": "處理中…",
+    "backToLogin": "返回登入",
+    "resetLogoutFailed": "密碼已更改，但登出失敗。請重試。",
+    "retryLogout": "重試登出"
   },
   "admin": {
     "dashboard": "儀表板",
@@ -238,7 +254,7 @@
         "address": "已輸入地址（至町目）",
         "propertyType": "已選擇物件類型",
         "images": "已採用至少1張圖片",
-        "noFullAddress": "完整地址未在公開欄位中顯示"
+        "noFullAddress": "已確認廣告許可並滿足同意條件"
       }
     },
     "lead": {
@@ -249,6 +265,7 @@
       "notes": "備註"
     },
     "analytics": {
+      "internalExcluded": "管理員、已確認的內部瀏覽器及本機開發存取不計入統計。",
       "title": "流量分析",
       "trackedSince": "開始追蹤: {date}",
       "totalTrackedPageviews": "已追蹤 PV {count}",
@@ -285,7 +302,8 @@
         "favorites": "收藏",
         "other": "其他"
       }
-    }
+    },
+    "autonomyNav": "自主營運"
   },
   "warnings": {
     "title": "注意事項",

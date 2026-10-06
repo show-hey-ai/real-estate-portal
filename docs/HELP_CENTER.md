@@ -1,0 +1,21 @@
+# Public help and automatic answers
+
+The public `/help` page explains the live portal's search filters, browser-local saved searches, account favorites, inquiry submission, property chat, language switching and public-information boundaries in Japanese, English, Traditional Chinese and Simplified Chinese. Header, compact navigation and footer link to it; the public sitemap includes it.
+
+The user selected a zero-yen AI allowance on 2026-10-03. Help currently retrieves exact, localized FAQ answers from `src/content/help.ts`; it does not use generative AI. Questions stay in component memory: no provider requests, query URLs, browser storage, transcripts or listing/database reads. Page-view analytics remains the existing public page tracker and does not collect the question. Input is limited to 600 characters. Unknown queries show a clear fallback. Sources link to the corresponding FAQ section and open it. Reading help never submits an inquiry or books a viewing.
+
+`src/lib/help-search.ts` ranks bounded multilingual keyword matches and specific phrases. English terms retain word boundaries, with limited plural suffixes, to avoid matching `ai` inside unrelated words. React renders all content as text. The controls wait for hydration; changing language resets the component's question and answer. FAQ content is server-rendered and usable without JavaScript.
+
+Tests cover four-language saved searches, natural questions, plural topic labels, routes/walking terms, unknown/oversized input, private-source questions, source identity and safe internal destinations. Separate review approved the implementation and responsive navigation. Full lint, production build and the 47 relevant help/chat/search/autonomy/format/category/translation tests passed. Local browser checks covered all four languages, answer-source navigation and mobile unknown-query behavior.
+
+The staged deployment `dpl_B7z922MA5267p8mECHmtfahdrQtH` at `real-estate-portal-25ny7kb1y-show-hey-ais-projects.vercel.app` passed help/search/sitemap/chat/admin-access probes before promotion. Production verification and screenshots are recorded separately in the private runtime logs and this task's workspace.
+
+The deployment was promoted to `https://portal.ziyou-fudosan.com`. Live verification confirmed the help page and sitemap at HTTP 200, anonymous admin/private-review requests rejected with HTTP 401, and an authenticated autonomy tick at HTTP 200 with state `active`. Browser checks verified live Japanese answers and compact navigation at 820px and 390px with no horizontal overflow. Desktop/mobile proof screenshots were saved and visually inspected. The source review's live policy check retained the zero-yen allowance and recorded zero paid runs; existing inventory remained three drafts and one published listing.
+
+## Desktop source review
+
+On the same date, the user requested property classification in the desktop app rather than a paid AI API. A fresh bounded REINS intake (`cmurmpv5400000kni3cbxakdv`) downloaded two PDFs containing 50 source pages. Codex inspected rendered headers and source details using on-device OCR, then saved a private JSON/CSV report and an admin-only `desktop_source_review` record. This is one completed desktop review, not a deployed generative source worker or a guarantee of 50 distinct listings.
+
+The first pass classified 49 apartment pages and one retail-unit page. Forty-five pages refer to Tokyo's 23 wards; five are outside scope. Fourteen pages state tenancy. One explicitly prohibits advertising; the other 49 do not establish public advertising permission. No new listings were published. The price on the advertising-prohibited page was visually read as 80万円, correcting an OCR error of 800万円. Missing REINS identities were not replaced with the brokerage's shorter internal registration numbers.
+
+The private report is stored under the source worker's application-support directory (`review-2026-10-03/classification.json`, `classification.csv`, and `判別結果.md`), with restricted local permissions. The paid source-import queue remains separate and waits at the zero-yen allowance. Neither this review nor the public help page changes the publication gates, database grants or monthly allowance.

@@ -1,3 +1,4 @@
+import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import 'server-only'
 
 import { unstable_cache } from 'next/cache'
@@ -56,8 +57,11 @@ async function fetchPublicSearchLocationIndex() {
       .select('city, stations')
       .eq('status', 'PUBLISHED')
       .eq('adAllowed', true)
+    .eq('adConsentRequired', false)
       .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
       .is('hospitalityCategory', null)
+    .or(publicFreshnessFilters()[0])
+    .or(publicFreshnessFilters()[1])
 
     if (error) {
       console.error('Failed to query listings via REST:', error.message)

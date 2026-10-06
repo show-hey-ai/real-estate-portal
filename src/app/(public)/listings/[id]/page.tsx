@@ -1,3 +1,4 @@
+import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations, getLocale } from 'next-intl/server'
@@ -5,15 +6,17 @@ import { JsonLd } from '@/components/common/json-ld'
 import { createServiceClient } from '@/lib/supabase/server'
 import { ListingGallery } from '@/components/listing/listing-gallery'
 import { ListingSpecs } from '@/components/listing/listing-specs'
-import { InquiryButton } from '@/components/listing/inquiry-button'
+import { ListingChat } from '@/components/listing/listing-chat'
+import { PropertyChatLink } from '@/components/chat/private-chats'
+import { getTradeChatCopy } from '@/lib/trade-chat'
 import { FavoriteButton } from '@/components/listing/favorite-button'
 import { ViewTracker } from '@/components/listing/view-tracker'
 import { formatPrice } from '@/lib/format'
-import { MapPin, Train, Info, Sparkles } from 'lucide-react'
+import { MapPin, Train, Info, Sparkles, MessageCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
-import { formatPublicAddress } from '@/lib/address'
+import { formatApprovedPublicAddress, hasDetailedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, translateAddress } from '@/lib/translate-fields'
 import { getIsFavoriteForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
@@ -37,14 +40,21 @@ async function getPublicListing(id: string) {
   const { data, error } = await supabase
     .from('listings')
     .select(`
-      *,
-      media (*)
+      id, status, propertyType, price, priceCurrency, prefecture, city, addressPublic,
+      stations, builtYear, builtMonth, currentStatus, buildingArea, landArea, floorCount,
+      structure, zoning, yieldGross, features, featuresEn, featuresZhTw, featuresZhCn,
+      descriptionJa, descriptionEn, descriptionZhTw, descriptionZhCn, publishedAt,
+      updatedAt, viewCount, hospitalityCategory,
+      media (id, url, category, isAdopted, sortOrder)
     `)
     .eq('id', id)
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
+    .eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES])
     .is('hospitalityCategory', null)
+    .or(publicFreshnessFilters()[0])
+    .or(publicFreshnessFilters()[1])
     .single()
 
   if (error || !data) {
@@ -129,7 +139,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const userId = viewer?.id ?? null
   const isFavorite = viewer ? await getIsFavoriteForViewer(viewer.id, id) : false
 
-  const publicAddress = formatPublicAddress(listing.addressPublic).publicAddress || listing.addressPublic
+  const publicAddress = formatApprovedPublicAddress(listing.addressPublic)
   const stations = normalizeTransitStations(
     listing.stations as { name: string; name_en?: string | null; line?: string | null; line_en?: string | null; walk_minutes?: number | null }[] | null
   )
@@ -151,10 +161,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const description = getDescription()
 
   // Prisma互換の形式に変換
-  const { yieldNet, ...listingForDisplay } = listing
-  void yieldNet
   const formattedListing = {
-    ...listingForDisplay,
+    ...listing,
     addressPublic: publicAddress,
     price: listing.price ? BigInt(listing.price) : null,
     buildingArea: listing.buildingArea ? Number(listing.buildingArea) : null,
@@ -209,14 +217,6 @@ export default async function ListingPage({ params }: ListingPageProps) {
             }
           : null,
       ].filter(Boolean),
-      geo:
-        listing.latitude != null && listing.longitude != null
-          ? {
-              '@type': 'GeoCoordinates',
-              latitude: Number(listing.latitude),
-              longitude: Number(listing.longitude),
-            }
-          : undefined,
       image: formattedListing.media.map((item: { url: string }) => item.url),
       offers: formattedListing.price
         ? {
@@ -255,7 +255,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
   }
 
   return (
-    <div className="container py-8">
+    <div className="container py-8" data-public-listing={listing.id}>
       <JsonLd data={listingJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       <ViewTracker listingId={listing.id} />
@@ -280,10 +280,10 @@ export default async function ListingPage({ params }: ListingPageProps) {
                       <MapPin className="h-4 w-4 shrink-0" />
                       <span>{translateAddress(publicAddress, locale) || publicAddress}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground/70 flex items-center gap-1 ml-5">
+                    {!hasDetailedPublicAddress(publicAddress) && (<p className="text-xs text-muted-foreground/70 flex items-center gap-1 ml-5">
                       <Info className="h-3 w-3 shrink-0" />
                       {t('addressPrivacyNote')}
-                    </p>
+                    </p>)}
                   </div>
                 )}
                 {stations.length > 0 && (
@@ -307,7 +307,14 @@ export default async function ListingPage({ params }: ListingPageProps) {
               />
             </div>
 
-            <ListingSpecs listing={formattedListing} />
+            <a href={`/chats?listing=${formattedListing.id}&start=1`} className="mb-6 inline-flex items-center gap-2 rounded-lg border border-[#cfded8] bg-[#f0f7f4] px-4 py-3 text-sm font-medium text-[#316957] lg:hidden">
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
+              {getTradeChatCopy(locale).start}
+            </a>
+
+            <div id="property-facts" className="scroll-mt-44">
+              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} />
+            </div>
 
             {/* アピールポイント */}
             {(description || features.length > 0) && (
@@ -351,12 +358,16 @@ export default async function ListingPage({ params }: ListingPageProps) {
         </div>
 
         <div className="lg:col-span-1 min-w-0">
-          <div className="sticky top-24 space-y-4">
-            <InquiryButton
+          <div className="sticky top-44 space-y-4">
+            <PropertyChatLink listingId={formattedListing.id} />
+            <ListingChat
+              key={formattedListing.id}
               listingId={formattedListing.id}
-              userId={userId}
               listingTitle={translateAddress(publicAddress, locale) || publicAddress || t('property')}
             />
+            <div id="inquiry" className="scroll-mt-44">
+              <PropertyChatLink listingId={formattedListing.id} />
+            </div>
             <ExclusiveCta listingId={formattedListing.id} userId={userId} />
           </div>
         </div>

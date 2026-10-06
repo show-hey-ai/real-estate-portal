@@ -60,9 +60,12 @@ export function FavoriteIconButton({
       size="icon"
       onClick={handleToggle}
       disabled={isLoading}
+      aria-label={isFavorite ? t('removeFavorite') : t('addFavorite')}
+      aria-pressed={isFavorite}
       className={className}
     >
       <Heart
+        aria-hidden="true"
         className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`}
       />
     </Button>

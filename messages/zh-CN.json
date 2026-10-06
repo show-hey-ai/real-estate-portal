@@ -27,7 +27,8 @@
     "guides": "购房指南",
     "favorites": "收藏",
     "admin": "管理后台",
-    "match": "购房咨询"
+    "match": "购房咨询",
+    "articles": "购房资讯"
   },
   "listing": {
     "price": "价格",
@@ -160,7 +161,22 @@
       "checks": "购房指南",
       "sourcing": "寻找房产",
       "focus": "购房咨询"
-    }
+    },
+    "forgotPassword": "忘记密码？",
+    "resetPasswordTitle": "重设密码",
+    "resetEmailHelp": "请输入注册邮箱。请在发送请求的浏览器中打开重设链接。",
+    "resetEmailSent": "如果该账号存在，将发送重设邮件。请检查垃圾邮件。",
+    "newPassword": "新密码",
+    "newPasswordHelp": "请输入至少8个字符的新密码。",
+    "sendResetEmail": "发送重设邮件",
+    "saveNewPassword": "保存新密码",
+    "passwordResetSuccess": "密码已更改，请使用新密码登录。",
+    "resetLinkInvalid": "链接无效或已过期，请重新发送邮件。",
+    "recoveryError": "暂时无法处理，请稍后重试。",
+    "recoveryLoading": "处理中…",
+    "backToLogin": "返回登录",
+    "resetLogoutFailed": "密码已更改，但退出登录失败。请重试。",
+    "retryLogout": "重试退出登录"
   },
   "admin": {
     "dashboard": "仪表板",
@@ -238,7 +254,7 @@
         "address": "已输入地址（至丁目）",
         "propertyType": "已选择房源类型",
         "images": "已采用至少1张图片",
-        "noFullAddress": "完整地址未在公开字段中显示"
+        "noFullAddress": "已确认广告许可并满足同意条件"
       }
     },
     "lead": {
@@ -249,6 +265,7 @@
       "notes": "备注"
     },
     "analytics": {
+      "internalExcluded": "管理员、已确认的内部浏览器及本地开发访问不计入统计。",
       "title": "流量分析",
       "trackedSince": "开始追踪: {date}",
       "totalTrackedPageviews": "已追踪 PV {count}",
@@ -285,7 +302,8 @@
         "favorites": "收藏",
         "other": "其他"
       }
-    }
+    },
+    "autonomyNav": "自主运营"
   },
   "warnings": {
     "title": "注意事项",

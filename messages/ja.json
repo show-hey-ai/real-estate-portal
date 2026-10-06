@@ -27,7 +27,8 @@
     "guides": "購入ガイド",
     "favorites": "お気に入り",
     "admin": "管理画面",
-    "match": "購入相談"
+    "match": "購入相談",
+    "articles": "物件選びの記事"
   },
   "listing": {
     "price": "価格",
@@ -160,7 +161,22 @@
       "checks": "購入ガイド",
       "sourcing": "物件を探す",
       "focus": "購入相談"
-    }
+    },
+    "forgotPassword": "パスワードを忘れた方",
+    "resetPasswordTitle": "パスワードの再設定",
+    "resetEmailHelp": "登録したメールアドレスを入力してください。メールを送信したブラウザで再設定リンクを開いてください。",
+    "resetEmailSent": "該当するアカウントがある場合、再設定メールを送信します。迷惑メールも確認してください。",
+    "newPassword": "新しいパスワード",
+    "newPasswordHelp": "8文字以上の新しいパスワードを入力してください。",
+    "sendResetEmail": "再設定メールを送信",
+    "saveNewPassword": "新しいパスワードを保存",
+    "passwordResetSuccess": "パスワードを変更しました。新しいパスワードでログインしてください。",
+    "resetLinkInvalid": "再設定リンクが無効か期限切れです。メールを再送してください。",
+    "recoveryError": "処理できませんでした。時間をおいて再試行してください。",
+    "recoveryLoading": "処理中…",
+    "backToLogin": "ログインに戻る",
+    "resetLogoutFailed": "パスワードは変更済みですが、ログアウトできませんでした。再試行してください。",
+    "retryLogout": "ログアウトを再試行"
   },
   "admin": {
     "dashboard": "ダッシュボード",
@@ -238,7 +254,7 @@
         "address": "住所（丁目まで）が入力されている",
         "propertyType": "物件種別が選択されている",
         "images": "画像が1枚以上採用されている",
-        "noFullAddress": "フル住所が公開フィールドに露出していない"
+        "noFullAddress": "広告許可確認済み・承諾条件充足"
       }
     },
     "lead": {
@@ -249,6 +265,7 @@
       "notes": "対応メモ"
     },
     "analytics": {
+      "internalExcluded": "管理者・確認済みの運営ブラウザ・開発環境からの閲覧は集計から除外しています。",
       "title": "アクセス解析",
       "trackedSince": "計測開始: {date}",
       "totalTrackedPageviews": "トラッキング済みPV {count}",
@@ -285,7 +302,8 @@
         "favorites": "お気に入り",
         "other": "その他"
       }
-    }
+    },
+    "autonomyNav": "自律運営"
   },
   "warnings": {
     "title": "注意事項",

@@ -1,11 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import { getHelpCopy } from '@/content/help'
 import { Separator } from '@/components/ui/separator'
 
 export function Footer() {
   const t = useTranslations()
+  const locale = useLocale()
+  const help = getHelpCopy(locale)
+  const privacyPath = locale === 'ja' ? '/ja/privacy.html'
+    : locale === 'zh-TW' ? '/zh-tw/privacy.html'
+    : locale === 'zh-CN' ? '/zh-cn/privacy.html'
+    : '/privacy.html'
   const currentYear = new Date().getFullYear()
 
   return (
@@ -38,6 +45,8 @@ export function Footer() {
                 </Link>
               </li>
               <li><Link href="/match" className="text-white/65 hover:text-white transition-colors">{t('nav.match')}</Link></li>
+              <li><Link href="/articles" className="text-white/65 hover:text-white transition-colors">{t('nav.articles')}</Link></li>
+              <li><Link href="/help" className="text-white/65 hover:text-white transition-colors">{help.nav}</Link></li>
               <li>
                 <Link href="/register" className="text-white/65 hover:text-white transition-colors">
                   {t('common.register')}
@@ -56,9 +65,9 @@ export function Footer() {
             <h3 className="font-semibold mb-4">{t('common.contact')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <span className="text-white/65">
+                <a href={`https://ziyou-fudosan.com${privacyPath}`} className="text-white/65 hover:text-white transition-colors">
                   {t('common.privacyPolicy')}
-                </span>
+                </a>
               </li>
               <li>
                 <span className="text-white/65">

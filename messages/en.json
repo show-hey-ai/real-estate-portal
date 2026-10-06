@@ -27,7 +27,8 @@
     "guides": "Buying Guide",
     "favorites": "Favorites",
     "admin": "Admin",
-    "match": "Plan My Search"
+    "match": "Plan My Search",
+    "articles": "Property insights"
   },
   "listing": {
     "price": "Price",
@@ -160,7 +161,22 @@
       "checks": "Buying Guide",
       "sourcing": "Homes for Sale",
       "focus": "Plan My Search"
-    }
+    },
+    "forgotPassword": "Forgot password?",
+    "resetPasswordTitle": "Reset your password",
+    "resetEmailHelp": "Enter your registered email. Open the reset link in the browser used to request it.",
+    "resetEmailSent": "If an account exists, a reset email will be sent. Please check your spam folder.",
+    "newPassword": "New password",
+    "newPasswordHelp": "Enter a new password with at least 8 characters.",
+    "sendResetEmail": "Send reset email",
+    "saveNewPassword": "Save new password",
+    "passwordResetSuccess": "Password changed. Sign in with your new password.",
+    "resetLinkInvalid": "The reset link is invalid or expired. Request a new email.",
+    "recoveryError": "Unable to complete the request. Please try again later.",
+    "recoveryLoading": "Processing…",
+    "backToLogin": "Back to sign in",
+    "resetLogoutFailed": "Your password was changed, but sign-out failed. Please retry.",
+    "retryLogout": "Retry sign out"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -238,7 +254,7 @@
         "address": "Address (up to district) is entered",
         "propertyType": "Property type is selected",
         "images": "At least 1 image is adopted",
-        "noFullAddress": "Full address is not exposed in public fields"
+        "noFullAddress": "Advertising permitted and consent conditions fulfilled"
       }
     },
     "lead": {
@@ -249,6 +265,7 @@
       "notes": "Notes"
     },
     "analytics": {
+      "internalExcluded": "Administrator visits, verified internal browsers and local development traffic are excluded.",
       "title": "Analytics",
       "trackedSince": "Tracking since: {date}",
       "totalTrackedPageviews": "Tracked pageviews {count}",
@@ -285,7 +302,8 @@
         "favorites": "Favorites",
         "other": "Other"
       }
-    }
+    },
+    "autonomyNav": "Autonomous operations"
   },
   "warnings": {
     "title": "Important Notes",

@@ -47,13 +47,15 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
         <input
           type="text"
           name="q"
+          maxLength={80}
+          aria-label={t('search.keywordPlaceholder')}
           placeholder={t('search.keywordPlaceholder')}
           className={cn(
             'flex-1 rounded-[4px] border border-[#cbd5df] bg-white text-[#1b293a] outline-none transition placeholder:text-[#8b98a6] focus:border-[#274d7d] focus:ring-2 focus:ring-[#274d7d]/15',
             compact ? 'h-10 px-3 text-sm' : 'h-11 px-4'
           )}
         />
-        <select name="ward" className={fieldClassName}>
+        <select name="ward" aria-label={t('search.allTokyo23Wards')} className={fieldClassName}>
           <option value="">{t('search.allTokyo23Wards')}</option>
           {locationIndex.wards.map((ward) => (
             <option key={ward} value={ward}>
@@ -67,7 +69,7 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
             <option key={value} value={value}>{label}</option>
           ))}
         </select>
-        <select name="priceMax" className={cn(fieldClassName, compact ? 'md:w-28' : 'md:w-32')}>
+        <select name="priceMax" aria-label={t('search.priceRange')} className={cn(fieldClassName, compact ? 'md:w-28' : 'md:w-32')}>
           <option value="">{t('search.priceRange')}</option>
           {priceOptions.map((value) => (
             <option key={value} value={value}>
@@ -93,12 +95,13 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
       <details className="group">
         <summary className="flex w-fit cursor-pointer list-none items-center gap-2 text-sm font-medium text-[#46698e] [&::-webkit-details-marker]:hidden">{copy.moreFilters}<ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></summary>
         <div className="mt-4 flex flex-col gap-2 md:flex-row md:flex-wrap">
-        <select name="type" className={fieldClassName}>
+        <select name="type" aria-label={t('search.allTypes')} className={fieldClassName}>
           <option value="">{t('search.allTypes')}</option>
           {propertyTypes.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
         </select>
         <select
           name="line"
+          aria-label={t('search.allLines')}
           value={line}
           onChange={(event) => {
             setLine(normalizeRailwayLine(event.target.value))
@@ -116,6 +119,7 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
 
         <select
           name="station"
+          aria-label={t('search.allStations')}
           value={station}
           onChange={(event) => setStation(event.target.value)}
           disabled={!line}
@@ -129,7 +133,7 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
           ))}
         </select>
 
-        <select name="walkMax" className={fieldClassName}>
+        <select name="walkMax" aria-label={t('search.walkMinutesAll')} className={fieldClassName}>
           <option value="">{t('search.walkMinutesAll')}</option>
           {walkOptions.map((value) => (
             <option key={value} value={value}>
@@ -138,7 +142,7 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
           ))}
         </select>
 
-        <select name="areaMin" className={cn(fieldClassName, compact ? 'md:w-28' : 'md:w-32')}>
+        <select name="areaMin" aria-label={t('search.buildingAreaAll')} className={cn(fieldClassName, compact ? 'md:w-28' : 'md:w-32')}>
           <option value="">{t('search.buildingAreaAll')}</option>
           {areaOptions.map((value) => (
             <option key={value} value={value}>

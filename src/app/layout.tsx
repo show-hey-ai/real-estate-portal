@@ -12,6 +12,7 @@ import {
   getSiteCopy,
   getSiteUrl,
 } from '@/lib/site-config'
+import { BuyerFunnelProvider } from '@/components/analytics/buyer-funnel'
 import './globals.css'
 
 const notoSansJP = Noto_Sans_JP({
@@ -88,7 +89,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <JsonLd data={organizationJsonLd} />
           <JsonLd data={websiteJsonLd} />
-          {children}
+          <BuyerFunnelProvider>{children}</BuyerFunnelProvider>
           <Toaster />
         </NextIntlClientProvider>
       </body>

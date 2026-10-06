@@ -236,7 +236,7 @@ export default async function GuideDetailPage({
 
           <div className="mt-10 space-y-10">
             {article.sections.map((section) => (
-              <section key={section.id} id={section.id} className="scroll-mt-24 space-y-4">
+              <section key={section.id} id={section.id} className="scroll-mt-44 space-y-4">
                 <h2 className="text-2xl font-semibold tracking-tight">{section.heading}</h2>
                 <div className="space-y-4 text-base leading-8 text-muted-foreground">
                   {section.paragraphs.map((paragraph, index) => (
@@ -257,7 +257,7 @@ export default async function GuideDetailPage({
             ))}
           </div>
 
-          <section id="faq" className="mt-12 scroll-mt-24">
+          <section id="faq" className="mt-12 scroll-mt-44">
             <h2 className="text-2xl font-semibold tracking-tight">{guideCopy.faq}</h2>
             <div className="mt-5 space-y-4">
               {article.faq.map((item) => (
@@ -310,7 +310,7 @@ export default async function GuideDetailPage({
         </div>
 
         <aside className="hidden lg:block">
-          <div className="sticky top-24 rounded-2xl border bg-muted/20 p-5">
+          <div className="sticky top-44 rounded-2xl border bg-muted/20 p-5">
             <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               {guideCopy.tableOfContents}
             </h2>

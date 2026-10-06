@@ -1,5 +1,6 @@
 'use client'
 
+import { useBuyerFunnelHeaders } from '@/components/analytics/buyer-funnel'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -38,6 +39,7 @@ const contactMethods = [
 ]
 
 export function InquiryButton({ listingId, userId, listingTitle }: InquiryButtonProps) {
+  const funnelHeaders = useBuyerFunnelHeaders()
   const t = useTranslations('inquiry')
   const tCommon = useTranslations('common')
   const router = useRouter()
@@ -74,7 +76,7 @@ export function InquiryButton({ listingId, userId, listingTitle }: InquiryButton
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...funnelHeaders },
         body: JSON.stringify({
           listingId,
           contactMethod,

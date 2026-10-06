@@ -678,7 +678,7 @@ export function translateCityName(city: string | null | undefined, locale: strin
 }
 
 export function translateAddress(address: string | null | undefined, locale: string): string | null {
-  if (!address || locale === 'ja') return address || null
+  if (!address || locale === 'ja' || locale === 'zh-TW' || locale === 'zh-CN') return address || null
 
   let result = address
   // 都道府県を変換
@@ -688,16 +688,17 @@ export function translateAddress(address: string | null | undefined, locale: str
       // 区市町村を変換
       for (const [jaCity, enCity] of Object.entries(cityMap)) {
         if (result.includes(jaCity)) {
-          return `${enCity}, ${en}`
+          const street = result.replace(jaCity, '').trim()
+          return [street, enCity, en].filter(Boolean).join(', ')
         }
       }
-      return en
+      return [result.trim(), en].filter(Boolean).join(', ')
     }
   }
   // 都道府県なしのフォールバック（例: "港区港南3-7" → "Minato, Tokyo"）
   for (const [jaCity, enCity] of Object.entries(cityMap)) {
     if (result.includes(jaCity)) {
-      return `${enCity}, Tokyo`
+      return [result.replace(jaCity, '').trim(), enCity, 'Tokyo'].filter(Boolean).join(', ')
     }
   }
   return address

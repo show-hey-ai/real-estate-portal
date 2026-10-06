@@ -23,10 +23,11 @@ import { getPortalPropertyTypes } from '@/lib/portal-copy'
 import { getMarketCategory } from '@/lib/market-category'
 import { getPortalCategoryLabel } from '@/lib/portal-copy'
 import { formatPrice } from '@/lib/format'
-import { formatPublicAddress } from '@/lib/address'
+import { formatApprovedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, translateAddress, translateZoning } from '@/lib/translate-fields'
 import { FavoriteIconButton } from './favorite-icon-button'
+import { getTradeChatCopy } from '@/lib/trade-chat'
 
 const NEW_LISTING_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 const NEW_LISTING_CUTOFF = Date.now() - NEW_LISTING_WINDOW_MS
@@ -83,7 +84,7 @@ export function ListingCard({
   const category = getMarketCategory(listing)
 
   const mainImage = listing.media.find((m) => m.category === 'EXTERIOR') || listing.media[0]
-  const safeAddress = formatPublicAddress(listing.addressPublic).publicAddress || listing.addressPublic
+  const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
   const stations = normalizeTransitStations(listing.stations)
   const primaryStation = stations[0]
   const primaryTransitLabel = formatTransitAccessLabel(primaryStation, locale)
@@ -95,15 +96,15 @@ export function ListingCard({
   const isNew = publishedAtTime != null && publishedAtTime > NEW_LISTING_CUTOFF
 
   return (
-    <Card className="group overflow-hidden rounded-[4px] border-[#dbe2e9] bg-white py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="group overflow-hidden rounded-xl border-[#dbe2e9] bg-white py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
       <Link href={`/listings/${listing.id}`} className="block">
-        <div className="relative aspect-[5/4] overflow-hidden bg-[#e9f0f7]">
+        <div className="relative aspect-square overflow-hidden bg-[#e9f0f7]">
           {mainImage ? (
             <Image
               src={mainImage.url}
               alt={safeAddress || t('noImage')}
               fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1536px) 33vw, 420px"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               priority={imagePriority}
             />
@@ -159,22 +160,21 @@ export function ListingCard({
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            <Link href={`/listings/${listing.id}#inquiry`} onClick={(e) => e.stopPropagation()}>
               <Button
+                asChild
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-[4px] text-[#657487] hover:bg-[#e9f0f7] hover:text-[#274d7d]"
-                aria-label={t('inquiry')}
+                className="h-11 w-11 rounded-lg text-[#657487] hover:bg-[#e9f0f7] hover:text-[#274d7d]"
+                aria-label={getTradeChatCopy(locale).start}
               >
-                <MessageCircle className="h-4 w-4" />
+                <Link href={`/chats?listing=${listing.id}&start=1`}><MessageCircle aria-hidden="true" className="h-4 w-4" /></Link>
               </Button>
-            </Link>
             {showFavoriteButton && (
               <FavoriteIconButton
                 listingId={listing.id}
                 initialFavorite={isFavorite}
                 userId={userId}
-                className="h-8 w-8 rounded-[8px]"
+                className="h-11 w-11 rounded-lg"
               />
             )}
           </div>

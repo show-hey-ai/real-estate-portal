@@ -1,3 +1,4 @@
+import { getPublicListingScope } from '@/lib/public-listing-scope'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -36,10 +37,13 @@ export default async function FavoritesPage() {
   }
 
   const favorites = await prisma.favorite.findMany({
-    where: { userId: dbUser.id },
+    where: { userId: dbUser.id, listing: getPublicListingScope() },
     include: {
       listing: {
-        include: {
+        select: {
+          id: true, status: true, adAllowed: true, hospitalityCategory: true, propertyType: true,
+          price: true, addressPublic: true, buildingArea: true, landArea: true, yieldGross: true,
+          stations: true, builtYear: true, viewCount: true,
           media: {
             where: { isAdopted: true },
             orderBy: { sortOrder: 'asc' },
@@ -72,8 +76,7 @@ export default async function FavoritesPage() {
       {publishedFavorites.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {publishedFavorites.map((fav) => {
-            const { yieldNet, ...listing } = fav.listing
-            void yieldNet
+            const listing = fav.listing
 
             return (
               <ListingCard

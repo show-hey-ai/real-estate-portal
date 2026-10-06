@@ -1,5 +1,5 @@
 import { type Locale, defaultLocale, locales } from '@/i18n/config'
-import { formatPublicAddress } from '@/lib/address'
+import { formatApprovedPublicAddress } from '@/lib/address'
 import { formatPrice } from '@/lib/format'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import {
@@ -34,7 +34,7 @@ type SeoListingLike = {
   descriptionZhCn?: string | null
   publishedAt?: string | Date | null
   updatedAt?: string | Date | null
-  media?: { url: string; category?: string | null }[] | null
+  media?: { url: string; category?: string | null; isAdopted?: boolean }[] | null
 }
 
 const DEFAULT_SITE_URL = 'https://portal.ziyou-fudosan.com'
@@ -168,16 +168,17 @@ export function getSiteCopy(locale: string) {
 }
 
 export function getPrimaryListingImage(listing: SeoListingLike): string | null {
+  const adoptedMedia = listing.media?.filter((image) => image.isAdopted !== false)
   const mainImage =
-    listing.media?.find((image) => image.category === 'EXTERIOR') ||
-    listing.media?.[0]
+    adoptedMedia?.find((image) => image.category === 'EXTERIOR') ||
+    adoptedMedia?.[0]
 
   return mainImage?.url || null
 }
 
 export function buildListingTitle(listing: SeoListingLike, locale: string): string {
   const normalizedLocale = normalizeLocale(locale)
-  const publicAddress = formatPublicAddress(listing.addressPublic).publicAddress || listing.addressPublic
+  const publicAddress = formatApprovedPublicAddress(listing.addressPublic)
   const translatedType =
     translatePropertyType(listing.propertyType || null, normalizedLocale) ||
     siteCopy[normalizedLocale].listingsTitle
@@ -201,7 +202,7 @@ export function buildListingDescription(listing: SeoListingLike, locale: string)
   const translatedType =
     translatePropertyType(listing.propertyType || null, normalizedLocale) ||
     siteCopy[normalizedLocale].listingsTitle
-  const publicAddress = formatPublicAddress(listing.addressPublic).publicAddress || listing.addressPublic
+  const publicAddress = formatApprovedPublicAddress(listing.addressPublic)
   const translatedAddress =
     translateAddress(publicAddress || null, normalizedLocale) ||
     publicAddress ||
