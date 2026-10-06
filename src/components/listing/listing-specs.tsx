@@ -9,6 +9,7 @@ import type { MonthlyFigures } from '@/lib/monthly-costs'
 import { seismicStandard } from '@/lib/seismic'
 import Link from 'next/link'
 
+const SQFT_PER_M2 = 10.7639
 const SEISMIC_GUIDE = 'japan-earthquake-standards-1981'
 const FEES_GUIDE = 'tokyo-condo-management-fee-repair-reserve'
 
@@ -45,6 +46,7 @@ export function ListingSpecs({ listing, monthly, grossYield, netYield }: Listing
   const locale = useLocale()
   const text = monthlyCopy[locale as keyof typeof monthlyCopy] ?? monthlyCopy.en
   const seismic = listing.propertyType === '土地' ? null : seismicStandard(listing.builtYear)
+  const areaText = (m2: number) => (locale === 'en' ? `${formatArea(m2)} (${Math.round(m2 * SQFT_PER_M2).toLocaleString('en-US')} sq ft)` : formatArea(m2))
   const guideLink = (slug: string) => <Link href={`/guides/${slug}`} className="ml-2 text-xs font-semibold text-[#274d7d] underline underline-offset-2">{text.more}</Link>
 
   // 築年月フォーマット
@@ -75,8 +77,8 @@ export function ListingSpecs({ listing, monthly, grossYield, netYield }: Listing
     { label: text.seismic, value: seismic ? <>{text.seismicValue[seismic]}{guideLink(SEISMIC_GUIDE)}</> : null },
     { label: t('structure'), value: translateStructure(listing.structure, locale) },
     { label: t('floorCount'), value: listing.floorCount ? t('floorCountValue', { count: listing.floorCount }) : null },
-    { label: t('landArea'), value: listing.landArea ? formatArea(Number(listing.landArea)) : null },
-    { label: t('buildingArea'), value: listing.buildingArea ? formatArea(Number(listing.buildingArea)) : null },
+    { label: t('landArea'), value: listing.landArea ? areaText(Number(listing.landArea)) : null },
+    { label: t('buildingArea'), value: listing.buildingArea ? areaText(Number(listing.buildingArea)) : null },
     { label: t('zoning'), value: translateZoning(listing.zoning, locale) },
     { label: t('currentStatus'), value: translateCurrentStatus(listing.currentStatus, locale) },
     { label: locale === 'ja' ? '㎡単価' : locale === 'en' ? 'Price per m²' : locale === 'zh-TW' ? '每平方公尺單價' : '每平方米单价', value: formatUnitPrice(Number(listing.price) || null, Number(listing.propertyType === '土地' ? listing.landArea : listing.buildingArea) || null, locale) },

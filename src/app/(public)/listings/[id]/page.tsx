@@ -8,6 +8,9 @@ import { InitialCostSimulator } from '@/components/listing/initial-cost-simulato
 import { parseMonthlyFigures } from '@/lib/monthly-costs'
 import { cardGrossYield } from '@/lib/card-facts'
 import { netYieldFromRent } from '@/lib/seismic'
+import { formatApproxPrice, getJpyRates } from '@/lib/fx'
+import { geocodeAddress } from '@/lib/geocode'
+import { HazardLinks } from '@/components/listing/hazard-links'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -204,6 +207,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const monthly = parseMonthlyFigures(listing.descriptionJa)
   const grossYield = cardGrossYield(listing)
   const letRent = listing.currentStatus?.includes('賃貸中') ? monthly.rent : null
+  const [rates, hazardPoint] = await Promise.all([getJpyRates(), publicAddress ? geocodeAddress(publicAddress) : Promise.resolve(null)])
+  const approxPrice = formatApproxPrice(Number(listing.price) || 0, locale, rates)
   const netYield = netYieldFromRent(letRent, monthly.fees, Number(listing.price) || null)
   const stations = normalizeTransitStations(
     listing.stations as { name: string; name_en?: string | null; line?: string | null; line_en?: string | null; walk_minutes?: number | null }[] | null
@@ -318,6 +323,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                 <p className="text-3xl font-bold text-primary mb-2">
                   {formattedListing.price ? formatPrice(formattedListing.price, locale) : '-'}
                 </p>
+                {approxPrice && <p className="-mt-1 mb-2 text-sm font-semibold text-[#536274]" data-testid="approx-price">{approxPrice}</p>}
                 {publicAddress && (
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-1 text-muted-foreground">
@@ -361,6 +367,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
             {formattedListing.price && Number(formattedListing.price) > 0 && <InitialCostSimulator price={Number(formattedListing.price)} />}
 
             {publicAddress && <ListingMap locale={locale} publicAddress={publicAddress} />}
+            {publicAddress && <HazardLinks locale={locale} point={hazardPoint} />}
 
             {/* アピールポイント */}
             {(description || features.length > 0) && (
