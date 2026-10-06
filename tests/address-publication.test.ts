@@ -21,11 +21,15 @@ test('approved public address rendering rejects internal placeholders and contac
 })
 
 test('all portal languages preserve the verified street and unit instead of reducing to the ward', () => {
-  for (const locale of ['ja', 'en', 'zh-TW', 'zh-CN']) {
+  for (const locale of ['ja', 'zh-TW', 'zh-CN']) {
     const translated = translateAddress(full, locale)
     assert.ok(translated?.includes('3丁目2-2'))
     assert.ok(translated?.includes('201号室'))
   }
+  // English writes the same street and unit in English order (e.g. "Unit 201, 3-2-2 Yanaka").
+  const english = translateAddress(full, 'en')
+  assert.ok(english?.includes('3-2-2'))
+  assert.ok(english?.includes('Unit 201'))
 })
 
 

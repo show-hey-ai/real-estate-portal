@@ -1,3 +1,5 @@
+import { englishStreet } from './english-address'
+
 /**
  * DB上の日本語フィールド値を言語に応じて翻訳するマッピング
  */
@@ -37,6 +39,7 @@ const zoningMap: Record<string, Record<string, string>> = {
   '商業地域': { en: 'Commercial', 'zh-TW': '商業地域', 'zh-CN': '商业地域' },
   '準工業地域': { en: 'Quasi-Industrial', 'zh-TW': '準工業地域', 'zh-CN': '准工业地域' },
   '工業地域': { en: 'Industrial', 'zh-TW': '工業地域', 'zh-CN': '工业地域' },
+  '田園住居地域': { en: 'Rural Residential', 'zh-TW': '田園住居地域', 'zh-CN': '田园住居地域' },
   '工業専用地域': { en: 'Exclusively Industrial', 'zh-TW': '工業專用地域', 'zh-CN': '工业专用地域' },
 }
 
@@ -78,7 +81,9 @@ export function translateStructure(value: string | null, locale: string): string
 }
 
 export function translateZoning(value: string | null, locale: string): string | null {
-  return lookupTranslation(value, zoningMap, locale)
+  // Listings write 第一種 as often as 第1種; the map uses Arabic numerals.
+  const normalized = value?.replace(/第一種/g, '第1種').replace(/第二種/g, '第2種') ?? null
+  return lookupTranslation(normalized, zoningMap, locale) ?? value
 }
 
 export function translateCurrentStatus(value: string | null, locale: string): string | null {
@@ -135,6 +140,7 @@ const railwayLineMap: Record<string, string> = {
   '東武東上線': 'Tobu Tojo Line',
   '東武伊勢崎線': 'Tobu Isesaki Line',
   '東武亀戸線': 'Tobu Kameido Line',
+  '東武大師線': 'Tobu Daishi Line',
   '東武スカイツリーライン': 'Tobu Skytree Line',
   '東海道新幹線': 'Tokaido Shinkansen',
   '東北新幹線': 'Tohoku Shinkansen',
@@ -689,7 +695,7 @@ export function translateAddress(address: string | null | undefined, locale: str
       for (const [jaCity, enCity] of Object.entries(cityMap)) {
         if (result.includes(jaCity)) {
           const street = result.replace(jaCity, '').trim()
-          return [street, enCity, en].filter(Boolean).join(', ')
+          return [englishStreet(jaCity, street) ?? street, enCity, en].filter(Boolean).join(', ')
         }
       }
       return [result.trim(), en].filter(Boolean).join(', ')
