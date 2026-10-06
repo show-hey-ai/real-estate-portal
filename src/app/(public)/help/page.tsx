@@ -3,7 +3,7 @@ import { localeAlternates } from '@/lib/locale-url'
 import { getLocale } from 'next-intl/server'
 import { HelpCenter } from '@/components/help/help-center'
 import { getHelpCopy } from '@/content/help'
-import { absoluteUrl } from '@/lib/site-config'
+import { shareMetadata } from '@/lib/site-config'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -12,11 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${copy.nav} | ZIYOU`,
     description: copy.subtitle,
     alternates: localeAlternates('/help', locale),
-    openGraph: {
-      title: `${copy.nav} | ZIYOU`,
-      description: copy.subtitle,
-      url: absoluteUrl('/help'),
-    },
+    ...shareMetadata({ title: `${copy.nav} | ZIYOU`, description: copy.subtitle, url: localeAlternates('/help', locale).canonical, locale }),
   }
 }
 

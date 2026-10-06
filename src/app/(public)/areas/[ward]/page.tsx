@@ -12,7 +12,7 @@ import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import { getOptionalPublicViewer, getFavoriteIdsForViewer } from '@/lib/public-viewer'
 import { getPublicArticle } from '@/lib/portal-articles'
 import { localeAlternates, localizedPath } from '@/lib/locale-url'
-import { absoluteUrl, getSchemaLanguage } from '@/lib/site-config'
+import { absoluteUrl, getSchemaLanguage, shareMetadata } from '@/lib/site-config'
 import { translatePropertyType } from '@/lib/translate-fields'
 import { countByWard, summarizeWard, wardFromSlug, wardLabel } from '@/lib/ward-tile-map'
 import { formatYenWords } from '@/lib/yen-words'
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const count = (await getPublicRows()).filter((row) => row.city === ward).length
   const alternates = localeAlternates(`/areas/${slug}`, locale)
   // Empty wards stay reachable from the map but are not offered to search engines as thin pages.
-  return { title: text.title(label), description: text.description(label, count), alternates, openGraph: { title: text.title(label), description: text.description(label, count), url: alternates.canonical }, robots: count ? { index: true, follow: true } : { index: false, follow: true } }
+  return { title: text.title(label), description: text.description(label, count), alternates, ...shareMetadata({ title: text.title(label), description: text.description(label, count), url: alternates.canonical, locale }), robots: count ? { index: true, follow: true } : { index: false, follow: true } }
 }
 
 export default async function WardPage({ params }: Props) {

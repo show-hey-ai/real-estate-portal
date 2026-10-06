@@ -10,8 +10,8 @@ import { getGuideArticles } from '@/content/guides'
 import { getGuideUiCopy, normalizeGuideLocale } from '@/lib/guides'
 import {
   absoluteUrl,
-  getOpenGraphLocale,
   getSchemaLanguage,
+  shareMetadata,
 } from '@/lib/site-config'
 
 const highlightIcons = [Search, LineChart, Globe2] as const
@@ -24,17 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: guideCopy.indexTitle,
     description: guideCopy.indexDescription,
     alternates: localeAlternates('/guides', locale),
-    openGraph: {
-      title: guideCopy.indexTitle,
-      description: guideCopy.indexDescription,
-      url: localeAlternates('/guides', locale).canonical,
-      type: 'website',
-      locale: getOpenGraphLocale(locale),
-    },
-    twitter: {
-      title: guideCopy.indexTitle,
-      description: guideCopy.indexDescription,
-    },
+    ...shareMetadata({ title: guideCopy.indexTitle, description: guideCopy.indexDescription, url: localeAlternates('/guides', locale).canonical, locale }),
   }
 }
 

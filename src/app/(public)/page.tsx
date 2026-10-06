@@ -18,7 +18,7 @@ import { getFavoriteIdsForViewer, getOptionalPublicViewer } from '@/lib/public-v
 import { getPortalHomeCopy } from '@/lib/portal-copy'
 import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { createServiceClient } from '@/lib/supabase/server'
-import { absoluteUrl, getSchemaLanguage, getSiteCopy } from '@/lib/site-config'
+import { absoluteUrl, getSchemaLanguage, getSiteCopy, shareMetadata } from '@/lib/site-config'
 
 export const dynamic = 'force-dynamic'
 
@@ -63,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const alternates = localeAlternates('/', locale)
   return { title: { absolute: copy.title }, description: copy.description,
     alternates,
-    openGraph: { title: copy.title, description: copy.description, url: alternates.canonical } }
+    ...shareMetadata({ title: copy.title, description: copy.description, url: alternates.canonical, locale }) }
 }
 
 export default async function HomePage() {

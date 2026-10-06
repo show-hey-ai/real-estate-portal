@@ -45,6 +45,7 @@ import {
   getPrimaryListingImage,
   getSchemaLanguage,
   getSiteCopy,
+  shareMetadata,
 } from '@/lib/site-config'
 import {
   translateCityName,
@@ -119,16 +120,7 @@ export async function generateMetadata({
     title: { absolute: title },
     description,
     alternates: localeAlternates('/listings', locale),
-    openGraph: {
-      title,
-      description,
-      url: localeAlternates('/listings', locale).canonical,
-      type: 'website',
-    },
-    twitter: {
-      title,
-      description,
-    },
+    ...shareMetadata({ title, description, url: localeAlternates('/listings', locale).canonical, locale }),
     robots: activeFilters
       ? {
           index: false,

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { shareMetadata } from '@/lib/site-config'
 import { localeAlternates } from '@/lib/locale-url'
 import Link from 'next/link'
 import { getLocale } from 'next-intl/server'
@@ -9,7 +10,8 @@ import { getBuyerJourneyCopy } from '@/lib/buyer-journey-copy'
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const copy = getBuyerJourneyCopy(locale)
-  return { title: copy.guideTitle, description: copy.guideIntro, alternates: localeAlternates('/buying-guide', locale) }
+  const alternates = localeAlternates('/buying-guide', locale)
+  return { title: copy.guideTitle, description: copy.guideIntro, alternates, ...shareMetadata({ title: copy.guideTitle, description: copy.guideIntro, url: alternates.canonical, locale }) }
 }
 
 export default async function BuyingGuidePage() {

@@ -1,4 +1,5 @@
 import { FunnelText } from '@/components/analytics/buyer-funnel'
+import { shareMetadata } from '@/lib/site-config'
 import { localeAlternates } from '@/lib/locale-url'
 import type { Metadata } from 'next'
 import { getLocale } from 'next-intl/server'
@@ -12,7 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
   const copy = getBuyerJourneyCopy(locale)
   const matching = getBuyerMatchingCopy(locale)
-  return { title: copy.matchTitle, description: matching.intro, alternates: localeAlternates('/match', locale) }
+  const alternates = localeAlternates('/match', locale)
+  return { title: copy.matchTitle, description: matching.intro, alternates, ...shareMetadata({ title: copy.matchTitle, description: matching.intro, url: alternates.canonical, locale }) }
 }
 
 export default async function MatchPage({ searchParams }: { searchParams: Promise<{ purpose?: string }> }) {

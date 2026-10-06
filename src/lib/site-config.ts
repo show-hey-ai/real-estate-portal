@@ -292,3 +292,17 @@ export function buildWebsiteJsonLd(locale: string) {
     },
   }
 }
+
+/** Branded 1200×630 share image for pages without a property photo. */
+export function defaultShareImages(alt: string) {
+  return [{ url: absoluteUrl('/og-default.jpg'), width: 1200, height: 630, alt }]
+}
+
+/** Open Graph and Twitter card fields for a page, using the default share image unless one is given. */
+export function shareMetadata({ title, description, url, locale, image }: { title: string; description: string; url: string; locale: string; image?: string | null }) {
+  const images = image ? [{ url: image, alt: title }] : defaultShareImages(title)
+  return {
+    openGraph: { type: 'website' as const, siteName: 'Ziyou Real Estate', title, description, url, locale: getOpenGraphLocale(locale), images },
+    twitter: { card: 'summary_large_image' as const, title, description, images: images.map((item) => item.url) },
+  }
+}
