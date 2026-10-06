@@ -18,7 +18,8 @@ export async function GET() {
     '# Ziyou Real Estate', '',
     '> Multilingual portal for buying investment property, a home, or land in Tokyo, Japan.', '',
     count == null ? 'See the live listings page for current properties.' : `Currently published properties: ${count}.`,
-    'Only listings with advertising permission are shown. Availability may change; ask the brokerage to confirm.', '',
+    'Only listings with advertising permission are shown. Availability may change; ask the brokerage to confirm.',
+    'Pages are available in English (plain URL), Japanese (?lang=ja), Traditional Chinese (?lang=zh-TW) and Simplified Chinese (?lang=zh-CN). The full inventory with prices is in llms-full.txt.', '',
     '## Main pages', '',
     `- [Home](${absoluteUrl('/')}): Tokyo property purchase overview and search.`,
     `- [Properties for sale](${absoluteUrl('/listings')}): Published investment, residential, and land listings.`,
@@ -26,6 +27,7 @@ export async function GET() {
     `- [Property insights](${absoluteUrl('/articles')}): Source-backed Tokyo property selections and comparisons.`,
     `- [Personal search](${absoluteUrl('/match')}): Save purchase criteria and review matching published listings.`,
     `- [Help center](${absoluteUrl('/help')}): Answers about searching, accounts, property chat, and buying steps.`, '',
+    `- [Full details for AI assistants](${absoluteUrl('/llms-full.txt')})`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
   ].join('\n')
   return new Response(markdown, { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, s-maxage=3600' } })

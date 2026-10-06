@@ -1,17 +1,18 @@
 import { FunnelText } from '@/components/analytics/buyer-funnel'
+import { localeAlternates } from '@/lib/locale-url'
 import type { Metadata } from 'next'
 import { getLocale } from 'next-intl/server'
 import { BuyerBrief } from '@/components/buyer/buyer-brief'
 import { BuyerSearch } from '@/components/buyer/buyer-search'
 import { getBuyerMatchingCopy } from '@/lib/buyer-matching-copy'
 import { getBuyerJourneyCopy } from '@/lib/buyer-journey-copy'
-import { absoluteUrl } from '@/lib/site-config'
 import { isMarketCategory } from '@/lib/market-category'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const copy = getBuyerJourneyCopy(await getLocale())
-  const matching = getBuyerMatchingCopy(await getLocale())
-  return { title: copy.matchTitle, description: matching.intro, alternates: { canonical: absoluteUrl('/match') } }
+  const locale = await getLocale()
+  const copy = getBuyerJourneyCopy(locale)
+  const matching = getBuyerMatchingCopy(locale)
+  return { title: copy.matchTitle, description: matching.intro, alternates: localeAlternates('/match', locale) }
 }
 
 export default async function MatchPage({ searchParams }: { searchParams: Promise<{ purpose?: string }> }) {

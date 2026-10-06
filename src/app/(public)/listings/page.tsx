@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { localeAlternates } from '@/lib/locale-url'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { getLocale, getTranslations } from 'next-intl/server'
@@ -117,13 +118,11 @@ export async function generateMetadata({
   return {
     title: { absolute: title },
     description,
-    alternates: {
-      canonical: absoluteUrl('/listings'),
-    },
+    alternates: localeAlternates('/listings', locale),
     openGraph: {
       title,
       description,
-      url: absoluteUrl('/listings'),
+      url: localeAlternates('/listings', locale).canonical,
       type: 'website',
     },
     twitter: {

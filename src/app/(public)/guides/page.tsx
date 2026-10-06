@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { localeAlternates } from '@/lib/locale-url'
 import Link from 'next/link'
 import { getLocale } from 'next-intl/server'
 import { ArrowRight, Globe2, LineChart, Search } from 'lucide-react'
@@ -22,13 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: guideCopy.indexTitle,
     description: guideCopy.indexDescription,
-    alternates: {
-      canonical: absoluteUrl('/guides'),
-    },
+    alternates: localeAlternates('/guides', locale),
     openGraph: {
       title: guideCopy.indexTitle,
       description: guideCopy.indexDescription,
-      url: absoluteUrl('/guides'),
+      url: localeAlternates('/guides', locale).canonical,
       type: 'website',
       locale: getOpenGraphLocale(locale),
     },

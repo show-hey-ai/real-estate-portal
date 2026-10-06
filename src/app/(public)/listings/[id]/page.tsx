@@ -1,4 +1,5 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { localeAlternates } from '@/lib/locale-url'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations, getLocale } from 'next-intl/server'
@@ -82,7 +83,8 @@ export async function generateMetadata({
   const title = buildListingTitle(listing, locale)
   const description = buildListingDescription(listing, locale)
   const image = getPrimaryListingImage(listing)
-  const url = absoluteUrl(`/listings/${id}`)
+  const alternates = localeAlternates(`/listings/${id}`, locale)
+  const url = alternates.canonical
   const keywords = [
     'Tokyo property for sale',
     'Tokyo investment property',
@@ -98,9 +100,7 @@ export async function generateMetadata({
     title,
     description,
     keywords,
-    alternates: {
-      canonical: url,
-    },
+    alternates,
     openGraph: {
       type: 'website',
       url,

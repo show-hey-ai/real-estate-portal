@@ -1,14 +1,15 @@
 import type { Metadata } from 'next'
+import { localeAlternates } from '@/lib/locale-url'
 import Link from 'next/link'
 import { getLocale } from 'next-intl/server'
 import { ArrowRight } from 'lucide-react'
 import { BuyingGuideFlow } from '@/components/buyer/buying-guide-flow'
 import { getBuyerJourneyCopy } from '@/lib/buyer-journey-copy'
-import { absoluteUrl } from '@/lib/site-config'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const copy = getBuyerJourneyCopy(await getLocale())
-  return { title: copy.guideTitle, description: copy.guideIntro, alternates: { canonical: absoluteUrl('/buying-guide') } }
+  const locale = await getLocale()
+  const copy = getBuyerJourneyCopy(locale)
+  return { title: copy.guideTitle, description: copy.guideIntro, alternates: localeAlternates('/buying-guide', locale) }
 }
 
 export default async function BuyingGuidePage() {

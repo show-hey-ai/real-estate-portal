@@ -1,4 +1,5 @@
 import { FunnelText } from '@/components/analytics/buyer-funnel'
+import { localeAlternates } from '@/lib/locale-url'
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import type { Metadata } from 'next'
 import Image from 'next/image'
@@ -57,10 +58,12 @@ async function getWardCounts() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const copy = getSiteCopy(await getLocale())
+  const locale = await getLocale()
+  const copy = getSiteCopy(locale)
+  const alternates = localeAlternates('/', locale)
   return { title: { absolute: copy.title }, description: copy.description,
-    alternates: { canonical: absoluteUrl('/') },
-    openGraph: { title: copy.title, description: copy.description, url: absoluteUrl('/') } }
+    alternates,
+    openGraph: { title: copy.title, description: copy.description, url: alternates.canonical } }
 }
 
 export default async function HomePage() {
