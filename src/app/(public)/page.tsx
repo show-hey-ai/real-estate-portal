@@ -24,6 +24,8 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { absoluteUrl, getSchemaLanguage, getSiteCopy, shareMetadata } from '@/lib/site-config'
 import { withBuildingName } from '@/lib/building-name'
 import { homeSnippet } from '@/lib/home-snippet'
+import { ArticleStrip } from '@/components/common/article-strip'
+import { getPublicArticles } from '@/lib/portal-articles'
 import { cache } from 'react'
 
 export const dynamic = 'force-dynamic'
@@ -44,7 +46,7 @@ async function getLatestListings() {
     .is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0])
     .or(publicFreshnessFilters()[1])
-    .order('publishedAt', { ascending: false }).limit(6)
+    .order('publishedAt', { ascending: false }).limit(8)
   if (error) { console.error('Failed to load homes:', error); return [] }
   return data || []
 }
@@ -77,8 +79,8 @@ export default async function HomePage() {
   const locale = await getLocale()
   const copy = getPortalHomeCopy(locale)
   const market = getMarketplaceCopy(locale)
-  const [homes, viewer, locationIndex, wardCounts] = await Promise.all([
-    getLatestListings(), getOptionalPublicViewer(), getPublicSearchLocationIndex(), getWardCounts(),
+  const [homes, viewer, locationIndex, wardCounts, articles] = await Promise.all([
+    getLatestListings(), getOptionalPublicViewer(), getPublicSearchLocationIndex(), getWardCounts(), getPublicArticles(),
   ])
   const listings = homes.map((home) => ({ ...home,
     price: home.price ? BigInt(home.price) : null,
@@ -140,6 +142,8 @@ export default async function HomePage() {
       </section>
 
       <RecentlyViewed />
+
+      <ArticleStrip articles={articles} locale={locale} />
 
       <section className="mt-12 grid gap-4 border-t border-[#e5eaf0] pt-8 md:grid-cols-2">
         <div className="rounded-xl bg-[#edf3f9] p-6"><h2 className="text-lg font-semibold">{copy.matchTitle}</h2><p className="mt-3 text-sm leading-7 text-[#536274]">{copy.matchDescription}</p><Link href="/match" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]"><FunnelText field="matchCta" baseline={copy.matchCta} /><ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>
