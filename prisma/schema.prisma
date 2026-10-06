@@ -23,6 +23,9 @@ model User {
 }
 
 model Listing {
+  buyerRecommendations BuyerRecommendation[]
+  chatSeller PropertyChatSeller?
+  chatRooms PropertyChatRoom[]
   id                   String               @id @default(cuid())
   status               ListingStatus        @default(DRAFT)
   propertyType         String?
@@ -80,6 +83,8 @@ model Listing {
   adConsentRequired    Boolean              @default(false)
   extractionConfidence Decimal?             @db.Decimal(3, 2)
   sourcePdfUrl         String?
+  sourcePropertyId     String?              @unique
+  autonomyValidUntil   DateTime?
   sourcePdfPages       Int?
   adminNotes           String?              @db.Text
   managementId         String?              @unique
@@ -92,6 +97,55 @@ model Listing {
   siteVisitEvents      SiteVisitEvent[]
 
   @@map("listings")
+}
+
+model PropertyChatSeller {
+  listingId String @id
+  sellerSubject String @db.Uuid
+  assignedBy String @db.Uuid
+  assignedAt DateTime @default(now()) @db.Timestamptz(6)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  @@map("property_chat_sellers")
+}
+
+model PropertyChatRoom {
+  sellerKind String @default("seller")
+  stage String @default("consultation")
+  id String @id @db.Uuid
+  listingId String
+  buyerSubject String @db.Uuid
+  sellerSubject String @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @db.Timestamptz(6)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  messages PropertyChatMessage[]
+  @@unique([listingId, buyerSubject, sellerSubject])
+  @@index([buyerSubject, updatedAt(sort: Desc)], map: "property_chat_buyer")
+  @@index([sellerSubject, updatedAt(sort: Desc)], map: "property_chat_seller")
+  @@map("property_chat_rooms")
+}
+
+model PropertyChatMessage {
+  kind String @default("text")
+  details Json @default("{}")
+  id String @id @db.Uuid
+  roomId String @db.Uuid
+  senderSubject String @db.Uuid
+  clientNonce String @db.Uuid
+  body String
+  language String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  room PropertyChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  @@unique([roomId, senderSubject, clientNonce])
+  @@index([roomId, createdAt, id], map: "property_chat_messages_room")
+  @@map("property_chat_messages")
+}
+
+model PropertyChatOperator {
+  id String @id
+  subject String @db.Uuid
+  configuredAt DateTime @default(now()) @db.Timestamptz(6)
+  @@map("property_chat_operator")
 }
 
 model TransitLineMaster {
@@ -272,4 +326,155 @@ enum LeadStatus {
   CONTACTED
   CONVERTED
   CLOSED
+}
+
+// Private operating state. Public clients have no access to these tables.
+model AutonomyPolicy {
+  id                 String   @id
+  enabled            Boolean  @default(false)
+  objective          String   @db.Text
+  intervalMinutes    Int      @default(60)
+  monthlyBudgetYen   Int      @default(0)
+  aiCallReserveYen   Int      @default(100)
+  allowAiStrategy    Boolean  @default(false)
+  allowPublication   Boolean  @default(false)
+  allowArchive       Boolean  @default(false)
+  allowReinsIntake   Boolean  @default(false)
+  allowArticles      Boolean  @default(false)
+  allowSeo           Boolean  @default(false)
+  reinsIntervalHours Int      @default(24)
+  reinsBatchReserveYen Int    @default(1000)
+  maxAttempts        Int      @default(3)
+  lastHeartbeatAt    DateTime?
+  lastSourceHeartbeatAt DateTime?
+  updatedAt          DateTime @updatedAt
+  jobs               AutonomyJob[]
+  records            AutonomyRecord[]
+
+  @@map("autonomy_policies")
+}
+
+model PortalArticle {
+  slug         String   @id
+  city         String
+  status       String   @default("DRAFT")
+  locales      Json
+  sourceHash   String
+  sourceIds    Json
+  version      String
+  publishedAt  DateTime?
+  updatedAt    DateTime @updatedAt
+
+  @@map("portal_articles")
+}
+
+model AutonomyJob {
+  id             String   @id @default(cuid())
+  ventureId      String
+  kind           String
+  status         String   @default("pending")
+  dedupeKey      String
+  payload        Json
+  result         Json?
+  priority       Int      @default(0)
+  attempts       Int      @default(0)
+  availableAt    DateTime @default(now())
+  leaseToken     String?
+  leaseExpiresAt DateTime?
+  lastError      String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  policy         AutonomyPolicy @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+  runs           AutonomyRun[]
+
+  @@unique([ventureId, dedupeKey])
+  @@index([ventureId, status, availableAt])
+  @@map("autonomy_jobs")
+}
+
+model AutonomyRun {
+  id               String   @id @default(cuid())
+  jobId            String
+  leaseToken       String   @unique
+  outcome          String   @default("running")
+  reservedCostYen  Int      @default(0)
+  actualCostYen    Int?
+  providerReceipt  String?
+  pendingProviderRequests Int @default(0)
+  inputTokens      Int?
+  outputTokens     Int?
+  startedAt        DateTime @default(now())
+  finishedAt       DateTime?
+  job              AutonomyJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([startedAt])
+  @@map("autonomy_runs")
+}
+
+model AutonomyRecord {
+  id           String   @id @default(cuid())
+  ventureId    String
+  dedupeKey    String
+  recordType   String
+  title        String
+  content      Json
+  sources      Json
+  verification String   @default("unverified")
+  version      String
+  createdAt    DateTime @default(now())
+  policy       AutonomyPolicy @relation(fields: [ventureId], references: [id], onDelete: Cascade)
+
+  @@unique([ventureId, dedupeKey])
+  @@index([ventureId, recordType, createdAt])
+  @@map("autonomy_records")
+}
+
+model BuyerSearchProfile {
+  id String @id @db.Uuid
+  buyerSubject String @unique @db.Uuid
+  revision Int @default(1)
+  active Boolean @default(true)
+  criteria Json
+  matchGeneration String? @db.Uuid
+  lastMatchedAt DateTime? @db.Timestamptz(6)
+  lastSourceAttemptAt DateTime? @db.Timestamptz(6)
+  lastSourceAt DateTime? @db.Timestamptz(6)
+  sourceCursor Int @default(0)
+  sourceState String @default("waiting")
+  sourcePlan Json?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @db.Timestamptz(6)
+  recommendations BuyerRecommendation[]
+  @@index([active,lastMatchedAt,lastSourceAttemptAt],map:"buyer_search_due")
+  @@map("buyer_search_profiles")
+}
+model BuyerRecommendation {
+  profileId String @db.Uuid
+  listingId String
+  profileRevision Int
+  matchGeneration String @db.Uuid
+  listingUpdatedAt DateTime @db.Timestamp(3)
+  listingHash String
+  evaluation Json
+  score Int
+  status String
+  suggestedAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @db.Timestamptz(6)
+  profile BuyerSearchProfile @relation(fields:[profileId],references:[id],onDelete:Cascade)
+  listing Listing @relation(fields:[listingId],references:[id],onDelete:Cascade)
+  feedback BuyerFeedback?
+  @@id([profileId,listingId])
+  @@map("buyer_recommendations")
+}
+model BuyerFeedback {
+  profileId String @db.Uuid
+  listingId String
+  rating Int?
+  status String
+  reason String
+  lastNonce String @db.Uuid
+  updatedAt DateTime @default(now()) @db.Timestamptz(6)
+  recommendation BuyerRecommendation @relation(fields:[profileId,listingId],references:[profileId,listingId],onDelete:Cascade)
+  @@id([profileId,listingId])
+  @@map("buyer_feedback")
 }

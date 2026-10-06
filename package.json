@@ -13,7 +13,10 @@
     "maisoku": "npx tsx scripts/process-openai-vision.ts",
     "maisoku:all": "npx tsx scripts/process-openai-vision.ts --all",
     "hospitality:fix": "npx tsx scripts/fix-hospitality-candidates.ts",
-    "ad:recheck": "npx tsx scripts/recheck-published-ad-policy.ts"
+    "ad:recheck": "npx tsx scripts/recheck-published-ad-policy.ts",
+    "autonomy:worker": "tsx scripts/autonomy-worker.ts",
+    "autonomy:once": "tsx scripts/autonomy-worker.ts --once",
+    "test:autonomy": "node --import tsx --test tests/autonomy-*.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.77",
@@ -54,6 +57,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.3.15",
     "@playwright/test": "^1.57.0",
     "@prisma/client": "^7.5.0",
     "@tailwindcss/postcss": "^4",

@@ -2,6 +2,7 @@ import dns from 'node:dns'
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
+import { databasePoolConfig } from './database-pool'
 
 // Supabase free tier resolves to IPv6 only (no IPv4 A record).
 // Node.js defaults to preferring IPv4 which causes ENODATA → P1001.
@@ -12,7 +13,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL! })
+const pool = new Pool(databasePoolConfig(process.env))
 const adapter = new PrismaPg(pool)
 
 export const prisma =
