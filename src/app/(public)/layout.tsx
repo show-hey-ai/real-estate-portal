@@ -1,5 +1,6 @@
 import { Header } from '@/components/common/header'
 import { Footer } from '@/components/common/footer'
+import { CompareBar } from '@/components/listing/browser-lists-client'
 import { PublicPageviewTracker } from '@/components/analytics/public-pageview-tracker'
 import { getOptionalPublicViewer } from '@/lib/public-viewer'
 
@@ -16,6 +17,7 @@ export default async function PublicLayout({
       <Header user={user} />
       <main className="flex-1">{children}</main>
       <Footer />
+      <CompareBar />
     </div>
   )
 }

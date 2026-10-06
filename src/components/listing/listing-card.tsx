@@ -29,6 +29,7 @@ import { formatApprovedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, translateAddress, translateZoning } from '@/lib/translate-fields'
 import { FavoriteIconButton } from './favorite-icon-button'
+import { CompareToggle } from './browser-lists-client'
 import { getTradeChatCopy } from '@/lib/trade-chat'
 
 const NEW_LISTING_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
@@ -171,6 +172,7 @@ export function ListingCard({
               >
                 <Link href={`/chats?listing=${listing.id}&start=1`}><MessageCircle aria-hidden="true" className="h-4 w-4" /></Link>
               </Button>
+            <CompareToggle listingId={listing.id} compact />
             {showFavoriteButton && (
               <FavoriteIconButton
                 listingId={listing.id}

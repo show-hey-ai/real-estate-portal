@@ -1,4 +1,5 @@
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
+import { CompareToggle, ListingViewTracker, RecentlyViewed } from '@/components/listing/browser-lists-client'
 import { StationAccess } from '@/components/listing/station-access'
 import { UnitPriceChart } from '@/components/listing/unit-price-chart'
 import { compareUnitPrice, type UnitPriceSource } from '@/lib/unit-price'
@@ -318,11 +319,14 @@ export default async function ListingPage({ params }: ListingPageProps) {
                 )}
                 {stations.length > 0 && <StationAccess locale={locale} stations={stations.map((station) => ({ label: formatTransitAccessLabel(station, locale) || station.name || '', walkMinutes: station.walk_minutes ?? null }))} />}
               </div>
-              <FavoriteButton
-                listingId={formattedListing.id}
-                initialFavorite={isFavorite}
-                userId={userId}
-              />
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                <FavoriteButton
+                  listingId={formattedListing.id}
+                  initialFavorite={isFavorite}
+                  userId={userId}
+                />
+                <CompareToggle listingId={formattedListing.id} />
+              </div>
             </div>
 
             <a href={`/chats?listing=${formattedListing.id}&start=1`} className="mb-6 inline-flex items-center gap-2 rounded-lg border border-[#cfded8] bg-[#f0f7f4] px-4 py-3 text-sm font-medium text-[#316957] lg:hidden">
@@ -400,10 +404,12 @@ export default async function ListingPage({ params }: ListingPageProps) {
           </div>
         </div>
       </div>
+      <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingTitle(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing) }} />
       {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={item} userId={userId} />)}</div>
       </section>}
+      <RecentlyViewed excludeId={formattedListing.id} />
     </div>
   )
 }
