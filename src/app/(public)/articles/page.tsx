@@ -4,10 +4,23 @@ import Image from 'next/image'
 import { getLocale } from 'next-intl/server'
 import { getPublicArticles } from '@/lib/portal-articles'
 import { type Locale } from '@/i18n/config'
-import { absoluteUrl } from '@/lib/site-config'
+import { shareMetadata } from '@/lib/site-config'
+import { localeAlternates } from '@/lib/locale-url'
 
 export const dynamic = 'force-dynamic'
-export const metadata: Metadata = { title: 'Japan Real Estate Guides | Ziyou', description: 'Understand Japan property markets, buying procedures and brokerage customs. Compare current Tokyo listings with source-backed multilingual guides.', alternates: { canonical: absoluteUrl('/articles') } }
+const indexCopy = {
+  ja: { title: '東京の不動産購入に役立つ記事 | 自由不動産', description: '日本の不動産市場、購入の流れ、仲介の慣習を解説。公開中の東京の物件を比較した多言語の記事です。' },
+  en: { title: 'Japan Real Estate Guides | Ziyou', description: 'Understand Japan property markets, buying procedures and brokerage customs. Compare current Tokyo listings with source-backed multilingual guides.' },
+  'zh-TW': { title: '東京購屋實用文章 | 自由不動產', description: '解說日本不動產市場、購屋流程與仲介慣例，並比較目前刊登中的東京物件。' },
+  'zh-CN': { title: '东京购房实用文章 | 自由不动产', description: '解说日本房产市场、购房流程与中介惯例，并比较当前在售的东京房源。' },
+} as const
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  const copy = indexCopy[locale as keyof typeof indexCopy] ?? indexCopy.en
+  const alternates = localeAlternates('/articles', locale)
+  return { title: { absolute: copy.title }, description: copy.description, alternates, ...shareMetadata({ title: copy.title, description: copy.description, url: alternates.canonical, locale }) }
+}
 
 export default async function ArticlesPage() {
   const [articles, locale] = await Promise.all([getPublicArticles(), getLocale()])

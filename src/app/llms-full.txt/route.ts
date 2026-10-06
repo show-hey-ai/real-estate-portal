@@ -5,6 +5,7 @@ import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import { getPublicArticles } from '@/lib/portal-articles'
 import { guideArticles } from '@/content/guides'
 import { formatLlmsListing, type LlmsListing } from '@/lib/llms-listings'
+import { WARD_SLUGS, countByWard, wardLabel } from '@/lib/ward-tile-map'
 
 export const dynamic = 'force-dynamic'
 const MAX_LISTED = 200
@@ -25,11 +26,11 @@ export async function GET() {
   const [listings, articles] = await Promise.all([publishedListings(), getPublicArticles()])
   const markdown = [
     '# Ziyou Real Estate', '',
-    'Ziyou Real Estate (自由不動産合同会社, Tokyo Governor licence (1) No. 108831) helps buyers look for investment property, residential homes, and land in Tokyo\'s 23 wards. The public site supports Japanese, English, Traditional Chinese, and Simplified Chinese.', '',
+    'Ziyou Real Estate (自由不動産合同会社, Tokyo Governor licence (1) No. 108831; Yanagibashi, Taito-ku, Tokyo; +81-3-5687-7120; admin@ziyou-fudosan.com) helps buyers look for investment property, residential homes, and land in Tokyo\'s 23 wards. The public site supports Japanese, English, Traditional Chinese, and Simplified Chinese.', '',
     'Every page has a URL per language: English is the plain URL; add ?lang=ja, ?lang=zh-TW or ?lang=zh-CN for Japanese, Traditional Chinese or Simplified Chinese.', '',
     'The portal lists properties for which advertising permission has been confirmed. A search result does not confirm current availability or suitability for an individual buyer. Prices are seller asking prices, not transaction prices.', '',
     'Signed-in buyers can save their purpose, budget, wards, property type, timing and other criteria on the personal search page. Saved criteria are rechecked against published listings, and matches are shown with matched, unmatched and unconfirmed points. The match score compares entered criteria only; it is not a loan, eligibility, yield or availability decision.', '',
-    'Questions about a specific property start in that listing\'s private property chat. Buyers who prefer messaging can also open a WhatsApp draft from the personal search page; nothing is sent automatically.', '',
+    'Every listing page offers contact without sign-up: WhatsApp (+81-80-8492-7068, pre-filled with the listing), email (admin@ziyou-fudosan.com) and phone (+81-3-5687-7120). Signed-in buyers can also use the listing\'s private property chat.', '',
     '## Pages', '',
     `- [Home](${absoluteUrl('/')})`,
     `- [Properties for sale](${absoluteUrl('/listings')})`,
@@ -40,6 +41,8 @@ export async function GET() {
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
     `## Properties for sale now (${listings.length})`, '',
     ...(listings.length ? listings.map((listing) => formatLlmsListing(listing, absoluteUrl(`/listings/${listing.id}`))) : ['See the properties page for the current inventory.']), '',
+    '## Properties by ward', '',
+    ...Object.entries(countByWard(listings)).sort((left, right) => right[1] - left[1]).filter(([ward]) => WARD_SLUGS[ward]).map(([ward, count]) => `- [${wardLabel(ward, 'en')}, Tokyo: ${count} for sale](${absoluteUrl(`/areas/${WARD_SLUGS[ward]}`)})`), '',
     '## Articles', '',
     ...articles.map((article) => `- [${article.locales.en.title}](${absoluteUrl(`/articles/${article.slug}/en`)}): ${article.locales.en.description}`),
     ...guideArticles.map((guide) => `- [${guide.locales.en.title}](${absoluteUrl(`/guides/${guide.slug}`)}): ${guide.locales.en.seoDescription}`), '',

@@ -7,7 +7,7 @@ import { rankRelatedListings, type RelatedCandidate } from '@/lib/related-listin
 import { QuickContact } from '@/components/listing/quick-contact'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { ListingMap } from '@/components/listing/listing-map'
-import { localeAlternates } from '@/lib/locale-url'
+import { localeAlternates, localizedPath } from '@/lib/locale-url'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations, getLocale } from 'next-intl/server'
@@ -257,29 +257,17 @@ export default async function ListingPage({ params }: ListingPageProps) {
         }
       : undefined,
   }
+  const homeLabel: Record<string, string> = { ja: 'ホーム', en: 'Home', 'zh-TW': '首頁', 'zh-CN': '首页' }
+  const wardSlug = listing.city ? WARD_SLUGS[listing.city] : undefined
+  const breadcrumbItems = [
+    { name: homeLabel[locale] ?? homeLabel.en, item: absoluteUrl(localizedPath('/', locale)) },
+    wardSlug ? { name: wardLabel(listing.city!, locale), item: absoluteUrl(localizedPath(`/areas/${wardSlug}`, locale)) } : { name: 'Listings', item: absoluteUrl(localizedPath('/listings', locale)) },
+    { name: buildListingTitle(formattedListing, locale), item: pageUrl },
+  ]
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: absoluteUrl('/'),
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Listings',
-        item: absoluteUrl('/listings'),
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: buildListingTitle(formattedListing, locale),
-        item: absoluteUrl(`/listings/${listing.id}`),
-      },
-    ],
+    itemListElement: breadcrumbItems.map((entry, index) => ({ '@type': 'ListItem', position: index + 1, ...entry })),
   }
 
   return (

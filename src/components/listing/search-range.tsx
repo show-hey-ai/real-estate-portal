@@ -135,7 +135,7 @@ export function SearchRange({
                   key={bin.from}
                   type="button"
                   disabled={bin.count === 0}
-                  onClick={() => onApply(bin.from > 0 ? String(bin.from) : '', bin.to < Number.MAX_SAFE_INTEGER ? String(bin.to) : '')}
+                  onClick={() => onApply(bin.from > 0 ? String(bin.from) : '', bin.to < Number.MAX_SAFE_INTEGER ? String(kind === 'price' ? bin.to - 1 : bin.to - 0.01) : '')}
                   className="group relative flex h-full flex-1 flex-col justify-end disabled:cursor-default"
                   aria-label={label}
                   title={label}

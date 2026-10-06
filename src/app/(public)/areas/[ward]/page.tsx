@@ -16,6 +16,7 @@ import { absoluteUrl, getSchemaLanguage, shareMetadata } from '@/lib/site-config
 import { translatePropertyType } from '@/lib/translate-fields'
 import { countByWard, summarizeWard, wardFromSlug, wardLabel } from '@/lib/ward-tile-map'
 import { formatYenWords } from '@/lib/yen-words'
+import { pickCoverImage } from '@/lib/cover-image'
 
 export const dynamic = 'force-dynamic'
 
@@ -52,10 +53,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = await getLocale()
   const text = textFor(locale)
   const label = wardLabel(ward, locale)
-  const count = (await getPublicRows()).filter((row) => row.city === ward).length
+  const wardRows = (await getPublicRows()).filter((row) => row.city === ward)
+  const count = wardRows.length
+  const cover = wardRows.map((row) => pickCoverImage((row.media || []).filter((item) => item.isAdopted))).find(Boolean)
   const alternates = localeAlternates(`/areas/${slug}`, locale)
   // Empty wards stay reachable from the map but are not offered to search engines as thin pages.
-  return { title: text.title(label), description: text.description(label, count), alternates, ...shareMetadata({ title: text.title(label), description: text.description(label, count), url: alternates.canonical, locale }), robots: count ? { index: true, follow: true } : { index: false, follow: true } }
+  return { title: text.title(label), description: text.description(label, count), alternates, ...shareMetadata({ title: text.title(label), description: text.description(label, count), url: alternates.canonical, locale, image: cover?.url }), robots: count ? { index: true, follow: true } : { index: false, follow: true } }
 }
 
 export default async function WardPage({ params }: Props) {

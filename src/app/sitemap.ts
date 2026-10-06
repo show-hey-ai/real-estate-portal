@@ -35,9 +35,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...guideArticles.flatMap((guide) => localized(`/guides/${guide.slug}`, new Date(guide.updatedAt), 'monthly', 0.6)),
   ]
 
-  // The article index keeps a single URL; every other page has one URL per language.
+  // Every page has one URL per language.
   const articleIndex = (lastModified: Date | string): MetadataRoute.Sitemap =>
-    articles.length ? [{ url: absoluteUrl('/articles'), lastModified, changeFrequency: 'weekly', priority: 0.65 }] : []
+    articles.length ? localized('/articles', lastModified, 'weekly', 0.65) : []
   const staticPages = (lastModified?: Date): MetadataRoute.Sitemap => [
     ...articleIndex(lastModified ?? (articles[0]?.updatedAt || portalLaunchAt)),
     ...localized('/', lastModified ?? portalLaunchAt, 'daily', 1),
