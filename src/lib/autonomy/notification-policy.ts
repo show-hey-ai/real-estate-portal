@@ -142,6 +142,11 @@ export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string)
   }
 }
 
+// Google shows app passwords in groups of four; people paste them with spaces or a trailing newline.
+export function normalizeAppPassword(value: string): string {
+  return value.replace(/\s+/g, '')
+}
+
 export function readNotificationConfig(env: Record<string, string | undefined>): NotificationConfig | null {
   const to = env.NOTIFY_EMAIL_TO?.trim()
   const user = env.SMTP_USER?.trim()

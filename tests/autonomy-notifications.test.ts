@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildAlertMail, buildDigestMail, digestKey, isDigestDue, readNotificationConfig, type NotificationSnapshot } from '../src/lib/autonomy/notification-policy'
+import { buildAlertMail, buildDigestMail, digestKey, isDigestDue, normalizeAppPassword, readNotificationConfig, type NotificationSnapshot } from '../src/lib/autonomy/notification-policy'
 
 const now = new Date('2026-10-06T23:30:00Z') // 08:30 JST on 7 Oct
 const site = 'https://portal.example.com'
@@ -89,4 +89,9 @@ test('mail settings are optional and incomplete settings disable sending', () =>
   assert.deepEqual(readNotificationConfig({ NOTIFY_EMAIL_TO: 'a@example.com', SMTP_USER: 'u@example.com', SMTP_PASS: 'p' }), {
     to: 'a@example.com', from: 'u@example.com', host: 'smtp.gmail.com', port: 465, user: 'u@example.com', pass: 'p',
   })
+})
+
+test('a pasted Gmail app password is normalised: spaces and line breaks are ignored', () => {
+  assert.equal(normalizeAppPassword(' abcd efgh ijkl mnop \n'), 'abcdefghijklmnop')
+  assert.equal(normalizeAppPassword('   \n'), '')
 })
