@@ -6,6 +6,7 @@ import { extraGuideArticles4 } from './guides-extra-4'
 import { extraGuideArticles5 } from './guides-extra-5'
 import { extraGuideArticles6 } from './guides-extra-6'
 import { extraGuideArticles7 } from './guides-extra-7'
+import { extraGuideArticles8 } from './guides-extra-8'
 import { guideEnrichments } from './guide-enrichments'
 import { guideCases } from './guide-cases'
 import { guideDiagrams } from './guide-diagrams'
@@ -1171,7 +1172,7 @@ function withEnrichment(article: GuideArticle): GuideArticle {
   return { ...article, locales }
 }
 
-export const guideArticles: GuideArticle[] = [...baseGuideArticles, ...extraGuideArticles, ...extraGuideArticles2, ...extraGuideArticles3, ...extraGuideArticles4, ...extraGuideArticles5, ...extraGuideArticles6, ...extraGuideArticles7].map(withEnrichment)
+export const guideArticles: GuideArticle[] = [...baseGuideArticles, ...extraGuideArticles, ...extraGuideArticles2, ...extraGuideArticles3, ...extraGuideArticles4, ...extraGuideArticles5, ...extraGuideArticles6, ...extraGuideArticles7, ...extraGuideArticles8].map(withEnrichment)
 
 export function getGuideArticles(locale: Locale) {
   return guideArticles.map((article) => ({
@@ -1185,7 +1186,7 @@ export function getGuideArticles(locale: Locale) {
 }
 
 // Reading order for guide lists: first steps, then costs and risks, then owning and investing.
-export const GUIDE_ORDER: readonly string[] = ['buying-property-japan-visa', 'how-to-buy-japan-investment-property', 'japan-property-foreign-exchange-report', 'tokyo-fixed-asset-tax-city-planning-tax', 'japanese-property-listing-terms', 'japan-earthquake-standards-1981', 'tokyo-earthquake-flood-risk-check', 'tokyo-condo-management-fee-repair-reserve', 'renting-out-tokyo-condo-from-overseas', 'selling-tokyo-property-costs-taxes', 'leasehold-vs-freehold-tokyo', 'renovating-resale-condo-tokyo', 'tokyo-condo-minpaku-short-term-rental-rules', 'tokyo-cap-rate-guide', 'personal-vs-company-japan-property']
+export const GUIDE_ORDER: readonly string[] = ['buying-property-japan-visa', 'how-to-buy-japan-investment-property', 'japan-property-foreign-exchange-report', 'tokyo-fixed-asset-tax-city-planning-tax', 'japan-property-purchase-taxes-registration', 'japanese-property-listing-terms', 'japan-earthquake-standards-1981', 'tokyo-earthquake-flood-risk-check', 'tokyo-condo-management-fee-repair-reserve', 'renting-out-tokyo-condo-from-overseas', 'selling-tokyo-property-costs-taxes', 'leasehold-vs-freehold-tokyo', 'renovating-resale-condo-tokyo', 'tokyo-condo-minpaku-short-term-rental-rules', 'tokyo-cap-rate-guide', 'personal-vs-company-japan-property']
 
 export function getOrderedGuideArticles(locale: Locale) {
   const rank = (slug: string) => { const index = GUIDE_ORDER.indexOf(slug); return index === -1 ? GUIDE_ORDER.length : index }
