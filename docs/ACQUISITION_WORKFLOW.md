@@ -16,6 +16,21 @@
 
 定期設定の保存は実行成功の証拠ではありません。Macやアプリの稼働、REINSの利用可能時間と認証、競合、実際の最新ページ保存・期限反映・本番表示の結果を確認します。利用できない場合は理由と未処理物件を残し、次の利用可能な実行で掲載維持と復旧から再開します。
 
+## 0. トークンと時間を節約するルール（2026-10-07）
+
+Codexのトークンの大半は、REINSの画面（詳細1件あたり約17KB、一覧の印刷表示は50件で約68KB）を読むことと、毎回の長い引き継ぎを読むことに使われています。判断の質を下げずに、読む量を減らします。
+
+| やること | コマンド・ルール |
+| --- | --- |
+| 実行の最初の状況確認 | `npm run portal:status -- --queue <review-queue.json>`（公開件数・期限・job・キューを1画面で）。DBへの独自クエリや長い記録の読み返しをしない |
+| 引き継ぎ | `~/Documents/ChatGPT/ポータル/HANDOFF.md`（150行以内）だけ読む。経緯は `HANDOFF_LOG.md` を必要な時だけ検索 |
+| OCRで不可・要承諾の物件 | `npm run queue:triage -- --queue <queue> --save` で保留にする。REINS詳細の取得も原図面の目視もしない |
+| REINS詳細の数値・項目 | `.snapshot.txt` に保存したら読み返さず、スクリプトで読む（`rank:details`、`draft:reviewed`（準備中）、`renew:light`） |
+| 一覧で取引中と分かる物件 | 印刷表示の「取引状況」が申込あり・停止中なら詳細を開かず後回し |
+| 公開後の確認 | `npm run verify:published -- --ids <番号,...> --reviewed-dir <フォルダ> --out <proof.json>`。バッチごとに確認スクリプトを書かない |
+
+判断が必要なところ（原図面の許可文、現況・同一性の矛盾、実写真の確認）は今までどおりCodexが目視します。
+
 ## 1. 新しく取得する物件
 
 1. REINSで検索し、マイソクPDFを一括でダウンロードする（東京23区、5,000万〜1億円を優先、次に1億円超。図面あり・画像ありで絞る）。
@@ -35,8 +50,8 @@
    | 掲載可の記載あり | 原図面の許可文を目視で確認してから、REINS詳細へ |
    | 要確認（一部不可・選択式・矛盾） | 原図面を目視して判断 |
    | 記載なし | REINS詳細の「広告転載区分」を確認（転載可・広告可なら候補。2026-10-06のユーザー決定） |
-   | 承諾・連絡・申請が必要 | 保留。連絡や承諾依頼は送らない |
-   | 広告不可 | 除外。表の「根拠」の文字だけ念のため確認 |
+   | 承諾・連絡・申請が必要 | 保留（`queue:triage`）。連絡や承諾依頼は送らない |
+   | 広告不可 | 除外（`queue:triage`）。根拠の文字はキューに残るので、詳細取得や目視はしない |
 
    判定は作業の順番を決めるためのものです。**OCRで「広告可」の文字が見つかっただけで掲載してよいことにはしません。** 原図面の目視と、これまでの公開審査（`src/lib/ad-publication-policy.ts`、`src/lib/autonomy/publication.ts`）は今までどおり必須です。
 
@@ -94,3 +109,4 @@
 - `src/lib/acquisition-priority.ts`：作業順
 - `src/lib/autonomy/light-renewal.ts`：毎日の軽い確認の判定
 - `scripts/screen-maisoku.ts`、`scripts/maisoku-ocr.swift`、`scripts/rank-reins-details.ts`、`scripts/renew-light.ts`
+- `scripts/portal-status.ts`、`scripts/triage-queue.ts`、`scripts/verify-published.ts`（節約用）

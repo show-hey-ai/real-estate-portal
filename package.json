@@ -19,7 +19,10 @@
     "test:autonomy": "node --import tsx --test tests/autonomy-*.test.ts",
     "screen:maisoku": "tsx scripts/screen-maisoku.ts",
     "rank:details": "tsx scripts/rank-reins-details.ts",
-    "renew:light": "tsx scripts/renew-light.ts"
+    "renew:light": "tsx scripts/renew-light.ts",
+    "portal:status": "tsx scripts/portal-status.ts",
+    "queue:triage": "tsx scripts/triage-queue.ts",
+    "verify:published": "tsx scripts/verify-published.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.77",
