@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react'
 import { BuyingGuideFlow } from '@/components/buyer/buying-guide-flow'
 import { getBuyerJourneyCopy } from '@/lib/buyer-journey-copy'
 import { BuyingGuideExtras } from '@/components/buyer/buying-guide-extras'
+import { OverseasBuyingLink } from '@/components/overseas/overseas-buying-link'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -28,6 +29,7 @@ export default async function BuyingGuidePage() {
           <BuyingGuideFlow steps={copy.guideSteps} label={copy.guideTitle} />
         </div>
         <BuyingGuideExtras locale={locale} />
+        <div className="mt-10 max-w-2xl"><OverseasBuyingLink locale={locale} /></div>
         <Link href="/match" className="mt-12 inline-flex items-center gap-2 rounded-lg bg-[#274d7d] px-6 py-3 font-semibold text-white hover:bg-[#18375f] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#274d7d]">{copy.matchTitle}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
       </div>
     </main>

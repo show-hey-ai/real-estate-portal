@@ -4,6 +4,7 @@ import { getLocale } from 'next-intl/server'
 import { ArrowRight, MapPin } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { WardMap } from '@/components/listing/ward-map'
+import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
 import { wardProfile } from '@/content/ward-profiles'
 import { formatCompactLocal, getJpyRates } from '@/lib/fx'
 import { localeAlternates, localizedPath } from '@/lib/locale-url'
@@ -85,5 +86,6 @@ export default async function AreasPage() {
         })}
       </ul>
     </section>
+    <div className="mt-12"><ListingAlertForm /></div>
   </div>
 }

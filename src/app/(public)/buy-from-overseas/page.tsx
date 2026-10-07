@@ -5,6 +5,7 @@ import { ArrowRight, Calculator, Globe2, MessagesSquare } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { GuideDiagramView, GuideReviewer, GuideSources } from '@/components/guides/guide-extras'
 import { PurchaseChecklist } from '@/components/overseas/purchase-checklist'
+import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
 import { overseasBuyingFor } from '@/content/overseas-buying'
 import { CONTACT_EMAIL, LINE_ADD_URL, WECHAT_DEEP_LINK, WHATSAPP_NUMBER } from '@/lib/contact-channels'
 import { localeAlternates } from '@/lib/locale-url'
@@ -79,6 +80,7 @@ export default async function BuyFromOverseasPage() {
       </div>
     </section>
 
+    <div className="mt-12 max-w-4xl"><ListingAlertForm /></div>
     <div className="max-w-4xl"><GuideReviewer locale={locale} /></div>
     <div className="max-w-4xl"><GuideSources sources={text.sources} locale={locale} /></div>
 
