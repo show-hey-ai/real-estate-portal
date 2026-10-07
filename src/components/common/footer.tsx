@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { WARD_SLUGS, WARD_TILES, wardLabel } from '@/lib/ward-tile-map'
 import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, type TypeSlug } from '@/lib/collections'
 import { priceBandRange } from '@/lib/price-bands'
-import { LINE_ADD_URL, LINE_ID, WECHAT_DEEP_LINK, WECHAT_ID, WHATSAPP_NUMBER } from '@/lib/contact-channels'
+import { INSTAGRAM_URL, LINE_ADD_URL, LINE_ID, WECHAT_DEEP_LINK, WECHAT_ID, WHATSAPP_NUMBER } from '@/lib/contact-channels'
 
 const OVERSEAS_LABEL: Record<string, string> = { ja: '海外から買う（お金の流れ）', en: 'Buying from overseas', 'zh-TW': '從海外購屋', 'zh-CN': '从海外买房' }
 const INTL_LABEL: Record<string, string> = { ja: '外国人の購入ガイド', en: 'Buying in Tokyo as a foreigner', 'zh-TW': '外國人東京買房指南', 'zh-CN': '外国人东京买房指南' }
@@ -94,6 +94,7 @@ export function Footer({ guides }: FooterProps) {
                 <a href={LINE_ADD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white">LINE {LINE_ID}</a>
                 <a href={WECHAT_DEEP_LINK} className="hover:text-white">WeChat {WECHAT_ID}</a>
                 <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a>
+                <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer me" className="hover:text-white">Instagram</a>
               </p>
             </address>
             <ul className="space-y-2 text-sm">

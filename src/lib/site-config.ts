@@ -2,6 +2,7 @@ import { type Locale, defaultLocale, locales } from '@/i18n/config'
 import { formatApprovedPublicAddress } from '@/lib/address'
 import { pickCoverImage } from '@/lib/cover-image'
 import { buildingNameOf } from '@/lib/building-name'
+import { INSTAGRAM_URL } from '@/lib/contact-channels'
 import { formatPrice } from '@/lib/format'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import {
@@ -296,7 +297,7 @@ export function buildOrganizationJsonLd(locale: string) {
     },
     areaServed: ['Tokyo', 'Greater Tokyo'],
     // The operating company's own site, so search engines connect the portal to the licensed broker.
-    sameAs: ['https://ziyou-fudosan.com/'],
+    sameAs: ['https://ziyou-fudosan.com/', INSTAGRAM_URL],
     availableLanguage: ['ja', 'en', 'zh-Hant', 'zh-Hans'],
     inLanguage: getSchemaLanguage(locale),
   }

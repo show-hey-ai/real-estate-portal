@@ -8,6 +8,7 @@ export const LINE_ID = '@569fyrhn'
 export const LINE_ADD_URL = `https://line.me/R/ti/p/${LINE_ID}`
 export const WECHAT_ID = 'sf930217'
 export const WECHAT_DEEP_LINK = `weixin://dl/chat?${WECHAT_ID}`
+export const INSTAGRAM_URL = 'https://www.instagram.com/ziyou_real_estate_agency_llc/'
 
 export type ContactChannel = 'whatsapp' | 'line' | 'wechat' | 'email' | 'phone'
 export type MessagingChannel = Extract<ContactChannel, 'whatsapp' | 'line' | 'wechat'>
