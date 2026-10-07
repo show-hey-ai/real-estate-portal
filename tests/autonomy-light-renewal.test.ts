@@ -11,14 +11,14 @@ const baseline: FullCheckBaseline = { capturedAt: hours(-21), adField: '広告�
 const detail: ReinsDetail = { sourcePropertyId: '100100100100', price: 59_800_000, adField: '広告可', dealStatus: '', changedOn: '令和8年10月6日', imageNames: [] }
 const input = (overrides: Partial<LightRenewalInput> = {}): LightRenewalInput => ({ listing, baseline, detail, checkedAt: hours(-1), now, ...overrides })
 
-test('an unchanged REINS page keeps the listing for 24 hours after the check', () => {
-  assert.deepEqual(lightRenewalDecision(input()), { action: 'extend', validUntil: hours(23) })
+test('an unchanged REINS page keeps the listing for a week plus a grace day after the check', () => {
+  assert.deepEqual(lightRenewalDecision(input()), { action: 'extend', validUntil: hours(-1 + 24 * 8) })
 })
 
-test('the weekly full check is a hard limit', () => {
-  const lateBaseline = { ...baseline, capturedAt: hours(-24 * 7 + 5) }
+test('the monthly full check is a hard limit', () => {
+  const lateBaseline = { ...baseline, capturedAt: hours(-24 * 30 + 5) }
   assert.deepEqual(lightRenewalDecision(input({ baseline: lateBaseline })), { action: 'extend', validUntil: hours(5) })
-  const due = lightRenewalDecision(input({ baseline: { ...baseline, capturedAt: hours(-24 * 7 - 1) } }))
+  const due = lightRenewalDecision(input({ baseline: { ...baseline, capturedAt: hours(-24 * 30 - 1) } }))
   assert.equal(due.action, 'full_check')
 })
 
@@ -63,7 +63,7 @@ test('stale, future or mismatched pages and expired or manual listings are not e
   assert.equal(lightRenewalDecision(input({ listing: { ...listing, autonomyValidUntil: null } })).action, 'skip')
   assert.equal(lightRenewalDecision(input({ listing: { ...listing, status: 'ARCHIVED' } })).action, 'skip')
   assert.equal(lightRenewalDecision(input({ listing: { ...listing, autonomyValidUntil: hours(-1) } })).action, 'full_check')
-  assert.equal(lightRenewalDecision(input({ listing: { ...listing, autonomyValidUntil: hours(30) } })).action, 'skip')
+  assert.equal(lightRenewalDecision(input({ listing: { ...listing, autonomyValidUntil: hours(24 * 8 + 5) } })).action, 'skip')
 })
 
 test('the baseline is read from the full check receipt, across overlapping evidence chunks', () => {

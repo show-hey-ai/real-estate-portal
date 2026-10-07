@@ -31,6 +31,8 @@ import { JsonLd } from '@/components/common/json-ld'
 import { createServiceClient } from '@/lib/supabase/server'
 import { ListingGallery } from '@/components/listing/listing-gallery'
 import { ListingSpecs } from '@/components/listing/listing-specs'
+import { ListingUpdateDates } from '@/components/listing/update-dates'
+import { listingUpdateDates } from '@/lib/freshness'
 import { ListingChat } from '@/components/listing/listing-chat'
 import { PropertyChatLink } from '@/components/chat/private-chats'
 import { getTradeChatCopy } from '@/lib/trade-chat'
@@ -75,7 +77,7 @@ async function getPublicListing(id: string) {
       stations, builtYear, builtMonth, currentStatus, buildingArea, landArea, floorCount,
       structure, zoning, landRights, yieldGross, features, featuresEn, featuresZhTw, featuresZhCn,
       descriptionJa, descriptionEn, descriptionZhTw, descriptionZhCn, publishedAt,
-      updatedAt, viewCount, hospitalityCategory,
+      updatedAt, autonomyValidUntil, viewCount, hospitalityCategory,
       media (id, url, category, isAdopted, sortOrder)
     `)
     .eq('id', id)
@@ -215,6 +217,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const letRent = listing.currentStatus?.includes('賃貸中') ? monthly.rent : null
   const [rates, hazardPoint] = await Promise.all([getJpyRates(), publicAddress ? geocodeAddress(publicAddress) : Promise.resolve(null)])
   const approxPrice = formatApproxPrice(Number(listing.price) || 0, locale, rates)
+  const lastEdited = parseDbTimestamp(listing.updatedAt)
+  const updateDates = lastEdited ? listingUpdateDates({ autonomyValidUntil: parseDbTimestamp(listing.autonomyValidUntil), updatedAt: lastEdited }) : null
   const netYield = netYieldFromRent(letRent, monthly.fees, Number(listing.price) || null)
   const stations = normalizeTransitStations(
     listing.stations as { name: string; name_en?: string | null; line?: string | null; line_en?: string | null; walk_minutes?: number | null }[] | null
@@ -332,6 +336,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                   {formattedListing.price ? formatPrice(formattedListing.price, locale) : '-'}
                 </p>
                 {approxPrice && <p className="-mt-1 mb-2 text-sm font-semibold text-[#536274]" data-testid="approx-price">{approxPrice}</p>}
+                {updateDates && <ListingUpdateDates dates={updateDates} locale={locale} />}
                 {publicAddress && (
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-1 text-muted-foreground">

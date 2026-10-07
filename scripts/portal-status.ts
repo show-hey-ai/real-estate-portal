@@ -36,8 +36,11 @@ async function listingLines(now: Date): Promise<string[]> {
   const next = managed.find((row) => until(row) > 0)
   const todayJst = new Date(now.toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo' }).slice(0, 10) + 'T00:00:00+09:00')
   const newToday = await prisma.listing.count({ where: { ...getPublicListingScope(now), publishedAt: { gte: todayJst } } })
+  // Weekly renewal (2026-10-07): only listings whose visibility ends within two days need a check now.
+  const due = managed.filter((row) => until(row) > 0 && until(row) <= 48 * HOUR).map((row) => row.sourcePropertyId)
   return [
     `public ${publicCount} (goal ${GOAL}, remaining ${Math.max(GOAL - publicCount, 0)}), new today ${newToday}`,
+    `renew now (visible <48h left, weekly check): ${due.length}${due.length ? ` -> ${due.join(',')}` : ''}`,
     `auto-managed ${managed.length}: expired-but-published ${expired.length}, expiring <6h ${within(6)}, <12h ${within(12)}, <24h ${within(24)}`,
     `next expiry ${jst(next?.autonomyValidUntil)} JST (${next?.sourcePropertyId ?? '-'})`,
     ...(expired.length ? [`EXPIRED (need full check): ${expired.map((row) => row.sourcePropertyId).join(',')}`] : []),

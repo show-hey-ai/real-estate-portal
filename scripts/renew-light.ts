@@ -6,7 +6,7 @@
  *
  * For each published listing with a detail page saved in the last 6 hours, an unchanged price,
  * sales status, advertising field and REINS change date keep the listing visible for another
- * 24 hours, up to 7 days after its last full check (src/lib/autonomy/light-renewal.ts). A changed
+ * week plus a grace day, up to 30 days after its last full check (src/lib/autonomy/light-renewal.ts). A changed
  * listing is left to expire unless it gets a full check; a purchase application, a pause, or a
  * REINS number listed with --missing hides the listing now. Without --save nothing is written.
  */

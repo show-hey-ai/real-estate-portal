@@ -1,14 +1,16 @@
 import { adFieldPermits, dealStatusBlocks, dealStatusOpen, parseReinsDetail, reinsDate, type ReinsDetail } from '../reins-detail'
+import { CHECK_VALIDITY_MS, FULL_CHECK_INTERVAL_MS } from '../freshness'
 
 /**
- * Daily light re-check of an automatically published listing. The full check (current REINS
- * detail plus a full read of the original drawing) stays mandatory at least weekly and whenever
- * REINS shows a change; in between, an unchanged price, sales status and advertising field on the
- * current REINS detail page keep the listing visible for another day.
+ * Weekly light re-check of an automatically published listing (user decision 2026-10-07). The
+ * full check (current REINS detail plus a full read of the original drawing) stays mandatory at
+ * least monthly and whenever REINS shows a change; in between, an unchanged price, sales status,
+ * advertising field and change date on the current REINS detail page keep the listing visible
+ * for another week (plus a grace day).
  */
 
-export const LIGHT_EXTENSION_MS = 24 * 3600_000
-export const FULL_CHECK_INTERVAL_MS = 7 * 24 * 3600_000
+export const LIGHT_EXTENSION_MS = CHECK_VALIDITY_MS
+export { FULL_CHECK_INTERVAL_MS }
 /** A saved detail page older than this is not a check made today. */
 export const LIGHT_CHECK_MAX_AGE_MS = 6 * 3600_000
 
@@ -55,7 +57,7 @@ export function lightRenewalDecision({ listing, baseline, detail, checkedAt, now
   if (!dealStatusOpen(detail.dealStatus)) reasons.push(`REINS sales status not readable as open: ${detail.dealStatus ?? '(missing)'}`)
   if (!baseline) reasons.push('No full-check receipt was found.')
   else {
-    if (now.getTime() - baseline.capturedAt.getTime() > FULL_CHECK_INTERVAL_MS) reasons.push('The weekly full check is due.')
+    if (now.getTime() - baseline.capturedAt.getTime() > FULL_CHECK_INTERVAL_MS) reasons.push('The monthly full check is due.')
     if (!baseline.factsUnchanged) reasons.push('Listing facts were edited after the full check.')
     if (baseline.adField !== null ? !sameText(baseline.adField, detail.adField) : !adFieldPermits(detail.adField)) reasons.push(`REINS advertising field changed: ${detail.adField ?? '(none)'}`)
     const changed = baseline.changedOn !== null

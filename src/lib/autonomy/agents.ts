@@ -12,6 +12,7 @@ import { PORTAL_VENTURE_ID, AUTONOMY_VERSION } from './policy'
 import { enqueueJob, getPolicy, json, writeRecord } from './store'
 import { withLiveLease } from './lease'
 import { isPageIndexable } from './page-verification'
+import { validUntilAfterCheck } from '../freshness'
 
 const receiptSchema = z.object({
   sourceHash: z.string().regex(/^[a-f0-9]{64}$/), factsHash: z.string().regex(/^[a-f0-9]{64}$/), capturedAt: z.string().datetime(),
@@ -152,7 +153,7 @@ export async function publicationAudit(job: AutonomyJob) {
     if (listing.sourcePropertyId && await tx.autonomyRecord.findUnique({ where: { ventureId_dedupeKey: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${listing.sourcePropertyId}` } } })) throw new Error('An operator override prevents this source release.')
     const conflict = await tx.listing.findFirst({ where: { id: { not: listing.id }, addressPrivate: listing.addressPrivate, status: 'PUBLISHED' }, select: { id: true } })
     if (conflict) throw new Error('An existing release at this address prevents duplicate publication.')
-    const changed = await tx.listing.updateMany({ where: { id: listing.id, status: listing.status, updatedAt: listing.updatedAt }, data: { status: 'PUBLISHED', publishedAt, updatedAt: releasedAt, autonomyValidUntil: new Date(new Date(input.receipt.capturedAt).getTime() + 24 * 3600_000) } })
+    const changed = await tx.listing.updateMany({ where: { id: listing.id, status: listing.status, updatedAt: listing.updatedAt }, data: { status: 'PUBLISHED', publishedAt, updatedAt: releasedAt, autonomyValidUntil: validUntilAfterCheck(new Date(input.receipt.capturedAt)) } })
     if (changed.count !== 1) throw new Error('Listing changed during verification.')
     // Existing EXTRACTED images are entire maisoku pages, including private addresses.
     // Keep the files as source evidence but do not auto-adopt them for public display.
