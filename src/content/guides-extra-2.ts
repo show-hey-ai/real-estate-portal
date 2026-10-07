@@ -5,7 +5,7 @@ export const extraGuideArticles2: GuideArticle[] = [
   {
     slug: 'buying-property-japan-visa',
     publishedAt: '2026-10-06',
-    updatedAt: '2026-10-06',
+    updatedAt: '2026-10-07',
     readMinutes: 5,
     tags: ['visa', 'foreign buyer', 'residency'],
     locales: {
@@ -61,7 +61,7 @@ export const extraGuideArticles2: GuideArticle[] = [
             id: 'reporting',
             heading: '購入後の届出',
             paragraphs: [
-              '非居住者が日本の不動産を取得した場合、外国為替及び外国貿易法にもとづく報告が必要になることがあります。報告の要否や期限は取引の内容で変わるため、登記を担当する司法書士に確認しましょう。',
+              '非居住者が日本の不動産を取得した場合、外国為替及び外国貿易法にもとづき、取得後20日以内に日本銀行経由で財務大臣へ報告します。2026年4月1日以降の取得は、自分が住むための購入でも不動産そのものの報告が必要です。不動産会社など日本の居住者が代理で提出できます（くわしくは「外為法の報告」のガイドへ）。',
             ],
           },
         ],
@@ -125,7 +125,7 @@ export const extraGuideArticles2: GuideArticle[] = [
             id: 'reporting',
             heading: 'Reporting after the purchase',
             paragraphs: [
-              'When a non-resident acquires Japanese real estate, a report under the Foreign Exchange and Foreign Trade Act may be required. Whether it applies and the deadline depend on the transaction, so ask the judicial scrivener handling the registration.',
+              'A non-resident who acquires Japanese real estate reports it under the Foreign Exchange and Foreign Trade Act, via the Bank of Japan to the Minister of Finance, within 20 days. For acquisitions from 1 April 2026 the property itself must be reported even when bought to live in. A Japanese resident such as your real estate agent can file it (see our guide on the Foreign Exchange Act report).',
             ],
           },
         ],
@@ -189,7 +189,7 @@ export const extraGuideArticles2: GuideArticle[] = [
             id: 'reporting',
             heading: '購買後的申報',
             paragraphs: [
-              '非居住者取得日本不動產時，可能需要依《外匯及外國貿易法》進行申報。是否需要申報及期限依交易內容而異，請向負責登記的司法書士確認。',
+              '非居住者取得日本不動產後，須依《外匯及外國貿易法》在20天內經日本銀行向財務大臣報告。2026年4月1日以後取得者，即使是自住用途，不動產本身也須報告。可由不動產公司等日本居住者代為提出（詳見「外匯法報告」指南）。',
             ],
           },
         ],
@@ -253,7 +253,7 @@ export const extraGuideArticles2: GuideArticle[] = [
             id: 'reporting',
             heading: '购买后的申报',
             paragraphs: [
-              '非居住者取得日本房产时，可能需要依据《外汇及外国贸易法》进行申报。是否需要申报及期限因交易内容而异，请向负责登记的司法书士确认。',
+              '非居住者取得日本房产后，须依据《外汇及外国贸易法》在20天内经日本银行向财务大臣报告。2026年4月1日以后取得的，即使是自住用途，房产本身也须报告。可由房产中介等日本居住者代为提交（详见“外汇法报告”指南）。',
             ],
           },
         ],
