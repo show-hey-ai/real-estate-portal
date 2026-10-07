@@ -75,7 +75,7 @@ async function listingInterest(since: Date) {
 export async function collectSnapshot(now = new Date()): Promise<NotificationSnapshot> {
   const since = new Date(now.getTime() - LOOKBACK_MS)
   const expiryLimit = new Date(now.getTime() + EXPIRY_WARNING_HOURS * 3600_000)
-  const [leads, messages, expiring, failedJobs, published, drafts, observation, search, interest, freshness] = await Promise.all([
+  const [leads, messages, expiring, failedJobs, published, drafts, observation, search, interest, freshness, alertsActive, alertsNew, alertsPending] = await Promise.all([
     prisma.lead.findMany({ where: { createdAt: { gte: since } }, select: { id: true, listingId: true }, take: MAX_ITEMS }),
     prisma.propertyChatMessage.findMany({
       where: { createdAt: { gte: since } },
@@ -99,6 +99,9 @@ export async function collectSnapshot(now = new Date()): Promise<NotificationSna
     latestSearchPerformance(),
     listingInterest(since),
     listingFreshness(now, since),
+    prisma.listingAlertSubscription.count({ where: { status: 'active' } }),
+    prisma.listingAlertSubscription.count({ where: { status: 'active', confirmedAt: { gte: since } } }),
+    prisma.listingAlertSubscription.count({ where: { status: 'pending' } }),
   ])
   return {
     now,
@@ -106,6 +109,7 @@ export async function collectSnapshot(now = new Date()): Promise<NotificationSna
     buyerMessages: messages.filter((message) => message.senderSubject === message.room.buyerSubject).map(({ id, roomId }) => ({ id, roomId })),
     expiringListings: expiring.map((listing) => ({ id: listing.id, label: listingLabel(listing), validUntil: listing.autonomyValidUntil! })),
     expiredListings: freshness.expired,
+    alerts: { active: alertsActive, newActive: alertsNew, pending: alertsPending },
     freshness: freshness.freshness,
     failedJobs,
     metrics: { published, drafts, ...observation },

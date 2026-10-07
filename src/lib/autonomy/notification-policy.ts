@@ -14,6 +14,8 @@ export interface NotificationSnapshot {
   /** Automatically published listings whose validity ran out in the last 24 hours (now hidden). */
   expiredListings?: { id: string; label: string; validUntil: Date }[]
   /** Re-check status of automatically published listings, for the morning summary. */
+  /** New-listing email alerts: confirmed subscribers, confirmed in the last 24 hours, awaiting confirmation. */
+  alerts?: { active: number; newActive: number; pending: number }
   freshness?: { managed: number; earliestExpiry: Date | null; lastLightCheck: { at: Date; extended: number; hidden: number } | null; lastFullCheck: Date | null }
   failedJobs: { id: string; kind: string; status: string }[]
   metrics: { published: number; drafts: number; pageViews: number | null; visitors: number | null; contactClicks: number | null; inquiries: number | null }
@@ -195,6 +197,7 @@ export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string)
   const lines = [
     `■ 物件: 公開中: ${metrics.published}件 / 下書き: ${metrics.drafts}件`,
     `■ 直近7日: PV ${count(metrics.pageViews)} / 訪問者 ${count(metrics.visitors, '人')} / 相談クリック ${count(metrics.contactClicks, '件')} / 問い合わせ ${count(metrics.inquiries, '件')}`,
+    ...(snapshot.alerts ? [`■ 新着メール登録: ${snapshot.alerts.active}人${snapshot.alerts.newActive ? `（24時間で+${snapshot.alerts.newActive}）` : ''}${snapshot.alerts.pending ? ` / 確認待ち ${snapshot.alerts.pending}人` : ''}`] : []),
     ...freshnessLines(snapshot),
     `■ ${EXPIRY_WARNING_HOURS}時間以内に掲載期限: ${snapshot.expiringListings.length}件`,
     ...expiryLines(snapshot.expiringListings, siteUrl),

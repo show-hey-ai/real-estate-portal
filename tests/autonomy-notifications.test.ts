@@ -159,3 +159,9 @@ test('LINE and WeChat clicks count in the listing interest summary', () => {
   const text = buildDigestMail(snapshot({ listingInterest: [{ ...ranked[0], label: '港区 6,180万円' }] }), site).text
   assert.ok(text.includes('相談クリック2（LINE 1・WeChat 1）'))
 })
+
+test('the digest reports new-listing email subscribers', () => {
+  const text = buildDigestMail(snapshot({ alerts: { active: 5, newActive: 2, pending: 1 } }), site).text
+  assert.ok(text.includes('■ 新着メール登録: 5人（24時間で+2） / 確認待ち 1人'))
+  assert.ok(buildDigestMail(snapshot({ alerts: { active: 0, newActive: 0, pending: 0 } }), site).text.includes('■ 新着メール登録: 0人'))
+})
