@@ -13,7 +13,7 @@ import { localeAlternates } from '@/lib/locale-url'
 
 export const dynamic = 'force-dynamic'
 
-const GUIDE_ORDER = ['buying-property-japan-visa', 'how-to-buy-japan-investment-property', 'japan-property-foreign-exchange-report', 'tokyo-fixed-asset-tax-city-planning-tax', 'japanese-property-listing-terms', 'japan-earthquake-standards-1981', 'tokyo-condo-management-fee-repair-reserve', 'renting-out-tokyo-condo-from-overseas', 'selling-tokyo-property-costs-taxes', 'leasehold-vs-freehold-tokyo', 'renovating-resale-condo-tokyo', 'tokyo-condo-minpaku-short-term-rental-rules', 'tokyo-cap-rate-guide', 'personal-vs-company-japan-property']
+const GUIDE_ORDER = ['buying-property-japan-visa', 'how-to-buy-japan-investment-property', 'japan-property-foreign-exchange-report', 'tokyo-fixed-asset-tax-city-planning-tax', 'japanese-property-listing-terms', 'japan-earthquake-standards-1981', 'tokyo-earthquake-flood-risk-check', 'tokyo-condo-management-fee-repair-reserve', 'renting-out-tokyo-condo-from-overseas', 'selling-tokyo-property-costs-taxes', 'leasehold-vs-freehold-tokyo', 'renovating-resale-condo-tokyo', 'tokyo-condo-minpaku-short-term-rental-rules', 'tokyo-cap-rate-guide', 'personal-vs-company-japan-property']
 const SECTION_TEXT = {
   ja: { guides: (count: number) => `購入ガイド（${count}本）`, allGuides: 'ガイド一覧', insights: '物件選びの記事' },
   en: { guides: (count: number) => `Buying guides (${count})`, allGuides: 'All guides', insights: 'Property insights' },
