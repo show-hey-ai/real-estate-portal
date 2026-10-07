@@ -5,6 +5,7 @@ import { ArrowRight, Globe2, MessagesSquare } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { ListingCard } from '@/components/listing/listing-card'
 import { GuideReviewer } from '@/components/guides/guide-extras'
+import { OverseasBuyingLink } from '@/components/overseas/overseas-buying-link'
 import { BUDGET_SLUGS, budgetBand } from '@/lib/collections'
 import { CONTACT_EMAIL, LINE_ADD_URL, WECHAT_DEEP_LINK, WHATSAPP_NUMBER } from '@/lib/contact-channels'
 import { approxBandLabel, getJpyRates } from '@/lib/fx'
@@ -122,6 +123,7 @@ export default async function BuyPropertyInTokyoPage() {
         <p className="mt-2 text-sm leading-6 text-[#536274]">{item.answer}</p>
       </Link>)}
     </section>
+    <div className="mt-6 max-w-2xl"><OverseasBuyingLink locale={locale} /></div>
 
     {latest.length > 0 && <section className="mt-12" aria-labelledby="intl-latest">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">

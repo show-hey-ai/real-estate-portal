@@ -5,6 +5,7 @@ import { UnitPriceChart } from '@/components/listing/unit-price-chart'
 import { compareUnitPrice, type UnitPriceSource } from '@/lib/unit-price'
 import { LoanSimulator } from '@/components/listing/loan-simulator'
 import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
+import { OverseasBuyingLink } from '@/components/overseas/overseas-buying-link'
 import { parseMonthlyFigures } from '@/lib/monthly-costs'
 import { cardGrossYield } from '@/lib/card-facts'
 import { netYieldFromRent } from '@/lib/seismic'
@@ -373,6 +374,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
             {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} monthlyFees={monthly.fees} monthlyRent={letRent} />}
             {formattedListing.price && Number(formattedListing.price) > 0 && <InitialCostSimulator price={Number(formattedListing.price)} />}
+            <OverseasBuyingLink locale={locale} />
 
             {publicAddress && <ListingMap locale={locale} publicAddress={publicAddress} />}
             {publicAddress && <HazardLinks locale={locale} point={hazardPoint} />}

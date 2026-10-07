@@ -28,7 +28,8 @@ export async function GET() {
     `- [Personal search](${absoluteUrl('/match')}): Save purchase criteria and review matching published listings.`,
     `- [Help center](${absoluteUrl('/help')}): Answers about searching, accounts, property chat, and buying steps.`,
     `- [About us](${absoluteUrl('/about')}): Operator, licence, content reviewer, listing and editorial rules.`,
-    `- [Buying property in Tokyo as a foreigner](${absoluteUrl('/buy-property-in-tokyo')}): Can foreigners buy, visas, mortgages, costs, timing, renting out, with current listings.`, '',
+    `- [Buying property in Tokyo as a foreigner](${absoluteUrl('/buy-property-in-tokyo')}): Can foreigners buy, visas, mortgages, costs, timing, renting out, with current listings.`,
+    `- [Buying from overseas](${absoluteUrl('/buy-from-overseas')}): How the purchase money moves (we never hold it), settlement options without a Japanese bank account, transfer tips, and a checklist (FX Act report, withholding, domestic contact for registration).`, '',
     `- [Full details for AI assistants](${absoluteUrl('/llms-full.txt')})`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
   ].join('\n')

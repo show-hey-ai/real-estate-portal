@@ -44,6 +44,7 @@ export async function GET() {
     `- [Help center](${absoluteUrl('/help')})`,
     `- [About us: operator, licence and content reviewer](${absoluteUrl('/about')})`,
     `- [Buying property in Tokyo as a foreigner: quick answers and listings](${absoluteUrl('/buy-property-in-tokyo')})`,
+    `- [Buying from overseas: how the money moves, with a checklist](${absoluteUrl('/buy-from-overseas')})`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',
     `## Properties for sale now (${listings.length})`, '',
     ...(listings.length ? listings.map((listing) => formatLlmsListing(listing, absoluteUrl(`/listings/${listing.id}`))) : ['See the properties page for the current inventory.']), '',
