@@ -29,6 +29,7 @@ export async function GET() {
     `- [Help center](${absoluteUrl('/help')}): Answers about searching, accounts, property chat, and buying steps.`,
     `- [About us](${absoluteUrl('/about')}): Operator, licence, content reviewer, listing and editorial rules.`,
     `- [Buying property in Tokyo as a foreigner](${absoluteUrl('/buy-property-in-tokyo')}): Can foreigners buy, visas, mortgages, costs, timing, renting out, with current listings.`,
+    `- [Tokyo's 23 wards compared](${absoluteUrl('/areas')}): A factual profile of each ward with the number of homes for sale and the lowest asking price.`,
     `- [Buying from overseas](${absoluteUrl('/buy-from-overseas')}): How the purchase money moves, settlement options without a Japanese bank account, transfer tips, and a checklist (FX Act report, withholding, domestic contact for registration).`, '',
     `- [Full details for AI assistants](${absoluteUrl('/llms-full.txt')})`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',

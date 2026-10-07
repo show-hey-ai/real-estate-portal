@@ -1,12 +1,12 @@
 import Link from 'next/link'
-import { MapPin } from 'lucide-react'
+import { ArrowRight, MapPin } from 'lucide-react'
 import { WARD_GRID, WARD_SLUGS, WARD_TILES, wardLabel } from '@/lib/ward-tile-map'
 
 const copy = {
-  ja: { title: 'エリアから探す', note: '東京23区の位置関係で表示。数字は公開中の物件数です。', empty: '公開中の物件なし', more: '色が濃いほど物件が多い区です' },
-  en: { title: 'Browse by area', note: 'Tokyo’s 23 wards in their rough positions. Numbers show listings for sale now.', empty: 'No listings now', more: 'Darker wards have more listings' },
-  'zh-TW': { title: '依區域尋找', note: '依東京23區的相對位置排列，數字為目前刊登中的物件數。', empty: '目前無刊登物件', more: '顏色越深，物件越多' },
-  'zh-CN': { title: '按区域查找', note: '按东京23区的相对位置排列，数字为当前在售房源数。', empty: '当前无在售房源', more: '颜色越深，房源越多' },
+  ja: { index: '23区の特徴をくらべる', title: 'エリアから探す', note: '東京23区の位置関係で表示。数字は公開中の物件数です。', empty: '公開中の物件なし', more: '色が濃いほど物件が多い区です' },
+  en: { index: 'Compare all 23 wards', title: 'Browse by area', note: 'Tokyo’s 23 wards in their rough positions. Numbers show listings for sale now.', empty: 'No listings now', more: 'Darker wards have more listings' },
+  'zh-TW': { index: '比較23區特色', title: '依區域尋找', note: '依東京23區的相對位置排列，數字為目前刊登中的物件數。', empty: '目前無刊登物件', more: '顏色越深，物件越多' },
+  'zh-CN': { index: '比较23区特点', title: '按区域查找', note: '按东京23区的相对位置排列，数字为当前在售房源数。', empty: '当前无在售房源', more: '颜色越深，房源越多' },
 } as const
 
 function tone(count: number, max: number): string {
@@ -22,9 +22,11 @@ interface WardMapProps {
   counts: Record<string, number>
   /** Ward whose page is being shown; it is outlined on the map. */
   current?: string
+  /** Link to the 23-ward index below the map (off on the index itself). */
+  showIndexLink?: boolean
 }
 
-export function WardMap({ locale, counts, current }: WardMapProps) {
+export function WardMap({ locale, counts, current, showIndexLink = true }: WardMapProps) {
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const max = Math.max(0, ...Object.values(counts))
   return <section aria-labelledby="ward-map-title" data-testid="ward-map" className="rounded-2xl border border-[#dbe2e9] bg-[#f8fafc] p-4 md:p-6">
@@ -53,5 +55,6 @@ export function WardMap({ locale, counts, current }: WardMapProps) {
           : <div key={ward} style={style} className={className}>{content}</div>
       })}
     </div>
+    {showIndexLink && <div className="mt-4 text-center"><Link href="/areas" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#274d7d] hover:underline">{text.index}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>}
   </section>
 }

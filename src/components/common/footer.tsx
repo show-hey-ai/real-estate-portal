@@ -107,7 +107,7 @@ export function Footer() {
         </div>
 
         <nav aria-label={company.wards} className="mt-10">
-          <h2 className="mb-3 text-sm font-semibold">{company.wards}</h2>
+          <h2 className="mb-3 text-sm font-semibold"><Link href="/areas" className="hover:underline">{company.wards}</Link></h2>
           <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
             {WARD_TILES.map(({ ward }) => <li key={ward}><Link href={`/areas/${WARD_SLUGS[ward]}`} className="text-white/65 transition-colors hover:text-white">{wardLabel(ward, locale)}</Link></li>)}
           </ul>

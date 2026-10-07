@@ -64,6 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...localized('/about', lastModified ?? new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.5),
     ...localized('/buy-property-in-tokyo', lastModified ?? new Date('2026-10-07T00:00:00+09:00'), 'weekly', 0.9),
     ...localized('/buy-from-overseas', new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.8),
+    ...localized('/areas', lastModified ?? new Date('2026-10-07T00:00:00+09:00'), 'weekly', 0.8),
   ]
   const staticEntries = staticPages()
 
