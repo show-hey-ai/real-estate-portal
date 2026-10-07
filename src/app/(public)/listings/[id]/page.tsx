@@ -57,6 +57,7 @@ import {
   getSchemaLanguage,
 } from '@/lib/site-config'
 import { withCardFacts } from '@/lib/card-facts'
+import { ShareListing } from '@/components/listing/share-listing'
 
 interface ListingPageProps {
   params: Promise<{ id: string }>
@@ -350,6 +351,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                   userId={userId}
                 />
                 <CompareToggle listingId={formattedListing.id} />
+                <ShareListing title={buildListingHeading(formattedListing, locale)} url={absoluteUrl(localizedPath(`/listings/${formattedListing.id}`, locale))} />
               </div>
             </div>
 
