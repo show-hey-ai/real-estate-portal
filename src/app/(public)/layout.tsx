@@ -5,6 +5,8 @@ import { PublicPageviewTracker } from '@/components/analytics/public-pageview-tr
 import { getOptionalPublicViewer } from '@/lib/public-viewer'
 import { getJpyRates } from '@/lib/fx'
 import { FxRatesProvider } from '@/components/fx/fx-rates-context'
+import { LanguageSuggestion } from '@/components/common/language-suggestion'
+import { Suspense } from 'react'
 
 export default async function PublicLayout({
   children,
@@ -18,6 +20,7 @@ export default async function PublicLayout({
       <div className="flex min-h-screen flex-col">
         <PublicPageviewTracker />
         <Header user={user} />
+        <Suspense fallback={null}><LanguageSuggestion /></Suspense>
         <main className="flex-1">{children}</main>
         <Footer />
         <CompareBar />
