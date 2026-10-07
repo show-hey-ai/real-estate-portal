@@ -4,6 +4,7 @@ import { extraGuideArticles2 } from './guides-extra-2'
 import { extraGuideArticles3 } from './guides-extra-3'
 import { extraGuideArticles4 } from './guides-extra-4'
 import { extraGuideArticles5 } from './guides-extra-5'
+import { extraGuideArticles6 } from './guides-extra-6'
 import { guideEnrichments } from './guide-enrichments'
 import { guideCases } from './guide-cases'
 import { guideDiagrams } from './guide-diagrams'
@@ -1169,7 +1170,7 @@ function withEnrichment(article: GuideArticle): GuideArticle {
   return { ...article, locales }
 }
 
-export const guideArticles: GuideArticle[] = [...baseGuideArticles, ...extraGuideArticles, ...extraGuideArticles2, ...extraGuideArticles3, ...extraGuideArticles4, ...extraGuideArticles5].map(withEnrichment)
+export const guideArticles: GuideArticle[] = [...baseGuideArticles, ...extraGuideArticles, ...extraGuideArticles2, ...extraGuideArticles3, ...extraGuideArticles4, ...extraGuideArticles5, ...extraGuideArticles6].map(withEnrichment)
 
 export function getGuideArticles(locale: Locale) {
   return guideArticles.map((article) => ({
