@@ -41,3 +41,8 @@ test('index coverage counts indexed pages and lists a few missing paths', () => 
   }, host)
   assert.deepEqual(coverage, { indexed: 1, total: 3, missing: ['/listings/a', '/listings/b'] })
 })
+
+test('the sitemap submission URL encodes the domain property and sitemap address', async () => {
+  const { sitemapSubmitUrl } = await import('../src/lib/autonomy/search-console')
+  assert.equal(sitemapSubmitUrl('sc-domain:ziyou-fudosan.com', 'https://portal.ziyou-fudosan.com/sitemap.xml'), 'https://searchconsole.googleapis.com/webmasters/v3/sites/sc-domain%3Aziyou-fudosan.com/sitemaps/https%3A%2F%2Fportal.ziyou-fudosan.com%2Fsitemap.xml')
+})

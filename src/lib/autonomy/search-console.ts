@@ -2,10 +2,12 @@ import { createSign } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { z } from 'zod'
 
-// Read-only Search Console access with a service account key kept outside the repository.
+// Search Console access with a service account key kept outside the repository. Reads use the
+// read-only scope; only sitemap submission asks for the write scope (it needs "Full" permission).
 // The key is never logged or stored; only the short-lived access token is used in memory.
 
 const SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly'
+const WRITE_SCOPE = 'https://www.googleapis.com/auth/webmasters'
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const REQUEST_TIMEOUT_MS = 20_000
 
@@ -23,11 +25,11 @@ function base64url(value: string | Buffer): string {
   return Buffer.from(value).toString('base64url')
 }
 
-async function getAccessToken(keyPath: string): Promise<string> {
+async function getAccessToken(keyPath: string, scope = SCOPE): Promise<string> {
   const account = serviceAccountSchema.parse(JSON.parse(await readFile(keyPath, 'utf8')))
   const issuedAt = Math.floor(Date.now() / 1000)
   const unsigned = `${base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }))}.${base64url(JSON.stringify({
-    iss: account.client_email, scope: SCOPE, aud: TOKEN_URL, iat: issuedAt, exp: issuedAt + 3600,
+    iss: account.client_email, scope, aud: TOKEN_URL, iat: issuedAt, exp: issuedAt + 3600,
   }))}`
   const signature = createSign('RSA-SHA256').update(unsigned).sign(account.private_key)
   const response = await fetch(TOKEN_URL, {
@@ -96,6 +98,22 @@ export async function getSitemapStatus(keyPath: string, siteUrl: string, sitemap
   if (!response.ok) throw new Error(`Search Console sitemap lookup failed (HTTP ${response.status}).`)
   const sitemap = sitemapSchema.parse(await response.json())
   return { submitted: true, lastDownloaded: sitemap.lastDownloaded ?? null, errors: Number(sitemap.errors ?? 0), warnings: Number(sitemap.warnings ?? 0) }
+}
+
+export function sitemapSubmitUrl(siteUrl: string, sitemapUrl: string): string {
+  return `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/sitemaps/${encodeURIComponent(sitemapUrl)}`
+}
+
+/** Asks Google to fetch the sitemap again; returns the HTTP status (403 while the account is read-only). */
+export async function submitSitemap(keyPath: string, siteUrl: string, sitemapUrl: string): Promise<number> {
+  const token = await getAccessToken(keyPath, WRITE_SCOPE)
+  const response = await fetch(sitemapSubmitUrl(siteUrl, sitemapUrl), {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  })
+  await response.body?.cancel()
+  return response.status
 }
 
 const inspectionSchema = z.object({ inspectionResult: z.object({ indexStatusResult: z.object({ verdict: z.string().optional(), coverageState: z.string().optional() }).optional() }).optional() })
