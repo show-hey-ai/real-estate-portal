@@ -16,6 +16,8 @@ import { ListingHighlightChips } from '@/components/listing/listing-highlights'
 import { listingHighlights } from '@/lib/listing-highlights'
 import Link from 'next/link'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
+import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
+import { typeSlugFor } from '@/lib/collections'
 import { ListingCard } from '@/components/listing/listing-card'
 import { rankRelatedListings, type RelatedCandidate } from '@/lib/related-listings'
 import { QuickContact } from '@/components/listing/quick-contact'
@@ -41,7 +43,7 @@ import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
 import { formatApprovedPublicAddress, hasDetailedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
-import { formatTransitAccessLabel, translateAddress } from '@/lib/translate-fields'
+import { formatTransitAccessLabel, translateAddress, translatePropertyType } from '@/lib/translate-fields'
 import { getIsFavoriteForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 import { getMarketCategory, PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { getPortalCategoryLabel } from '@/lib/portal-copy'
@@ -441,6 +443,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withCardFacts(item)} userId={userId} />)}</div>
       </section>}
+      {formattedListing.city && <div className="mt-12" data-testid="listing-page-alert"><ListingAlertForm ward={formattedListing.city} type={typeSlugFor(formattedListing.propertyType) ?? undefined} scopeLabel={[wardLabel(formattedListing.city, locale), translatePropertyType(formattedListing.propertyType || null, locale)].filter(Boolean).join(locale === 'en' ? ', ' : '・')} /></div>}
       <RecentlyViewed excludeId={formattedListing.id} />
     </div>
   )
