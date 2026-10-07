@@ -21,28 +21,35 @@ test('no alert mail is built when nothing needs attention', () => {
   assert.equal(buildAlertMail(snapshot(), site), null)
 })
 
-test('alert mail groups every item, links to admin screens and carries one dedupe key per item', () => {
+test('instant alerts are only for buyers: inquiries and chats, one dedupe key per item', () => {
   const mail = buildAlertMail(snapshot({
     leads: [{ id: 'lead-1', listingId: 'listing-1' }],
     buyerMessages: [{ id: 'message-1', roomId: 'room-1' }, { id: 'message-2', roomId: 'room-1' }],
-    expiringListings: [{ id: 'listing-2', label: '台東区 5,980万円', validUntil: new Date('2026-10-07T01:05:30Z') }],
-    failedJobs: [{ id: 'job-1', kind: 'reins_intake', status: 'failed' }],
   }), site)
   assert.ok(mail)
-  assert.match(mail.subject, /対応/)
+  assert.match(mail.subject, /問い合わせ/)
   assert.match(mail.text, /新しい問い合わせ: 1件/)
   assert.match(mail.text, /買主からのチャット: 2件（1件の会話）/)
-  assert.match(mail.text, /台東区 5,980万円/)
-  assert.match(mail.text, /10\/7 10:05/)
-  assert.match(mail.text, /reins_intake/)
   assert.ok(mail.text.includes(`${site}/admin/leads`))
   assert.ok(mail.text.includes(`${site}/admin/chats`))
-  assert.ok(mail.text.includes(`${site}/admin/listings/listing-2/review`))
-  assert.deepEqual(mail.keys.sort(), [
-    'notify:chat:message-1', 'notify:chat:message-2',
-    `notify:expiry:listing-2:${new Date('2026-10-07T01:05:30Z').toISOString()}`,
-    'notify:job:job-1:failed', 'notify:lead:lead-1',
-  ].sort())
+  assert.deepEqual(mail.keys.sort(), ['notify:chat:message-1', 'notify:chat:message-2', 'notify:lead:lead-1'].sort())
+})
+
+test('expiring, expired and failed items wait for the morning digest instead of mailing at once', () => {
+  assert.equal(buildAlertMail(snapshot({
+    expiringListings: [{ id: 'listing-2', label: '台東区 5,980万円', validUntil: new Date('2026-10-07T01:05:30Z') }],
+    expiredListings: [{ id: 'listing-9', label: '文京区 8,999万円', validUntil: new Date('2026-10-07T01:05:30Z') }],
+    failedJobs: [{ id: 'job-1', kind: 'reins_intake', status: 'failed' }],
+  }), site), null)
+})
+
+test('the digest lists at most five expiring listings and counts the rest', () => {
+  const expiringListings = Array.from({ length: 8 }, (_, index) => ({ id: `l${index}`, label: `区${index}`, validUntil: new Date('2026-10-07T01:35:00Z') }))
+  const text = buildDigestMail(snapshot({ expiringListings }), site).text
+  assert.match(text, /12時間以内に掲載期限: 8件/)
+  assert.ok(text.includes('/admin/listings/l4/review'))
+  assert.ok(!text.includes('/admin/listings/l5/review'))
+  assert.match(text, /ほか3件/)
 })
 
 test('alert mail never includes buyer contact details or message bodies', () => {
@@ -136,11 +143,10 @@ test('ranking listing interest puts contact clicks ahead of views', () => {
   ])
 })
 
-test('listings hidden by an expired check raise one alert each, with their own dedupe key', () => {
-  const mail = buildAlertMail(snapshot({ expiredListings: [{ id: 'listing-9', label: '文京区 8,999万円', validUntil: new Date('2026-10-07T01:05:30Z') }] }), site)
-  assert.ok(mail?.text.includes('掲載期限が切れて非表示になった物件: 1件'))
-  assert.ok(mail?.text.includes('/admin/listings/listing-9/review'))
-  assert.deepEqual(mail?.keys, ['notify:expired:listing-9:2026-10-07T01:05:30.000Z'])
+test('listings hidden by an expired check are reported in the digest', () => {
+  const text = buildDigestMail(snapshot({ expiredListings: [{ id: 'listing-9', label: '文京区 8,999万円', validUntil: new Date('2026-10-07T01:05:30Z') }] }), site).text
+  assert.ok(text.includes('掲載期限が切れて非表示: 1件'))
+  assert.ok(text.includes('/admin/listings/listing-9/review'))
 })
 
 test('the digest shows whether the light and full re-checks are running', () => {

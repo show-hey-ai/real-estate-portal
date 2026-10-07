@@ -127,14 +127,12 @@ async function alreadySent(keys: string[]): Promise<Set<string>> {
   return new Set(rows.map((row) => row.dedupeKey))
 }
 
+// Instant alerts cover buyers only; everything else is in the morning digest.
 function withoutSent(snapshot: NotificationSnapshot, sent: Set<string>): NotificationSnapshot {
   return {
     ...snapshot,
     leads: snapshot.leads.filter((lead) => !sent.has(`notify:lead:${lead.id}`)),
     buyerMessages: snapshot.buyerMessages.filter((message) => !sent.has(`notify:chat:${message.id}`)),
-    expiringListings: snapshot.expiringListings.filter((listing) => !sent.has(`notify:expiry:${listing.id}:${listing.validUntil.toISOString()}`)),
-    expiredListings: snapshot.expiredListings?.filter((listing) => !sent.has(`notify:expired:${listing.id}:${listing.validUntil.toISOString()}`)),
-    failedJobs: snapshot.failedJobs.filter((job) => !sent.has(`notify:job:${job.id}:${job.status}`)),
   }
 }
 
@@ -169,9 +167,6 @@ export async function runNotifications(now = new Date(), env: Record<string, str
   const itemKeys = [
     ...snapshot.leads.map((lead) => `notify:lead:${lead.id}`),
     ...snapshot.buyerMessages.map((message) => `notify:chat:${message.id}`),
-    ...snapshot.expiringListings.map((listing) => `notify:expiry:${listing.id}:${listing.validUntil.toISOString()}`),
-    ...(snapshot.expiredListings ?? []).map((listing) => `notify:expired:${listing.id}:${listing.validUntil.toISOString()}`),
-    ...snapshot.failedJobs.map((job) => `notify:job:${job.id}:${job.status}`),
   ]
   const sent = await alreadySent([...itemKeys, digestKey(now)])
   const result = { state: 'checked' as const, alert: false, digest: false }

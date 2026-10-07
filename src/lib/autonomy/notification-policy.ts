@@ -104,6 +104,19 @@ function expiryLines(listings: NotificationSnapshot['expiringListings'], siteUrl
   return listings.map((listing) => `- ${listing.label}（期限 ${formatTokyoTime(listing.validUntil)}）${siteUrl}/admin/listings/${listing.id}/review`)
 }
 
+const DIGEST_LIST_LIMIT = 5
+
+/** Up to five listing lines, then a count of the rest, so the morning mail stays short. */
+function limitedExpiryLines(listings: NotificationSnapshot['expiringListings'], siteUrl: string): string[] {
+  const shown = expiryLines(listings.slice(0, DIGEST_LIST_LIMIT), siteUrl)
+  return listings.length > DIGEST_LIST_LIMIT ? [...shown, `- ほか${listings.length - DIGEST_LIST_LIMIT}件（${siteUrl}/admin/listings）`] : shown
+}
+
+/**
+ * Mails at once only what a buyer is waiting on (inquiries and chats). Expiring or expired
+ * listings and failed jobs are the operator's routine work and go into the morning digest
+ * (user request 2026-10-08: too many mails).
+ */
 export function buildAlertMail(snapshot: NotificationSnapshot, siteUrl: string): NotificationMail | null {
   const sections: string[] = []
   const keys: string[] = []
@@ -117,34 +130,10 @@ export function buildAlertMail(snapshot: NotificationSnapshot, siteUrl: string):
     sections.push(`■ 買主からのチャット: ${snapshot.buyerMessages.length}件（${rooms}件の会話）\n${siteUrl}/admin/chats`)
     keys.push(...snapshot.buyerMessages.map((message) => `notify:chat:${message.id}`))
   }
-  if (snapshot.expiredListings?.length) {
-    sections.push([
-      `■ 掲載期限が切れて非表示になった物件: ${snapshot.expiredListings.length}件`,
-      '売れた・申込ありで止めた物件はそのままで構いません。掲載を続ける物件は、原図面とREINS詳細の全面確認で戻してください（軽い再確認では戻せません）。',
-      ...expiryLines(snapshot.expiredListings, siteUrl),
-    ].join('\n'))
-    keys.push(...snapshot.expiredListings.map((listing) => `notify:expired:${listing.id}:${listing.validUntil.toISOString()}`))
-  }
-  if (snapshot.expiringListings.length) {
-    sections.push([
-      `■ ${EXPIRY_WARNING_HOURS}時間以内に掲載期限が切れる物件: ${snapshot.expiringListings.length}件`,
-      'REINSで現行情報を再確認しないと、期限後に非表示になります。',
-      ...expiryLines(snapshot.expiringListings, siteUrl),
-    ].join('\n'))
-    keys.push(...snapshot.expiringListings.map((listing) => `notify:expiry:${listing.id}:${listing.validUntil.toISOString()}`))
-  }
-  if (snapshot.failedJobs.length) {
-    sections.push([
-      `■ 失敗した自動処理: ${snapshot.failedJobs.length}件`,
-      ...snapshot.failedJobs.map((job) => `- ${job.kind}（${job.status === 'needs_reconciliation' ? '有料処理の結果確認が必要' : '再試行の上限に到達'}）`),
-      `${siteUrl}/admin/autonomy`,
-    ].join('\n'))
-    keys.push(...snapshot.failedJobs.map((job) => `notify:job:${job.id}:${job.status}`))
-  }
 
   if (!sections.length) return null
   return {
-    subject: '【Welcome Home Tokyo】対応が必要な項目があります',
+    subject: '【Welcome Home Tokyo】お客様からの問い合わせ・チャットがあります',
     text: [...sections, '', 'このメールはポータルの自動通知です。'].join('\n\n'),
     keys,
   }
@@ -200,8 +189,9 @@ export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string)
     ...(snapshot.alerts ? [`■ 新着メール登録: ${snapshot.alerts.active}人${snapshot.alerts.newActive ? `（24時間で+${snapshot.alerts.newActive}）` : ''}${snapshot.alerts.pending ? ` / 確認待ち ${snapshot.alerts.pending}人` : ''}`] : []),
     ...freshnessLines(snapshot),
     `■ ${EXPIRY_WARNING_HOURS}時間以内に掲載期限: ${snapshot.expiringListings.length}件`,
-    ...expiryLines(snapshot.expiringListings, siteUrl),
-    `■ 失敗した自動処理（24時間）: ${snapshot.failedJobs.length}件`,
+    ...limitedExpiryLines(snapshot.expiringListings, siteUrl),
+    ...(snapshot.expiredListings?.length ? [`■ 掲載期限が切れて非表示: ${snapshot.expiredListings.length}件（続けるなら全面確認で戻す）`, ...limitedExpiryLines(snapshot.expiredListings, siteUrl)] : []),
+    `■ 失敗した自動処理（24時間）: ${snapshot.failedJobs.length}件${snapshot.failedJobs.length ? `（${siteUrl}/admin/autonomy）` : ''}`,
     ...interestLines(snapshot.listingInterest, siteUrl),
     ...searchLines(snapshot.search, siteUrl),
     '',
