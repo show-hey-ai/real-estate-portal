@@ -36,11 +36,10 @@ test('the key figures appear in every language', () => {
   }
 })
 
-test('the copy never promises results or suggests we hold the money', () => {
+test('the copy never promises results', () => {
   for (const locale of locales) {
     const text = JSON.stringify(overseasBuyingCopy[locale])
     assert.doesNotMatch(text, /guarantee|保証します|保證|保证收益|必ず儲/i, locale)
-    assert.ok(overseasBuyingCopy[locale].noHoldingTitle.length > 0, locale)
   }
 })
 

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getLocale } from 'next-intl/server'
-import { ArrowRight, Calculator, Globe2, MessagesSquare, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Calculator, Globe2, MessagesSquare } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { GuideDiagramView, GuideReviewer, GuideSources } from '@/components/guides/guide-extras'
 import { PurchaseChecklist } from '@/components/overseas/purchase-checklist'
@@ -11,7 +11,7 @@ import { localeAlternates } from '@/lib/locale-url'
 import { getSchemaLanguage, shareMetadata } from '@/lib/site-config'
 
 /**
- * For buyers living abroad: how the purchase money moves (we never hold it), how settlement is
+ * For buyers living abroad: how the purchase money moves, how settlement is
  * arranged, what to watch when sending money, and a checklist from contract to after handover.
  */
 
@@ -38,13 +38,6 @@ export default async function BuyFromOverseasPage() {
     <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight md:text-5xl">{text.title}</h1>
     <p className="mt-5 max-w-3xl text-lg leading-8 text-[#3d4a5a]">{text.lead}</p>
 
-    <aside className="mt-8 flex max-w-3xl gap-4 rounded-2xl border border-[#cfe0d4] bg-[#f3f9f5] p-5" aria-labelledby="no-holding-title">
-      <ShieldCheck aria-hidden="true" className="mt-0.5 h-6 w-6 shrink-0 text-[#2f6b45]" />
-      <div>
-        <h2 id="no-holding-title" className="font-semibold">{text.noHoldingTitle}</h2>
-        <p className="mt-1 text-sm leading-6 text-[#3d4a5a]">{text.noHoldingBody}</p>
-      </div>
-    </aside>
 
     <section className="mt-12 max-w-4xl" aria-labelledby="flow-title">
       <h2 id="flow-title" className="text-2xl font-semibold">{text.flowTitle}</h2>

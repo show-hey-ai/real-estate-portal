@@ -4,8 +4,8 @@ import type { GuideSource } from './guides'
  * "Buying from overseas": how the money moves and a checklist, for buyers living abroad.
  * Rules checked on 2026-10-07 against the Ministry of Justice (registration from 1 April 2024),
  * the National Tax Agency (No.2879), the Bank of Japan (payment reports over ¥30M), the Ministry
- * of Finance (acquisition report) and the AML handbook for real estate agents. Our company never
- * holds purchase money; currency exchange and transfers are done by banks or licensed providers.
+ * of Finance (acquisition report) and the AML handbook for real estate agents. Currency exchange
+ * and transfers are done by banks or licensed providers.
  */
 
 export interface OverseasStep { label: string; detail: string }
@@ -17,8 +17,6 @@ export interface OverseasBuyingCopy {
   title: string
   description: string
   lead: string
-  noHoldingTitle: string
-  noHoldingBody: string
   flowTitle: string
   flowCaption: string
   flow: OverseasStep[]
@@ -67,8 +65,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
     title: '海外から東京の不動産を買う：お金の流れとチェックリスト',
     description: '海外にお住まいの方が東京の物件を買うときの、お金の流れ（送金・決済・登記）と、契約前から引渡し後までのチェックリスト。外為法の報告、源泉徴収、登記の国内連絡先まで。',
     lead: '海外にお住まいでも、東京の不動産は購入できます。ただ、国際送金の日数や、登記・報告の書類など、国内の購入にはない準備があります。お金がいつ・どこへ動くのかと、やることの一覧をまとめました。',
-    noHoldingTitle: '当社が購入代金を預かることはありません',
-    noHoldingBody: 'お金は買主から売主（または決済のための口座）へ動きます。両替と送金は、銀行や資金移動業の登録を受けた送金会社が行います。送金先と金額は、必ず書面で確認してから送ってください。',
     flowTitle: 'お金と手続きの流れ',
     flowCaption: '申込みから引渡し後までの5ステップ',
     flow: [
@@ -128,7 +124,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
       { question: '日本の銀行口座は必要ですか？', answer: '必須ではありません。日本に口座がない場合は、海外から決済用の口座へ事前に送金する方法などを、売主・司法書士・金融機関と相談して決めます。' },
       { question: 'ドルや人民元で支払えますか？', answer: '代金は円で支払います。両替は送金のときに銀行や送金会社で行います。サイトでは参考として外貨での概算も表示しています。' },
       { question: '送金にはどれくらいかかりますか？', answer: '国や銀行によりますが、ふつうは数営業日です。決済日の前に余裕をもって送ってください。' },
-      { question: '自由不動産がお金を預かりますか？', answer: 'いいえ。当社は購入代金を預かりません。両替と送金は銀行や登録を受けた送金会社が行います。' },
       { question: '日本に来なくても買えますか？', answer: '多くの手続きは海外からでも進められ、重要事項の説明もオンラインで受けられます。住所証明などの書類は準備に時間がかかるため、早めに始めてください。' },
     ],
     ctaTitle: '海外からの購入をご相談ください',
@@ -147,8 +142,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
     title: 'Buying Tokyo property from overseas: how the money moves, with a checklist',
     description: 'How money moves when you buy a Tokyo home from abroad (transfer, settlement, registration), and a checklist from before the contract to after handover: the FX Act report, withholding tax and the domestic contact for registration.',
     lead: 'You can buy property in Tokyo while living abroad. There is extra preparation compared with a local purchase, though: international transfers take days, and registration and reporting need documents. Here is when and where the money moves, and everything to do.',
-    noHoldingTitle: 'We never hold your purchase money',
-    noHoldingBody: 'Money moves from the buyer to the seller (or to an account set up for the settlement). Currency exchange and transfers are handled by banks or registered money transfer providers. Always confirm the receiving account and amount in writing before you send.',
     flowTitle: 'How the money and paperwork move',
     flowCaption: '5 steps from offer to after handover',
     flow: [
@@ -208,7 +201,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
       { question: 'Do I need a Japanese bank account?', answer: 'No. Without one, you can send the money in advance to an account set up for the settlement, agreed with the seller, the scrivener and the banks.' },
       { question: 'Can I pay in US dollars or yuan?', answer: 'The price is paid in yen. Your bank or transfer provider converts it when you send. The site shows approximate foreign-currency prices for reference.' },
       { question: 'How long does a transfer take?', answer: 'Usually a few business days, depending on the country and bank. Send well before settlement.' },
-      { question: 'Does Ziyou Real Estate hold the money?', answer: 'No. We never hold purchase money. Banks or registered transfer providers handle exchange and transfers.' },
       { question: 'Can I buy without coming to Japan?', answer: 'Most steps can be done from abroad, and the disclosure briefing can be online. Documents such as the address proof take time, so start early.' },
     ],
     ctaTitle: 'Planning to buy from overseas? Talk to us',
@@ -227,8 +219,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
     title: '從海外購買東京不動產：資金流向與檢查清單',
     description: '住在海外的人購買東京物件時的資金流向（匯款、交割、登記），以及從簽約前到交屋後的檢查清單：外匯法報告、預扣稅、登記的日本國內聯絡人。',
     lead: '即使住在海外，也能購買東京的不動產。不過與在日本購買相比，還需要額外準備，例如國際匯款需要數天，登記與報告也需要文件。以下整理資金何時、流向何處，以及該做的事項。',
-    noHoldingTitle: '本公司不會代管購屋款',
-    noHoldingBody: '資金由買方直接流向賣方（或為交割設定的帳戶）。換匯與匯款由銀行或已登記的資金移動業者辦理。匯款前，請務必以書面確認收款帳戶與金額。',
     flowTitle: '資金與手續的流程',
     flowCaption: '從申請到交屋後的5個步驟',
     flow: [
@@ -288,7 +278,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
       { question: '需要日本的銀行帳戶嗎？', answer: '不一定。沒有帳戶時，可與賣方、司法書士及金融機構商量，事先從海外匯至交割用帳戶等。' },
       { question: '可以用美元或人民幣支付嗎？', answer: '價款以日圓支付，於匯款時由銀行或匯款業者換匯。網站上也會顯示外幣概算供參考。' },
       { question: '匯款需要多久？', answer: '依國家與銀行而定，通常為數個營業日。請在交割日前預留充裕時間。' },
-      { question: '自由不動產會代管款項嗎？', answer: '不會。本公司不代管購屋款，換匯與匯款由銀行或已登記的匯款業者辦理。' },
       { question: '不來日本也能購買嗎？', answer: '多數手續可在海外進行，重要事項說明也可線上進行。住址證明等文件需要時間準備，請及早開始。' },
     ],
     ctaTitle: '歡迎諮詢從海外購屋',
@@ -307,8 +296,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
     title: '从海外购买东京房产：资金流向与检查清单',
     description: '住在海外的人购买东京房产时的资金流向（汇款、交割、登记），以及从签约前到交房后的检查清单：外汇法报告、预扣税、登记的日本国内联系人。',
     lead: '即使住在海外，也可以购买东京的房产。不过和在日本购买相比，还需要额外准备，比如国际汇款需要几天，登记和报告也需要材料。下面整理资金何时、流向哪里，以及要做的事。',
-    noHoldingTitle: '本公司不会代管购房款',
-    noHoldingBody: '资金由买方直接流向卖方（或为交割设立的账户）。换汇和汇款由银行或已登记的资金移动业者办理。汇款前，请务必书面确认收款账户和金额。',
     flowTitle: '资金与手续的流程',
     flowCaption: '从申请到交房后的5个步骤',
     flow: [
@@ -368,7 +355,6 @@ export const overseasBuyingCopy: Record<'ja' | 'en' | 'zh-TW' | 'zh-CN', Oversea
       { question: '需要日本的银行账户吗？', answer: '不一定。没有账户时，可以与卖方、司法书士和金融机构商量，事先从海外汇到交割用账户等。' },
       { question: '可以用美元或人民币支付吗？', answer: '房款以日元支付，汇款时由银行或汇款业者换汇。网站上也显示外币概算供参考。' },
       { question: '汇款需要多久？', answer: '因国家和银行而异，通常是几个工作日。请在交割日前留出充足时间。' },
-      { question: '自由不动产会代管款项吗？', answer: '不会。本公司不代管购房款，换汇和汇款由银行或已登记的汇款业者办理。' },
       { question: '不来日本也能买吗？', answer: '大部分手续可以在海外进行，重要事项说明也可以线上进行。住址证明等材料需要时间准备，请尽早开始。' },
     ],
     ctaTitle: '欢迎咨询从海外买房',
