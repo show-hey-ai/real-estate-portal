@@ -5,7 +5,7 @@ import { seismicStandard } from '@/lib/seismic'
  * and facts. Cautions are shown as plainly as highlights so buyers can ask about them early.
  */
 
-export type HighlightKey = 'nearStation' | 'newSeismic' | 'corner' | 'topFloor' | 'renovated' | 'renovationPlanned' | 'pets' | 'autoLock' | 'deliveryBox' | 'sunny'
+export type HighlightKey = 'freehold' | 'nearStation' | 'newSeismic' | 'corner' | 'topFloor' | 'renovated' | 'renovationPlanned' | 'pets' | 'autoLock' | 'deliveryBox' | 'sunny'
 export type CautionKey = 'noRebuild' | 'subleaseRequired' | 'oldSeismic' | 'checkSeismic' | 'noElevator' | 'selfManaged' | 'noAssociation' | 'noViewing' | 'leasehold' | 'farFromStation'
 
 export interface HighlightSource {
@@ -51,6 +51,7 @@ export function listingHighlights(listing: HighlightSource): ListingHighlights {
   const renovationPlanned = /(リノベーション|リフォーム)[^。]{0,20}予定/u.test(text)
 
   const highlights: HighlightKey[] = [
+    /所有権/u.test(listing.landRights || '') ? 'freehold' : null,
     walk !== null && walk <= NEAR_STATION_MINUTES ? 'nearStation' : null,
     seismic === 'new' ? 'newSeismic' : null,
     /角部屋|角住戸/u.test(text) ? 'corner' : null,

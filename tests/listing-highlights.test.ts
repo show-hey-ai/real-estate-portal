@@ -33,3 +33,8 @@ test('walking time falls back to the description', () => {
   assert.equal(result.walkMinutes, 3)
   assert.ok(result.highlights.includes('nearStation'))
 })
+
+test('freehold land rights are a good point', () => {
+  assert.ok(listingHighlights({ landRights: '所有権' }).highlights.includes('freehold'))
+  assert.ok(!listingHighlights({ landRights: '借地権' }).highlights.includes('freehold'))
+})

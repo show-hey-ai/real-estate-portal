@@ -361,7 +361,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
             <ListingHighlightChips locale={locale} result={highlights} />
 
             <div id="property-facts" className="scroll-mt-4 md:scroll-mt-44">
-              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross }} monthly={monthly} grossYield={grossYield} netYield={netYield} />
+              <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross, landRights: listing.landRights }} monthly={monthly} grossYield={grossYield} netYield={netYield} />
             </div>
 
             {unitPrice && listing.city && <UnitPriceChart locale={locale} title={unitPriceCopy[locale]?.title ?? unitPriceCopy.en.title} note={unitPriceCopy[locale]?.note(unitPrice.count) ?? unitPriceCopy.en.note(unitPrice.count)} bars={[

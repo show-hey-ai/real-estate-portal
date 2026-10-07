@@ -15,10 +15,10 @@ const SEISMIC_GUIDE = 'japan-earthquake-standards-1981'
 const FEES_GUIDE = 'tokyo-condo-management-fee-repair-reserve'
 
 const monthlyCopy = {
-  ja: { glossary: '用語の説明', more: '解説', seismic: '耐震基準（築年からの目安）', seismicValue: { new: '新耐震基準（1981年6月以降の基準）', check: '新旧の境目（建築確認日の確認が必要）', old: '旧耐震基準の可能性（耐震診断の有無を確認）' }, netYield: '実質利回り（管理費等控除後・概算）', management: '管理費（月額）', repair: '修繕積立金（月額）', fees: '管理費等（月額）', rent: '賃料（月額）', yield: '表面利回り', yen: (value: number) => `${value.toLocaleString('ja-JP')}円` },
-  en: { glossary: 'Terms explained', more: 'Guide', seismic: 'Earthquake standard (from built year)', seismicValue: { new: 'New standard (June 1981 or later)', check: 'Borderline: check the building permit date', old: 'Likely pre-1981 standard: ask about seismic checks' }, netYield: 'Net yield (after fees, estimate)', management: 'Management fee (monthly)', repair: 'Repair reserve (monthly)', fees: 'Management fees (monthly)', rent: 'Rent (monthly)', yield: 'Gross yield', yen: (value: number) => `¥${value.toLocaleString('en-US')}` },
-  'zh-TW': { glossary: '用語說明', more: '說明', seismic: '耐震基準（依屋齡推估）', seismicValue: { new: '新耐震基準（1981年6月以後）', check: '新舊交界（需確認建築許可日期）', old: '可能為舊耐震基準（請確認耐震診斷）' }, netYield: '實質投報率（扣除管理費等・概算）', management: '管理費（月）', repair: '修繕公積金（月）', fees: '管理費等（月）', rent: '租金（月）', yield: '表面投報率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日圓` },
-  'zh-CN': { glossary: '用语说明', more: '说明', seismic: '耐震标准（按房龄推估）', seismicValue: { new: '新耐震标准（1981年6月以后）', check: '新旧交界（需确认建筑许可日期）', old: '可能为旧耐震标准（请确认抗震诊断）' }, netYield: '实际收益率（扣除管理费等・估算）', management: '管理费（月）', repair: '修缮基金（月）', fees: '管理费等（月）', rent: '租金（月）', yield: '表面收益率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日元` },
+  ja: { landRights: '土地権利', freehold: '所有権', leasehold: '借地権', glossary: '用語の説明', more: '解説', seismic: '耐震基準（築年からの目安）', seismicValue: { new: '新耐震基準（1981年6月以降の基準）', check: '新旧の境目（建築確認日の確認が必要）', old: '旧耐震基準の可能性（耐震診断の有無を確認）' }, netYield: '実質利回り（管理費等控除後・概算）', management: '管理費（月額）', repair: '修繕積立金（月額）', fees: '管理費等（月額）', rent: '賃料（月額）', yield: '表面利回り', yen: (value: number) => `${value.toLocaleString('ja-JP')}円` },
+  en: { landRights: 'Land rights', freehold: 'Freehold (land included)', leasehold: 'Leasehold', glossary: 'Terms explained', more: 'Guide', seismic: 'Earthquake standard (from built year)', seismicValue: { new: 'New standard (June 1981 or later)', check: 'Borderline: check the building permit date', old: 'Likely pre-1981 standard: ask about seismic checks' }, netYield: 'Net yield (after fees, estimate)', management: 'Management fee (monthly)', repair: 'Repair reserve (monthly)', fees: 'Management fees (monthly)', rent: 'Rent (monthly)', yield: 'Gross yield', yen: (value: number) => `¥${value.toLocaleString('en-US')}` },
+  'zh-TW': { landRights: '土地權利', freehold: '所有權（永久產權）', leasehold: '借地權', glossary: '用語說明', more: '說明', seismic: '耐震基準（依屋齡推估）', seismicValue: { new: '新耐震基準（1981年6月以後）', check: '新舊交界（需確認建築許可日期）', old: '可能為舊耐震基準（請確認耐震診斷）' }, netYield: '實質投報率（扣除管理費等・概算）', management: '管理費（月）', repair: '修繕公積金（月）', fees: '管理費等（月）', rent: '租金（月）', yield: '表面投報率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日圓` },
+  'zh-CN': { landRights: '土地权利', freehold: '所有权（永久产权）', leasehold: '借地权', glossary: '用语说明', more: '说明', seismic: '耐震标准（按房龄推估）', seismicValue: { new: '新耐震标准（1981年6月以后）', check: '新旧交界（需确认建筑许可日期）', old: '可能为旧耐震标准（请确认抗震诊断）' }, netYield: '实际收益率（扣除管理费等・估算）', management: '管理费（月）', repair: '修缮基金（月）', fees: '管理费等（月）', rent: '租金（月）', yield: '表面收益率', yen: (value: number) => `${value.toLocaleString('ja-JP')}日元` },
 } as const
 
 interface ListingSpecsProps {
@@ -34,6 +34,7 @@ interface ListingSpecsProps {
     zoning: string | null
     currentStatus: string | null
     yieldGross?: number | null
+    landRights?: string | null
   }
   /** Monthly figures read from the description; see parseMonthlyFigures. */
   monthly?: MonthlyFigures
@@ -47,6 +48,7 @@ export function ListingSpecs({ listing, monthly, grossYield, netYield }: Listing
   const locale = useLocale()
   const text = monthlyCopy[locale as keyof typeof monthlyCopy] ?? monthlyCopy.en
   const seismic = listing.propertyType === '土地' ? null : seismicStandard(listing.builtYear)
+  const landRightsText = (value: string | null | undefined) => (!value ? null : /借地/.test(value) ? text.leasehold : /所有/.test(value) ? text.freehold : value)
   const areaText = (m2: number) => (locale === 'en' ? `${formatArea(m2)} (${Math.round(m2 * SQFT_PER_M2).toLocaleString('en-US')} sq ft)` : formatArea(m2))
   const guideLink = (slug: string) => <Link href={`/guides/${slug}`} className="ml-2 text-xs font-semibold text-[#274d7d] underline underline-offset-2">{text.more}</Link>
 
@@ -81,6 +83,7 @@ export function ListingSpecs({ listing, monthly, grossYield, netYield }: Listing
     { label: t('landArea'), value: listing.landArea ? areaText(Number(listing.landArea)) : null },
     { label: t('buildingArea'), value: listing.buildingArea ? areaText(Number(listing.buildingArea)) : null },
     { label: t('zoning'), value: translateZoning(listing.zoning, locale) },
+    { label: text.landRights, value: landRightsText(listing.landRights) },
     { label: t('currentStatus'), value: translateCurrentStatus(listing.currentStatus, locale) },
     { label: locale === 'ja' ? '㎡単価' : locale === 'en' ? 'Price per m²' : locale === 'zh-TW' ? '每平方公尺單價' : '每平方米单价', value: formatUnitPrice(Number(listing.price) || null, Number(listing.propertyType === '土地' ? listing.landArea : listing.buildingArea) || null, locale) },
     ...(monthly?.managementFee ? [{ label: text.management, value: <>{text.yen(monthly.managementFee)}{guideLink(FEES_GUIDE)}</> }] : []),
