@@ -32,6 +32,31 @@ async function latestObservation() {
 
 const INTEREST_LIMIT = 5
 
+/** Expired-and-hidden listings plus the latest light and full re-checks. */
+async function listingFreshness(now: Date, since: Date) {
+  const [managed, expired, light, full] = await Promise.all([
+    prisma.listing.findMany({ where: { status: 'PUBLISHED', autonomyValidUntil: { gt: now } }, select: { autonomyValidUntil: true }, orderBy: { autonomyValidUntil: 'asc' } }),
+    prisma.listing.findMany({
+      where: { status: { in: ['PUBLISHED', 'ARCHIVED'] }, autonomyValidUntil: { gt: since, lte: now } },
+      select: { id: true, city: true, addressPublic: true, price: true, autonomyValidUntil: true },
+      orderBy: { autonomyValidUntil: 'asc' },
+      take: MAX_ITEMS,
+    }),
+    prisma.autonomyRecord.findFirst({ where: { ventureId: PORTAL_VENTURE_ID, recordType: 'freshness' }, orderBy: { createdAt: 'desc' } }),
+    prisma.autonomyJob.findFirst({ where: { ventureId: PORTAL_VENTURE_ID, kind: 'publication_audit', status: 'succeeded' }, orderBy: { updatedAt: 'desc' }, select: { updatedAt: true } }),
+  ])
+  const results = ((light?.content as { results?: { action?: string; result?: string }[] } | null)?.results ?? []).filter((item) => item.result === 'applied')
+  return {
+    expired: expired.map((listing) => ({ id: listing.id, label: listingLabel(listing), validUntil: listing.autonomyValidUntil! })),
+    freshness: {
+      managed: managed.length,
+      earliestExpiry: managed[0]?.autonomyValidUntil ?? null,
+      lastLightCheck: light ? { at: light.createdAt, extended: results.filter((item) => item.action === 'extend').length, hidden: results.filter((item) => item.action === 'withdraw').length } : null,
+      lastFullCheck: full?.updatedAt ?? null,
+    },
+  }
+}
+
 async function listingInterest(since: Date) {
   const audience = await getExternalAnalyticsWhere()
   const events = await prisma.siteVisitEvent.findMany({
@@ -50,7 +75,7 @@ async function listingInterest(since: Date) {
 export async function collectSnapshot(now = new Date()): Promise<NotificationSnapshot> {
   const since = new Date(now.getTime() - LOOKBACK_MS)
   const expiryLimit = new Date(now.getTime() + EXPIRY_WARNING_HOURS * 3600_000)
-  const [leads, messages, expiring, failedJobs, published, drafts, observation, search, interest] = await Promise.all([
+  const [leads, messages, expiring, failedJobs, published, drafts, observation, search, interest, freshness] = await Promise.all([
     prisma.lead.findMany({ where: { createdAt: { gte: since } }, select: { id: true, listingId: true }, take: MAX_ITEMS }),
     prisma.propertyChatMessage.findMany({
       where: { createdAt: { gte: since } },
@@ -73,12 +98,15 @@ export async function collectSnapshot(now = new Date()): Promise<NotificationSna
     latestObservation(),
     latestSearchPerformance(),
     listingInterest(since),
+    listingFreshness(now, since),
   ])
   return {
     now,
     leads,
     buyerMessages: messages.filter((message) => message.senderSubject === message.room.buyerSubject).map(({ id, roomId }) => ({ id, roomId })),
     expiringListings: expiring.map((listing) => ({ id: listing.id, label: listingLabel(listing), validUntil: listing.autonomyValidUntil! })),
+    expiredListings: freshness.expired,
+    freshness: freshness.freshness,
     failedJobs,
     metrics: { published, drafts, ...observation },
     search,
@@ -101,6 +129,7 @@ function withoutSent(snapshot: NotificationSnapshot, sent: Set<string>): Notific
     leads: snapshot.leads.filter((lead) => !sent.has(`notify:lead:${lead.id}`)),
     buyerMessages: snapshot.buyerMessages.filter((message) => !sent.has(`notify:chat:${message.id}`)),
     expiringListings: snapshot.expiringListings.filter((listing) => !sent.has(`notify:expiry:${listing.id}:${listing.validUntil.toISOString()}`)),
+    expiredListings: snapshot.expiredListings?.filter((listing) => !sent.has(`notify:expired:${listing.id}:${listing.validUntil.toISOString()}`)),
     failedJobs: snapshot.failedJobs.filter((job) => !sent.has(`notify:job:${job.id}:${job.status}`)),
   }
 }
@@ -137,6 +166,7 @@ export async function runNotifications(now = new Date(), env: Record<string, str
     ...snapshot.leads.map((lead) => `notify:lead:${lead.id}`),
     ...snapshot.buyerMessages.map((message) => `notify:chat:${message.id}`),
     ...snapshot.expiringListings.map((listing) => `notify:expiry:${listing.id}:${listing.validUntil.toISOString()}`),
+    ...(snapshot.expiredListings ?? []).map((listing) => `notify:expired:${listing.id}:${listing.validUntil.toISOString()}`),
     ...snapshot.failedJobs.map((job) => `notify:job:${job.id}:${job.status}`),
   ]
   const sent = await alreadySent([...itemKeys, digestKey(now)])

@@ -11,13 +11,17 @@ export interface NotificationSnapshot {
   leads: { id: string; listingId: string }[]
   buyerMessages: { id: string; roomId: string }[]
   expiringListings: { id: string; label: string; validUntil: Date }[]
+  /** Automatically published listings whose validity ran out in the last 24 hours (now hidden). */
+  expiredListings?: { id: string; label: string; validUntil: Date }[]
+  /** Re-check status of automatically published listings, for the morning summary. */
+  freshness?: { managed: number; earliestExpiry: Date | null; lastLightCheck: { at: Date; extended: number; hidden: number } | null; lastFullCheck: Date | null }
   failedJobs: { id: string; kind: string; status: string }[]
   metrics: { published: number; drafts: number; pageViews: number | null; visitors: number | null; contactClicks: number | null; inquiries: number | null }
 }
 
-export type ContactChannel = 'whatsapp' | 'email' | 'phone'
+export type ContactChannel = 'whatsapp' | 'line' | 'wechat' | 'email' | 'phone'
 
-const CHANNEL_LABELS: Record<ContactChannel, string> = { whatsapp: 'WhatsApp', phone: '電話', email: 'メール' }
+const CHANNEL_LABELS: Record<ContactChannel, string> = { whatsapp: 'WhatsApp', line: 'LINE', wechat: 'WeChat', phone: '電話', email: 'メール' }
 
 /** Groups yesterday's listing views and contact clicks; listings with contact clicks rank first. */
 export function rankListingInterest(events: { listingId: string | null; pageType: string; channel: string | null }[], limit: number) {
@@ -111,6 +115,14 @@ export function buildAlertMail(snapshot: NotificationSnapshot, siteUrl: string):
     sections.push(`■ 買主からのチャット: ${snapshot.buyerMessages.length}件（${rooms}件の会話）\n${siteUrl}/admin/chats`)
     keys.push(...snapshot.buyerMessages.map((message) => `notify:chat:${message.id}`))
   }
+  if (snapshot.expiredListings?.length) {
+    sections.push([
+      `■ 掲載期限が切れて非表示になった物件: ${snapshot.expiredListings.length}件`,
+      '売れた・申込ありで止めた物件はそのままで構いません。掲載を続ける物件は、原図面とREINS詳細の全面確認で戻してください（軽い再確認では戻せません）。',
+      ...expiryLines(snapshot.expiredListings, siteUrl),
+    ].join('\n'))
+    keys.push(...snapshot.expiredListings.map((listing) => `notify:expired:${listing.id}:${listing.validUntil.toISOString()}`))
+  }
   if (snapshot.expiringListings.length) {
     sections.push([
       `■ ${EXPIRY_WARNING_HOURS}時間以内に掲載期限が切れる物件: ${snapshot.expiringListings.length}件`,
@@ -134,6 +146,18 @@ export function buildAlertMail(snapshot: NotificationSnapshot, siteUrl: string):
     text: [...sections, '', 'このメールはポータルの自動通知です。'].join('\n\n'),
     keys,
   }
+}
+
+/** Shows each morning whether the daily light re-check and the weekly full check are running. */
+function freshnessLines(snapshot: NotificationSnapshot): string[] {
+  const freshness = snapshot.freshness
+  if (!freshness) return []
+  const light = freshness.lastLightCheck
+  return [
+    `■ 再確認: 自動掲載 ${freshness.managed}件 / 最も早い期限 ${freshness.earliestExpiry ? formatTokyoTime(freshness.earliestExpiry) : '—'}${snapshot.expiredListings?.length ? ` / 期限切れで非表示 ${snapshot.expiredListings.length}件` : ''}`,
+    `- 最後の軽い再確認: ${light ? `${formatTokyoTime(light.at)}（延長${light.extended}件${light.hidden ? `・非表示${light.hidden}件` : ''}）` : 'まだ実行されていません'}`,
+    `- 最後の全面確認: ${freshness.lastFullCheck ? formatTokyoTime(freshness.lastFullCheck) : '—'}`,
+  ]
 }
 
 function count(value: number | null, unit = ''): string {
@@ -171,6 +195,7 @@ export function buildDigestMail(snapshot: NotificationSnapshot, siteUrl: string)
   const lines = [
     `■ 物件: 公開中: ${metrics.published}件 / 下書き: ${metrics.drafts}件`,
     `■ 直近7日: PV ${count(metrics.pageViews)} / 訪問者 ${count(metrics.visitors, '人')} / 相談クリック ${count(metrics.contactClicks, '件')} / 問い合わせ ${count(metrics.inquiries, '件')}`,
+    ...freshnessLines(snapshot),
     `■ ${EXPIRY_WARNING_HOURS}時間以内に掲載期限: ${snapshot.expiringListings.length}件`,
     ...expiryLines(snapshot.expiringListings, siteUrl),
     `■ 失敗した自動処理（24時間）: ${snapshot.failedJobs.length}件`,

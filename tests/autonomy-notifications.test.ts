@@ -135,3 +135,27 @@ test('ranking listing interest puts contact clicks ahead of views', () => {
     { id: 'a', views: 2, clicks: {} },
   ])
 })
+
+test('listings hidden by an expired check raise one alert each, with their own dedupe key', () => {
+  const mail = buildAlertMail(snapshot({ expiredListings: [{ id: 'listing-9', label: '文京区 8,999万円', validUntil: new Date('2026-10-07T01:05:30Z') }] }), site)
+  assert.ok(mail?.text.includes('掲載期限が切れて非表示になった物件: 1件'))
+  assert.ok(mail?.text.includes('/admin/listings/listing-9/review'))
+  assert.deepEqual(mail?.keys, ['notify:expired:listing-9:2026-10-07T01:05:30.000Z'])
+})
+
+test('the digest shows whether the light and full re-checks are running', () => {
+  const freshness = { managed: 30, earliestExpiry: new Date('2026-10-08T01:54:48Z'), lastLightCheck: { at: new Date('2026-10-07T22:02:00Z'), extended: 29, hidden: 1 }, lastFullCheck: new Date('2026-10-07T01:40:00Z') }
+  const text = buildDigestMail(snapshot({ freshness }), site).text
+  assert.ok(text.includes('■ 再確認: 自動掲載 30件 / 最も早い期限 10/8 10:54'))
+  assert.ok(text.includes('- 最後の軽い再確認: 10/8 7:02（延長29件・非表示1件）'))
+  assert.ok(text.includes('- 最後の全面確認: 10/7 10:40'))
+  const never = buildDigestMail(snapshot({ freshness: { ...freshness, lastLightCheck: null } }), site).text
+  assert.ok(never.includes('最後の軽い再確認: まだ実行されていません'))
+})
+
+test('LINE and WeChat clicks count in the listing interest summary', () => {
+  const ranked = rankListingInterest([{ listingId: 'a', pageType: 'contact_click', channel: 'line' }, { listingId: 'a', pageType: 'contact_click', channel: 'wechat' }, { listingId: 'b', pageType: 'listing_detail', channel: null }], 5)
+  assert.deepEqual(ranked[0], { id: 'a', views: 0, clicks: { line: 1, wechat: 1 } })
+  const text = buildDigestMail(snapshot({ listingInterest: [{ ...ranked[0], label: '港区 6,180万円' }] }), site).text
+  assert.ok(text.includes('相談クリック2（LINE 1・WeChat 1）'))
+})
