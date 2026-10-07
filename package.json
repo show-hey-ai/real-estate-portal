@@ -16,7 +16,10 @@
     "ad:recheck": "npx tsx scripts/recheck-published-ad-policy.ts",
     "autonomy:worker": "tsx scripts/autonomy-worker.ts",
     "autonomy:once": "tsx scripts/autonomy-worker.ts --once",
-    "test:autonomy": "node --import tsx --test tests/autonomy-*.test.ts"
+    "test:autonomy": "node --import tsx --test tests/autonomy-*.test.ts",
+    "screen:maisoku": "tsx scripts/screen-maisoku.ts",
+    "rank:details": "tsx scripts/rank-reins-details.ts",
+    "renew:light": "tsx scripts/renew-light.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.77",

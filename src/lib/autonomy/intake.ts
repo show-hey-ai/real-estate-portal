@@ -57,6 +57,11 @@ export async function runSourceCommand(job: AutonomyJob, script: 'reins-download
 }
 
 export async function reinsIntake(job: AutonomyJob) {
+  // Scheduled intake jobs have an empty payload. Desktop scripts claim reins_intake jobs with a
+  // payload for their own work; if one stops mid-way the worker may reclaim it, and must not
+  // start a REINS download in its place.
+  const payload = job.payload as Record<string, unknown> | null
+  if (payload && typeof payload === 'object' && Object.keys(payload).length) return { blocked: true, reason: 'A desktop script job stopped before finishing; rerun the script instead.' }
   if (!(process.env.REINS_LOGIN_ID || process.env.REINS_USER_ID) || !(process.env.REINS_LOGIN_PW || process.env.REINS_PASSWORD)) return { blocked: true, reason: 'REINS connection is not configured on the source worker.' }
   const batchDir = join(sourceDir(), `batch-${job.id}`)
   await mkdir(batchDir, { recursive: true, mode: 0o700 })

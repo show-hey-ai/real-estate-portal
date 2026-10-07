@@ -7,7 +7,7 @@ import { getExternalAnalyticsWhere } from '../site-analytics-data'
 import { getOpenAI } from '../openai'
 import { getSiteUrl } from '../site-config'
 import { getPublicListingScope } from '../public-listing-scope'
-import { publicationIssues } from './publication'
+import { firstPublicationDate, publicationIssues } from './publication'
 import { PORTAL_VENTURE_ID, AUTONOMY_VERSION } from './policy'
 import { enqueueJob, getPolicy, json, writeRecord } from './store'
 import { withLiveLease } from './lease'
@@ -138,8 +138,12 @@ export async function publicationAudit(job: AutonomyJob) {
     await writeRecord(job, 'quality', 'Candidate publication checks', { listingId: listing.id, passed: false, issues }, [input.receipt.sourceHash], 'verified')
     return { blocked: true, issues }
   }
-  const publishedAt = new Date()
-  const receipt = { listingId: listing.id, publishedAt: publishedAt.toISOString(), previousStatus: listing.status as 'DRAFT' | 'REVIEWED', auditJobId: job.id }
+  // The receipt's publishedAt is this release's time (it matches updatedAt for a rollback). The
+  // listing keeps its first publication date across re-checks, so renewals do not make it "new"
+  // again in badges, newest-first lists or listing alerts.
+  const releasedAt = new Date()
+  const publishedAt = firstPublicationDate(listing.publishedAt, releasedAt)
+  const receipt = { listingId: listing.id, publishedAt: releasedAt.toISOString(), previousStatus: listing.status as 'DRAFT' | 'REVIEWED', auditJobId: job.id }
   await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM autonomy_policies WHERE id=${PORTAL_VENTURE_ID} FOR UPDATE`
     const policy = await tx.autonomyPolicy.findUniqueOrThrow({ where: { id: PORTAL_VENTURE_ID } })
@@ -148,7 +152,7 @@ export async function publicationAudit(job: AutonomyJob) {
     if (listing.sourcePropertyId && await tx.autonomyRecord.findUnique({ where: { ventureId_dedupeKey: { ventureId: PORTAL_VENTURE_ID, dedupeKey: `source-override:${listing.sourcePropertyId}` } } })) throw new Error('An operator override prevents this source release.')
     const conflict = await tx.listing.findFirst({ where: { id: { not: listing.id }, addressPrivate: listing.addressPrivate, status: 'PUBLISHED' }, select: { id: true } })
     if (conflict) throw new Error('An existing release at this address prevents duplicate publication.')
-    const changed = await tx.listing.updateMany({ where: { id: listing.id, status: listing.status, updatedAt: listing.updatedAt }, data: { status: 'PUBLISHED', publishedAt, updatedAt: publishedAt, autonomyValidUntil: new Date(new Date(input.receipt.capturedAt).getTime() + 24 * 3600_000) } })
+    const changed = await tx.listing.updateMany({ where: { id: listing.id, status: listing.status, updatedAt: listing.updatedAt }, data: { status: 'PUBLISHED', publishedAt, updatedAt: releasedAt, autonomyValidUntil: new Date(new Date(input.receipt.capturedAt).getTime() + 24 * 3600_000) } })
     if (changed.count !== 1) throw new Error('Listing changed during verification.')
     // Existing EXTRACTED images are entire maisoku pages, including private addresses.
     // Keep the files as source evidence but do not auto-adopt them for public display.
@@ -174,8 +178,15 @@ export async function rollbackPublication(job: AutonomyJob) {
   const receipt = verifyInput.parse(job.payload)
   const audit = await prisma.autonomyJob.findFirst({ where: { id: receipt.auditJobId, ventureId: PORTAL_VENTURE_ID, kind: 'publication_audit' } })
   if (!audit || !verifyInput.safeParse(audit.result).success || JSON.stringify(verifyInput.parse(audit.result)) !== JSON.stringify(receipt)) return { blocked: true, reason: 'Automatic publication receipt did not match.' }
-  // Only undo this exact release; preserve later manual or automated edits.
-  const changed = await withLiveLease(job, (tx) => tx.listing.updateMany({ where: { id: receipt.listingId, status: 'PUBLISHED', publishedAt: new Date(receipt.publishedAt), updatedAt: new Date(receipt.publishedAt) }, data: { status: receipt.previousStatus, publishedAt: null } }))
+  // Only undo this exact release (its time is still the listing's updatedAt); preserve later edits.
+  // A first release is undone completely; a renewal keeps the listing's first publication date.
+  const releasedAt = new Date(receipt.publishedAt)
+  const changed = await withLiveLease(job, async (tx) => {
+    const released = await tx.listing.findFirst({ where: { id: receipt.listingId, status: 'PUBLISHED', updatedAt: releasedAt }, select: { publishedAt: true } })
+    if (!released) return { count: 0 }
+    const firstRelease = released.publishedAt?.getTime() === releasedAt.getTime()
+    return tx.listing.updateMany({ where: { id: receipt.listingId, status: 'PUBLISHED', updatedAt: releasedAt }, data: { status: receipt.previousStatus, ...(firstRelease ? { publishedAt: null } : {}) } })
+  })
   await writeRecord(job, 'recovery', changed.count ? 'Unreachable automatic publication rolled back' : 'Rollback skipped because listing changed', { ...receipt, rolledBack: changed.count === 1 }, [receipt.auditJobId], 'verified')
   return { rolledBack: changed.count === 1 }
 }

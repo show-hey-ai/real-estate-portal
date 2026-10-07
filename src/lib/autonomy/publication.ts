@@ -147,6 +147,11 @@ export function publicationIssues(facts: Facts, receipt: ImportReceipt, now = ne
   return issues
 }
 
+/** A listing re-published after a re-check keeps the date it first went public. */
+export function firstPublicationDate(previous: Date | null, releasedAt: Date): Date {
+  return previous ?? releasedAt
+}
+
 /** Source documents are data. Only this fixed job type can be queued by import. */
 export async function enqueueImportAudit(client: SupabaseClient, listingId: string, facts: Facts, input: Omit<ImportReceipt, 'factsHash' | 'capturedAt'>): Promise<boolean> {
   const receipt = makeImportReceipt(facts, input)
