@@ -6,6 +6,8 @@ import { useLocale } from 'next-intl'
 import { Receipt } from 'lucide-react'
 import { DEPOSIT_RATE, LOAN_FEE_RATE, estimateInitialCosts, type OtherCostKey, type Range } from '@/lib/purchase-costs'
 import { formatYenWords } from '@/lib/yen-words'
+import { useFxRates } from '@/components/fx/fx-rates-context'
+import { approxBandLabel, formatApproxPrice } from '@/lib/fx'
 
 const pct = (rate: number) => `${Math.round(rate * 1000) / 10}%`
 
@@ -67,6 +69,10 @@ export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGui
   const [downPaymentRate, setDownPaymentRate] = useState(DEFAULT_DOWN_PAYMENT_RATE)
   const effectivePrice = price ?? Math.min(Math.max(typedPrice, 0) * text.unitValue, MAX_PRICE_YEN)
   const costs = estimateInitialCosts({ price: effectivePrice, downPaymentRate, useLoan })
+  const rates = useFxRates()
+  // Overseas buyers see the cash they need in their own currency too (en: US$, zh-TW: NT$, zh-CN: 人民币).
+  const localNeeded = approxBandLabel({ min: costs.cashNeeded.low, max: costs.cashNeeded.high }, locale, rates)
+  const localAtContract = formatApproxPrice(costs.atContract, locale, rates)
   const yen = (value: number) => formatYenWords(Math.round(value / 10_000) * 10_000, locale)
   const range = ({ low, high }: Range) => (low === high ? yen(low) : `${yen(low)}${locale === 'en' ? ' – ' : '〜'}${yen(high)}`)
   const segments = [
@@ -106,6 +112,7 @@ export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGui
       <div className="rounded-lg bg-[#f4f7fb] p-4">
         <p className="text-xs font-semibold text-[#4a6789]">{text.cashNeeded}</p>
         <p className="mt-1 text-2xl font-bold tabular-nums text-[#1b293a] md:text-3xl" aria-live="polite">{range(costs.cashNeeded)}</p>
+        {localNeeded && <p className="mt-1 text-sm font-semibold tabular-nums text-[#3d4a5a]" data-testid="cost-local-currency">{localNeeded}</p>}
         <div className="mt-4 flex h-3 overflow-hidden rounded-full bg-[#e6edf4]" aria-hidden="true">
           {segments.map((segment) => <div key={segment.label} className={segment.tone} style={{ width: `${total ? (segment.value / total) * 100 : 0}%` }} />)}
         </div>
@@ -115,7 +122,7 @@ export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGui
         <div className="mt-4 border-t border-[#dbe2e9] pt-3">
           <p className="text-xs font-semibold text-[#4a6789]">{text.timing}</p>
           <dl className="mt-2 space-y-1.5 text-sm">
-            <div className="flex items-start justify-between gap-3"><dt className="text-[#536274]">{text.atContract}</dt><dd className="shrink-0 font-semibold tabular-nums">{yen(costs.atContract)}</dd></div>
+            <div className="flex items-start justify-between gap-3"><dt className="text-[#536274]">{text.atContract}</dt><dd className="shrink-0 text-right font-semibold tabular-nums">{yen(costs.atContract)}{localAtContract && <span className="block text-xs font-normal text-[#536274]">{localAtContract}</span>}</dd></div>
             <div className="flex items-start justify-between gap-3"><dt className="text-[#536274]">{text.atSettlement}</dt><dd className="shrink-0 font-semibold tabular-nums">{range(costs.atSettlement)}</dd></div>
           </dl>
         </div>
