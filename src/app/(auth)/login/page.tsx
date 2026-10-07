@@ -14,6 +14,7 @@ import { Building2, Loader2 } from 'lucide-react'
 import { safeAuthRedirect } from '@/lib/auth-redirect'
 import { AuthBrandPanel } from '@/components/auth/auth-brand-panel'
 import { AuthAlternatives } from '@/components/auth/auth-alternatives'
+import { NoSignupContact } from '@/components/auth/no-signup-contact'
 import { getLoginMethodsCopy } from '@/lib/login-methods-copy'
 
 export default function LoginPage() {
@@ -53,7 +54,7 @@ export default function LoginPage() {
   return (
     <div data-testid="auth-page" className="min-h-screen bg-[#f7f5ed] lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(440px,0.78fr)]">
       <AuthBrandPanel />
-      <div className="flex min-h-screen items-center justify-center p-5 sm:p-8">
+      <main className="flex min-h-screen flex-col items-center justify-center p-5 sm:p-8"><div className="w-full max-w-md">
       <Card className="portal-surface w-full max-w-md rounded-[12px] border-[#d9d2bd] py-2">
         <CardHeader className="text-center">
           <Link href="/" className="flex items-center justify-center gap-2 mb-4">
@@ -63,7 +64,7 @@ export default function LoginPage() {
           <CardTitle>{t('loginTitle')}</CardTitle>
           <CardDescription>
             {t('noAccount')}{' '}
-            <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-primary hover:underline">
+            <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-primary underline underline-offset-2">
               {t('registerTitle')}
             </Link>
           </CardDescription>
@@ -114,7 +115,8 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
-      </div>
+      <NoSignupContact />
+      </div></main>
     </div>
   )
 }
