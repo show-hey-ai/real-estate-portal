@@ -295,6 +295,8 @@ export function buildOrganizationJsonLd(locale: string) {
       addressCountry: 'JP',
     },
     areaServed: ['Tokyo', 'Greater Tokyo'],
+    // The operating company's own site, so search engines connect the portal to the licensed broker.
+    sameAs: ['https://ziyou-fudosan.com/'],
     availableLanguage: ['ja', 'en', 'zh-Hant', 'zh-Hans'],
     inLanguage: getSchemaLanguage(locale),
   }

@@ -32,6 +32,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/hotel-airbnb-checklist', destination: '/buying-guide', permanent: true },
+      { source: '/hotel-lp.html', destination: '/', permanent: true },
+      { source: '/hotel-lp/:path*', destination: '/', permanent: true },
       { source: '/youtube', destination: '/', permanent: true },
       { source: '/checklists/:path*', destination: '/buying-guide', permanent: true },
       // Production aliases on vercel.app (two projects build this repo) duplicate the site; send them to the canonical domain.
