@@ -45,27 +45,30 @@ function listingImages(media: SitemapMedia[] | null): string[] {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const portalLaunchAt = new Date('2026-09-29T00:00:00+09:00')
   const articles = await getPublicArticles()
-  const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: Object.fromEntries(locales.map((language) => [getSchemaLanguage(language), absoluteUrl(`/articles/${article.slug}/${language}`)])) }, ...(article.locales[locale]?.hero ? { images: [toAbsolute(article.locales[locale].hero!.url)] } : {}) })))
+  const articleEntries: MetadataRoute.Sitemap = articles.flatMap((article) => locales.map((locale) => ({ url: absoluteUrl(`/articles/${article.slug}/${locale}`), lastModified: article.updatedAt, changeFrequency: 'weekly' as const, priority: 0.65, alternates: { languages: { ...Object.fromEntries(locales.map((language) => [getSchemaLanguage(language), absoluteUrl(`/articles/${article.slug}/${language}`)])), 'x-default': absoluteUrl(`/articles/${article.slug}/en`) } }, ...(article.locales[locale]?.hero ? { images: [toAbsolute(article.locales[locale].hero!.url)] } : {}) })))
   const guideEntries: MetadataRoute.Sitemap = [
     ...localized('/guides', getLatestDate(guideArticles.map((guide) => guide.updatedAt)), 'monthly', 0.6),
     ...guideArticles.flatMap((guide) => localized(`/guides/${guide.slug}`, new Date(guide.updatedAt), 'monthly', 0.6)),
   ]
 
-  // Every page has one URL per language.
-  const articleIndex = (lastModified: Date | string): MetadataRoute.Sitemap =>
-    articles.length ? localized('/articles', lastModified, 'weekly', 0.65) : []
-  const staticPages = (lastModified?: Date): MetadataRoute.Sitemap => [
-    ...articleIndex(lastModified ?? (articles[0]?.updatedAt || portalLaunchAt)),
-    ...localized('/', lastModified ?? portalLaunchAt, 'daily', 1),
-    ...localized('/listings', lastModified ?? portalLaunchAt, 'daily', 0.9),
-    ...localized('/buying-guide', lastModified ?? new Date('2026-09-29T00:00:00+09:00'), 'monthly', 0.85),
-    ...localized('/match', lastModified ?? new Date('2026-09-29T00:00:00+09:00'), 'monthly', 0.8),
-    ...localized('/help', lastModified ?? new Date('2026-10-03T00:00:00+09:00'), 'monthly', 0.6),
-    ...localized('/about', lastModified ?? new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.5),
-    ...localized('/buy-property-in-tokyo', lastModified ?? new Date('2026-10-07T00:00:00+09:00'), 'weekly', 0.9),
-    ...localized('/buy-from-overseas', new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.8),
-    ...localized('/areas', lastModified ?? new Date('2026-10-07T00:00:00+09:00'), 'weekly', 0.8),
-  ]
+  // Every page has one URL per language. lastmod must reflect real content changes, or Google stops trusting it:
+  // pages that list properties follow the newest listing, written pages keep the date their text last changed.
+  const articleIndex: MetadataRoute.Sitemap = articles.length ? localized('/articles', articles[0]?.updatedAt || portalLaunchAt, 'weekly', 0.65) : []
+  const staticPages = (latestListingAt?: Date): MetadataRoute.Sitemap => {
+    const withListings = (contentUpdatedAt: string) => getLatestDate([contentUpdatedAt, latestListingAt])
+    return [
+      ...articleIndex,
+      ...localized('/', withListings('2026-10-07T00:00:00+09:00'), 'daily', 1),
+      ...localized('/listings', withListings('2026-10-07T00:00:00+09:00'), 'daily', 0.9),
+      ...localized('/buy-property-in-tokyo', withListings('2026-10-07T00:00:00+09:00'), 'weekly', 0.9),
+      ...localized('/areas', withListings('2026-10-07T00:00:00+09:00'), 'weekly', 0.8),
+      ...localized('/buying-guide', new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.85),
+      ...localized('/match', new Date('2026-10-06T00:00:00+09:00'), 'monthly', 0.8),
+      ...localized('/help', new Date('2026-10-06T00:00:00+09:00'), 'monthly', 0.6),
+      ...localized('/about', new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.5),
+      ...localized('/buy-from-overseas', new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.8),
+    ]
+  }
   const staticEntries = staticPages()
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -96,8 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latestListingModifiedAt = getLatestDate(
     (data || []).flatMap((listing) => [listing.updatedAt, listing.publishedAt])
   )
-  const staticLastModified = getLatestDate([portalLaunchAt, latestListingModifiedAt])
-  const adjustedStaticEntries = staticPages(staticLastModified)
+  const adjustedStaticEntries = staticPages(latestListingModifiedAt)
 
   const listingEntries: MetadataRoute.Sitemap = (data || []).flatMap((listing) =>
     localized(`/listings/${listing.id}`, parseDbTimestamp(listing.updatedAt) || parseDbTimestamp(listing.publishedAt) || new Date(), 'weekly', 0.8, listingImages(listing.media)))

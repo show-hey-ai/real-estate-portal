@@ -1184,6 +1184,14 @@ export function getGuideArticles(locale: Locale) {
   }))
 }
 
+// Reading order for guide lists: first steps, then costs and risks, then owning and investing.
+export const GUIDE_ORDER: readonly string[] = ['buying-property-japan-visa', 'how-to-buy-japan-investment-property', 'japan-property-foreign-exchange-report', 'tokyo-fixed-asset-tax-city-planning-tax', 'japanese-property-listing-terms', 'japan-earthquake-standards-1981', 'tokyo-earthquake-flood-risk-check', 'tokyo-condo-management-fee-repair-reserve', 'renting-out-tokyo-condo-from-overseas', 'selling-tokyo-property-costs-taxes', 'leasehold-vs-freehold-tokyo', 'renovating-resale-condo-tokyo', 'tokyo-condo-minpaku-short-term-rental-rules', 'tokyo-cap-rate-guide', 'personal-vs-company-japan-property']
+
+export function getOrderedGuideArticles(locale: Locale) {
+  const rank = (slug: string) => { const index = GUIDE_ORDER.indexOf(slug); return index === -1 ? GUIDE_ORDER.length : index }
+  return getGuideArticles(locale).toSorted((left, right) => rank(left.slug) - rank(right.slug))
+}
+
 export function getGuideArticleBySlug(slug: string, locale: Locale) {
   const article = guideArticles.find((item) => item.slug === slug)
   if (!article) return null

@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { getLocale } from 'next-intl/server'
 import { BookOpen } from 'lucide-react'
 import { getPublicArticles } from '@/lib/portal-articles'
-import { getGuideArticles } from '@/content/guides'
+import { getOrderedGuideArticles } from '@/content/guides'
 import { GuideCard } from '@/components/guides/guide-card'
 import { getGuideUiCopy, normalizeGuideLocale } from '@/lib/guides'
 import { type Locale } from '@/i18n/config'
@@ -13,7 +13,6 @@ import { localeAlternates } from '@/lib/locale-url'
 
 export const dynamic = 'force-dynamic'
 
-const GUIDE_ORDER = ['buying-property-japan-visa', 'how-to-buy-japan-investment-property', 'japan-property-foreign-exchange-report', 'tokyo-fixed-asset-tax-city-planning-tax', 'japanese-property-listing-terms', 'japan-earthquake-standards-1981', 'tokyo-earthquake-flood-risk-check', 'tokyo-condo-management-fee-repair-reserve', 'renting-out-tokyo-condo-from-overseas', 'selling-tokyo-property-costs-taxes', 'leasehold-vs-freehold-tokyo', 'renovating-resale-condo-tokyo', 'tokyo-condo-minpaku-short-term-rental-rules', 'tokyo-cap-rate-guide', 'personal-vs-company-japan-property']
 const SECTION_TEXT = {
   ja: { guides: (count: number) => `購入ガイド（${count}本）`, allGuides: 'ガイド一覧', insights: '物件選びの記事' },
   en: { guides: (count: number) => `Buying guides (${count})`, allGuides: 'All guides', insights: 'Property insights' },
@@ -40,7 +39,7 @@ export default async function ArticlesPage() {
   const guideLocale = normalizeGuideLocale(locale)
   const guideUi = getGuideUiCopy(guideLocale)
   // Foreign-buyer basics first; the guide list is short enough to show in full.
-  const guides = getGuideArticles(guideLocale).toSorted((left, right) => GUIDE_ORDER.indexOf(left.slug) - GUIDE_ORDER.indexOf(right.slug))
+  const guides = getOrderedGuideArticles(guideLocale)
   const sectionText = SECTION_TEXT[locale as keyof typeof SECTION_TEXT] ?? SECTION_TEXT.en
   return <div className="container py-12"><p className="mb-3 text-sm uppercase tracking-widest text-muted-foreground">Welcome Home Tokyo</p><h1 className="text-4xl font-semibold">{heading}</h1>
     <section className="mt-10" aria-labelledby="guides-title">

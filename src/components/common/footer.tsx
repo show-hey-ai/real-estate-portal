@@ -13,7 +13,12 @@ const OVERSEAS_LABEL: Record<string, string> = { ja: '海外から買う（お�
 const INTL_LABEL: Record<string, string> = { ja: '外国人の購入ガイド', en: 'Buying in Tokyo as a foreigner', 'zh-TW': '外國人東京買房指南', 'zh-CN': '外国人东京买房指南' }
 const ABOUT_LABEL: Record<string, string> = { ja: '運営会社・監修者', en: 'About us', 'zh-TW': '營運公司與監修者', 'zh-CN': '运营公司与审校者' }
 
-export function Footer() {
+interface FooterProps {
+  /** Guide links rendered on the server (see FooterGuides). */
+  guides?: React.ReactNode
+}
+
+export function Footer({ guides }: FooterProps) {
   const t = useTranslations()
   const locale = useLocale()
   const help = getHelpCopy(locale)
@@ -105,6 +110,8 @@ export function Footer() {
             </ul>
           </div>
         </div>
+
+        {guides}
 
         <nav aria-label={company.wards} className="mt-10">
           <h2 className="mb-3 text-sm font-semibold"><Link href="/areas" className="hover:underline">{company.wards}</Link></h2>

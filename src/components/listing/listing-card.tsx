@@ -184,7 +184,7 @@ export function ListingCard({
                 className="h-11 w-11 rounded-lg text-[#657487] hover:bg-[#e9f0f7] hover:text-[#274d7d]"
                 aria-label={getTradeChatCopy(locale).start}
               >
-                <Link href={`/chats?listing=${listing.id}&start=1`}><MessageCircle aria-hidden="true" className="h-4 w-4" /></Link>
+                <Link href={`/chats?listing=${listing.id}&start=1`} rel="nofollow"><MessageCircle aria-hidden="true" className="h-4 w-4" /></Link>
               </Button>
             {showFavoriteButton && (
               <FavoriteIconButton

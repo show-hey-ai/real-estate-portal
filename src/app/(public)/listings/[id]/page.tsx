@@ -358,7 +358,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </div>
             </div>
 
-            <a href={`/chats?listing=${formattedListing.id}&start=1`} className="mb-6 inline-flex items-center gap-2 rounded-lg border border-[#cfded8] bg-[#f0f7f4] px-4 py-3 text-sm font-medium text-[#316957] lg:hidden">
+            <a href={`/chats?listing=${formattedListing.id}&start=1`} rel="nofollow" className="mb-6 inline-flex items-center gap-2 rounded-lg border border-[#cfded8] bg-[#f0f7f4] px-4 py-3 text-sm font-medium text-[#316957] lg:hidden">
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               {getTradeChatCopy(locale).start}
             </a>

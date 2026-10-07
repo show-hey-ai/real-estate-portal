@@ -33,6 +33,6 @@ export function localeAlternates(path: string, locale: string): LocaleAlternates
 
 /** Sitemap entries for every language version of one page, each listing its alternates. */
 export function localizedSitemapUrls(path: string): { url: string; languages: Record<string, string> }[] {
-  const languages = Object.fromEntries(locales.map((language) => [getSchemaLanguage(language), absoluteUrl(localizedPath(path, language))]))
+  const { languages } = localeAlternates(path, defaultLocale)
   return locales.map((language) => ({ url: absoluteUrl(localizedPath(path, language)), languages }))
 }

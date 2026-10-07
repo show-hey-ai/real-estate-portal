@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { absoluteUrl, getSiteUrl } from '@/lib/site-config'
 
 export default function robots(): MetadataRoute.Robots {
-  const disallow = ['/admin/', '/api/', '/favorites', '/login', '/preview/', '/register']
+  const disallow = ['/admin/', '/api/', '/chats', '/favorites', '/login', '/preview/', '/register']
 
   return {
     rules: [

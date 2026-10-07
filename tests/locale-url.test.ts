@@ -40,3 +40,9 @@ test('the sitemap lists one URL per language, each with the same alternates', ()
   ])
   assert.equal(new Set(entries.map((entry) => JSON.stringify(entry.languages))).size, 1)
 })
+
+test('sitemap alternates match the page head, including x-default for English', () => {
+  const [entry] = localizedSitemapUrls('/help')
+  assert.deepEqual(entry.languages, localeAlternates('/help', 'en').languages)
+  assert.equal(entry.languages['x-default'], 'https://portal.example.com/help')
+})
