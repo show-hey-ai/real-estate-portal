@@ -15,3 +15,20 @@ export function extractBuildingName(descriptionJa: string | null | undefined): s
   if (/^[^\s]{1,4}区/u.test(name)) return null
   return name
 }
+
+const LOT = '(?:[0-9０-９]+(?:[-‐−－][0-9０-９]+)+|[0-9０-９]+番地?(?:[0-9０-９]+号)?)'
+const TRAILING_UNIT = /\s*[0-9０-９]+(?:号室|階部分|階)$/u
+
+/** The building name written after the lot number in a public address ("…9-3 カテリーナ池袋西プラザタワー501号室"). */
+export function buildingNameFromAddress(addressPublic: string | null | undefined): string | null {
+  const match = (addressPublic ?? '').trim().match(new RegExp(`${LOT}\\s*(.+)$`, 'u'))
+  if (!match) return null
+  const name = match[1].replace(TRAILING_UNIT, '').trim()
+  if (name.length < 2 || name.length > MAX_LENGTH || /^[0-9０-９]/u.test(name)) return null
+  return name
+}
+
+/** Building name from the description's opening, else from the public address. */
+export function buildingNameOf(listing: { descriptionJa?: string | null; addressPublic?: string | null }): string | null {
+  return extractBuildingName(listing.descriptionJa) ?? buildingNameFromAddress(listing.addressPublic)
+}

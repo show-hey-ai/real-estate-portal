@@ -1,5 +1,5 @@
 import { translateCityName, translatePropertyType } from './translate-fields'
-import { extractBuildingName } from './building-name'
+import { buildingNameOf } from './building-name'
 import { parseMonthlyFigures } from './monthly-costs'
 
 export interface LlmsListing {
@@ -27,6 +27,6 @@ export function formatLlmsListing(listing: LlmsListing, url: string): string {
     monthly.fees ? `management and repair fees JPY ${monthly.fees.toLocaleString('en-US')}/month` : null,
     monthly.rent && listing.currentStatus?.includes('賃貸中') ? `let, current rent JPY ${monthly.rent.toLocaleString('en-US')}/month` : null,
   ].filter(Boolean)
-  const name = extractBuildingName(listing.descriptionJa)
+  const name = buildingNameOf(listing)
   return `- [${type} in ${ward}${name ? ` (${name})` : ''}](${url})${facts.length ? `: ${facts.join(', ')}` : ''}`
 }

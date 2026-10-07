@@ -10,7 +10,7 @@ import { translatePropertyType } from '@/lib/translate-fields'
 import { unitPriceOf } from '@/lib/unit-price'
 import { WARD_SLUGS, countByWard, summarizeWard, wardLabel } from '@/lib/ward-tile-map'
 import { formatYenWords } from '@/lib/yen-words'
-import { extractBuildingName } from '@/lib/building-name'
+import { buildingNameOf } from '@/lib/building-name'
 import { withCardFacts } from '@/lib/card-facts'
 import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
 import type { BudgetSlug, TypeSlug } from '@/lib/collections'
@@ -46,7 +46,7 @@ export function CollectionView({ locale, path, title, intro, Icon, rows, filterH
     .map((row) => ({ row, value: unitPriceOf(row) }))
     .filter((item): item is { row: PublicListingRow; value: number } => item.value !== null)
     .sort((left, right) => left.value - right.value)
-    .map(({ row, value }) => ({ label: `${row.city ? `${wardLabel(row.city, locale)} · ` : ''}${(locale !== 'en' && extractBuildingName(row.descriptionJa)) || translatePropertyType(row.propertyType, locale)} · ${formatYenWords(Number(row.price), locale)}`, value, href: `/listings/${row.id}` }))
+    .map(({ row, value }) => ({ label: `${row.city ? `${wardLabel(row.city, locale)} · ` : ''}${(locale !== 'en' && buildingNameOf(row)) || translatePropertyType(row.propertyType, locale)} · ${formatYenWords(Number(row.price), locale)}`, value, href: `/listings/${row.id}` }))
   const structured = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',

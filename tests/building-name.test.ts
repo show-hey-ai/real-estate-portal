@@ -23,3 +23,16 @@ test('station and walking-time phrases are not building names', () => {
   assert.equal(extractBuildingName('北池袋駅徒歩9分、2009年築の区分マンション。'), null)
   assert.equal(extractBuildingName('池袋駅徒歩13分。75.96㎡の3LDK。'), null)
 })
+
+test('the public address supplies the name when the description starts with access notes', async () => {
+  const { buildingNameFromAddress, buildingNameOf } = await import('../src/lib/building-name')
+  assert.equal(buildingNameFromAddress('東京都板橋区中丸町9-3 カテリーナ池袋西プラザタワー501号室'), 'カテリーナ池袋西プラザタワー')
+  assert.equal(buildingNameFromAddress('東京都豊島区上池袋3丁目35-15 LE-LION IKEBUKURO COMFORT1401号室'), 'LE-LION IKEBUKURO COMFORT')
+  assert.equal(buildingNameFromAddress('東京都豊島区東池袋5丁目1-4 ベルメゾン池袋1階部分'), 'ベルメゾン池袋')
+  assert.equal(buildingNameFromAddress('東京都中野区中野5丁目24-16 502号室'), null)
+  assert.equal(buildingNameFromAddress('東京都江東区東砂1丁目3番24号402号室'), null)
+  assert.equal(buildingNameFromAddress('東京都港区南青山5丁目5-11 2階'), null)
+  assert.equal(buildingNameFromAddress('東京都江東区森下三丁目'), null)
+  assert.equal(buildingNameOf({ descriptionJa: '池袋駅徒歩13分。75.96㎡の3LDK。', addressPublic: '東京都豊島区南長崎4丁目42-4 マイキャッスル東長崎503号室' }), 'マイキャッスル東長崎')
+  assert.equal(buildingNameOf({ descriptionJa: 'ライオンズグローベル石神井公園。75.40㎡', addressPublic: '東京都練馬区下石神井3丁目1-1 201号室' }), 'ライオンズグローベル石神井公園')
+})

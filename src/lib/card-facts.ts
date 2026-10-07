@@ -1,4 +1,4 @@
-import { extractBuildingName } from '@/lib/building-name'
+import { buildingNameOf } from '@/lib/building-name'
 import { grossYieldFromRent, parseMonthlyFigures } from '@/lib/monthly-costs'
 
 interface CardSource {
@@ -22,5 +22,5 @@ export function cardGrossYield(listing: CardSource): number | null {
  */
 export function withCardFacts<T extends CardSource>(listing: T): Omit<T, 'descriptionJa'> & { buildingName: string | null; grossYield: number | null } {
   const { descriptionJa, ...rest } = listing
-  return { ...rest, buildingName: extractBuildingName(descriptionJa), grossYield: cardGrossYield(listing) }
+  return { ...rest, buildingName: buildingNameOf({ descriptionJa, addressPublic: (listing as { addressPublic?: string | null }).addressPublic }), grossYield: cardGrossYield(listing) }
 }

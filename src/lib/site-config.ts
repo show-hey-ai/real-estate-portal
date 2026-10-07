@@ -1,7 +1,7 @@
 import { type Locale, defaultLocale, locales } from '@/i18n/config'
 import { formatApprovedPublicAddress } from '@/lib/address'
 import { pickCoverImage } from '@/lib/cover-image'
-import { extractBuildingName } from '@/lib/building-name'
+import { buildingNameOf } from '@/lib/building-name'
 import { formatPrice } from '@/lib/format'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import {
@@ -203,7 +203,7 @@ export function buildListingTitle(listing: SeoListingLike, locale: string): stri
   }
 
   // Japanese and Chinese searchers often search by building name, which leads the title when known.
-  const buildingName = extractBuildingName(listing.descriptionJa)
+  const buildingName = buildingNameOf(listing)
   return [buildingName, translatedType, translatedAddress, formattedPrice].filter(Boolean).join(' | ')
 }
 
@@ -212,7 +212,7 @@ export function buildListingHeading(listing: SeoListingLike, locale: string): st
   const normalizedLocale = normalizeLocale(locale)
   const type = translatePropertyType(listing.propertyType || null, normalizedLocale) || siteCopy[normalizedLocale].listingsTitle
   const ward = listing.city ? (normalizedLocale === 'en' ? translateCityName(listing.city, 'en') || listing.city : normalizedLocale === 'zh-TW' ? listing.city.replace('区', '區') : listing.city) : null
-  const buildingName = extractBuildingName(listing.descriptionJa)
+  const buildingName = buildingNameOf(listing)
   // English pages avoid a Japanese-script heading; the building name stays in the description.
   if (normalizedLocale === 'en') return `${type} in ${ward ? `${ward}, ` : ''}Tokyo`
   if (buildingName) return buildingName
