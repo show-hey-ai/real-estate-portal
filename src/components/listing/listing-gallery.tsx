@@ -77,7 +77,7 @@ export function ListingGallery({ media, title }: ListingGalleryProps) {
 
   if (media.length === 0) {
     return (
-      <div className="aspect-[16/9] bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
+      <div className="aspect-[16/9] bg-muted rounded-lg flex items-center justify-center text-[#536274]">
         {t('noImage')}
       </div>
     )
