@@ -96,6 +96,11 @@ export function digestKey(now: Date): string {
   return `notify:digest:${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
 }
 
+/** The user asked for no morning summary (2026-10-08); NOTIFY_DIGEST=on brings it back. */
+export function digestEnabled(env: Record<string, string | undefined>): boolean {
+  return env.NOTIFY_DIGEST?.trim().toLowerCase() === 'on'
+}
+
 export function isDigestDue(now: Date): boolean {
   return toTokyo(now).getUTCHours() >= DIGEST_HOUR_JST
 }

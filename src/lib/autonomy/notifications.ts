@@ -7,7 +7,7 @@ import { getSiteUrl } from '../site-config'
 import { AUTONOMY_VERSION, PORTAL_VENTURE_ID } from './policy'
 import { latestSearchPerformance } from './search-sync'
 import {
-  EXPIRY_WARNING_HOURS, buildAlertMail, rankListingInterest, buildDigestMail, digestKey, isDigestDue, normalizeAppPassword, readNotificationConfig,
+  EXPIRY_WARNING_HOURS, buildAlertMail, rankListingInterest, buildDigestMail, digestEnabled, digestKey, isDigestDue, normalizeAppPassword, readNotificationConfig,
   type NotificationConfig, type NotificationMail, type NotificationSnapshot,
 } from './notification-policy'
 
@@ -176,7 +176,7 @@ export async function runNotifications(now = new Date(), env: Record<string, str
     await sendAndRecord(config, alert)
     result.alert = true
   }
-  if (isDigestDue(now) && !sent.has(digestKey(now))) {
+  if (digestEnabled(env) && isDigestDue(now) && !sent.has(digestKey(now))) {
     await sendAndRecord(config, buildDigestMail(snapshot, siteUrl))
     result.digest = true
   }

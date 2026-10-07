@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildAlertMail, buildDigestMail, digestKey, isDigestDue, normalizeAppPassword, rankListingInterest, readNotificationConfig, type NotificationSnapshot } from '../src/lib/autonomy/notification-policy'
+import { buildAlertMail, buildDigestMail, digestEnabled, digestKey, isDigestDue, normalizeAppPassword, rankListingInterest, readNotificationConfig, type NotificationSnapshot } from '../src/lib/autonomy/notification-policy'
 
 const now = new Date('2026-10-06T23:30:00Z') // 08:30 JST on 7 Oct
 const site = 'https://portal.example.com'
@@ -170,4 +170,10 @@ test('the digest reports new-listing email subscribers', () => {
   const text = buildDigestMail(snapshot({ alerts: { active: 5, newActive: 2, pending: 1 } }), site).text
   assert.ok(text.includes('■ 新着メール登録: 5人（24時間で+2） / 確認待ち 1人'))
   assert.ok(buildDigestMail(snapshot({ alerts: { active: 0, newActive: 0, pending: 0 } }), site).text.includes('■ 新着メール登録: 0人'))
+})
+
+test('the morning digest is off unless NOTIFY_DIGEST=on (user request 2026-10-08)', () => {
+  assert.equal(digestEnabled({}), false)
+  assert.equal(digestEnabled({ NOTIFY_DIGEST: 'off' }), false)
+  assert.equal(digestEnabled({ NOTIFY_DIGEST: 'on' }), true)
 })
