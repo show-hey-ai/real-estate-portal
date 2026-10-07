@@ -25,7 +25,8 @@ Codexのトークンの大半は、REINSの画面（詳細1件あたり約17KB�
 | 実行の最初の状況確認 | `npm run portal:status -- --queue <review-queue.json>`（公開件数・期限・job・キューを1画面で）。DBへの独自クエリや長い記録の読み返しをしない |
 | 引き継ぎ | `~/Documents/ChatGPT/ポータル/HANDOFF.md`（150行以内）だけ読む。経緯は `HANDOFF_LOG.md` を必要な時だけ検索 |
 | OCRで不可・要承諾の物件 | `npm run queue:triage -- --queue <queue> --save` で保留にする。REINS詳細の取得も原図面の目視もしない |
-| REINS詳細の数値・項目 | `.snapshot.txt` に保存したら読み返さず、スクリプトで読む（`rank:details`、`draft:reviewed`（準備中）、`renew:light`） |
+| REINS詳細の数値・項目 | `.snapshot.txt` に保存したら読み返さず、スクリプトで読む（`rank:details`、`draft:reviewed`、`renew:light`） |
+| reviewed.json と4言語の説明文 | `npm run draft:reviewed -- --dir <詳細を保存したフォルダ>` で `<番号>.draft.json` を作り、その facts を reviewed.json に使う。Codexは書き写さず、写真・許可文・建物名の英語表記・`remarks`（備考：リフォーム内容など）と `notes` だけ確認して足す。電話・メール・担当者名は出力されない |
 | 一覧で取引中と分かる物件 | 印刷表示の「取引状況」が申込あり・停止中なら詳細を開かず後回し |
 | 公開後の確認 | `npm run verify:published -- --ids <番号,...> --reviewed-dir <フォルダ> --out <proof.json>`。バッチごとに確認スクリプトを書かない |
 
@@ -111,4 +112,4 @@ Codexのトークンの大半は、REINSの画面（詳細1件あたり約17KB�
 - `src/lib/acquisition-priority.ts`：作業順
 - `src/lib/autonomy/light-renewal.ts`：週1回の軽い確認の判定（期間は `src/lib/freshness.ts`）
 - `scripts/screen-maisoku.ts`、`scripts/maisoku-ocr.swift`、`scripts/rank-reins-details.ts`、`scripts/renew-light.ts`
-- `scripts/portal-status.ts`、`scripts/triage-queue.ts`、`scripts/verify-published.ts`（節約用）
+- `scripts/portal-status.ts`、`scripts/triage-queue.ts`、`scripts/verify-published.ts`、`scripts/draft-reviewed.ts`（節約用。読み取りは `src/lib/reins-detail-facts.ts`、下書きは `src/lib/reins-reviewed-draft.ts`）

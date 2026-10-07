@@ -67,6 +67,8 @@ test('missing verification, address privacy failures and low-confidence facts ca
 test('source amounts are checked in yen, including full-width numerals and decimal billions', () => {
   assert.deepEqual(sourcePrices('価格６，８００万円'), [68000000])
   assert.deepEqual(sourcePrices('価格1.25億円'), [125000000])
+  assert.deepEqual(sourcePrices('価格1億2,800万円'), [128000000])
+  assert.deepEqual(sourcePrices('1億円'), [100000000])
   assert.deepEqual(sourcePrices('住所1丁目'), [])
 })
 

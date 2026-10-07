@@ -26,9 +26,12 @@ export interface ImageCounts {
   other: number
 }
 
-interface PageNode {
-  kind: 'heading' | 'text'
+/** One heading, text or link of a saved page, NFKC-normalised (full-width digits and letters become ASCII). */
+export interface PageNode {
+  kind: 'heading' | 'text' | 'link'
   value: string
+  /** Heading level: 1 is the page title, 2 a section, 3 a sub-section (「交通１」). */
+  level?: number
 }
 
 const KNOWN_LABELS = new Set([
@@ -50,19 +53,43 @@ function clean(value: string): string {
   return value.normalize('NFKC').trim().replace(/^"(.*)"$/u, '$1').trim()
 }
 
-function pageNodes(text: string): PageNode[] {
+const ARIA_LINE = /^\s*-\s+(heading|generic|text|paragraph|cell|link)(?:\s+"([^"]*)")?([^:]*?)(?::\s*(.*))?$/u
+// Dumps can be diffs of the previous tree, marking lines with 「+」 or 「~」.
+const DUMP_LINE = /^[+~]?\s*\d+\s+(heading|text|link)\s+(.*)$/u
+
+function lineNode(line: string): { node: PageNode; dump: boolean } | null {
+  const aria = line.match(ARIA_LINE)
+  if (aria) {
+    const kind = aria[1] === 'heading' ? 'heading' : aria[1] === 'link' ? 'link' : 'text'
+    // A link's text is its quoted name (「- link "（株）…":」); other nodes put it after the colon.
+    const raw = kind === 'link' ? aria[4] || aria[2] || '' : aria[4] ?? aria[2] ?? ''
+    const level = kind === 'heading' ? Number(aria[3].match(/\[level=(\d)\]/u)?.[1]) : NaN
+    return { node: { kind, value: clean(raw), ...(level ? { level } : {}) }, dump: false }
+  }
+  const dump = line.match(DUMP_LINE)
+  if (!dump) return null
+  const kind = dump[1] as PageNode['kind']
+  // A link's 「, Value: …」 is its URL; a heading's is its level.
+  const raw = dump[2].replace(kind === 'link' ? /,\s*Value:\s*.*$/u : /,\s*Value:\s*\d+$/u, '')
+  const level = kind === 'heading' ? Number(dump[2].match(/,\s*Value:\s*(\d+)$/u)?.[1]) : NaN
+  return { node: { kind, value: clean(raw), ...(level ? { level } : {}) }, dump: true }
+}
+
+/** Headings, texts and links of a saved REINS page in page order (ARIA snapshots, macOS dumps and their diffs). */
+export function pageNodes(text: string): PageNode[] {
   const result: PageNode[] = []
   let previous: PageNode | null = null
   for (const line of text.split('\n')) {
-    const aria = line.match(/^\s*-\s+(heading|generic|text|paragraph|cell)(?:\s+"([^"]*)")?[^:]*?(?::\s*(.*))?$/u)
-    // Dumps can be diffs of the previous tree, marking lines with 「+」 or 「~」.
-    const dump = aria ? null : line.match(/^[+~]?\s*\d+\s+(heading|text)\s+(.*)$/u)
-    if (!aria && !dump) continue
-    const kind = (aria?.[1] ?? dump?.[1]) === 'heading' ? 'heading' : 'text'
-    const raw = aria ? (aria[3] ?? aria[2] ?? '') : (dump?.[2] ?? '').replace(/,\s*Value:\s*\d+$/u, '')
-    const node: PageNode = { kind, value: clean(raw) }
-    // In accessibility dumps a heading is followed by its own text; keep only the heading.
-    const headingText = kind === 'text' && previous?.kind === 'heading' && previous.value === node.value
+    const parsed = lineNode(line)
+    if (!parsed) continue
+    const { node, dump } = parsed
+    if (node.kind === 'link') {
+      if (node.value) result.push(node)
+      continue
+    }
+    // In accessibility dumps a heading is followed by its own text; keep only the heading. ARIA
+    // snapshots do not repeat it, so a same-named label there (「現況」 under 「現況」) is kept.
+    const headingText = dump && node.kind === 'text' && previous?.kind === 'heading' && previous.value === node.value
     previous = node
     if (node.value && !headingText) result.push(node)
   }
@@ -84,7 +111,8 @@ function fieldValue(nodes: readonly PageNode[], label: string): string | null {
 }
 
 export function parseReinsDetail(text: string): ReinsDetail {
-  const nodes = pageNodes(text)
+  // Links (the broker's name, e-mail addresses) are not needed for these facts.
+  const nodes = pageNodes(text).filter((node) => node.kind !== 'link')
   const id = fieldValue(nodes, '物件番号')?.replace(/\s/g, '') ?? ''
   const prices = sourcePrices(fieldValue(nodes, '価格') ?? '')
   const imageNames = nodes.flatMap((node, index) => {

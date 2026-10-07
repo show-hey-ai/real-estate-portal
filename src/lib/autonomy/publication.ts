@@ -77,8 +77,12 @@ function removeExactApprovedAddress(text: string, address: string): string {
 }
 
 export function sourcePrices(text: string): number[] {
-  const matches = normalized(text).replaceAll(',', '').matchAll(/(\d+(?:\.\d+)?)\s*(億円|万円|円)/g)
-  return [...new Set(Array.from(matches, (match) => Number(match[1]) * (match[2] === '億円' ? 100_000_000 : match[2] === '万円' ? 10_000 : 1)))]
+  // 「1億2,800万円」 is one amount; reading only its 万 part would give 2,800万円.
+  const matches = normalized(text).replaceAll(',', '').matchAll(/(?:(\d+(?:\.\d+)?)\s*億\s*)?(?:(\d+(?:\.\d+)?)\s*万\s*)?(\d+)?\s*円/g)
+  const amounts = Array.from(matches, (match) => match[1] || match[2] || match[3]
+    ? Math.round(Number(match[1] ?? 0) * 100_000_000 + Number(match[2] ?? 0) * 10_000 + Number(match[3] ?? 0))
+    : null)
+  return [...new Set(amounts.filter((value): value is number => value !== null))]
 }
 
 export function translationIssues(facts: Facts): string[] {

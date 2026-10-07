@@ -22,7 +22,8 @@
     "renew:light": "tsx scripts/renew-light.ts",
     "portal:status": "tsx scripts/portal-status.ts",
     "queue:triage": "tsx scripts/triage-queue.ts",
-    "verify:published": "tsx scripts/verify-published.ts"
+    "verify:published": "tsx scripts/verify-published.ts",
+    "draft:reviewed": "tsx scripts/draft-reviewed.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.77",
