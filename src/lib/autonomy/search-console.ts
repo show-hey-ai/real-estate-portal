@@ -10,6 +10,7 @@ const SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly'
 const WRITE_SCOPE = 'https://www.googleapis.com/auth/webmasters'
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const REQUEST_TIMEOUT_MS = 20_000
+const MAX_INSPECTIONS = 1_000
 
 const serviceAccountSchema = z.object({ client_email: z.string().email(), private_key: z.string().min(100) }).passthrough()
 
@@ -122,7 +123,8 @@ const inspectionSchema = z.object({ inspectionResult: z.object({ indexStatusResu
 export async function inspectIndexStatus(keyPath: string, siteUrl: string, urls: string[]): Promise<Record<string, string>> {
   const token = await getAccessToken(keyPath)
   const states: Record<string, string> = {}
-  for (const url of urls.slice(0, 200)) {
+  // The daily quota is 2,000 inspections per property; the sitemap (about 370 URLs) fits in one pass.
+  for (const url of urls.slice(0, MAX_INSPECTIONS)) {
     const response = await fetch('https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
