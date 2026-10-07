@@ -1,0 +1,43 @@
+/**
+ * Short, factual introductions to each of Tokyo's 23 wards for ward pages.
+ * Kept to well-known landmarks, stations and character; no price or safety claims.
+ */
+
+interface WardProfile {
+  ja: string
+  en: string
+  'zh-TW': string
+  'zh-CN': string
+}
+
+export const wardProfiles: Record<string, WardProfile> = {
+  千代田区: { ja: '皇居を中心に、丸の内・大手町のオフィス街、霞が関の官庁街、神田・秋葉原が広がる都心の区です。東京駅をはじめ多くの路線が集まります。', en: 'Central Tokyo around the Imperial Palace, with the Marunouchi and Otemachi business districts, Kasumigaseki government offices, and Kanda and Akihabara. Tokyo Station and many lines meet here.', 'zh-TW': '以皇居為中心，涵蓋丸之內・大手町商辦區、霞關政府機關、神田與秋葉原的都心區，東京車站等多條路線匯集。', 'zh-CN': '以皇居为中心，涵盖丸之内・大手町商务区、霞关政府机关、神田与秋叶原的都心区，东京站等多条线路汇集。' },
+  中央区: { ja: '銀座・日本橋の商業地と、月島・勝どき・晴海の湾岸エリアからなる区です。東京駅や大手町に近く、タワーマンションも多く見られます。', en: 'Home to the Ginza and Nihonbashi shopping districts and the waterfront areas of Tsukishima, Kachidoki and Harumi, close to Tokyo Station and Otemachi, with many high-rise condominiums.', 'zh-TW': '由銀座・日本橋商業區與月島・勝鬨・晴海灣岸區組成，鄰近東京車站與大手町，高樓公寓眾多。', 'zh-CN': '由银座・日本桥商业区与月岛・胜哄・晴海湾岸区组成，邻近东京站与大手町，高层公寓众多。' },
+  港区: { ja: '六本木・赤坂・麻布・青山・白金・芝浦などを含み、大使館や外資系企業が多い区です。山手線の田町・浜松町、品川方面へのアクセスも良好です。', en: 'Roppongi, Akasaka, Azabu, Aoyama, Shirokane and Shibaura, with many embassies and international companies. Tamachi and Hamamatsucho on the Yamanote Line serve the bayside area.', 'zh-TW': '包含六本木、赤坂、麻布、青山、白金、芝浦等地，大使館與外商企業眾多，山手線田町・濱松町一帶交通便利。', 'zh-CN': '包含六本木、赤坂、麻布、青山、白金、芝浦等地，大使馆与外资企业众多，山手线田町・滨松町一带交通便利。' },
+  新宿区: { ja: '世界有数の乗降客数がある新宿駅を中心に、西新宿の高層ビル街、神楽坂や四谷などの住宅地が広がる区です。', en: 'Built around Shinjuku Station, one of the busiest stations in the world, with the West Shinjuku skyscrapers and residential areas such as Kagurazaka and Yotsuya.', 'zh-TW': '以全球旅客量數一數二的新宿車站為中心，有西新宿高樓區，以及神樂坂、四谷等住宅區。', 'zh-CN': '以全球客流量名列前茅的新宿站为中心，有西新宿高楼区，以及神乐坂、四谷等住宅区。' },
+  文京区: { ja: '東京大学などの大学や学校が多く、落ち着いた住宅地が広がる区です。後楽園・本郷・千石・本駒込などがあり、山手線や地下鉄で都心へ出やすい立地です。', en: 'Known for universities, including the University of Tokyo, and quiet residential streets such as Hongo, Sengoku and Honkomagome, with easy subway and Yamanote Line access to central Tokyo.', 'zh-TW': '東京大學等大學與學校眾多，本鄉、千石、本駒込等住宅區環境安靜，地鐵與山手線前往市中心方便。', 'zh-CN': '东京大学等大学与学校众多，本乡、千石、本驹込等住宅区环境安静，地铁与山手线前往市中心方便。' },
+  台東区: { ja: '上野・浅草・谷中など歴史ある街並みと観光地がある区です。上野駅は新幹線も止まる交通の拠点で、下町の雰囲気が残ります。', en: 'Historic neighbourhoods and sights such as Ueno, Asakusa and Yanaka. Ueno Station is a major hub with Shinkansen services, and the area keeps an old downtown feel.', 'zh-TW': '有上野、淺草、谷中等歷史街區與觀光地，上野站為新幹線停靠的交通樞紐，保有下町氛圍。', 'zh-CN': '有上野、浅草、谷中等历史街区与观光地，上野站为新干线停靠的交通枢纽，保留下町氛围。' },
+  墨田区: { ja: '東京スカイツリーや両国国技館がある区で、隅田川沿いに下町の住宅地が広がります。押上・錦糸町が交通の拠点です。', en: 'Home to Tokyo Skytree and the Ryogoku sumo arena, with traditional residential areas along the Sumida River. Oshiage and Kinshicho are the main hubs.', 'zh-TW': '有東京晴空塔與兩國國技館，隅田川沿岸為下町住宅區，押上與錦糸町為交通樞紐。', 'zh-CN': '有东京晴空塔与两国国技馆，隅田川沿岸为下町住宅区，押上与锦糸町为交通枢纽。' },
+  江東区: { ja: '豊洲・有明などの湾岸エリアと、門前仲町・清澄白河・森下などの下町エリアがある区です。湾岸には大規模なマンションが多くあります。', en: 'Waterfront districts such as Toyosu and Ariake alongside older neighbourhoods like Monzen-nakacho, Kiyosumi-shirakawa and Morishita, with many large condominium developments by the bay.', 'zh-TW': '有豐洲、有明等灣岸區，以及門前仲町、清澄白河、森下等下町區，灣岸有許多大型公寓。', 'zh-CN': '有丰洲、有明等湾岸区，以及门前仲町、清澄白河、森下等下町区，湾岸有许多大型公寓。' },
+  品川区: { ja: '新幹線が止まる品川駅（駅自体は港区）周辺から、大崎・五反田・武蔵小山などの住宅地まで広がる区です。羽田空港へのアクセスも良好です。', en: 'From the Osaki and Gotanda business areas to residential Musashi-Koyama, near Shinagawa Station (itself in Minato) with Shinkansen services and easy access to Haneda Airport.', 'zh-TW': '從大崎、五反田商辦區到武藏小山等住宅區，鄰近新幹線停靠的品川站（車站本身位於港區），前往羽田機場方便。', 'zh-CN': '从大崎、五反田商务区到武藏小山等住宅区，邻近新干线停靠的品川站（车站本身位于港区），前往羽田机场方便。' },
+  目黒区: { ja: '中目黒・自由が丘・学芸大学など、住宅地として人気のある街が多い区です。東急線沿線を中心に、落ち着いた住環境が広がります。', en: 'Popular residential neighbourhoods such as Nakameguro, Jiyugaoka and Gakugei-daigaku, mostly along the Tokyu lines, with a calm residential feel.', 'zh-TW': '有中目黑、自由之丘、學藝大學等熱門住宅區，以東急線沿線為主，居住環境寧靜。', 'zh-CN': '有中目黑、自由之丘、学艺大学等热门住宅区，以东急线沿线为主，居住环境宁静。' },
+  大田区: { ja: '羽田空港がある区で、蒲田・大森の駅周辺から田園調布などの住宅地まで広がります。国家戦略特区の民泊制度の対象区でもあります。', en: 'Home to Haneda Airport, stretching from the Kamata and Omori station areas to residential Den-en-chofu. It is the 23-ward area covered by the special-zone minpaku scheme.', 'zh-TW': '羽田機場所在地，範圍從蒲田、大森車站周邊到田園調布等住宅區，也是國家戰略特區民宿制度的適用區。', 'zh-CN': '羽田机场所在地，范围从蒲田、大森车站周边到田园调布等住宅区，也是国家战略特区民宿制度的适用区。' },
+  世田谷区: { ja: '23区で人口が最も多い住宅の区です。三軒茶屋・二子玉川・下北沢・駒沢など、個性のある街が東急線・小田急線・京王線沿いに点在します。', en: "The 23 wards' most populous residential ward, with distinct neighbourhoods such as Sangenjaya, Futako-tamagawa, Shimokitazawa and Komazawa along the Tokyu, Odakyu and Keio lines.", 'zh-TW': '23區中人口最多的住宅區，三軒茶屋、二子玉川、下北澤、駒澤等各具特色的街區分布在東急線、小田急線、京王線沿線。', 'zh-CN': '23区中人口最多的住宅区，三轩茶屋、二子玉川、下北泽、驹泽等各具特色的街区分布在东急线、小田急线、京王线沿线。' },
+  渋谷区: { ja: '渋谷・原宿・表参道・恵比寿・代々木などを含む区で、商業・IT企業・ファッションの中心地です。代々木公園など緑もあります。', en: 'Shibuya, Harajuku, Omotesando, Ebisu and Yoyogi: a centre for retail, tech companies and fashion, with green space such as Yoyogi Park.', 'zh-TW': '包含澀谷、原宿、表參道、惠比壽、代代木等地，是商業、科技企業與時尚中心，也有代代木公園等綠地。', 'zh-CN': '包含涩谷、原宿、表参道、惠比寿、代代木等地，是商业、科技企业与时尚中心，也有代代木公园等绿地。' },
+  中野区: { ja: 'JR中央線で新宿から数分の中野駅を中心とした住宅の多い区です。中野ブロードウェイなど商店街も充実しています。', en: 'A largely residential ward around Nakano Station, a few minutes from Shinjuku on the JR Chuo Line, with lively shopping streets such as Nakano Broadway.', 'zh-TW': '以JR中央線距新宿僅數分鐘的中野站為中心，住宅區多，中野百老匯等商店街也很熱鬧。', 'zh-CN': '以JR中央线距新宿仅几分钟的中野站为中心，住宅区多，中野百老汇等商店街也很热闹。' },
+  杉並区: { ja: '荻窪・阿佐ヶ谷・高円寺・西荻窪など、JR中央線沿いに住宅地が広がる区です。京王井の頭線・西武線の沿線にも落ち着いた住宅街があります。', en: 'Residential neighbourhoods along the JR Chuo Line, including Ogikubo, Asagaya, Koenji and Nishi-Ogikubo, plus quiet streets along the Keio Inokashira and Seibu lines.', 'zh-TW': '荻窪、阿佐谷、高圓寺、西荻窪等住宅區沿JR中央線分布，京王井之頭線與西武線沿線也有安靜的住宅街。', 'zh-CN': '荻洼、阿佐谷、高圆寺、西荻洼等住宅区沿JR中央线分布，京王井之头线与西武线沿线也有安静的住宅街。' },
+  豊島区: { ja: '池袋駅を中心とする区で、JR・東武・西武・地下鉄が集まります。駅周辺の商業地と、目白・東長崎などの住宅地があります。', en: 'Centred on Ikebukuro Station, where JR, Tobu, Seibu and subway lines meet, with a busy commercial core and residential areas such as Mejiro and Higashi-Nagasaki.', 'zh-TW': '以池袋站為中心，JR、東武、西武與地鐵在此交會，有車站周邊商業區與目白、東長崎等住宅區。', 'zh-CN': '以池袋站为中心，JR、东武、西武与地铁在此交会，有车站周边商业区与目白、东长崎等住宅区。' },
+  北区: { ja: '赤羽・王子・田端などがある区で、JR京浜東北線・埼京線などで都心や埼玉方面へ出やすい住宅地です。', en: 'Akabane, Oji and Tabata: residential areas with JR Keihin-Tohoku and Saikyo line access towards central Tokyo and Saitama.', 'zh-TW': '有赤羽、王子、田端等地，JR京濱東北線、埼京線前往市中心與埼玉方便的住宅區。', 'zh-CN': '有赤羽、王子、田端等地，JR京滨东北线、埼京线前往市中心与埼玉方便的住宅区。' },
+  荒川区: { ja: '日暮里・南千住・町屋などがある区で、都電荒川線が走る下町の住宅地です。日暮里駅は成田空港行きのスカイライナーが止まります。', en: 'Nippori, Minami-Senju and Machiya: traditional residential areas served by the Toden Arakawa tram line. Nippori Station has Skyliner services to Narita Airport.', 'zh-TW': '有日暮里、南千住、町屋等地，都電荒川線行經的下町住宅區，日暮里站有開往成田機場的Skyliner停靠。', 'zh-CN': '有日暮里、南千住、町屋等地，都电荒川线行经的下町住宅区，日暮里站有开往成田机场的Skyliner停靠。' },
+  板橋区: { ja: '東武東上線・都営三田線沿いに住宅地が広がる区で、池袋や大手町方面へ出やすい立地です。', en: 'Residential areas along the Tobu Tojo Line and the Toei Mita Line, with direct trains to Ikebukuro and Otemachi.', 'zh-TW': '住宅區沿東武東上線與都營三田線分布，前往池袋、大手町方便。', 'zh-CN': '住宅区沿东武东上线与都营三田线分布，前往池袋、大手町方便。' },
+  練馬区: { ja: '西武池袋線・大江戸線などの沿線に住宅地が広がる、緑の多い区です。石神井公園など大きな公園があります。', en: 'A green residential ward along the Seibu Ikebukuro and Oedo lines, with large parks such as Shakujii Park.', 'zh-TW': '住宅區沿西武池袋線與大江戶線等分布，綠意豐富，有石神井公園等大型公園。', 'zh-CN': '住宅区沿西武池袋线与大江户线等分布，绿意丰富，有石神井公园等大型公园。' },
+  足立区: { ja: '北千住駅を中心に、JR・東武・地下鉄・つくばエクスプレスが通る区です。竹ノ塚・西新井などの住宅地が広がります。', en: 'Centred on Kita-Senju Station, served by JR, Tobu, the subway and the Tsukuba Express, with residential areas such as Takenotsuka and Nishiarai.', 'zh-TW': '以北千住站為中心，JR、東武、地鐵與筑波快線通過，有竹之塚、西新井等住宅區。', 'zh-CN': '以北千住站为中心，JR、东武、地铁与筑波快线通过，有竹之塚、西新井等住宅区。' },
+  葛飾区: { ja: '柴又・亀有・金町・立石など下町の雰囲気が残る区で、京成線・JR常磐線沿いに住宅地が広がります。', en: 'Shibamata, Kameari, Kanamachi and Tateishi keep an old downtown feel, with homes along the Keisei and JR Joban lines.', 'zh-TW': '柴又、龜有、金町、立石等地保有下町氛圍，住宅區沿京成線與JR常磐線分布。', 'zh-CN': '柴又、龟有、金町、立石等地保留下町氛围，住宅区沿京成线与JR常磐线分布。' },
+  江戸川区: { ja: '葛西・小岩・船堀などがある、23区の東端の区です。公園や川沿いの緑が多く、東西線・都営新宿線・JR総武線で都心へ通えます。', en: "Kasai, Koiwa and Funabori at the eastern edge of the 23 wards, with plenty of parks and riverside green, and the Tozai, Toei Shinjuku and JR Sobu lines into central Tokyo.", 'zh-TW': '葛西、小岩、船堀等地位於23區東端，公園與河岸綠地多，可搭東西線、都營新宿線、JR總武線前往市中心。', 'zh-CN': '葛西、小岩、船堀等地位于23区东端，公园与河岸绿地多，可乘东西线、都营新宿线、JR总武线前往市中心。' },
+}
+
+export function wardProfile(ward: string | null | undefined, locale: string): string | null {
+  if (!ward) return null
+  const profile = wardProfiles[ward]
+  return profile ? profile[locale as keyof WardProfile] ?? profile.en : null
+}

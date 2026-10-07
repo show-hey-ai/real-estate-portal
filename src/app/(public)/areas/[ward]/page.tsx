@@ -23,6 +23,7 @@ import { extractBuildingName } from '@/lib/building-name'
 import { withCardFacts } from '@/lib/card-facts'
 import { countedTitle } from '@/lib/home-snippet'
 import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
+import { wardProfile } from '@/content/ward-profiles'
 
 export const dynamic = 'force-dynamic'
 
@@ -112,6 +113,7 @@ export default async function WardPage({ params }: Props) {
     <div className="container pb-14 pt-8">
       <nav aria-label="Breadcrumb" className="text-xs text-[#536274]"><Link href="/" className="hover:underline">{text.home}</Link> / <span>{label}</span></nav>
       <h1 className="mt-4 flex items-center gap-2 text-2xl font-semibold md:text-3xl"><MapPin aria-hidden="true" className="h-6 w-6 text-[#274d7d]" />{text.title(label)}</h1>
+      {wardProfile(ward, locale) && <p className="mt-3 max-w-3xl leading-7 text-[#3d4a5a]" data-testid="ward-profile">{wardProfile(ward, locale)}</p>}
       <p className="mt-3 max-w-3xl text-sm leading-7 text-[#536274]">{summary.count ? text.intro(label, summary.count) : text.empty(label)}</p>
 
       {summary.count > 0 && <dl className="mt-6 grid gap-3 sm:grid-cols-2">
