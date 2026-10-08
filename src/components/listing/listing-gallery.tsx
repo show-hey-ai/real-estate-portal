@@ -5,11 +5,13 @@ import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { X, ChevronLeft, ChevronRight, Expand } from 'lucide-react'
+import { aiImageDisclosure } from '@/lib/image-disclosure'
 
 interface Media {
   id: string
   url: string
   category: string
+  caption?: string | null
 }
 
 interface ListingGalleryProps {
@@ -41,7 +43,7 @@ export function ListingGallery({ media, title }: ListingGalleryProps) {
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const label = (item: Media) => text.categories[item.category as keyof typeof text.categories] ?? text.categories.OTHER
-  const altFor = (item: Media, index: number) => `${title || t('property')} ${label(item)} ${index + 1}/${media.length}`
+  const altFor = (item: Media, index: number) => `${title || t('property')} ${label(item)} ${index + 1}/${media.length}${aiImageDisclosure(item.caption, locale) ? ` · ${aiImageDisclosure(item.caption, locale)!.label}` : ''}`
 
   const closeLightbox = useCallback(() => setLightboxOpen(false), [])
   const goNext = useCallback(() => setSelectedIndex((prev) => (prev + 1) % media.length), [media.length])
@@ -84,6 +86,7 @@ export function ListingGallery({ media, title }: ListingGalleryProps) {
   }
 
   const current = media[selectedIndex]
+  const disclosure = aiImageDisclosure(current.caption, locale)
   const arrow = 'absolute top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[#1b293a] shadow-md transition hover:bg-white'
 
   return (
@@ -99,6 +102,8 @@ export function ListingGallery({ media, title }: ListingGalleryProps) {
           <button type="button" className={cn(arrow, 'right-3')} onClick={goNext} aria-label={text.next}><ChevronRight aria-hidden="true" className="h-6 w-6" /></button>
         </>}
       </div>
+
+      {disclosure && <p className="mt-2 text-xs leading-5 text-[#536274]" data-testid="image-disclosure" aria-live="polite">{disclosure.detail}</p>}
 
       {media.length > 1 && (
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
@@ -131,6 +136,7 @@ export function ListingGallery({ media, title }: ListingGalleryProps) {
           <div className="relative h-[90vh] w-[95vw]">
             <Image src={current.url} alt={altFor(current, selectedIndex)} fill className={current.category === 'FLOORPLAN' ? 'bg-white object-contain p-4' : 'object-contain'} sizes="95vw" quality={85} />
           </div>
+          {disclosure && <p className="absolute inset-x-4 bottom-2 rounded-md bg-black/80 px-3 py-2 text-center text-sm text-white" data-testid="lightbox-image-disclosure" aria-live="polite">{disclosure.detail}</p>}
           {media.length > 1 && (
             <button type="button" className="absolute right-4 top-1/2 z-10 -translate-y-1/2 p-2 text-white/70 hover:text-white" onClick={(e) => { e.stopPropagation(); goNext() }} aria-label={text.next}>
               <ChevronRight aria-hidden="true" className="h-10 w-10" />

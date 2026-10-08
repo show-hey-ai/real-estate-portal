@@ -35,6 +35,7 @@ export async function GET(_request: Request, context: RouteContext) {
         id,
         url,
         category,
+        caption,
         sortOrder,
         isAdopted
       )

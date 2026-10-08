@@ -47,7 +47,7 @@ const stepVisuals = [
 async function getLatestListings() {
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('id, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, viewCount, publishedAt, media (url, category, isAdopted)')
+    .select('id, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, viewCount, publishedAt, media (url, category, caption, isAdopted)')
     .eq('status', 'PUBLISHED').eq('adAllowed', true)
     .eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES])

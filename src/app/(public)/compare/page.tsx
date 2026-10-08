@@ -9,6 +9,7 @@ import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import { COMPARE_LIMIT } from '@/lib/browser-lists'
 import { pickCoverImage } from '@/lib/cover-image'
+import { aiImageDisclosure } from '@/lib/image-disclosure'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, translateCurrentStatus, translatePropertyType } from '@/lib/translate-fields'
 import { formatUnitPrice, unitPriceOf } from '@/lib/unit-price'
@@ -40,7 +41,7 @@ async function getCompared(ids: string[]) {
   if (!ids.length) return []
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('id, city, propertyType, price, buildingArea, landArea, builtYear, floorCount, currentStatus, landRights, yieldGross, descriptionJa, stations, media (url, category, isAdopted, sortOrder)')
+    .select('id, city, propertyType, price, buildingArea, landArea, builtYear, floorCount, currentStatus, landRights, yieldGross, descriptionJa, stations, media (url, category, caption, isAdopted, sortOrder)')
     .in('id', ids)
     .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
@@ -108,6 +109,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
           <th scope="col" className="w-28 md:w-36" />
           {facts.map((item) => <th key={item.row.id} scope="col" className="px-3 pb-4 text-left align-top font-normal">
             <Link href={`/listings/${item.row.id}`} aria-label={`${translatePropertyType(item.row.propertyType, locale) ?? ""} ${item.price ? formatYenWords(item.price, locale) : ""}`.trim()} className="block overflow-hidden rounded-lg border border-[#dbe2e9]"><div className="relative aspect-[4/3] bg-[#eef2f6]">{item.cover && <Image src={item.cover.url} alt="" fill sizes="(max-width: 768px) 50vw, 30vw" className={item.cover.category === 'FLOORPLAN' ? 'bg-white object-contain p-2' : 'object-cover'} />}</div></Link>
+            {aiImageDisclosure(item.cover?.caption, locale) && <p className="mt-2 text-xs leading-5 text-[#536274]">{aiImageDisclosure(item.cover?.caption, locale)?.detail}</p>}
             <div className="mt-2 flex items-center justify-between gap-2"><Link href={`/listings/${item.row.id}`} className="inline-flex items-center gap-1 font-semibold text-[#274d7d] hover:underline">{text.detail}<ArrowRight aria-hidden="true" className="h-3.5 w-3.5" /></Link><CompareToggle listingId={item.row.id} compact /></div>
           </th>)}
         </tr></thead>

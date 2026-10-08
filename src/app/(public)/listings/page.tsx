@@ -160,7 +160,7 @@ interface ListingRow {
   yieldGross: string | number | null
   viewCount: number | null
   publishedAt: string | null
-  media: { url: string; category: string; isAdopted: boolean }[] | null
+  media: { url: string; category: string; caption: string | null; isAdopted: boolean }[] | null
 }
 
 async function getInventoryDistributions(
@@ -228,7 +228,7 @@ export default async function ListingsPage({
       yieldGross,
       viewCount,
       publishedAt,
-      media (url, category, isAdopted)
+      media (url, category, caption, isAdopted)
     `
 
   // Build query

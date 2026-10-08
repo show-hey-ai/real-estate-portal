@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { pickCoverImage } from '@/lib/cover-image'
+import { aiImageDisclosure } from '@/lib/image-disclosure'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
@@ -69,6 +70,7 @@ interface ListingCardProps {
     media: {
       url: string
       category: string
+      caption?: string | null
     }[]
   }
   isFavorite?: boolean
@@ -94,6 +96,7 @@ export function ListingCard({
   const category = getMarketCategory(listing)
 
   const mainImage = pickCoverImage(listing.media)
+  const disclosure = aiImageDisclosure(mainImage?.caption, locale)
   const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
   const buildingName = listing.buildingName
   const stations = normalizeTransitStations(listing.stations)
@@ -165,6 +168,8 @@ export function ListingCard({
           )}
         </div>
       </Link>
+
+      {disclosure && <p className="px-4 pt-2 text-xs leading-5 text-[#536274]" data-testid="card-image-disclosure">{disclosure.detail}</p>}
 
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-3">

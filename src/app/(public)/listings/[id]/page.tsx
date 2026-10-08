@@ -61,6 +61,7 @@ import {
   getPrimaryListingImage,
   getSchemaLanguage,
 } from '@/lib/site-config'
+import { pickCoverImage } from '@/lib/cover-image'
 import { withCardFacts } from '@/lib/card-facts'
 import { ShareListing } from '@/components/listing/share-listing'
 
@@ -78,7 +79,7 @@ async function getPublicListing(id: string) {
       structure, zoning, landRights, yieldGross, features, featuresEn, featuresZhTw, featuresZhCn,
       descriptionJa, descriptionEn, descriptionZhTw, descriptionZhCn, publishedAt,
       updatedAt, autonomyValidUntil, viewCount, hospitalityCategory,
-      media (id, url, category, isAdopted, sortOrder)
+      media (id, url, category, caption, isAdopted, sortOrder)
     `)
     .eq('id', id)
     .eq('status', 'PUBLISHED')
@@ -160,7 +161,7 @@ function schemaPropertyType(propertyType: string | null | undefined): string {
 async function getRelatedListings(current: RelatedCandidate & UnitPriceSource) {
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('id, city, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, isAdopted)')
+    .select('id, city, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, caption, isAdopted)')
     .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])
@@ -443,7 +444,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
           </div>
         </div>
       </div>
-      <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingHeading(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing) }} />
+      <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingHeading(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing), imageCaption: pickCoverImage(formattedListing.media)?.caption ?? null }} />
       {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withCardFacts(item)} userId={userId} />)}</div>

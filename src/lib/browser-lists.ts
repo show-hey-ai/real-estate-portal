@@ -12,6 +12,7 @@ export interface RecentListing {
   title: string
   price: string
   image: string | null
+  imageCaption?: string | null
   viewedAt: number
 }
 
