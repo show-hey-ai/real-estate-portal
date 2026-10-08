@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { triageRows } from '../scripts/triage-queue'
+import { attachScreening, triageRows } from '../scripts/triage-queue'
 
 const now = new Date('2026-10-07T12:00:00Z')
 
@@ -31,4 +31,22 @@ test('permitted, unclear, no-mention and already-progressed rows are left alone'
 test('a denied row without recorded evidence stays open for a person to check', () => {
   const { changed } = triageRows([{ sourceId: '8', stage: 'screened-awaiting-full-review', screeningVerdict: 'denied', screeningEvidence: [] }], now)
   assert.equal(changed, 0)
+})
+
+test('older queues: screening verdicts are attached by drawing file and page, then triaged', () => {
+  const rows = attachScreening(
+    [
+      { sourceId: '9', originalPdf: '/x/batch-13-originals.pdf', originalPage: 12, stage: 'needs_original_visual_review_and_current_detail' },
+      { sourceId: '10', originalPdf: '/x/batch-13-originals.pdf', originalPage: 13, stage: 'needs_original_visual_review_and_current_detail' },
+    ],
+    [
+      { page: 'batch-13-originals.pdf p.12', verdict: 'denied', evidence: ['広告不可'] },
+      { page: 'batch-13-originals.pdf p.13', verdict: 'permitted', evidence: ['自社HP可'] },
+    ],
+  )
+  assert.equal(rows[0].screeningVerdict, 'denied')
+  const { rows: triaged, changed } = triageRows(rows, now)
+  assert.equal(changed, 1)
+  assert.equal(triaged[0].stage, 'held-screening-denied')
+  assert.equal(triaged[1].stage, 'needs_original_visual_review_and_current_detail')
 })
