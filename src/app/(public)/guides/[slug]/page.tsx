@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { localeAlternates } from '@/lib/locale-url'
+import { localeAlternates, localizedPath } from '@/lib/locale-url'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getLocale } from 'next-intl/server'
@@ -11,6 +11,7 @@ import {
   Clock3,
 } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
+import { AskUs } from '@/components/common/ask-us'
 import { GuideCard } from '@/components/guides/guide-card'
 import { GUIDE_SUPERVISOR, GUIDE_SUPERVISOR_PHOTO, GuideCases, GuideDiagramView, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
 import { Button } from '@/components/ui/button'
@@ -299,6 +300,8 @@ export default async function GuideDetailPage({
               </Link>
             </CardContent>
           </Card>
+
+          <AskUs topic={article.title} pageUrl={absoluteUrl(localizedPath(`/guides/${slug}`, locale))} />
 
           {relatedArticles.length > 0 && (
             <section className="mt-12">

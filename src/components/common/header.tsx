@@ -26,7 +26,8 @@ export function Header({ user }: HeaderProps) {
     { href: '/listings', label: copy.discover, active: pathname === '/' || pathname.startsWith('/listings') },
     { href: '/match', label: copy.recommendations, active: pathname.startsWith('/match') },
     { href: '/favorites', label: t('nav.favorites'), active: pathname.startsWith('/favorites') },
-    { href: '/chats', label: chat.title, active: pathname.startsWith('/chats') },
+    // The private chat needs an account; visitors use the no-sign-up LINE/WhatsApp/WeChat buttons instead.
+    ...(user ? [{ href: '/chats', label: chat.title, active: pathname.startsWith('/chats') }] : []),
     { href: '/buying-guide', label: t('nav.guides'), active: pathname.startsWith('/buying-guide') },
     { href: '/articles', label: copy.articles, active: pathname.startsWith('/articles') },
     { href: '/help', label: help.nav, active: pathname.startsWith('/help') },

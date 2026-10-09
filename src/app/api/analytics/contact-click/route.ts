@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { ANALYTICS_VISITOR_COOKIE } from '@/lib/site-analytics'
 import { skipInternalAnalytics } from '@/lib/site-analytics-server'
+import { contactClickPath } from '@/lib/contact-click-path'
 
 const eventSchema = z.object({
   locale: z.string().max(16).optional(),
@@ -10,6 +11,8 @@ const eventSchema = z.object({
   // Direct-contact buttons on listing pages report the listing and the channel used.
   listingId: z.string().regex(/^[A-Za-z0-9-]{8,64}$/).optional(),
   channel: z.enum(['whatsapp', 'line', 'wechat', 'email', 'phone']).optional(),
+  // Contact buttons on guide and ward pages report the page instead of a listing.
+  path: z.string().max(220).optional(),
 }).strict()
 
 export async function POST(request: NextRequest) {
@@ -26,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (excluded) return excluded
     await prisma.siteVisitEvent.create({ data: {
       visitorId: request.cookies.get(ANALYTICS_VISITOR_COOKIE)?.value?.slice(0, 128) || crypto.randomUUID(),
-      pathname: parsed.data.listingId ? `/listings/${parsed.data.listingId}` : '/match',
+      pathname: contactClickPath(parsed.data),
       queryString: parsed.data.channel ? `channel=${parsed.data.channel}` : null,
       pageType: 'contact_click',
       locale: parsed.data.locale || null,
