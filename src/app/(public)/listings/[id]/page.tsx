@@ -331,8 +331,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </Badge>
             )}
             <h1 className="mb-3 text-xl font-semibold leading-snug text-[#1b293a] md:text-2xl">{buildListingHeading(formattedListing, locale)}</h1>
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div>
+            {/* On phones the actions sit under the price; side by side they pushed the page wider than the screen. */}
+            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
                 <p className="text-3xl font-bold text-primary mb-2">
                   {formattedListing.price ? formatPrice(formattedListing.price, locale) : '-'}
                 </p>
@@ -353,7 +354,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                 )}
                 {stations.length > 0 && <StationAccess locale={locale} stations={stations.map((station) => ({ label: formatTransitAccessLabel(station, locale) || station.name || '', walkMinutes: station.walk_minutes ?? null }))} />}
               </div>
-              <div className="flex shrink-0 flex-col items-end gap-2">
+              <div className="flex flex-wrap gap-2 sm:shrink-0 sm:flex-col sm:items-end">
                 <FavoriteButton
                   listingId={formattedListing.id}
                   initialFavorite={isFavorite}
