@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
+import { usePathname } from 'next/navigation'
 import { Mail, MessageCircle, MessagesSquare } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import {
@@ -31,10 +32,10 @@ function recordClick(channel: ContactChannel, locale: string) {
 }
 
 interface AskUsProps {
-  /** What the visitor was reading (guide title or ward name), quoted in the prefilled message. */
-  topic: string
-  /** Absolute URL of the page, added to the prefilled message. */
-  pageUrl: string
+  /** What the visitor was reading (guide title or ward name), quoted in the prefilled message. Defaults to the page title. */
+  topic?: string
+  /** Absolute URL of the page, added to the prefilled message. Defaults to the current address. */
+  pageUrl?: string
 }
 
 /** Direct contact for pages without a listing (guides, ward pages). */
@@ -42,10 +43,17 @@ export function AskUs({ topic, pageUrl }: AskUsProps) {
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const [wechatCopied, setWechatCopied] = useState(false)
-  const message = `${text.message(topic)}\n${pageUrl}`
+  const messageFor = (title: string, url: string) => `${text.message(title)}\n${url}`
+  const message = messageFor(topic ?? 'Welcome Home Tokyo', pageUrl ?? '')
+  const hrefFor = (channel: ContactChannel, body: string) => channel === 'whatsapp' ? whatsappUrl(body)
+    : channel === 'line' ? lineMessageUrl(body)
+      : channel === 'wechat' ? WECHAT_DEEP_LINK
+        : `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(topic ?? document.title)}&body=${encodeURIComponent(body)}`
   const hrefs: Record<MessagingChannel, string> = { whatsapp: whatsappUrl(message), line: lineMessageUrl(message), wechat: WECHAT_DEEP_LINK }
   const [primary, ...secondary] = messagingOrder(locale)
-  const onClick = (channel: ContactChannel) => {
+  const onClick = (channel: ContactChannel, event?: MouseEvent<HTMLAnchorElement>) => {
+    // Without a topic, quote the page actually open (title and address are only known in the browser).
+    if (event && (!topic || !pageUrl)) event.currentTarget.href = hrefFor(channel, messageFor(topic ?? document.title, pageUrl ?? window.location.href))
     recordClick(channel, locale)
     // WeChat has no web chat link: copy the ID as well, in case the app does not open.
     if (channel === 'wechat') {
@@ -55,7 +63,7 @@ export function AskUs({ topic, pageUrl }: AskUsProps) {
   }
   const linkProps = (channel: MessagingChannel) => ({
     href: hrefs[channel],
-    onClick: () => onClick(channel),
+    onClick: (event: MouseEvent<HTMLAnchorElement>) => onClick(channel, event),
     ...(channel === 'wechat' ? {} : { target: '_blank', rel: 'noopener noreferrer' }),
   })
 
@@ -65,8 +73,18 @@ export function AskUs({ topic, pageUrl }: AskUsProps) {
     <div className="mt-4 grid gap-2 sm:grid-cols-4">
       <a {...linkProps(primary)} className={`${BUTTON} ${PRIMARY_TONE[primary]}`}><MessageCircle aria-hidden="true" className="h-4 w-4" />{text[primary]}</a>
       {secondary.map((channel) => <a key={channel} {...linkProps(channel)} className={`${BUTTON} ${OUTLINE_TONE}`}><MessagesSquare aria-hidden="true" className="h-4 w-4" />{text[channel]}</a>)}
-      <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(topic)}&body=${encodeURIComponent(message)}`} onClick={() => onClick('email')} className={`${BUTTON} ${OUTLINE_TONE}`}><Mail aria-hidden="true" className="h-4 w-4" />{text.email}</a>
+      <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(topic ?? 'Welcome Home Tokyo')}&body=${encodeURIComponent(message)}`} onClick={(event) => onClick('email', event)} className={`${BUTTON} ${OUTLINE_TONE}`}><Mail aria-hidden="true" className="h-4 w-4" />{text.email}</a>
     </div>
     {wechatCopied && <p className="mt-3 rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{text.wechatCopied}</p>}
   </section>
+}
+
+/** Pages that already show their own contact block, or where asking makes no sense. */
+const OWN_CONTACT = [/^\/listings\/[^/]+$/, /^\/guides\/[^/]+$/, /^\/areas\/[^/]+$/, /^\/(chats|favorites|login|register|alerts|preview)(\/|$)/]
+
+/** Site-wide contact block above the footer, except on pages listed in OWN_CONTACT. */
+export function SiteAskUs() {
+  const pathname = usePathname()
+  if (OWN_CONTACT.some((pattern) => pattern.test(pathname))) return null
+  return <div className="container pb-12"><AskUs /></div>
 }

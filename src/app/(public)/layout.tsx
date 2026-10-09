@@ -1,6 +1,7 @@
 import { Header } from '@/components/common/header'
 import { Footer } from '@/components/common/footer'
 import { FooterGuides } from '@/components/common/footer-guides'
+import { SiteAskUs } from '@/components/common/ask-us'
 import { CompareBar } from '@/components/listing/browser-lists-client'
 import { PublicPageviewTracker } from '@/components/analytics/public-pageview-tracker'
 import { getOptionalPublicViewer } from '@/lib/public-viewer'
@@ -23,6 +24,7 @@ export default async function PublicLayout({
         <Header user={user} />
         <Suspense fallback={null}><LanguageSuggestion /></Suspense>
         <main className="flex-1">{children}</main>
+        <SiteAskUs />
         <Footer guides={<FooterGuides />} />
         <CompareBar />
       </div>
