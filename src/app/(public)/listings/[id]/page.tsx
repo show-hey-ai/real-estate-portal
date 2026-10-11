@@ -6,6 +6,8 @@ import { compareUnitPrice, type UnitPriceSource } from '@/lib/unit-price'
 import { LoanSimulator } from '@/components/listing/loan-simulator'
 import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
 import { OverseasBuyingLink } from '@/components/overseas/overseas-buying-link'
+import { ConversionCheckLink } from '@/components/listing/conversion-check-link'
+import { isConversionCandidate } from '@/lib/conversion-check'
 import { parseMonthlyFigures } from '@/lib/monthly-costs'
 import { cardGrossYield } from '@/lib/card-facts'
 import { netYieldFromRent } from '@/lib/seismic'
@@ -375,6 +377,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
             <div id="property-facts" className="scroll-mt-4 md:scroll-mt-44">
               <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross, landRights: listing.landRights }} monthly={monthly} grossYield={grossYield} netYield={netYield} />
             </div>
+
+            {isConversionCandidate(formattedListing.propertyType) && <ConversionCheckLink locale={locale} publicAddress={publicAddress} listingUrl={absoluteUrl(localizedPath(`/listings/${formattedListing.id}`, locale))} />}
 
             {unitPrice && listing.city && <UnitPriceChart locale={locale} title={unitPriceCopy[locale]?.title ?? unitPriceCopy.en.title} note={unitPriceCopy[locale]?.note(unitPrice.count) ?? unitPriceCopy.en.note(unitPrice.count)} bars={[
               { label: unitPriceCopy[locale]?.self ?? unitPriceCopy.en.self, value: unitPrice.current, highlight: true },
