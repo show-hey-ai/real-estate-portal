@@ -3,24 +3,24 @@ import { conversionCheckUrl } from '@/lib/conversion-check'
 
 const copy = {
   ja: {
-    title: 'この物件でホテル・旅館を開業できるか診断する',
-    body: '用途地域・道路・避難・消防など7つの関門を、宅地建物取引業者が書類と公開情報で判定します。一次調査9,800円（税別）・3行政営業日。',
+    title: 'この物件でホテル・民泊を開業できるか診断する',
+    body: '旅館業の案件を30件以上手がけてきた当社が、用途地域・道路・避難・消防など7つの関門を書類と公開情報で判定します。一次調査9,800円（税別）・3行政営業日。',
   },
   en: {
-    title: 'Check whether this property can open as a hotel',
-    body: 'A licensed brokerage checks seven gates on paper, including zoning, roads, egress and fire code. Stage 1: JPY 9,800 (excl. tax), 3 administrative business days.',
+    title: 'Check whether this property can open as a hotel or minpaku',
+    body: 'With 30+ inn projects behind us, we check seven gates on paper, including zoning, roads, egress and fire code. Stage 1: JPY 9,800 (excl. tax), 3 administrative business days.',
   },
   'zh-TW': {
-    title: '診斷此物件能否開設飯店・旅館',
-    body: '由持牌不動產仲介依據文件與公開資訊，檢查用途地域、道路、避難、消防等七道關卡。一次調查9,800日圓（未稅），3個行政工作日。',
+    title: '診斷此物件能否開設飯店・民宿',
+    body: '經手旅館業案件30件以上的我們，依據文件與公開資訊，檢查用途地域、道路、避難、消防等七道關卡。一次調查9,800日圓（未稅），3個行政工作日。',
   },
   'zh-CN': {
-    title: '诊断此物业能否开设酒店·旅馆',
-    body: '由持牌不动产中介根据文件与公开信息，检查用途地域、道路、避难、消防等七道关口。一次调查9,800日元（不含税），3个行政工作日。',
+    title: '诊断此物业能否开设酒店·民宿',
+    body: '经手旅馆业项目30件以上的我们，根据文件与公开信息，检查用途地域、道路、避难、消防等七道关口。一次调查9,800日元（不含税），3个行政工作日。',
   },
 } as const
 
-/** 物件ページから宿泊転用・開業診断の申込フォームへ。所在地と物件URLを渡す。 */
+/** 物件ページからホテル・民泊 開業診断の申込フォームへ。所在地と物件URLを渡す。 */
 export function ConversionCheckLink({ locale, publicAddress, listingUrl }: { locale: string; publicAddress?: string | null; listingUrl: string }) {
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const href = conversionCheckUrl({ locale, publicAddress, listingUrl })

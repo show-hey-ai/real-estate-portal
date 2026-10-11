@@ -12,7 +12,7 @@ import { INSTAGRAM_URL, LINE_ADD_URL, LINE_ID, WECHAT_DEEP_LINK, WECHAT_ID, WHAT
 
 const OVERSEAS_LABEL: Record<string, string> = { ja: '海外から買う（お金の流れ）', en: 'Buying from overseas', 'zh-TW': '從海外購屋', 'zh-CN': '从海外买房' }
 const INTL_LABEL: Record<string, string> = { ja: '外国人の購入ガイド', en: 'Buying in Tokyo as a foreigner', 'zh-TW': '外國人東京買房指南', 'zh-CN': '外国人东京买房指南' }
-const CONVERSION_LABEL: Record<string, string> = { ja: 'ホテル・旅館に転用できるか診断', en: 'Hotel conversion check', 'zh-TW': '飯店・旅館轉用診斷', 'zh-CN': '酒店·旅馆转用诊断' }
+const CONVERSION_LABEL: Record<string, string> = { ja: 'ホテル・民泊 開業診断', en: 'Hotel & Minpaku Opening Check', 'zh-TW': '飯店・民宿 開業診斷', 'zh-CN': '酒店·民宿 开业诊断' }
 const ABOUT_LABEL: Record<string, string> = { ja: '運営会社・監修者', en: 'About us', 'zh-TW': '營運公司與監修者', 'zh-CN': '运营公司与审校者' }
 
 interface FooterProps {
