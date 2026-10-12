@@ -28,6 +28,7 @@ import { ArticleStrip } from '@/components/common/article-strip'
 import { getPublicArticles } from '@/lib/portal-articles'
 import { cache } from 'react'
 import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
+import { ConversionCheckLink } from '@/components/listing/conversion-check-link'
 
 export const dynamic = 'force-dynamic'
 
@@ -131,6 +132,7 @@ export default async function HomePage() {
         <span><span className="block font-semibold text-[#1b293a]">{INTERNATIONAL_CTA[locale]?.title ?? INTERNATIONAL_CTA.en.title}</span><span className="mt-0.5 block text-sm text-[#536274]">{INTERNATIONAL_CTA[locale]?.body ?? INTERNATIONAL_CTA.en.body}</span></span>
         <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
       </Link>
+      <div className="[&>a]:mt-3"><ConversionCheckLink locale={locale} variant="general" /></div>
       <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} showAreas={false} /></div>
       <div className="mt-9 grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
         <WardMap locale={locale} counts={wardCounts.wards} />

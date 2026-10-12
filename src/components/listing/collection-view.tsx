@@ -34,9 +34,11 @@ interface CollectionViewProps {
   favorites: Set<string>
   /** Filters for the new-listing email form on this page. */
   alert?: { type?: TypeSlug; budget?: BudgetSlug; scopeLabel: string }
+  /** Optional block shown under the intro (e.g. the hotel conversion check link). */
+  aside?: React.ReactNode
 }
 
-export function CollectionView({ locale, path, title, intro, Icon, rows, filterHref, userId, favorites, alert }: CollectionViewProps) {
+export function CollectionView({ locale, path, title, intro, Icon, rows, filterHref, userId, favorites, alert, aside }: CollectionViewProps) {
   const text = labels[locale as keyof typeof labels] ?? labels.en
   const summary = summarizeWard(rows)
   const listings = rows.map(toCardListing)
@@ -67,6 +69,7 @@ export function CollectionView({ locale, path, title, intro, Icon, rows, filterH
       <nav aria-label="Breadcrumb" className="text-xs text-[#536274]"><Link href="/" className="hover:underline">{text.home}</Link> / <span>{title}</span></nav>
       <h1 className="mt-4 flex items-center gap-2 text-2xl font-semibold md:text-3xl"><Icon aria-hidden="true" className="h-6 w-6 text-[#274d7d]" />{title}</h1>
       <p className="mt-3 max-w-3xl text-sm leading-7 text-[#536274]">{intro}</p>
+      {aside ? <div className="max-w-3xl">{aside}</div> : null}
 
       {summary.count > 0 && <dl className="mt-6 grid gap-3 md:grid-cols-3">
         <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-4"><dt className="text-xs font-semibold text-[#4a6789]">{text.range}</dt><dd className="mt-1 text-lg font-bold">{summary.minPrice && summary.maxPrice ? `${formatYenWords(summary.minPrice, locale)} 〜 ${formatYenWords(summary.maxPrice, locale)}` : '—'}</dd></div>

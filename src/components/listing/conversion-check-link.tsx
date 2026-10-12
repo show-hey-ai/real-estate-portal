@@ -1,6 +1,13 @@
 import { ArrowUpRight, Hotel } from 'lucide-react'
 import { conversionCheckUrl } from '@/lib/conversion-check'
 
+const generalTitle = {
+  ja: 'ホテル・民泊にできる物件か、買う前に診断する',
+  en: 'Thinking of a hotel or minpaku? Check the building before you buy',
+  'zh-TW': '想做飯店・民宿？購買前先診斷物件',
+  'zh-CN': '想做酒店·民宿？购买前先诊断物业',
+} as const
+
 const copy = {
   ja: {
     title: 'この物件でホテル・民泊を開業できるか診断する',
@@ -21,8 +28,10 @@ const copy = {
 } as const
 
 /** 物件ページからホテル・民泊 開業診断の申込フォームへ。所在地と物件URLを渡す。 */
-export function ConversionCheckLink({ locale, publicAddress, listingUrl }: { locale: string; publicAddress?: string | null; listingUrl: string }) {
-  const text = copy[locale as keyof typeof copy] ?? copy.en
+/** variant="general" は一覧やトップ用（特定の物件を指さない文言）。 */
+export function ConversionCheckLink({ locale, publicAddress, listingUrl, variant = 'listing' }: { locale: string; publicAddress?: string | null; listingUrl?: string; variant?: 'listing' | 'general' }) {
+  const base = copy[locale as keyof typeof copy] ?? copy.en
+  const text = variant === 'general' ? { ...base, title: generalTitle[locale as keyof typeof generalTitle] ?? generalTitle.en } : base
   const href = conversionCheckUrl({ locale, publicAddress, listingUrl })
   return <a href={href} target="_blank" rel="noopener" className="group mt-6 flex items-start gap-3 rounded-xl border border-[#e7c9cf] bg-[#fbf3f4] p-4 transition-shadow hover:shadow-md" data-testid="conversion-check-link">
     <Hotel aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[#a3263d]" />
