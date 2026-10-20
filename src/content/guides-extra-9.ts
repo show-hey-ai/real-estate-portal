@@ -10,7 +10,7 @@ const TAITO_TEBIKI = 'https://www.city.taito.lg.jp/kenchiku/jutaku/eisei/kankyoe
 const TAITO_FAQ = 'https://www.city.taito.lg.jp/kenchiku/jutaku/eisei/kankyoeisei/20180903162819383.html'
 const KITA_TEBIKI = 'https://www.city.kita.lg.jp/_res/projects/default_project/_page_/001/008/982/ryokan_tebiki_kita.pdf'
 const OTA_RYOKAN = 'https://www.city.ota.tokyo.jp/seikatsu/hoken/eisei/riyoubiyou/tetuduki/ryokanngyou.html'
-const CHUO_RYOKAN = 'https://www.city.chuo.lg.jp/a0030/kenkouiryou/eisei/kankyoeisei/ryokanngyou.html'
+const CHUO_RYOKAN = 'https://www.city.chuo.lg.jp/a0030/kenkouiryou/eisei/kankyoueisei/ryokanngyou.html'
 const MHLW_2018 = 'https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000188046.html'
 const MHLW_2016 = 'https://www.mhlw.go.jp/file/05-Shingikai-11121000-Iyakushokuhinkyoku-Soumuka/0000120947.pdf'
 const MLIT_2019 = 'https://www.mlit.go.jp/report/press/house05_hh_000789.html'
@@ -22,6 +22,13 @@ const OTA_MINPAKU = 'https://www.city.ota.tokyo.jp/seikatsu/hoken/minpaku/minpak
 const CHUO_MINPAKU = 'https://www.city.chuo.lg.jp/a0030/kenkouiryou/eisei/seikatsueisei/minpaku/jyutakujyukuhakujigyojyorei.html'
 const TAITO_MINPAKU = 'https://www.city.taito.lg.jp/kenchiku/jutaku/eisei/jutakulaw/minpanku20180613_003.html'
 const SHINJUKU_PUBCOM = 'https://www.city.shinjuku.lg.jp/kenkou/kenko01_002177_01_00001.html'
+
+const FDMA_TEKIGO = 'https://www.fdma.go.jp/laws/tutatsu/assets/260307_yo60.pdf'
+const MLIT_TECH = 'https://www.mlit.go.jp/common/001294992.pdf'
+const MHLW_2018_DECREE = 'https://www.mhlw.go.jp/content/11130500/001353975.pdf'
+const SHINJUKU_FEE = 'https://www.city.shinjuku.lg.jp/content/000384209.pdf'
+const SHINJUKU_RYOKAN_DRAFT = 'https://www.city.shinjuku.lg.jp/content/000467609.pdf'
+const CHIYODA_MINPAKU = 'https://www.city.chiyoda.lg.jp/koho/kurashi/jutakushukuhakujigyo/jorei.html'
 
 export const extraGuideArticles9: GuideArticle[] = [
   // ───────────────────────────── 1. Timeline and cost ─────────────────────────────
@@ -37,10 +44,10 @@ export const extraGuideArticles9: GuideArticle[] = [
         title: '東京で旅館業許可を取るには何か月・いくらかかる？流れと費用の内訳',
         excerpt: '東京23区で旅館業（簡易宿所・旅館・ホテル営業）の許可を取るまでの手順、区が示す期間の目安、申請手数料、費用が膨らむポイントを整理します。',
         seoDescription: '東京23区の旅館業許可（簡易宿所・旅館ホテル営業）の取得期間と費用。事前相談から許可までの流れ、北区・台東区が示す期間の目安、区ごとの申請手数料、消防・建築で費用が変わる点を解説。',
-        intro: '東京23区で旅館業の許可を取るまでの期間は、建物の工事を除いても、事前相談から許可まで数か月を見込むのが現実的です。区の示す目安では、建築・消防との協議に1か月〜1か月半（台東区）、施設が完成してから許可までに土日祝を除いて20日（北区）かかります。申請手数料そのものは数万円ですが、費用の大半は消防設備・建築の適合工事と専門家への報酬で、建物によって大きく変わります。',
+        intro: '東京23区で旅館業の許可を取るまでの期間は、建物の工事を除いても、事前相談から許可まで数か月を見込むのが現実的です。区の示す目安では、施設が完成してから許可までに土日祝を除いて20日（北区）かかり、その前の調査・設計・消防や建築との調整・工事の期間は建物によって大きく変わります。申請手数料そのものは数万円ですが、費用の大半は消防設備・建築の適合工事と専門家への報酬で、建物によって大きく変わります。',
         keyTakeaways: [
           '流れは「事前相談 → 近隣周知 → 建築・消防との協議 → 申請 → 現地検査 → 許可」',
-          '台東区の目安：関係機関との協議に1〜1.5か月、立入検査後1週間〜10日で許可',
+          '台東区の目安：立入検査で問題がなければ、検査後1週間〜10日程度で許可（学校等の近くで関係機関への照会が必要な場合は、照会に通常1〜1.5か月）',
           '北区の目安：施設完成から土日祝を除き20日（関係機関への照会がある場合は48日）',
           '申請手数料は区ごとに違う（例：北区・新宿区・大田区は簡易宿所16,500円、旅館・ホテル30,600円）',
           '費用を大きく左右するのは消防設備と建築基準法への適合工事。購入前の調査で見通しを立てる',
@@ -71,15 +78,15 @@ export const extraGuideArticles9: GuideArticle[] = [
             id: 'how-long',
             heading: '期間はどのくらい？',
             paragraphs: [
-              '答え：区が公表している目安を足し合わせると、工事期間を除いても2〜3か月程度を見込むのが無難です。工事が必要な建物では、その期間がそのまま上乗せされます。',
-              '台東区は、関係機関との協議に通常1か月〜1か月半かかり、立入検査で問題がなければ検査後1週間〜10日程度で許可になるとしています。北区は、施設完成から土日祝を除いて20日、関係機関への意見照会が必要な施設では48日を目安としています。',
+              '答え：区が示す目安は、施設が完成してから許可まで約1か月（北区：土日祝を除き20日）です。その前の物件調査・設計・建築や消防との調整・工事にかかる期間は建物によって大きく違い、ここが全体の長さを決めます。',
+              '北区は、施設完成から土日祝を除いて20日、関係機関への意見照会が必要な施設では48日を目安としています。台東区は、立入検査で問題がなければ検査後1週間〜10日程度で許可になるとしています。また台東区では、学校等から110m以内の施設は関係機関への照会が必要で、その照会に通常1か月〜1か月半かかります。',
               '時間がかかりやすいのは、申請の前の段階です。用途地域が合わない、避難経路や階段の区画が基準を満たさない、消防設備の追加が必要、といった問題は図面の段階で見つかることが多く、設計の手戻りがそのまま遅れになります。',
             ],
             table: {
               caption: '区が示す期間の目安（2026年10月確認）',
               headers: ['区', '段階', '目安'],
               rows: [
-                ['台東区', '建築・消防など関係機関との協議', '通常1か月〜1か月半'],
+                ['台東区', '学校等から110m以内の場合の関係機関への照会', '通常1か月〜1か月半'],
                 ['台東区', '立入検査から許可まで', '1週間〜10日程度'],
                 ['北区', '施設完成から許可まで', '土日祝を除き20日'],
                 ['北区', '同上（関係機関への意見照会がある施設）', '土日祝を除き48日'],
@@ -128,10 +135,10 @@ export const extraGuideArticles9: GuideArticle[] = [
               title: '例：北区の戸建を簡易宿所にする場合の組み立て（説明用）',
               lines: [
                 '物件調査・用途地域の確認・事前相談：2〜4週間',
-                '建築士の図面作成と、建築・消防との協議：1〜1.5か月（台東区が示す協議期間を目安に置いた場合）',
+                '建築士の図面作成と、建築課・消防署との事前相談：建物による（基準に合わない点が見つかると設計の手戻りが出る）',
                 '工事：建物による（設備の追加だけで済むか、区画工事が必要かで大きく変わる）',
                 '施設完成から許可まで：土日祝を除き20日（北区の目安）',
-                '合計：工事期間を除いて、およそ2〜3か月',
+                '学校等が近く関係機関への照会が必要な場合：北区の目安は48日に延びる',
               ],
               note: '区・建物・工事内容によって大きく変わります。購入スケジュールを組む前に、物件ごとの確認が必要です。',
             },
@@ -163,6 +170,8 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '大田区 旅館業の手続き', url: OTA_RYOKAN },
           { label: '中央区 旅館業', url: CHUO_RYOKAN },
           { label: '国土交通省 改正建築基準法（2019年6月25日施行）', url: MLIT_2019 },
+          { label: '新宿区 旅館業営業許可申請書（手数料の記載）', url: SHINJUKU_FEE },
+          { label: '消防庁 消防法令適合通知書の交付について（通知）', url: FDMA_TEKIGO },
         ],
       },
       en: {
@@ -170,10 +179,10 @@ export const extraGuideArticles9: GuideArticle[] = [
         title: 'How Long Does a Ryokan or Hotel License Take in Tokyo, and What Does It Cost?',
         excerpt: 'The steps to a lodging business licence (ryokangyo kyoka) in Tokyo\'s 23 wards, the time each ward says to expect, application fees, and where the real costs come from.',
         seoDescription: 'Japan hotel and ryokan licence in Tokyo: the step-by-step process, timelines published by Kita and Taito wards, application fees by ward, and the fire-safety and building work that drive the real cost.',
-        intro: "Getting a lodging business licence (ryokangyo kyoka, the licence behind hotels, ryokan and guesthouses) in Tokyo's 23 wards usually takes a few months from first consultation to licence, before counting any building work. Ward guidance points to 1 to 1.5 months for talks with the building and fire authorities (Taito Ward) and 20 business days from completion of the premises to licence (Kita Ward). The application fee itself is a few hundred dollars; most of the cost is fire-safety equipment, building compliance work and professional fees, which depend heavily on the building.",
+        intro: "Getting a lodging business licence (ryokangyo kyoka, the licence behind hotels, ryokan and guesthouses) in Tokyo's 23 wards usually takes a few months from first consultation to licence, before counting any building work. Ward guidance points to 20 business days from completion of the premises to licence (Kita Ward); the survey, design, building and fire discussions and works before that vary widely by building. The application fee itself is JPY 11,000 to 30,600; most of the cost is fire-safety equipment, building compliance work and professional fees, which depend heavily on the building.",
         keyTakeaways: [
           'Steps: consultation → notify neighbours → building and fire consultations → application → on-site inspection → licence',
-          'Taito Ward: 1 to 1.5 months for consultations; licence about 1 week to 10 days after inspection',
+          'Taito Ward: licence about 1 week to 10 days after a clean inspection (if a school is nearby and other agencies must be consulted, that inquiry usually takes 1 to 1.5 months)',
           'Kita Ward: 20 business days from completion (48 if other agencies must be consulted)',
           'Fees vary by ward, e.g. JPY 16,500 for a simple lodging (kan-i shukusho) and JPY 30,600 for a ryokan/hotel licence in Kita, Shinjuku and Ota',
           'Fire equipment and building compliance drive the real cost, so check the building before you buy',
@@ -204,15 +213,15 @@ export const extraGuideArticles9: GuideArticle[] = [
             id: 'how-long',
             heading: 'How long does it take?',
             paragraphs: [
-              'Short answer: adding up the ward guidance, plan on roughly 2 to 3 months excluding construction. If the building needs work, add that time on top.',
-              'Taito Ward says consultations with other agencies usually take 1 to 1.5 months and that a licence follows about 1 week to 10 days after a clean inspection. Kita Ward points to 20 days (excluding weekends and holidays) from completion of the premises, or 48 days when other agencies must be consulted.',
+              'Short answer: ward guidance puts completion-to-licence at about a month (Kita Ward: 20 business days). The time before that, for property checks, design, building and fire discussions and works, varies widely by building and decides the overall length.',
+              'Kita Ward points to 20 days (excluding weekends and holidays) from completion of the premises, or 48 days when other agencies must be consulted. Taito Ward says a licence follows about 1 week to 10 days after a clean inspection; for premises within 110 m of a school, the ward must consult other agencies, which usually takes 1 to 1.5 months.',
               'Most delays happen before the application: zoning that does not allow lodging, stairs or escape routes that fail the rules, or fire equipment that must be added. These usually surface at the drawing stage, and redesign time becomes delay.',
             ],
             table: {
               caption: 'Ward timelines (checked October 2026)',
               headers: ['Ward', 'Stage', 'Guide'],
               rows: [
-                ['Taito', 'Consultations with building, fire and other agencies', 'Usually 1 to 1.5 months'],
+                ['Taito', 'Inquiry to other agencies when within 110 m of a school', 'Usually 1 to 1.5 months'],
                 ['Taito', 'Inspection to licence', 'About 1 week to 10 days'],
                 ['Kita', 'Completion of premises to licence', '20 business days'],
                 ['Kita', 'Same, where other agencies are consulted', '48 business days'],
@@ -259,10 +268,10 @@ export const extraGuideArticles9: GuideArticle[] = [
               title: 'Illustration: turning a house in Kita Ward into a simple lodging',
               lines: [
                 'Property check, zoning, first consultation: 2 to 4 weeks',
-                'Architect drawings and building/fire consultations: 1 to 1.5 months (using the Taito Ward consultation period as a guide)',
+                'Architect drawings and early talks with the building office and fire station: depends on the building (any non-compliance means redesign)',
                 'Construction: depends on the building, from adding equipment to rebuilding stair enclosures',
                 'Completion to licence: 20 business days (Kita Ward guide)',
-                'Total: roughly 2 to 3 months excluding construction',
+                'If a school is nearby and other agencies must be consulted: Kita Ward\'s guide extends to 48 business days',
               ],
               note: 'Actual timing varies widely by ward, building and works. Check the property before fixing a purchase schedule.',
             },
@@ -294,6 +303,8 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: 'Ota Ward ryokan licence procedure (Japanese)', url: OTA_RYOKAN },
           { label: 'Chuo Ward ryokan licence (Japanese)', url: CHUO_RYOKAN },
           { label: 'MLIT: amended Building Standards Act in force 25 June 2019 (Japanese)', url: MLIT_2019 },
+          { label: 'Shinjuku Ward ryokan licence application form with fees (Japanese)', url: SHINJUKU_FEE },
+          { label: 'FDMA notice on fire-code compliance notices (Japanese)', url: FDMA_TEKIGO },
         ],
       },
       'zh-TW': {
@@ -301,10 +312,10 @@ export const extraGuideArticles9: GuideArticle[] = [
         title: '在東京取得旅館業許可要多久、花多少錢？流程與費用拆解',
         excerpt: '整理東京23區取得旅館業許可（簡易宿所、旅館・飯店營業）的流程、各區公布的時間參考、申請規費，以及費用容易膨脹的地方。',
         seoDescription: '東京23區旅館業許可（簡易宿所、旅館飯店營業）需要多久、多少錢？從事前諮詢到取得許可的流程、北區與台東區的時間參考、各區申請規費、消防與建築工程對費用的影響。',
-        intro: '在東京23區取得旅館業許可，即使不算建物工程，從事前諮詢到拿到許可，實務上也要抓幾個月。依各區公布的參考：與建築、消防單位協商約1個月到1個半月（台東區），設施完工到許可約20個工作日（北區）。申請規費本身只要數萬日圓，費用大頭在消防設備、建築法規的改善工程與專家報酬，依物件差異很大。',
+        intro: '在東京23區取得旅館業許可，即使不算建物工程，從事前諮詢到拿到許可，實務上也要抓幾個月。依各區公布的參考，設施完工到許可約20個工作日（北區）；在此之前的調查、設計、與建築・消防的協調及施工，依建物差異很大。申請規費本身只要數萬日圓，費用大頭在消防設備、建築法規的改善工程與專家報酬，依物件差異很大。',
         keyTakeaways: [
           '流程：事前諮詢 → 通知鄰居 → 與建築・消防協商 → 申請 → 現場檢查 → 許可',
-          '台東區參考：協商1〜1.5個月，檢查後約1週到10天取得許可',
+          '台東區參考：現場檢查無問題時，約1週到10天取得許可（靠近學校等需徵詢相關機關時，徵詢通常需1〜1.5個月）',
           '北區參考：設施完工後約20個工作日（需徵詢其他機關時為48天）',
           '規費依區而異（例：北區、新宿區、大田區簡易宿所16,500日圓，旅館・飯店30,600日圓）',
           '真正左右費用的是消防設備與建築改善工程，購買前就要評估',
@@ -335,15 +346,15 @@ export const extraGuideArticles9: GuideArticle[] = [
             id: 'how-long',
             heading: '需要多久？',
             paragraphs: [
-              '簡答：把各區公布的參考加起來，不含工程約抓2〜3個月比較保險；需要施工的物件，再加上工期。',
-              '台東區表示與相關機關協商通常需要1個月到1個半月，現場檢查沒有問題時，約1週到10天取得許可。北區的參考是設施完工後扣除週末假日20天，需要徵詢其他機關的設施為48天。',
+              '簡答：各區的參考是設施完工到許可約1個月（北區：扣除週末假日20天）。在此之前的物件調查、設計、與建築・消防協調與施工的時間，依建物差異很大，決定了整體長度。',
+              '北區的參考是設施完工後扣除週末假日20天，需要徵詢其他機關的設施為48天。台東區表示現場檢查沒有問題時，約1週到10天取得許可；距學校等110m以內的設施需徵詢相關機關，通常需要1個月到1個半月。',
               '最容易拖延的是申請之前：用途地域不符、樓梯或避難路線不合規、需要追加消防設備等，多半在圖面階段才發現，重新設計的時間就直接變成延誤。',
             ],
             table: {
               caption: '各區公布的時間參考（2026年10月確認）',
               headers: ['區', '階段', '參考'],
               rows: [
-                ['台東區', '與建築・消防等機關協商', '通常1個月〜1個半月'],
+                ['台東區', '距學校等110m以內時徵詢相關機關', '通常1個月〜1個半月'],
                 ['台東區', '現場檢查到許可', '約1週〜10天'],
                 ['北區', '設施完工到許可', '扣除週末假日20天'],
                 ['北區', '同上（需徵詢其他機關）', '扣除週末假日48天'],
@@ -388,10 +399,10 @@ export const extraGuideArticles9: GuideArticle[] = [
               title: '範例：把北區獨棟改為簡易宿所（說明用）',
               lines: [
                 '物件調查、用途地域確認、事前諮詢：2〜4週',
-                '建築師畫圖並與建築・消防協商：1〜1.5個月（以台東區的協商期間為參考）',
+                '建築師畫圖並與建築課・消防署事前諮詢：依建物而定（發現不合規處就要重新設計）',
                 '施工：依建物而定（只加設備或需做區劃工程，差很多）',
                 '完工到許可：扣除週末假日20天（北區參考）',
-                '合計：不含工程約2〜3個月',
+                '靠近學校等需徵詢相關機關時：北區參考延長為48天',
               ],
               note: '依區、建物、工程內容差異很大。安排購買時程前，請先逐件確認。',
             },
@@ -423,6 +434,8 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '大田區 旅館業手續（日文）', url: OTA_RYOKAN },
           { label: '中央區 旅館業（日文）', url: CHUO_RYOKAN },
           { label: '國土交通省 修正建築基準法（2019年6月25日施行，日文）', url: MLIT_2019 },
+          { label: '新宿區 旅館業營業許可申請書（含規費，日文）', url: SHINJUKU_FEE },
+          { label: '消防廳 消防法令適合通知書核發通知（日文）', url: FDMA_TEKIGO },
         ],
       },
       'zh-CN': {
@@ -430,10 +443,10 @@ export const extraGuideArticles9: GuideArticle[] = [
         title: '在东京取得旅馆业许可要多久、花多少钱？流程与费用拆解',
         excerpt: '梳理东京23区取得旅馆业许可（简易宿所、旅馆・酒店营业）的流程、各区公布的时间参考、申请手续费，以及费用容易超支的环节。',
         seoDescription: '东京23区旅馆业许可（简易宿所、旅馆酒店营业）需要多久、多少钱？从事前咨询到取得许可的流程、北区与台东区的时间参考、各区申请手续费、消防与建筑改造对成本的影响。',
-        intro: '在东京23区取得旅馆业许可，即使不算改造工期，从事前咨询到拿到许可，实际也要按几个月来规划。按各区公布的参考：与建筑、消防部门协商约1到1.5个月（台东区），设施完工到许可约20个工作日（北区）。申请手续费只要几万日元，成本大头在消防设备、建筑法规改造工程和专业人士报酬，因物业而差异很大。',
+        intro: '在东京23区取得旅馆业许可，即使不算改造工期，从事前咨询到拿到许可，实际也要按几个月来规划。按各区公布的参考，设施完工到许可约20个工作日（北区）；在此之前的调查、设计、与建筑・消防的协调及施工，因建筑差异很大。申请手续费只要几万日元，成本大头在消防设备、建筑法规改造工程和专业人士报酬，因物业而差异很大。',
         keyTakeaways: [
           '流程：事前咨询 → 告知邻居 → 与建筑・消防协商 → 申请 → 现场检查 → 许可',
-          '台东区参考：协商1〜1.5个月，检查后约1周到10天取得许可',
+          '台东区参考：现场检查无问题时，约1周到10天取得许可（靠近学校等需征询相关机关时，征询通常需1〜1.5个月）',
           '北区参考：设施完工后约20个工作日（需征询其他机关时为48天）',
           '手续费因区而异（例：北区、新宿区、大田区简易宿所16,500日元，旅馆・酒店30,600日元）',
           '真正决定成本的是消防设备与建筑改造，购买前就要评估',
@@ -464,15 +477,15 @@ export const extraGuideArticles9: GuideArticle[] = [
             id: 'how-long',
             heading: '需要多久？',
             paragraphs: [
-              '简答：把各区公布的参考加起来，不含工期约按2〜3个月规划较稳妥；需要改造的物业，再加上工期。',
-              '台东区表示与相关机关协商通常需要1到1.5个月，现场检查无问题时约1周到10天取得许可。北区的参考是设施完工后扣除周末节假日20天，需征询其他机关的设施为48天。',
+              '简答：各区的参考是设施完工到许可约1个月（北区：扣除周末节假日20天）。在此之前的物业调查、设计、与建筑・消防协调和施工的时间，因建筑差异很大，决定了整体时长。',
+              '北区的参考是设施完工后扣除周末节假日20天，需征询其他机关的设施为48天。台东区表示现场检查无问题时约1周到10天取得许可；距学校等110m以内的设施需征询相关机关，通常需要1到1.5个月。',
               '最容易拖延的是申请之前：用途地域不符、楼梯或疏散路线不合规、需要追加消防设备等，大多在图纸阶段才发现，重新设计的时间就直接变成延误。',
             ],
             table: {
               caption: '各区公布的时间参考（2026年10月确认）',
               headers: ['区', '阶段', '参考'],
               rows: [
-                ['台东区', '与建筑・消防等机关协商', '通常1〜1.5个月'],
+                ['台东区', '距学校等110m以内时征询相关机关', '通常1〜1.5个月'],
                 ['台东区', '现场检查到许可', '约1周〜10天'],
                 ['北区', '设施完工到许可', '扣除周末节假日20天'],
                 ['北区', '同上（需征询其他机关）', '扣除周末节假日48天'],
@@ -517,10 +530,10 @@ export const extraGuideArticles9: GuideArticle[] = [
               title: '示例：把北区独栋改为简易宿所（说明用）',
               lines: [
                 '物业调查、用途地域确认、事前咨询：2〜4周',
-                '建筑师出图并与建筑・消防协商：1〜1.5个月（以台东区的协商期为参考）',
+                '建筑师出图并与建筑课・消防署事前咨询：视建筑而定（发现不合规处就要重新设计）',
                 '施工：视建筑而定（只加设备还是需要做分隔工程，差别很大）',
                 '完工到许可：扣除周末节假日20天（北区参考）',
-                '合计：不含工期约2〜3个月',
+                '靠近学校等需征询相关机关时：北区参考延长为48天',
               ],
               note: '因区、建筑、工程内容差异很大。确定购买时间表前，请先逐套确认。',
             },
@@ -552,6 +565,8 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '大田区 旅馆业手续（日文）', url: OTA_RYOKAN },
           { label: '中央区 旅馆业（日文）', url: CHUO_RYOKAN },
           { label: '国土交通省 修订建筑基准法（2019年6月25日施行，日文）', url: MLIT_2019 },
+          { label: '新宿区 旅馆业营业许可申请书（含手续费，日文）', url: SHINJUKU_FEE },
+          { label: '消防厅 消防法令适合通知书颁发通知（日文）', url: FDMA_TEKIGO },
         ],
       },
     },
@@ -648,7 +663,7 @@ export const extraGuideArticles9: GuideArticle[] = [
             ],
             bullets: [
               '台東区：対面できる玄関帳場を設け、営業時間中は従事者を常駐。学校などから110m以内は不許可になる場合がある',
-              '北区：居住型（5室以下・定員10人以下）は帳場不要。不在型の簡易宿所は、防犯カメラ（72時間以上保存）や概ね10分以内の駆けつけ体制などが必要',
+              '北区：居住型（5室以下・定員10人以下）は帳場不要。不在型の簡易宿所も、5室以下・定員10人以下で、防犯カメラ（72時間以上保存）や概ね10分以内の駆けつけ体制などの代替措置をとれば帳場を設けなくてよい',
               '新宿区：旅館用途の延床面積を200㎡超とする最低規模や、帳場の設置・従業員の常駐を求める条例改正案が出ている（2026年10月時点で未成立）',
             ],
           },
@@ -683,6 +698,10 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '厚生労働省 旅館業法の改正（2018年施行）', url: MHLW_2018 },
           { label: '台東区「旅館業のてびき」', url: TAITO_TEBIKI },
           { label: '北区保健所「旅館業のてびき」', url: KITA_TEBIKI },
+          { label: '国土交通省 改正建築基準法の技術的解説（3階建て・200㎡未満、竪穴区画）', url: MLIT_TECH },
+          { label: '厚生労働省 旅館業法施行令等の改正通知（2018年6月15日施行、玄関帳場）', url: MHLW_2018_DECREE },
+          { label: '消防庁 消防法令適合通知書の交付について（通知）', url: FDMA_TEKIGO },
+          { label: '新宿区 旅館業条例等の改正案', url: SHINJUKU_RYOKAN_DRAFT },
         ],
       },
       en: {
@@ -765,7 +784,7 @@ export const extraGuideArticles9: GuideArticle[] = [
             paragraphs: ['Short answer: conditions differ between wards. Read the handbook of the ward where the property sits before buying.'],
             bullets: [
               'Taito: a face-to-face front desk staffed during operating hours; may be refused within 110 m of a school',
-              'Kita: no desk needed for owner-occupied lodgings (up to 5 rooms and 10 guests); unattended simple lodgings need CCTV kept 72+ hours and staff able to arrive in about 10 minutes',
+              'Kita: no desk needed for owner-occupied lodgings (up to 5 rooms and 10 guests); unattended simple lodgings can skip the desk only if they also stay within 5 rooms and 10 guests and add substitutes such as CCTV kept 72+ hours and staff able to arrive in about 10 minutes',
               'Shinjuku: a proposed bylaw would set a 200 m²+ minimum floor area for ryokan use and require a staffed desk (not yet adopted as of October 2026)',
             ],
           },
@@ -800,6 +819,10 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: 'MHLW: 2018 amendment of the Inns and Hotels Act (Japanese)', url: MHLW_2018 },
           { label: 'Taito Ward ryokan handbook (Japanese)', url: TAITO_TEBIKI },
           { label: 'Kita Ward ryokan handbook (Japanese)', url: KITA_TEBIKI },
+          { label: 'MLIT technical notes: three-storey under-200 m² rule and stair enclosures (Japanese)', url: MLIT_TECH },
+          { label: 'MHLW notice on the 2018 decree amendments, incl. front desk (Japanese)', url: MHLW_2018_DECREE },
+          { label: 'FDMA notice on fire-code compliance notices (Japanese)', url: FDMA_TEKIGO },
+          { label: 'Shinjuku Ward draft ryokan bylaw amendment (Japanese)', url: SHINJUKU_RYOKAN_DRAFT },
         ],
       },
       'zh-TW': {
@@ -882,7 +905,7 @@ export const extraGuideArticles9: GuideArticle[] = [
             paragraphs: ['簡答：同在東京23區，條件也因區而異。購買前務必看物件所在區的手冊。'],
             bullets: [
               '台東區：設置可面對面的櫃台，營業時間內須有人員常駐；距學校等110m以內可能不予許可',
-              '北區：居住型（5間以下、10人以下）不需櫃台；不在型簡易宿所需防盜攝影機（保存72小時以上）與約10分鐘內到場的體制',
+              '北區：居住型（5間以下、10人以下）不需櫃台；不在型簡易宿所若同樣在5間以下、10人以下，並設置防盜攝影機（保存72小時以上）與約10分鐘內到場的體制等替代措施，也可不設櫃台',
               '新宿區：已提出旅館用途總面積需超過200㎡、須設櫃台並有員工常駐的條例修正案（2026年10月時尚未通過）',
             ],
           },
@@ -917,6 +940,10 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '厚生勞動省 旅館業法修正（2018年施行，日文）', url: MHLW_2018 },
           { label: '台東區《旅館業手冊》（日文）', url: TAITO_TEBIKI },
           { label: '北區保健所《旅館業手冊》（日文）', url: KITA_TEBIKI },
+          { label: '國土交通省 修正建築基準法技術說明（3層200㎡未滿、樓梯間區劃，日文）', url: MLIT_TECH },
+          { label: '厚生勞動省 2018年施行令修正通知（含櫃台，日文）', url: MHLW_2018_DECREE },
+          { label: '消防廳 消防法令適合通知書核發通知（日文）', url: FDMA_TEKIGO },
+          { label: '新宿區 旅館業條例修正案（日文）', url: SHINJUKU_RYOKAN_DRAFT },
         ],
       },
       'zh-CN': {
@@ -928,7 +955,7 @@ export const extraGuideArticles9: GuideArticle[] = [
         keyTakeaways: [
           '第一关是用途地域：低层住居专用、中高层住居专用、工业地域等不能经营旅馆・酒店',
           '用途变更200㎡以下不需申请建筑确认（2019年6月25日施行），但仍须符合法规',
-          '3层、200㎡以下的建筑，设置报警设备等即可不必建成耐火建筑',
+          '3层、不足200㎡的建筑，设置报警设备等即可不必建成耐火建筑',
           '1〜2层的独栋，大多可用特定小规模设施用自动火灾报警设备',
           '前台、与学校距离等，区条例另有附加条件',
         ],
@@ -956,7 +983,7 @@ export const extraGuideArticles9: GuideArticle[] = [
             paragraphs: [
               '简答：变更用途的部分在200㎡以下，就不需申请建筑确认；但符合《建筑基准法》与《消防法》的义务仍然存在。',
               '这个「200㎡」来自2019年6月25日全面施行的修订建筑基准法，由原来的100㎡放宽。',
-              '同次修法还规定，总面积200㎡以下、3层以下的建筑，采取必要措施即可不必建成耐火建筑；住宿这类睡眠用途，条件是设置自动火灾报警等设备。',
+              '同次修法还规定，总面积不足200㎡、3层以下的建筑，采取必要措施即可不必建成耐火建筑；住宿这类睡眠用途，条件是设置自动火灾报警等设备。',
               '3层独栋常卡在楼梯间分隔（竖井分隔），门的性能等要求很细。具体到旅馆项目的判断因建筑而异，一定要请建筑师确认。',
             ],
           },
@@ -999,7 +1026,7 @@ export const extraGuideArticles9: GuideArticle[] = [
             paragraphs: ['简答：同在东京23区，条件也因区而异。购买前务必查看物业所在区的手册。'],
             bullets: [
               '台东区：设置可面对面的前台，营业时间内须有人员常驻；距学校等110m以内可能不予许可',
-              '北区：家主居住型（5间以下、10人以下）不需前台；家主不在型简易宿所需安防摄像头（保存72小时以上）和约10分钟内到场的体制',
+              '北区：家主居住型（5间以下、10人以下）不需前台；家主不在型简易宿所若同样在5间以下、10人以下，并采取安防摄像头（保存72小时以上）和约10分钟内到场的体制等替代措施，也可不设前台',
               '新宿区：已提出旅馆用途总面积须超过200㎡、须设前台并有员工常驻的条例修订案（2026年10月尚未通过）',
             ],
           },
@@ -1034,6 +1061,10 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '厚生劳动省 旅馆业法修订（2018年施行，日文）', url: MHLW_2018 },
           { label: '台东区《旅馆业手册》（日文）', url: TAITO_TEBIKI },
           { label: '北区保健所《旅馆业手册》（日文）', url: KITA_TEBIKI },
+          { label: '国土交通省 修订建筑基准法技术说明（3层不足200㎡、楼梯间分隔，日文）', url: MLIT_TECH },
+          { label: '厚生劳动省 2018年施行令修订通知（含前台，日文）', url: MHLW_2018_DECREE },
+          { label: '消防厅 消防法令适合通知书颁发通知（日文）', url: FDMA_TEKIGO },
+          { label: '新宿区 旅馆业条例修订案（日文）', url: SHINJUKU_RYOKAN_DRAFT },
         ],
       },
     },
@@ -1096,7 +1127,7 @@ export const extraGuideArticles9: GuideArticle[] = [
                 ['台東区', '2026年10月1日以降に届出した住宅は、家主居住型・不在型とも平日営業不可（9月30日までに受理された届出は対象外）'],
                 ['新宿区', '住居専用地域は金曜日正午〜月曜日正午のみ。住居系地域などで新規の民泊を禁止する改正案のパブリックコメントが2026年10月15日〜11月13日'],
                 ['千代田区', '文教地区・学校周辺は、家主居住型が日曜日正午〜金曜日正午は不可、家主不在型は全日不可。人口密集区域は家主不在型不可'],
-                ['大田区', '旅館・ホテルが建てられる用途地域でのみ可能。小中学校から100m以内は月曜正午〜金曜正午は不可'],
+                ['大田区', '家主不在型は、旅館・ホテルが建てられる用途地域でのみ可能で、小中学校から100m以内は月曜正午〜金曜正午は不可（家主居住型は緩和あり）'],
               ],
             },
           },
@@ -1127,7 +1158,7 @@ export const extraGuideArticles9: GuideArticle[] = [
         faq: [
           { question: 'すでに届出済みの民泊にも新しい規制はかかりますか？', answer: '台東区の改正は2026年9月30日までに受理された届出を対象外としています。新宿区の改正案は既存施設に施行2年後から適用する内容です。区ごとに経過措置が違うため、個別に確認が必要です。' },
           { question: '民泊から旅館業に切り替えられますか？', answer: '旅館業の基準（用途地域・建築・消防・面積）を満たせば許可を取ることはできます。用途地域で不可の場所では切り替えられません。' },
-          { question: '特区民泊は大田区以外でもできますか？', answer: '東京23区で国家戦略特区の民泊を実施しているのは大田区です。' },
+          { question: '特区民泊は大田区以外でもできますか？', answer: '東京23区では大田区が国家戦略特区の民泊を実施しています。他の区で検討する場合は、その区の最新情報を確認してください。' },
         ],
         ctaTitle: '通年営業できる物件を探す・確認する',
         ctaDescription: '旅館業の許可が取れる見込みの物件を、区の規制も含めて確認します。日本語・英語・中国語で対応します。',
@@ -1138,6 +1169,7 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '台東区 住宅宿泊事業の条例改正', url: TAITO_MINPAKU },
           { label: '新宿区 住宅宿泊事業条例改正案のパブリックコメント', url: SHINJUKU_PUBCOM },
           { label: '厚生労働省 旅館業法の改正', url: MHLW_2018 },
+          { label: '千代田区 住宅宿泊事業の条例', url: CHIYODA_MINPAKU },
         ],
       },
       en: {
@@ -1190,7 +1222,7 @@ export const extraGuideArticles9: GuideArticle[] = [
                 ['Taito', 'Homes notified on or after 1 October 2026 cannot operate on weekdays, hosted or absentee (notifications accepted by 30 September are exempt)'],
                 ['Shinjuku', 'Exclusive residential zones: Friday noon to Monday noon only. A proposal to ban new minpaku in residential and other zones was under public comment 15 October to 13 November 2026'],
                 ['Chiyoda', 'Near schools and in education districts: hosted minpaku barred Sunday noon to Friday noon, absentee barred entirely; absentee barred in dense residential areas'],
-                ['Ota', 'Only where hotels are allowed by zoning; within 100 m of schools, no operation Monday noon to Friday noon'],
+                ['Ota', 'Absentee minpaku: only where hotels are allowed by zoning, and within 100 m of schools no operation Monday noon to Friday noon (relaxed for hosted minpaku)'],
               ],
             },
           },
@@ -1221,7 +1253,7 @@ export const extraGuideArticles9: GuideArticle[] = [
         faq: [
           { question: 'Do new rules apply to minpaku already notified?', answer: 'Taito Ward exempts notifications accepted by 30 September 2026. Shinjuku\'s proposal would apply to existing homes two years after it takes effect. Transitional rules differ by ward, so check each case.' },
           { question: 'Can I switch from minpaku to a lodging licence?', answer: 'Yes, if the property meets lodging standards (zoning, building, fire, floor area). Where zoning forbids hotels, you cannot switch.' },
-          { question: 'Is special-zone minpaku available outside Ota?', answer: 'Among Tokyo\'s 23 wards, Ota is the one running the national strategic special-zone minpaku.' },
+          { question: 'Is special-zone minpaku available outside Ota?', answer: 'Within Tokyo\'s 23 wards, Ota runs national strategic special-zone minpaku. For any other ward, check that ward\'s current information.' },
         ],
         ctaTitle: 'Find or check a property that can operate year-round',
         ctaDescription: 'We check whether a property can get a lodging licence, including ward rules, in English, Japanese and Chinese. General information, not legal advice for a specific case.',
@@ -1232,6 +1264,7 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: 'Taito Ward minpaku bylaw amendment (Japanese)', url: TAITO_MINPAKU },
           { label: 'Shinjuku Ward public comment on minpaku bylaw (Japanese)', url: SHINJUKU_PUBCOM },
           { label: 'MHLW: amendment of the Inns and Hotels Act (Japanese)', url: MHLW_2018 },
+          { label: 'Chiyoda Ward minpaku bylaw (Japanese)', url: CHIYODA_MINPAKU },
         ],
       },
       'zh-TW': {
@@ -1284,7 +1317,7 @@ export const extraGuideArticles9: GuideArticle[] = [
                 ['台東區', '2026年10月1日以後申報的住宅，屋主居住型・不在型皆平日不可營業（9月30日前受理者不在此限）'],
                 ['新宿區', '住居專用地域僅週五中午至週一中午。禁止住居系地域等新設民宿的修正案，2026年10月15日至11月13日徵求公眾意見'],
                 ['千代田區', '文教地區、學校周邊：屋主居住型週日中午至週五中午不可，屋主不在型全日不可；人口密集區不可屋主不在型'],
-                ['大田區', '僅限可蓋旅館・飯店的用途地域；中小學100m以內週一中午至週五中午不可'],
+                ['大田區', '屋主不在型僅限可蓋旅館・飯店的用途地域，中小學100m以內週一中午至週五中午不可（屋主居住型有放寬）'],
               ],
             },
           },
@@ -1315,7 +1348,7 @@ export const extraGuideArticles9: GuideArticle[] = [
         faq: [
           { question: '已申報的民宿也適用新規定嗎？', answer: '台東區的修正排除2026年9月30日前受理的申報；新宿區修正案則對既有設施於施行2年後適用。各區過渡措施不同，需逐件確認。' },
           { question: '民宿可以改成旅館業嗎？', answer: '符合旅館業基準（用途地域、建築、消防、面積）即可取得許可；用途地域不允許的地方無法轉換。' },
-          { question: '大田區以外也能做特區民宿嗎？', answer: '東京23區中實施國家戰略特區民宿的是大田區。' },
+          { question: '大田區以外也能做特區民宿嗎？', answer: '東京23區中由大田區實施國家戰略特區民宿；考慮其他區時，請確認該區的最新資訊。' },
         ],
         ctaTitle: '尋找、確認可全年營業的物件',
         ctaDescription: '連同各區規定，確認物件能否取得旅館業許可，提供中文、日文、英文服務。本文為一般資訊，並非個案法律意見。',
@@ -1326,6 +1359,7 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '台東區 住宅宿泊事業條例修正（日文）', url: TAITO_MINPAKU },
           { label: '新宿區 住宅宿泊事業條例修正案公眾意見（日文）', url: SHINJUKU_PUBCOM },
           { label: '厚生勞動省 旅館業法修正（日文）', url: MHLW_2018 },
+          { label: '千代田區 住宅宿泊事業條例（日文）', url: CHIYODA_MINPAKU },
         ],
       },
       'zh-CN': {
@@ -1378,7 +1412,7 @@ export const extraGuideArticles9: GuideArticle[] = [
                 ['台东区', '2026年10月1日以后申报的住宅，房东居住型・不在型工作日均不可营业（9月30日前受理的不受影响）'],
                 ['新宿区', '住居专用地域仅周五中午至周一中午。禁止住居系地域等新设民宿的修订案，2026年10月15日至11月13日征求公众意见'],
                 ['千代田区', '文教地区、学校周边：房东居住型周日中午至周五中午不可，房东不在型全天不可；人口密集区不可房东不在型'],
-                ['大田区', '仅限可建旅馆・酒店的用途地域；中小学100m以内周一中午至周五中午不可'],
+                ['大田区', '房东不在型仅限可建旅馆・酒店的用途地域，中小学100m以内周一中午至周五中午不可（房东居住型有放宽）'],
               ],
             },
           },
@@ -1409,7 +1443,7 @@ export const extraGuideArticles9: GuideArticle[] = [
         faq: [
           { question: '已申报的民宿也适用新规定吗？', answer: '台东区的修订不适用于2026年9月30日前受理的申报；新宿区修订案则对既有设施于施行2年后适用。各区过渡措施不同，需逐个确认。' },
           { question: '民宿可以转为旅馆业吗？', answer: '符合旅馆业标准（用途地域、建筑、消防、面积）即可取得许可；用途地域不允许的地方无法转换。' },
-          { question: '大田区以外也能做特区民宿吗？', answer: '东京23区中实施国家战略特区民宿的是大田区。' },
+          { question: '大田区以外也能做特区民宿吗？', answer: '东京23区中由大田区实施国家战略特区民宿；考虑其他区时，请确认该区的最新信息。' },
         ],
         ctaTitle: '寻找、确认可全年营业的物业',
         ctaDescription: '连同各区规定，确认物业能否取得旅馆业许可，提供中文、日文、英文服务。本文为一般信息，并非个案法律意见。',
@@ -1420,6 +1454,7 @@ export const extraGuideArticles9: GuideArticle[] = [
           { label: '台东区 住宅宿泊事业条例修订（日文）', url: TAITO_MINPAKU },
           { label: '新宿区 住宅宿泊事业条例修订案公众意见（日文）', url: SHINJUKU_PUBCOM },
           { label: '厚生劳动省 旅馆业法修订（日文）', url: MHLW_2018 },
+          { label: '千代田区 住宅宿泊事业条例（日文）', url: CHIYODA_MINPAKU },
         ],
       },
     },
