@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { AskUs } from '@/components/common/ask-us'
+import { ConversionCheckLink } from '@/components/listing/conversion-check-link'
 import { GuideCard } from '@/components/guides/guide-card'
 import { GUIDE_SUPERVISOR, GUIDE_SUPERVISOR_PHOTO, GuideCases, GuideDiagramView, GuideExampleView, GuideReviewer, GuideSources, GuideTableView } from '@/components/guides/guide-extras'
 import { Button } from '@/components/ui/button'
@@ -283,6 +284,8 @@ export default async function GuideDetailPage({
               ))}
             </div>
           </section>
+
+          {article.tags.includes('hospitality') && <ConversionCheckLink locale={locale} variant="general" />}
 
           <Card className="mt-12 border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background">
             <CardContent className="flex flex-col gap-5 p-6 md:flex-row md:items-end md:justify-between">
