@@ -19,6 +19,7 @@
     "test:autonomy": "node --import tsx --test tests/autonomy-*.test.ts",
     "screen:maisoku": "tsx scripts/screen-maisoku.ts",
     "rank:details": "tsx scripts/rank-reins-details.ts",
+    "acquisition:plan": "tsx scripts/plan-acquisition.ts",
     "renew:light": "tsx scripts/renew-light.ts",
     "portal:status": "tsx scripts/portal-status.ts",
     "queue:triage": "tsx scripts/triage-queue.ts",
