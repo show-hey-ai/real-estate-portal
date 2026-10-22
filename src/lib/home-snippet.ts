@@ -33,6 +33,47 @@ export function homeSnippet(locale: string, count: number): HomeSnippet {
   }
 }
 
+export interface HomeHero {
+  title: string
+  description: string
+  /** Primary button label for the listing index. */
+  browse: string
+}
+
+/**
+ * Hero heading, lead and primary button. The heading says what is for sale, where and how many,
+ * because that is what people type into search engines; the lead says foreign buyers are welcome.
+ */
+export function homeHero(locale: string, count: number): HomeHero {
+  const live = count > 0
+  switch (locale) {
+    case 'ja':
+      return {
+        title: live ? `東京23区の中古マンション・一棟・土地、${count}件を公開中` : '東京23区の中古マンション・一棟ビル・土地を探す',
+        description: '外国籍・海外在住の方も購入できます。価格、㎡単価、月々の返済、購入時の諸費用の目安を全物件に表示。登録なしで、日本語・英語・中国語で相談できます。',
+        browse: live ? `${count}件の物件を見る` : '物件を探す',
+      }
+    case 'zh-TW':
+      return {
+        title: live ? `東京23區待售公寓・整棟・土地，現有${count}筆` : '尋找東京23區的待售公寓、整棟大樓與土地',
+        description: '海外買家與外國籍人士也能購買。每筆物件都顯示價格、每平方公尺單價、每月還款與購屋雜費試算。免註冊，中文、日文、英文皆可諮詢。',
+        browse: live ? `查看${count}筆物件` : '尋找物件',
+      }
+    case 'zh-CN':
+      return {
+        title: live ? `东京23区在售公寓・整栋・土地，现有${count}套` : '查找东京23区的在售公寓、整栋大楼和土地',
+        description: '海外买家与外国籍人士也能购买。每套房源都显示价格、每平方米单价、月供和购房杂费估算。无需注册，中文、日语、英语均可咨询。',
+        browse: live ? `查看${count}套房源` : '查找房源',
+      }
+    default:
+      return {
+        title: live ? `Buy a condo, house or building in Tokyo: ${count} properties for sale` : 'Buy a condo, house or building in Tokyo',
+        description: "Tokyo apartments, houses, whole buildings and land for sale across all 23 wards, with prices in yen and US dollars, monthly payment and purchase-cost estimates on every listing. Foreign buyers welcome. A Tokyo-licensed brokerage, in English, Japanese and Chinese, no sign-up needed.",
+        browse: live ? `Browse ${count} properties` : 'Browse properties',
+      }
+  }
+}
+
 const BRAND: Record<string, string> = { ja: '｜Welcome Home Tokyo', 'zh-TW': '｜Welcome Home Tokyo', 'zh-CN': '｜Welcome Home Tokyo' }
 
 /** Title template: full-width separator for Japanese and Chinese titles. */

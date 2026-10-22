@@ -23,7 +23,7 @@ import { PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { createServiceClient } from '@/lib/supabase/server'
 import { absoluteUrl, getSchemaLanguage, getSiteCopy, shareMetadata } from '@/lib/site-config'
 import { withCardFacts } from '@/lib/card-facts'
-import { homeSnippet } from '@/lib/home-snippet'
+import { homeHero, homeSnippet } from '@/lib/home-snippet'
 import { ArticleStrip } from '@/components/common/article-strip'
 import { getPublicArticles } from '@/lib/portal-articles'
 import { cache } from 'react'
@@ -101,6 +101,7 @@ export default async function HomePage() {
   const favorites = viewer
     ? await getFavoriteIdsForViewer(viewer.id, listings.map((home) => home.id))
     : new Set<string>()
+  const hero = homeHero(locale, wardCounts.total)
 
 
   return <div className="bg-white text-[#1b293a]">
@@ -112,11 +113,11 @@ export default async function HomePage() {
         <div className="grid md:grid-cols-[1.1fr_0.9fr]">
           <div className="relative z-10 px-6 py-8 md:px-10 md:py-10">
             <p className="text-xs font-semibold tracking-wider text-[#4a6789]">{copy.eyebrow}</p>
-            <h1 className="mt-3 max-w-xl text-balance text-2xl font-semibold leading-snug tracking-tight md:text-4xl">{market.personalTitle}</h1>
-            <p className="mt-4 max-w-lg text-sm leading-7 text-[#536274]">{market.personalDescription}</p>
+            <h1 className="mt-3 max-w-xl text-balance text-2xl font-semibold leading-snug tracking-tight md:text-4xl">{hero.title}</h1>
+            <p className="mt-4 max-w-lg text-sm leading-7 text-[#536274]">{hero.description}</p>
             <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <Link href="/match" className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#274d7d] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#18375f]"><FunnelText field="matchCta" baseline={copy.matchCta} /><ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
-              <Link href="/listings" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]">{copy.browse}<ArrowUpRight aria-hidden="true" className="h-4 w-4" /></Link>
+              <Link href="/listings" className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#274d7d] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#18375f]">{hero.browse}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
+              <Link href="/match" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]"><FunnelText field="matchCta" baseline={copy.matchCta} /><ArrowUpRight aria-hidden="true" className="h-4 w-4" /></Link>
             </div>
           </div>
           <div className="relative hidden min-h-[280px] bg-[#e8eef3] md:block">

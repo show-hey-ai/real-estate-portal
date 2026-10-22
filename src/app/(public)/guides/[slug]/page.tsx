@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   getGuideArticleBySlug,
-  getGuideArticles,
+  getRelatedGuideArticles,
   getGuideSlugs,
 } from '@/content/guides'
 import {
@@ -91,9 +91,7 @@ export default async function GuideDetailPage({
     notFound()
   }
 
-  const relatedArticles = getGuideArticles(locale)
-    .filter((candidate) => candidate.slug !== slug)
-    .slice(0, 2)
+  const relatedArticles = getRelatedGuideArticles(slug, locale)
   const articleUrl = absoluteUrl(`/guides/${slug}`)
 
   const articleJsonLd = {

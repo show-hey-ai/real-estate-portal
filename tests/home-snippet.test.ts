@@ -27,3 +27,28 @@ test('collection titles carry the count, and the brand follows the language', as
   assert.equal(titleTemplate('en'), '%s | Welcome Home Tokyo')
   assert.equal(listingsSnippet('zh-CN', 26).title, '东京23区在售房源一览（26套）')
 })
+
+test('the home hero names what is for sale, the count and foreign buyers, in every language', async () => {
+  const { homeHero } = await import('../src/lib/home-snippet')
+  const en = homeHero('en', 182)
+  assert.match(en.title, /182/)
+  assert.match(en.title, /Tokyo/)
+  assert.match(`${en.title} ${en.description}`, /for sale/i)
+  assert.match(en.description, /foreign/i)
+  assert.equal(en.browse, 'Browse 182 properties')
+  assert.match(homeHero('ja', 182).title, /182件/)
+  assert.match(homeHero('ja', 182).title, /中古マンション/)
+  assert.match(homeHero('ja', 182).description, /外国籍/)
+  assert.equal(homeHero('ja', 182).browse, '182件の物件を見る')
+  assert.match(homeHero('zh-TW', 182).title, /182筆/)
+  assert.match(homeHero('zh-CN', 182).title, /182套/)
+})
+
+test('the home hero drops the number when nothing is published', async () => {
+  const { homeHero } = await import('../src/lib/home-snippet')
+  for (const locale of ['ja', 'en', 'zh-TW', 'zh-CN']) {
+    const hero = homeHero(locale, 0)
+    assert.doesNotMatch(`${hero.title} ${hero.description} ${hero.browse}`, /\b0\b|0件|0筆|0套/)
+    assert.ok(hero.browse.length > 0)
+  }
+})

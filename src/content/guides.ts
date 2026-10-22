@@ -1194,6 +1194,27 @@ export function getOrderedGuideArticles(locale: Locale) {
   return getGuideArticles(locale).toSorted((left, right) => rank(left.slug) - rank(right.slug))
 }
 
+/**
+ * Guides to show under an article: the ones sharing the most tags, then the next ones in reading
+ * order, so every guide links onward to something relevant instead of the same two every time.
+ */
+export function getRelatedGuideArticles(slug: string, locale: Locale, limit = 2) {
+  const tags = new Set(guideArticles.find((article) => article.slug === slug)?.tags ?? [])
+  const position = GUIDE_ORDER.indexOf(slug)
+  const distance = (candidate: string) => {
+    const index = GUIDE_ORDER.indexOf(candidate)
+    if (index === -1) return GUIDE_ORDER.length * 2
+    // Articles after this one in reading order come first; past the end, continue from the start.
+    return index > position ? index - position : GUIDE_ORDER.length + index
+  }
+  return getGuideArticles(locale)
+    .filter((article) => article.slug !== slug)
+    .map((article) => ({ article, shared: article.tags.filter((tag) => tags.has(tag)).length, distance: distance(article.slug) }))
+    .toSorted((left, right) => right.shared - left.shared || left.distance - right.distance)
+    .slice(0, limit)
+    .map(({ article }) => article)
+}
+
 export function getGuideArticleBySlug(slug: string, locale: Locale) {
   const article = guideArticles.find((item) => item.slug === slug)
   if (!article) return null
