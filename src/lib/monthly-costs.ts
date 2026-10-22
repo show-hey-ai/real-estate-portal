@@ -18,10 +18,10 @@ const MAX_MONTHLY_RENT = 50_000_000
 
 const toYen = (raw: string | undefined) => (raw ? Number(raw.replace(/,/g, '')) : NaN)
 
-function first(text: string, patterns: RegExp[], max: number): number | null {
+function first(text: string, patterns: RegExp[], max: number, min = 1): number | null {
   for (const pattern of patterns) {
     const value = toYen(text.match(pattern)?.[1])
-    if (Number.isFinite(value) && value > 0 && value <= max) return value
+    if (Number.isFinite(value) && value >= min && value <= max) return value
   }
   return null
 }
@@ -29,18 +29,23 @@ function first(text: string, patterns: RegExp[], max: number): number | null {
 export function parseMonthlyFigures(descriptionJa: string | null | undefined): MonthlyFigures {
   const text = (descriptionJa || '').replace(/\s+/g, '')
   const combined = first(text, [
-    new RegExp(`管理費(?:等|・修繕積立金)の合計は?(?:月額)?${AMOUNT}`),
-  ], MAX_MONTHLY_FEE)
-  const managementFee = combined ? null : first(text, [
-    new RegExp(`管理費(?!等|・修繕|を含)は?(?:月額)?${AMOUNT}`),
-  ], MAX_MONTHLY_FEE)
-  const repairReserve = combined ? null : first(text, [
-    new RegExp(`修繕積立金は?(?:月額)?${AMOUNT}`),
-  ], MAX_MONTHLY_FEE)
+    new RegExp(`管理費(?:等|・修繕積立金)の合計は?(?:月(?:額)?)?${AMOUNT}`),
+  ], MAX_MONTHLY_FEE, 0)
+  const managementFee = combined !== null ? null : first(text, [
+    new RegExp(`管理費(?!等|・修繕|を含)は?(?:月(?:額)?)?${AMOUNT}`),
+  ], MAX_MONTHLY_FEE, 0)
+  const repairReserve = combined !== null ? null : first(text, [
+    new RegExp(`修繕積立金は?(?:月(?:額)?)?${AMOUNT}`),
+  ], MAX_MONTHLY_FEE, 0)
   const rent = first(text, [
     new RegExp(`(?:月額)?(?:賃料|家賃)(?:・共益費)?は?(?:管理費を含め)?(?:月額)?${AMOUNT}`),
   ], MAX_MONTHLY_RENT)
-  const fees = combined ?? (managementFee !== null || repairReserve !== null ? (managementFee ?? 0) + (repairReserve ?? 0) : null)
+  // An explicit total may include water, association or other charges. Use the
+  // first ordinary total, before any later conditional non-resident total.
+  const statedTotal = managementFee !== null || repairReserve !== null ? first(text, [
+    new RegExp(`(?:管理費|修繕積立金)[^。！？]*?(?:記載費用の|通常)?合計は?月(?:額)?${AMOUNT}`),
+  ], MAX_MONTHLY_FEE, 0) : null
+  const fees = combined ?? statedTotal ?? (managementFee !== null && repairReserve !== null ? managementFee + repairReserve : null)
   return { rent, managementFee, repairReserve, fees }
 }
 

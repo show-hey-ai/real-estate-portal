@@ -20,7 +20,7 @@ export function seismicStandard(builtYear: number | null | undefined): SeismicSt
 
 /** Net yield in percent: (rent − management and repair fees) × 12 ÷ price, before tax, letting fees and vacancy. */
 export function netYieldFromRent(monthlyRent: number | null, monthlyFees: number | null, price: number | null): number | null {
-  if (!monthlyRent || !price || price <= 0) return null
-  const net = (monthlyRent - (monthlyFees ?? 0)) * 12
+  if (!monthlyRent || !price || price <= 0 || monthlyFees === null || !Number.isFinite(monthlyFees) || monthlyFees < 0) return null
+  const net = (monthlyRent - monthlyFees) * 12
   return Math.round((net / price) * 1000) / 10
 }

@@ -12,6 +12,12 @@ export interface LoanResult {
   totalInterest: number
 }
 
+/** Unknown fees cannot be treated as zero when estimating rental cash flow. */
+export function monthlyCashflow(rent: number | null, repayment: number, fees: number | null): number | null {
+  if (rent === null || fees === null || ![rent, repayment, fees].every((value) => Number.isFinite(value) && value >= 0)) return null
+  return rent - repayment - fees
+}
+
 /** Level-payment (元利均等) mortgage estimate. Fees, taxes and lender conditions are not included. */
 export function estimateLoan({ price, downPaymentRate, annualRatePercent, years }: LoanInput): LoanResult {
   const downPayment = Math.round(price * Math.min(Math.max(downPaymentRate, 0), 1))

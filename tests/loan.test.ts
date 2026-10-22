@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { estimateLoan } from '../src/lib/loan'
+import { estimateLoan, monthlyCashflow } from '../src/lib/loan'
 
 test('a level-payment mortgage matches the standard formula', () => {
   const result = estimateLoan({ price: 59_800_000, downPaymentRate: 0.2, annualRatePercent: 1, years: 35 })
@@ -8,6 +8,13 @@ test('a level-payment mortgage matches the standard formula', () => {
   assert.equal(result.principal, 47_840_000)
   assert.equal(result.monthlyPayment, 135_045)
   assert.ok(result.totalInterest > 8_800_000 && result.totalInterest < 8_900_000)
+})
+
+test('cash flow requires known rent and fees, including a known zero fee', () => {
+  assert.equal(monthlyCashflow(46_000, 16_553, 11_000), 18_447)
+  assert.equal(monthlyCashflow(46_000, 16_553, null), null)
+  assert.equal(monthlyCashflow(null, 16_553, 11_000), null)
+  assert.equal(monthlyCashflow(46_000, 16_553, 0), 29_447)
 })
 
 test('zero interest divides evenly and full cash needs no payment', () => {

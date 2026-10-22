@@ -33,3 +33,21 @@ test('gross yield is annual rent over price, to one decimal', () => {
   assert.equal(grossYieldFromRent(null, 20_800_000), null)
   assert.equal(grossYieldFromRent(108_000, 0), null)
 })
+
+test('reads the monthly fee wording in reviewed listing descriptions', () => {
+  assert.deepEqual(parseMonthlyFigures('管理費月7,000円、修繕積立金月4,000円、記載費用の合計月11,000円。参考月額賃料46,000円。'), { rent: 46_000, managementFee: 7_000, repairReserve: 4_000, fees: 11_000 })
+})
+
+test('includes additional charges in the stated total without taking a later conditional total', () => {
+  const figures = parseMonthlyFigures('管理費月4,100円、修繕積立金月1,900円、その他費用月14,100円、合計月20,100円。')
+  assert.equal(figures.fees, 20_100)
+  assert.equal(parseMonthlyFigures('管理費月7,000円、修繕積立金月13,200円、水道料月300円、通常合計月20,500円。不在所有者は別途2,000円で合計月22,500円です。').fees, 20_500)
+  assert.equal(parseMonthlyFigures('参考賃料・共益費の合計月58,000円。').fees, null)
+  assert.equal(parseMonthlyFigures('管理費月7,000円、修繕積立金月4,000円。参考賃料・共益費の合計月58,000円。').fees, 11_000)
+})
+
+test('does not infer an unstated repair reserve or discard explicitly zero fees', () => {
+  assert.equal(parseMonthlyFigures('管理費月7,000円。修繕積立金は不明。').fees, null)
+  assert.equal(parseMonthlyFigures('管理費等の合計は月額0円。').fees, 0)
+  assert.equal(parseMonthlyFigures('管理費月0円、修繕積立金月0円。').fees, 0)
+})
