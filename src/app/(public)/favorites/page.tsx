@@ -43,7 +43,7 @@ export default async function FavoritesPage() {
       listing: {
         select: {
           id: true, status: true, adAllowed: true, hospitalityCategory: true, propertyType: true,
-          price: true, addressPublic: true, descriptionJa: true, buildingArea: true, landArea: true, yieldGross: true,
+          price: true, addressPublic: true, descriptionJa: true, descriptionEn: true, buildingArea: true, landArea: true, yieldGross: true,
           stations: true, builtYear: true, viewCount: true,
           media: {
             where: { isAdopted: true },

@@ -1,7 +1,7 @@
 import { type Locale, defaultLocale, locales } from '@/i18n/config'
 import { formatApprovedPublicAddress } from '@/lib/address'
 import { pickCoverImage } from '@/lib/cover-image'
-import { buildingNameOf } from '@/lib/building-name'
+import { buildingNameOf, extractBuildingNameEn } from '@/lib/building-name'
 import { INSTAGRAM_URL } from '@/lib/contact-channels'
 import { formatPrice } from '@/lib/format'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
@@ -197,10 +197,11 @@ export function buildListingTitle(listing: SeoListingLike, locale: string): stri
   const formattedPrice = price != null ? formatPrice(price, normalizedLocale) : null
 
   if (normalizedLocale === 'en') {
-    // English searchers look for "condominium in Minato, Tokyo"; a Japanese street address does not help them.
+    // English searchers look for "condominium in Minato, Tokyo" or the building's romanised name;
+    // a Japanese street address does not help them.
     const ward = listing.city ? translateCityName(listing.city, 'en') || listing.city : null
     const area = toNumber(listing.propertyType === '土地' ? listing.landArea : listing.buildingArea)
-    return [`${translatedType} in ${ward ? `${ward}, ` : ''}Tokyo`, area ? `${area} m²` : null, formattedPrice].filter(Boolean).join(' | ')
+    return [extractBuildingNameEn(listing.descriptionEn), `${translatedType} in ${ward ? `${ward}, ` : ''}Tokyo`, area ? `${area} m²` : null, formattedPrice].filter(Boolean).join(' | ')
   }
 
   // Japanese and Chinese searchers often search by building name, which leads the title when known.
@@ -214,8 +215,8 @@ export function buildListingHeading(listing: SeoListingLike, locale: string): st
   const type = translatePropertyType(listing.propertyType || null, normalizedLocale) || siteCopy[normalizedLocale].listingsTitle
   const ward = listing.city ? (normalizedLocale === 'en' ? translateCityName(listing.city, 'en') || listing.city : normalizedLocale === 'zh-TW' ? listing.city.replace('区', '區') : listing.city) : null
   const buildingName = buildingNameOf(listing)
-  // English pages avoid a Japanese-script heading; the building name stays in the description.
-  if (normalizedLocale === 'en') return `${type} in ${ward ? `${ward}, ` : ''}Tokyo`
+  // English pages avoid a Japanese-script heading: the romanised name from the English description, or type and ward.
+  if (normalizedLocale === 'en') return extractBuildingNameEn(listing.descriptionEn) ?? `${type} in ${ward ? `${ward}, ` : ''}Tokyo`
   if (buildingName) return buildingName
   if (!ward) return type
   return normalizedLocale === 'ja' ? `${ward}の${type}` : `${ward}${type}`

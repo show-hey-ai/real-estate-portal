@@ -219,6 +219,7 @@ export default async function ListingsPage({
       price,
       addressPublic,
       descriptionJa,
+      descriptionEn,
       stations,
       builtYear,
       buildingArea,

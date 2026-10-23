@@ -163,7 +163,7 @@ function schemaPropertyType(propertyType: string | null | undefined): string {
 async function getRelatedListings(current: RelatedCandidate & UnitPriceSource) {
   const { data, error } = await createServiceClient()
     .from('listings')
-    .select('id, city, propertyType, price, addressPublic, descriptionJa, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, caption, isAdopted)')
+    .select('id, city, propertyType, price, addressPublic, descriptionJa, descriptionEn, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, caption, isAdopted)')
     .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
     .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
     .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])

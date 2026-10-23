@@ -56,6 +56,7 @@ interface ListingCardProps {
     price: bigint | null
     addressPublic: string | null
     buildingName?: string | null
+    buildingNameEn?: string | null
     grossYield?: number | null
     stations?: Station[] | null
     builtYear: number | null
@@ -98,7 +99,8 @@ export function ListingCard({
   const mainImage = pickCoverImage(listing.media)
   const disclosure = aiImageDisclosure(mainImage?.caption, locale)
   const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
-  const buildingName = listing.buildingName
+  // English cards show the romanised name; the others the Japanese one.
+  const buildingName = locale === 'en' ? listing.buildingNameEn : listing.buildingName
   const stations = normalizeTransitStations(listing.stations)
   const primaryStation = stations[0]
   const primaryTransitLabel = formatTransitAccessLabel(primaryStation, locale)
@@ -203,7 +205,7 @@ export function ListingCard({
         </div>
 
         <div className="mt-3 space-y-2">
-          {buildingName && locale !== 'en' && <p className="truncate text-sm font-semibold text-[#1b293a]" title={buildingName}>{buildingName}</p>}
+          {buildingName && <p className="truncate text-sm font-semibold text-[#1b293a]" title={buildingName}>{buildingName}</p>}
           {safeAddress && (
             <div className="flex items-center gap-2 text-sm text-[#657487]">
               <MapPin className="h-3.5 w-3.5 shrink-0 text-[#57769b]" />

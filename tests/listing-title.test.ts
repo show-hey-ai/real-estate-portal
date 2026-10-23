@@ -25,3 +25,12 @@ test('a known building name leads the Japanese title and becomes the heading', (
   assert.equal(buildListingHeading(named, 'en'), 'Condominium in Nerima, Tokyo')
   assert.equal(buildListingHeading(listing, 'ja'), '練馬区の区分マンション')
 })
+
+test('a romanised name from the English description leads the English title and heading', () => {
+  const named = { ...listing, descriptionJa: 'ライオンズグローベル石神井公園。75.40㎡の3LDK', descriptionEn: 'Lions Global Shakujii Koen: a 75.40 m² 3LDK.' }
+  assert.match(buildListingTitle(named, 'en'), /^Lions Global Shakujii Koen \| Condominium in Nerima, Tokyo \| 75\.4 m² \| /)
+  assert.equal(buildListingHeading(named, 'en'), 'Lions Global Shakujii Koen')
+  // A descriptive opening leaves the type-and-ward heading as before.
+  const plain = { ...listing, descriptionEn: 'Condominium in Nerima: a 75.40 m² 3LDK.' }
+  assert.equal(buildListingHeading(plain, 'en'), 'Condominium in Nerima, Tokyo')
+})

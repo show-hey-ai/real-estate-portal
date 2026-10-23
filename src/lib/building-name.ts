@@ -28,6 +28,36 @@ export function buildingNameFromAddress(addressPublic: string | null | undefined
   return name
 }
 
+const EN_MAX_LENGTH = 45
+// Openings that describe the unit or the place rather than naming the building.
+const EN_DESCRIPTIVE = /^(?:a|an|the|this|condominium|whole|house|land|detached|apartment|unit|property|building)\b/iu
+// Named buildings never carry access notes, floor numbers, sizes or a trailing "in <ward>".
+const EN_NOT_A_NAME = /\b(?:station|exit|floor|minutes?|walk)\b|\d+\s?m²|,| in [A-Z][a-z]+$/iu
+const EN_PATTERNS = [
+  /^([^:.]{2,60}): /u,
+  /^A condominium unit in ([^,.]{2,60}),/u,
+  /^([^,.]{2,60}) is a /u,
+  /^(The [^,.:]{2,60})\. /u,
+]
+
+/**
+ * Building name from the English description. Drafts open with "Name: ", older descriptions
+ * with "A condominium unit in Name," or "Name is a whole-building…".
+ */
+export function extractBuildingNameEn(descriptionEn: string | null | undefined): string | null {
+  const text = (descriptionEn ?? '').trim()
+  if (!text) return null
+  for (const pattern of EN_PATTERNS) {
+    const name = text.match(pattern)?.[1]?.trim()
+    if (!name) continue
+    if (name.length < 2 || name.length > EN_MAX_LENGTH) return null
+    if (EN_DESCRIPTIVE.test(name) && !/^The [A-Z]/u.test(name)) return null
+    if (EN_NOT_A_NAME.test(name)) return null
+    return name
+  }
+  return null
+}
+
 /** Building name from the description's opening, else from the public address. */
 export function buildingNameOf(listing: { descriptionJa?: string | null; addressPublic?: string | null }): string | null {
   return extractBuildingName(listing.descriptionJa) ?? buildingNameFromAddress(listing.addressPublic)
