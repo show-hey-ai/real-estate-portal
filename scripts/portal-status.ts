@@ -9,6 +9,7 @@ import { readFile } from 'node:fs/promises'
 import { prisma } from '../src/lib/db'
 import { getPublicListingScope } from '../src/lib/public-listing-scope'
 import { PORTAL_VENTURE_ID } from '../src/lib/autonomy/policy'
+import { funnelLines } from '../src/lib/contact-funnel'
 
 const GOAL = 500
 const HOUR = 3600_000
@@ -62,6 +63,14 @@ async function jobLines(now: Date): Promise<string[]> {
   ]
 }
 
+async function visitLines(now: Date): Promise<string[]> {
+  const rows = await prisma.siteVisitEvent.findMany({
+    where: { occurredAt: { gte: new Date(now.getTime() - 30 * 24 * HOUR) } },
+    select: { visitorId: true, pageType: true, referrerHost: true, occurredAt: true },
+  })
+  return funnelLines(rows, now)
+}
+
 async function queueLines(path: string): Promise<string[]> {
   const rows = JSON.parse(await readFile(path, 'utf8')) as { stage?: string; screeningVerdict?: string }[]
   const count = (key: (row: { stage?: string; screeningVerdict?: string }) => string | undefined) =>
@@ -77,6 +86,7 @@ async function main() {
     `status ${jst(now)} JST`,
     ...(await listingLines(now)),
     ...(await jobLines(now)),
+    ...(await visitLines(now)),
     ...(queue ? await queueLines(queue) : []),
   ]
   console.log(lines.join('\n'))

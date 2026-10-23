@@ -26,7 +26,7 @@ Codexのトークンの大半は、REINSの画面（詳細1件あたり約17KB�
 
 | やること | コマンド・ルール |
 | --- | --- |
-| 実行の最初の状況確認 | `npm run portal:status -- --queue <review-queue.json>`（公開件数・期限・job・キューを1画面で）。DBへの独自クエリや長い記録の読み返しをしない |
+| 実行の最初の状況確認 | `npm run portal:status -- --queue <review-queue.json>`（公開件数・期限・job・訪問と問い合わせ導線（7日・30日）・キューを1画面で）。DBへの独自クエリや長い記録の読み返しをしない |
 | 引き継ぎ | `~/Documents/ChatGPT/ポータル/HANDOFF.md`（150行以内）だけ読む。経緯は `HANDOFF_LOG.md` を必要な時だけ検索 |
 | OCRで不可・要承諾の物件 | `npm run queue:triage -- --queue <queue> --save` で保留にする。REINS詳細の取得も原図面の目視もしない |
 | REINS詳細の数値・項目 | `.snapshot.txt` に保存したら読み返さず、スクリプトで読む（`rank:details`、`draft:reviewed`、`renew:light`） |
