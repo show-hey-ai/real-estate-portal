@@ -20,6 +20,8 @@ test('descriptive or address-like openings are not names', () => {
   assert.equal(extractBuildingNameEn('Tobu Nishiarai Station East Exit Sunlight Mansion B: 2DK'), null)
   assert.equal(extractBuildingNameEn('House Minami Aoyama, floor 2: vacant'), null)
   assert.equal(extractBuildingNameEn('Land in Setagaya, Tokyo: 120 m²'), null)
+  assert.equal(extractBuildingNameEn('Oji 1-chome condominium: a tenanted investment property'), null)
+  assert.equal(extractBuildingNameEn('Toa Shintomi Mansion: 40 m²'), 'Toa Shintomi Mansion')
   assert.equal(extractBuildingNameEn(''), null)
   assert.equal(extractBuildingNameEn(null), null)
 })
