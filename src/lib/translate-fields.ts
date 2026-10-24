@@ -189,6 +189,16 @@ const railwayLineMap: Record<string, string> = {
   '南海本線': 'Nankai Main Line',
   '大阪メトロ御堂筋線': 'Osaka Metro Midosuji Line',
   '大江戸線': 'Toei Oedo Line',
+  // Abbreviated line names seen on published listings (2026-10-24).
+  '常磐緩線': 'JR Joban Line (Local)',
+  '常磐緩行線': 'JR Joban Line (Local)',
+  '京浜急線': 'Keikyu Main Line',
+  '日暮里舎人': 'Nippori-Toneri Liner',
+  '高崎線': 'JR Takasaki Line',
+  '東北本線(宇都宮線)': 'JR Utsunomiya Line',
+  '西武有楽町': 'Seibu Yurakucho Line',
+  '丸ノ内方南': 'Tokyo Metro Marunouchi Line (Honancho Branch)',
+  '埼玉高速線': 'Saitama Railway Line',
 }
 
 // 都道府県マッピング
@@ -597,6 +607,34 @@ const stationNameMap: Record<string, string> = {
   '国際展示場': 'Kokusai-Tenjijo',
   'テレコムセンター': 'Telecom Center',
   '台場': 'Daiba',
+  // Stations on published listings that had no English name (2026-10-24).
+  '武蔵関': 'Musashi-Seki',
+  '上石神井': 'Kami-Shakujii',
+  '中野坂上': 'Nakano-Sakaue',
+  '高井戸': 'Takaido',
+  '昭和島': 'Showajima',
+  '落合南長崎': 'Ochiai-Minami-Nagasaki',
+  '神泉': 'Shinsen',
+  '五反野': 'Gotanno',
+  '新宿西口': 'Shinjuku-Nishiguchi',
+  '新大塚': 'Shin-Otsuka',
+  '新江古田': 'Shin-Egota',
+  '東長崎': 'Higashi-Nagasaki',
+  '池尻大橋': 'Ikejiri-Ohashi',
+  '豊島園': 'Toshimaen',
+  '富士見ヶ丘': 'Fujimigaoka',
+  '岩本町': 'Iwamotocho',
+  '新中野': 'Shin-Nakano',
+  '中野富士見町': 'Nakano-Fujimicho',
+  '東高円寺': 'Higashi-Koenji',
+  '蓮根': 'Hasune',
+  '赤羽橋': 'Akabanebashi',
+  '若林': 'Wakabayashi',
+  '京成金町': 'Keisei-Kanamachi',
+  '浜町': 'Hamacho',
+  '春日': 'Kasuga',
+  '上井草': 'Kami-Igusa',
+  '北参道': 'Kita-Sando',
 }
 
 type TransitStationLike = {
@@ -668,6 +706,24 @@ export function translateRailwayLine(line: string | null | undefined, locale: st
   return normalizedLine
 }
 
+const JAPANESE_SCRIPT = /[぀-ヿ一-鿿]/u
+
+/**
+ * English descriptions drafted before a station had a romanisation say "4 min walk to 神泉 Station (西武有楽町)".
+ * Replace the station and line names the dictionaries know, at display time, without touching stored text.
+ */
+export function romanizeStationNames(text: string): string {
+  if (!JAPANESE_SCRIPT.test(text)) return text
+  const romanLine = (line: string) => {
+    const en = translateRailwayLine(line, 'en')
+    return en && !JAPANESE_SCRIPT.test(en) ? en : line
+  }
+  return text
+    .replace(/([぀-ヿ一-鿿ヶ]+)(?= Station)/gu, (name) => translateStationName(name, 'en') ?? name)
+    // The line follows in brackets: "Kanamachi Station (常磐緩行線)".
+    .replace(/(?<= Station \()([^()]*[぀-ヿ一-鿿][^()]*)(?=\))/gu, romanLine)
+}
+
 export function translateStationName(name: string | null | undefined, locale: string): string | null {
   if (!name || locale === 'ja') return name || null
   // 直接一致
@@ -716,13 +772,15 @@ export function formatTransitAccessLabel(
 ): string | null {
   if (!station) return null
 
+  // Drafts store the Japanese name in name_en/line_en when no romanisation was known; ignore those.
+  const latin = (value: string | null | undefined) => (value && !JAPANESE_SCRIPT.test(value) ? value : null)
   const lineLabel =
     locale !== 'ja'
-      ? station.line_en || translateRailwayLine(station.line, locale)
+      ? latin(station.line_en) || translateRailwayLine(station.line, locale)
       : station.line || null
   const stationLabel =
     locale !== 'ja'
-      ? station.name_en || translateStationName(station.name, locale)
+      ? latin(station.name_en) || translateStationName(station.name, locale)
       : station.name || null
 
   if (lineLabel && stationLabel) {

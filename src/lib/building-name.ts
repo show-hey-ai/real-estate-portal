@@ -53,6 +53,8 @@ export function extractBuildingNameEn(descriptionEn: string | null | undefined):
     if (name.length < 2 || name.length > EN_MAX_LENGTH) return null
     if (EN_DESCRIPTIVE.test(name) && !/^The [A-Z]/u.test(name)) return null
     if (EN_NOT_A_NAME.test(name)) return null
+    // A name still in Japanese script would put Japanese in the English title and heading.
+    if (/[\u3040-\u30ff\u4e00-\u9fff]/u.test(name)) return null
     return name
   }
   return null

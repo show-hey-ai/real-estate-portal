@@ -10,6 +10,7 @@ import {
   translateAddress,
   translateCityName,
   translatePropertyType,
+  romanizeStationNames,
 } from '@/lib/translate-fields'
 
 type SeoStation = {
@@ -112,7 +113,7 @@ function toNumber(value: bigint | number | string | null | undefined): number | 
 function getLocalizedListingDescription(listing: SeoListingLike, locale: Locale): string | null {
   switch (locale) {
     case 'en':
-      return listing.descriptionEn || listing.descriptionJa || null
+      return listing.descriptionEn ? romanizeStationNames(listing.descriptionEn) : listing.descriptionJa || null
     case 'zh-TW':
       return listing.descriptionZhTw || listing.descriptionJa || null
     case 'zh-CN':

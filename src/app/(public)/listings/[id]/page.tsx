@@ -47,7 +47,7 @@ import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
 import { formatApprovedPublicAddress, hasDetailedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
-import { formatTransitAccessLabel, translateAddress, translatePropertyType } from '@/lib/translate-fields'
+import { formatTransitAccessLabel, romanizeStationNames, translateAddress, translatePropertyType } from '@/lib/translate-fields'
 import { getIsFavoriteForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 import { getMarketCategory, PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { getPortalCategoryLabel } from '@/lib/portal-copy'
@@ -234,7 +234,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const getDescription = () => {
     switch (locale) {
       case 'en':
-        return listing.descriptionEn || listing.descriptionJa
+        return listing.descriptionEn ? romanizeStationNames(listing.descriptionEn) : listing.descriptionJa
       case 'zh-TW':
         return listing.descriptionZhTw || listing.descriptionJa
       case 'zh-CN':
