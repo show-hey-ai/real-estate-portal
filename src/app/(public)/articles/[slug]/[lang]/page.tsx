@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { locales, type Locale, localeNames } from '@/i18n/config'
 import { getPublicArticle } from '@/lib/portal-articles'
+import { articleFallbackPath } from '@/lib/article-fallback'
 import { absoluteUrl, getSchemaLanguage } from '@/lib/site-config'
 import { JsonLd } from '@/components/common/json-ld'
 import { ArticleSourceGallery } from '@/components/articles/article-source-gallery'
@@ -38,7 +39,8 @@ export default async function ArticlePage({ params }: Props) {
   const { slug, lang } = await params
   if (!validLocale(lang)) notFound()
   const article = await getPublicArticle(slug)
-  if (!article) notFound()
+  // Hidden until regenerated: send readers (and search engines) to the closest evergreen page.
+  if (!article) redirect(articleFallbackPath(slug, lang))
   const content = article.locales[lang]
   const covers = await coverImages(article.sources.map((source) => source.id))
   const labels = {
