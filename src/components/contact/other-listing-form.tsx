@@ -3,11 +3,12 @@
 import { useId, useState, type ReactNode } from 'react'
 import { Link2, Mail } from 'lucide-react'
 import { ChannelIcon } from '@/components/contact/channel-icon'
+import { browserCanOpenLineChat, lineDesktopNote } from '@/lib/line-desktop'
 import { recordClick } from '@/components/common/ask-us'
 import { BuyerProfileFields, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
 import { getProfileCopy, isProfileComplete, profileText } from '@/lib/buyer-profile'
 import { cleanListingUrl, getOtherListingsCopy } from '@/content/other-listings'
-import { CONTACT_EMAIL, WECHAT_DEEP_LINK, lineMessageUrl, messagingOrder, whatsappUrl, type ContactChannel, type MessagingChannel } from '@/lib/contact-channels'
+import { CONTACT_EMAIL, LINE_ADD_URL, WECHAT_DEEP_LINK, lineMessageUrl, messagingOrder, whatsappUrl, type ContactChannel, type MessagingChannel } from '@/lib/contact-channels'
 
 const BUTTON = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors'
 const PRIMARY = 'bg-[#1f7a4d] text-white hover:bg-[#17633e]'
@@ -20,6 +21,7 @@ export function OtherListingForm({ locale }: { locale: string }) {
   const [topics, setTopics] = useState<string[]>([])
   const [touched, setTouched] = useState(false)
   const [wechatCopied, setWechatCopied] = useState(false)
+  const [lineOnComputer, setLineOnComputer] = useState(false)
   const [profile, answer] = useBuyerProfile()
   const fieldsId = useId()
   const cleanUrl = cleanListingUrl(url)
@@ -42,6 +44,13 @@ export function OtherListingForm({ locale }: { locale: string }) {
       return
     }
     recordClick(channel, locale)
+    if (channel === 'line' && !browserCanOpenLineChat()) {
+      event.preventDefault()
+      void navigator.clipboard?.writeText(message).catch(() => undefined)
+      window.open(LINE_ADD_URL, '_blank', 'noopener,noreferrer')
+      setLineOnComputer(true)
+      return
+    }
     // WeChat cannot be opened with a message, so the message is copied for pasting.
     if (channel === 'wechat') {
       void navigator.clipboard?.writeText(message).catch(() => undefined)
@@ -84,5 +93,6 @@ export function OtherListingForm({ locale }: { locale: string }) {
       {link('email', copy.email, OUTLINE, <Mail aria-hidden="true" className="h-4 w-4" />)}
     </div>
     {wechatCopied && <p className="mt-3 rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{copy.wechatCopied}</p>}
+    {lineOnComputer && <p className="mt-3 rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{lineDesktopNote(locale)}</p>}
   </section>
 }

@@ -3,9 +3,10 @@
 import { useId, useState, type MouseEvent } from 'react'
 import { CalendarCheck, FileText, HelpCircle, Images, Mail, SearchCheck } from 'lucide-react'
 import { ChannelIcon } from '@/components/contact/channel-icon'
+import { browserCanOpenLineChat, lineDesktopNote } from '@/lib/line-desktop'
 import { useLocale } from 'next-intl'
 import {
-  CONTACT_EMAIL, WECHAT_DEEP_LINK, WECHAT_ID,
+  CONTACT_EMAIL, LINE_ADD_URL, WECHAT_DEEP_LINK, WECHAT_ID,
   lineMessageUrl, messagingOrder, whatsappUrl, type ContactChannel, type MessagingChannel,
 } from '@/lib/contact-channels'
 import { BuyerProfileFields, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
@@ -64,6 +65,7 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const [intent, setIntent] = useState<Intent>('question')
   const [wechatCopied, setWechatCopied] = useState(false)
+  const [lineOnComputer, setLineOnComputer] = useState(false)
   const [profile, answer] = useBuyerProfile()
   const [triedToSend, setTriedToSend] = useState(false)
   const ready = isProfileComplete(profile)
@@ -91,6 +93,13 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
       return
     }
     recordClick(listingId, channel, locale)
+    if (channel === 'line' && !browserCanOpenLineChat()) {
+      event.preventDefault()
+      void navigator.clipboard?.writeText(message).catch(() => undefined)
+      window.open(LINE_ADD_URL, '_blank', 'noopener,noreferrer')
+      setLineOnComputer(true)
+      return
+    }
     // WeChat has no web chat link: copy the ID as well, in case the app does not open.
     if (channel === 'wechat') {
       void navigator.clipboard?.writeText(WECHAT_ID).catch(() => undefined)
@@ -130,6 +139,7 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
         {secondary.map((link) => <a key={link.channel} {...linkProps(link)} aria-label={link.label} className={`${button} ${OUTLINE_TONE}`}><ChannelIcon channel={link.channel as MessagingChannel} />{CHANNEL_NAME[link.channel as MessagingChannel]}</a>)}
       </div>
       {wechatCopied && <p className="rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{text.wechatCopied}</p>}
+      {lineOnComputer && <p className="rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{lineDesktopNote(locale)}</p>}
       {[email].map((link) => <a key={link.channel} {...linkProps(link)} className={`${button} ${OUTLINE_TONE}`}><Mail aria-hidden="true" className="h-4 w-4" />{link.label}</a>)}
     </div>
   </section>

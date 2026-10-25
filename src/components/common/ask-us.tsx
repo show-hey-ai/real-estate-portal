@@ -4,9 +4,10 @@ import { useId, useState, type MouseEvent } from 'react'
 import { usePathname } from 'next/navigation'
 import { Mail } from 'lucide-react'
 import { ChannelIcon } from '@/components/contact/channel-icon'
+import { browserCanOpenLineChat, lineDesktopNote } from '@/lib/line-desktop'
 import { useLocale } from 'next-intl'
 import {
-  CONTACT_EMAIL, WECHAT_DEEP_LINK, WECHAT_ID,
+  CONTACT_EMAIL, LINE_ADD_URL, WECHAT_DEEP_LINK, WECHAT_ID,
   lineMessageUrl, messagingOrder, whatsappUrl, type ContactChannel, type MessagingChannel,
 } from '@/lib/contact-channels'
 import { BuyerProfileFields, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
@@ -55,6 +56,7 @@ export function AskUs({ topic, pageUrl, variant = 'general', initialPurpose = ''
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const [wechatCopied, setWechatCopied] = useState(false)
+  const [lineOnComputer, setLineOnComputer] = useState(false)
   const unlisted = variant === 'unlisted'
   const brief = variant === 'brief'
   const [profile, answer] = useBuyerProfile()
@@ -92,6 +94,13 @@ export function AskUs({ topic, pageUrl, variant = 'general', initialPurpose = ''
     // Without a topic, quote the page actually open (title and address are only known in the browser).
     if (event && (!topic || !pageUrl)) event.currentTarget.href = hrefFor(channel, messageFor(topic ?? document.title, pageUrl ?? window.location.href))
     recordClick(channel, locale)
+    if (channel === 'line' && event && !browserCanOpenLineChat()) {
+      event.preventDefault()
+      void navigator.clipboard?.writeText(messageFor(topic ?? document.title, pageUrl ?? window.location.href)).catch(() => undefined)
+      window.open(LINE_ADD_URL, '_blank', 'noopener,noreferrer')
+      setLineOnComputer(true)
+      return
+    }
     // WeChat has no web chat link: copy the ID as well, in case the app does not open.
     if (channel === 'wechat') {
       void navigator.clipboard?.writeText(WECHAT_ID).catch(() => undefined)
@@ -122,6 +131,7 @@ export function AskUs({ topic, pageUrl, variant = 'general', initialPurpose = ''
       <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(topic ?? 'Welcome Home Tokyo')}&body=${encodeURIComponent(message)}`} onClick={(event) => onClick('email', event)} className={`${BUTTON} ${OUTLINE_TONE}`}><Mail aria-hidden="true" className="h-4 w-4" />{text.email}</a>
     </div>
     {wechatCopied && <p className="mt-3 rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{text.wechatCopied}</p>}
+    {lineOnComputer && <p className="mt-3 rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{lineDesktopNote(locale)}</p>}
   </section>
 }
 
