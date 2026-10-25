@@ -31,6 +31,9 @@ export interface SimulatorCopy {
   barCash: string
   barMonthly: string
   barFlow: string
+  fromListing: string
+  homeTitle: string
+  homeBody: string
 }
 
 const COPY: Record<string, SimulatorCopy> = {
@@ -47,6 +50,7 @@ const COPY: Record<string, SimulatorCopy> = {
     cashNote: '固定資産税・賃貸管理費・空室は含みません。',
     browse: 'この価格帯の物件を見る', results: '計算結果',
     barCash: '必要な自己資金', barMonthly: '月々の返済', barFlow: '月々の収支',
+    fromListing: 'この物件で条件を変えて試算する（家賃・現金購入も）', homeTitle: '購入シミュレーター', homeBody: '価格と支払い方法を選ぶだけで、必要な自己資金・初期費用・月々の返済がすぐわかります。',
   },
   en: {
     nav: 'Purchase simulator', title: 'Tokyo property purchase simulator',
@@ -61,6 +65,7 @@ const COPY: Record<string, SimulatorCopy> = {
     cashNote: 'Property tax, letting fees and vacancies are not included.',
     browse: 'See properties at this price', results: 'Results',
     barCash: 'Cash you need', barMonthly: 'Monthly payment', barFlow: 'Monthly cash flow',
+    fromListing: 'Try other conditions for this property (rent, cash purchase)', homeTitle: 'Purchase simulator', homeBody: 'Pick a price and how you will pay to see the cash you need, purchase costs and monthly payments.',
   },
   'zh-TW': {
     nav: '購屋試算', title: '東京不動產購屋試算',
@@ -75,6 +80,7 @@ const COPY: Record<string, SimulatorCopy> = {
     cashNote: '未含固定資產稅、租賃管理費與空置。',
     browse: '查看此價格帶的物件', results: '試算結果',
     barCash: '所需自有資金', barMonthly: '每月還款', barFlow: '每月收支',
+    fromListing: '以此物件改變條件試算（含出租與現金購買）', homeTitle: '購屋試算', homeBody: '選擇價格與付款方式，即可了解所需自有資金、購屋費用與每月還款。',
   },
   'zh-CN': {
     nav: '购房试算', title: '东京房产购房试算',
@@ -89,6 +95,7 @@ const COPY: Record<string, SimulatorCopy> = {
     cashNote: '未含固定资产税、租赁管理费和空置。',
     browse: '查看此价格区间的房源', results: '试算结果',
     barCash: '所需自有资金', barMonthly: '每月还款', barFlow: '每月收支',
+    fromListing: '以此房源改变条件试算（含出租与全款购买）', homeTitle: '购房试算', homeBody: '选择价格和付款方式，即可了解所需自有资金、购房费用和月供。',
   },
 }
 

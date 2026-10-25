@@ -17,6 +17,8 @@ import { HazardLinks } from '@/components/listing/hazard-links'
 import { ListingHighlightChips } from '@/components/listing/listing-highlights'
 import { listingHighlights } from '@/lib/listing-highlights'
 import Link from 'next/link'
+import { simulatorHref } from '@/lib/simulator'
+import { getSimulatorCopy } from '@/lib/simulator-copy'
 import { WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
 import { ListingAlertForm } from '@/components/alerts/listing-alert-form'
 import { typeSlugFor } from '@/lib/collections'
@@ -40,7 +42,7 @@ import { PropertyChatLink } from '@/components/chat/private-chats'
 import { FavoriteButton } from '@/components/listing/favorite-button'
 import { ViewTracker } from '@/components/listing/view-tracker'
 import { formatPrice } from '@/lib/format'
-import { MapPin, Info, Sparkles } from 'lucide-react'
+import { Calculator, MapPin, Info, Sparkles } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
@@ -382,6 +384,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
             {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} monthlyFees={monthly.fees} monthlyRent={letRent} />}
             {formattedListing.price && Number(formattedListing.price) > 0 && <InitialCostSimulator price={Number(formattedListing.price)} />}
+            {formattedListing.price && Number(formattedListing.price) > 0 && <Link href={simulatorHref({ price: Number(formattedListing.price), fees: monthly.fees, rent: letRent })} className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#cfd9e3] bg-white px-4 text-sm font-semibold text-[#274d7d] hover:bg-[#f2f6fa]" data-testid="listing-simulator-link"><Calculator aria-hidden="true" className="h-4 w-4" />{getSimulatorCopy(locale).fromListing} →</Link>}
             <OverseasBuyingLink locale={locale} />
 
             {publicAddress && <ListingMap locale={locale} publicAddress={publicAddress} />}

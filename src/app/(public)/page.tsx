@@ -10,6 +10,7 @@ import { JsonLd } from '@/components/common/json-ld'
 import { MarketShortcuts } from '@/components/listing/market-shortcuts'
 import { WardMap } from '@/components/listing/ward-map'
 import { LineShortcuts } from '@/components/transit/line-shortcuts'
+import { getSimulatorCopy } from '@/lib/simulator-copy'
 import { getOtherListingsCopy } from '@/content/other-listings'
 import { getTransitIndex } from '@/lib/transit/public-index'
 import { transitOptions } from '@/lib/transit/search'
@@ -139,6 +140,10 @@ export default async function HomePage() {
       </Link>
       <Link href="/other-listings" className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-[#cfd9e3] bg-white px-5 py-4 transition-shadow hover:shadow-md" data-testid="home-other-listings-link">
         <span><span className="block font-semibold text-[#1b293a]">{getOtherListingsCopy(locale).entryTitle}</span><span className="mt-0.5 block text-sm text-[#536274]">{getOtherListingsCopy(locale).entryBody}</span></span>
+        <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
+      </Link>
+      <Link href="/simulator" className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-[#cfd9e3] bg-white px-5 py-4 transition-shadow hover:shadow-md" data-testid="home-simulator-link">
+        <span><span className="block font-semibold text-[#1b293a]">{getSimulatorCopy(locale).homeTitle}</span><span className="mt-0.5 block text-sm text-[#536274]">{getSimulatorCopy(locale).homeBody}</span></span>
         <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
       </Link>
       <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} showAreas={false} /></div>

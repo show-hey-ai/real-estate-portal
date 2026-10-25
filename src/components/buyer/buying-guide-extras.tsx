@@ -4,6 +4,7 @@ import type { Locale } from '@/i18n/config'
 import { getGuideArticles } from '@/content/guides'
 import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
 import { BuyingCostsOverview } from '@/components/buyer/buying-costs-overview'
+import { getSimulatorCopy } from '@/lib/simulator-copy'
 
 const copy = {
   ja: {
@@ -82,6 +83,7 @@ export function BuyingGuideExtras({ locale }: BuyingGuideExtrasProps) {
 
     <div className="mt-6 max-w-3xl">
       <InitialCostSimulator showGuideLink={false} />
+      <Link href="/simulator" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#274d7d] hover:underline">{getSimulatorCopy(lang).homeTitle}: {getSimulatorCopy(lang).homeBody}<ArrowRight aria-hidden="true" className="h-4 w-4 shrink-0" /></Link>
     </div>
 
     {guides.length > 0 && <section className="mt-12" aria-labelledby="guide-list-title">

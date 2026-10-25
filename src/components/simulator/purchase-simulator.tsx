@@ -9,7 +9,7 @@ import { estimateLoan } from '@/lib/loan'
 import { estimateInitialCosts } from '@/lib/purchase-costs'
 import { formatYenWords } from '@/lib/yen-words'
 import { getSimulatorCopy } from '@/lib/simulator-copy'
-import { SIMULATOR_PRICE, browseQuery, cashMonthlyFlow, clampPrice, grossYieldPercent } from '@/lib/simulator'
+import { SIMULATOR_PRICE, browseQuery, cashMonthlyFlow, clampPrice, grossYieldPercent, type SimulatorStart } from '@/lib/simulator'
 import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
 import { LoanSimulator } from '@/components/listing/loan-simulator'
 
@@ -57,17 +57,17 @@ function Slider({ id, label, display, value, min, max, step, onChange }: SliderP
 }
 
 /** Every purchase figure from one set of conditions: cash needed, initial costs, monthly payment, rent and yield. */
-export function PurchaseSimulator() {
+export function PurchaseSimulator({ start }: { start?: SimulatorStart }) {
   const locale = useLocale()
   const text = getSimulatorCopy(locale)
   const id = useId()
-  const [price, setPrice] = useState<number>(SIMULATOR_PRICE.default)
+  const [price, setPrice] = useState<number>(start?.price ?? SIMULATOR_PRICE.default)
   const [useLoan, setUseLoan] = useState(true)
   const [downPaymentRate, setDownPaymentRate] = useState(0.2)
   const [annualRatePercent, setAnnualRatePercent] = useState(1)
   const [years, setYears] = useState(35)
-  const [fees, setFees] = useState(20_000)
-  const [rent, setRent] = useState(0)
+  const [fees, setFees] = useState(start?.fees ?? 20_000)
+  const [rent, setRent] = useState(start?.rent ?? 0)
   const yieldPercent = grossYieldPercent(price, rent)
   const cashFlow = cashMonthlyFlow(rent, fees)
   const toggle = (active: boolean) => `min-h-11 flex-1 rounded-lg px-4 text-sm font-semibold transition ${active ? 'bg-[#274d7d] text-white' : 'text-[#536274] hover:bg-white'}`
