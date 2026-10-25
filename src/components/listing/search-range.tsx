@@ -155,7 +155,7 @@ export function SearchRange({
             <span>{distribution.bins.at(-1)!.to >= Number.MAX_SAFE_INTEGER ? `${formatBound(distribution.bins.at(-1)!.from)}+` : formatBound(distribution.bins.at(-1)!.to)}</span>
           </div>
           <p className="text-[11px] leading-4 text-[#73848a]">
-            {kind === 'price' ? copy.distribution : copy.areaDistribution}・{copy.pickRange}
+            {kind === 'price' ? copy.distribution : copy.areaDistribution}{locale === 'ja' ? '・' : locale === 'en' ? '. ' : '，'}{copy.pickRange}
           </p>
         </div>
       )}

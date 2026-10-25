@@ -11,6 +11,6 @@ test('prices use 億 and 万 in Japanese and Chinese', () => {
 })
 
 test('English keeps the full yen amount and odd amounts are not rounded away', () => {
-  assert.equal(formatYenWords(385_000_000, 'en'), 'JPY 385,000,000')
+  assert.equal(formatYenWords(385_000_000, 'en'), '¥385,000,000')
   assert.equal(formatYenWords(12_345_678, 'ja'), '12,345,678円')
 })

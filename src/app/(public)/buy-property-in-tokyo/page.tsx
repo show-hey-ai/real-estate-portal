@@ -33,7 +33,7 @@ const copy = {
       { question: 'Can I get a mortgage?', answer: 'Possible with Japanese residence status or through a Japanese company; otherwise cash is usual.', href: '/buying-guide' },
       { question: 'What does it cost on top of the price?', answer: 'About 5–7% in cash; each listing has an initial cost simulator.', href: '/buying-guide' },
       { question: 'How long does it take?', answer: 'Usually one to two months from offer to handover.', href: '/buying-guide' },
-      { question: 'Can I rent it out from abroad?', answer: 'Yes, through a management company; rent to non-residents has 20.42% withheld.', href: '/guides/renting-out-tokyo-condo-from-overseas' },
+      { question: 'Can I rent it out from abroad?', answer: 'Yes, through a management company; rent paid to a non-resident owner has 20.42% withheld.', href: '/guides/renting-out-tokyo-condo-from-overseas' },
       { question: 'Is there a report to file after buying?', answer: 'Yes. Non-residents report the purchase within 20 days via the Bank of Japan; since April 2026 this includes homes to live in.', href: '/guides/japan-property-foreign-exchange-report' },
       { question: 'What are the yearly taxes?', answer: 'Fixed asset tax 1.4% and city planning tax 0.3% of the assessed value, not the price.', href: '/guides/tokyo-fixed-asset-tax-city-planning-tax' },
     ] as QuickAnswer[],

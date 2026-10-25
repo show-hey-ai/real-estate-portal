@@ -188,22 +188,22 @@ export const helpArticles: HelpArticle[] = [
     text: {
       ja: {
         title: '内見・詳細確認の問い合わせをするには？',
-        body: 'ログイン後、対象の物件ページの問い合わせフォームで連絡方法、連絡先、相談内容を入力して送信してください。メール、LINE、WhatsApp、WeChatを選べます。自動回答を読むだけでは問い合わせは送信されず、内見予約も確定しません。',
+        body: '登録やログインは不要です。物件ページの「登録なしですぐ相談」で、用件（質問・追加の写真・資料請求・内見予約など）と購入者情報をタップで選び、LINE・WhatsApp・WeChat・メールのいずれかで送ってください。自動回答を読んでも問い合わせは送られません。',
         action: '問い合わせる物件を選ぶ',
       },
       en: {
         title: 'How do I ask about a property or viewing?',
-        body: 'Sign in, then submit the inquiry form on the relevant property page with your contact method, contact details and message. You can choose email, LINE, WhatsApp or WeChat. Reading an automatic answer does not submit an inquiry or confirm a viewing.',
+        body: 'No account is needed. On the property page, use “Ask now, no sign-up”: tap what you need (a question, more photos, documents or a viewing) and answer the buyer questions, then send it by WhatsApp, LINE, WeChat or email. Reading an automatic answer does not send an inquiry.',
         action: 'Choose a property to ask about',
       },
       'zh-TW': {
         title: '如何詢問物件詳情或預約看房？',
-        body: '登入後，在該物件頁的詢問表單填寫聯絡方式、聯絡資料及詢問內容，再提交。可選擇電子郵件、LINE、WhatsApp或WeChat。閱讀自動回答不會提交詢問，也不會確認看房預約。',
+        body: '不必註冊或登入。在物件頁的「免註冊立即諮詢」點選諮詢內容（提問、更多照片、索取資料、預約看屋等）並回答購屋者問題，再透過LINE、WeChat、WhatsApp或電子郵件傳送。閱讀自動回答不會送出詢問。',
         action: '選擇要詢問的物件',
       },
       'zh-CN': {
         title: '如何咨询房产详情或预约看房？',
-        body: '登录后，在该房产页的咨询表单填写联系方式、联系信息及咨询内容，再提交。可选择电子邮件、LINE、WhatsApp或WeChat。阅读自动回答不会提交咨询，也不会确认看房预约。',
+        body: '无需注册或登录。在房源页的“免注册立即咨询”点选咨询内容（提问、更多照片、索取资料、预约看房等）并回答购房者问题，再通过微信、WhatsApp、LINE或邮件发送。阅读自动回答不会发送咨询。',
         action: '选择要咨询的房产',
       },
     },
@@ -427,22 +427,22 @@ export const helpArticles: HelpArticle[] = [
     text: {
       ja: {
         title: 'ログインが必要なのはどの機能ですか？',
-        body: '公開物件の閲覧、検索、ヘルプ、物件チャットはログインなしで使えます。お気に入りと物件問い合わせの送信にはログインが必要です。ログインページからログインでき、新規登録へのリンクもあります。ヘルプにパスワードや認証コードを入力しないでください。',
+        body: '物件の閲覧・検索・お気に入り・閲覧履歴・保存した検索条件・問い合わせは、ログインなしで使えます。ログインすると、お気に入り・閲覧履歴・保存した検索条件・購入者情報が会員情報に保存され、スマホとパソコンで共有できます。サイト内の担当者チャットにはログインが必要です。ヘルプにパスワードや認証コードを入力しないでください。',
         action: 'ログインする',
       },
       en: {
         title: 'Which features require signing in?',
-        body: 'Public listings, search, help and property chat work without signing in. Saving favorite properties and submitting property inquiries require an account. Use the login page, which also links to registration. Do not enter passwords or verification codes in help.',
-        action: 'Sign in',
+        body: 'Browsing, search, favorites, viewing history, saved searches and inquiries all work without an account. Logging in saves your favorites, history, saved searches and buyer answers to your account, so they appear on your phone and computer. Chatting with our agent inside the site requires an account. Never enter passwords or codes in help.',
+        action: 'Log in',
       },
       'zh-TW': {
         title: '哪些功能需要登入？',
-        body: '公開物件、搜尋、幫助及物件聊天不必登入。收藏物件及提交物件詢問需要登入。登入頁也提供註冊連結。請勿在幫助輸入密碼或驗證碼。',
+        body: '瀏覽、搜尋、收藏、瀏覽紀錄、已儲存的搜尋條件與詢問，不登入也能使用。登入後，收藏、瀏覽紀錄、搜尋條件與購屋者資訊會保存到帳號，可在手機與電腦間共用。在網站內與負責顧問聊天需要登入。請勿在幫助輸入密碼或驗證碼。',
         action: '登入',
       },
       'zh-CN': {
         title: '哪些功能需要登录？',
-        body: '公开房源、搜索、帮助及房产聊天不必登录。收藏房产及提交房产咨询需要登录。登录页也提供注册链接。请勿在帮助中输入密码或验证码。',
+        body: '浏览、搜索、收藏、浏览记录、已保存的搜索条件和咨询，不登录也能使用。登录后，收藏、浏览记录、搜索条件和购房者信息会保存到账号，可在手机和电脑之间共享。在网站内与负责顾问聊天需要登录。请勿在帮助中输入密码或验证码。',
         action: '登录',
       },
     },

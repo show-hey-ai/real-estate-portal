@@ -1,5 +1,6 @@
 'use client'
 
+import { formatPrice } from '@/lib/format'
 import { useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { ChevronDown, Search } from 'lucide-react'
@@ -9,6 +10,14 @@ import { cn } from '@/lib/utils'
 import { type PublicSearchLocationIndex } from '@/lib/public-search'
 import type { TransitOptions } from '@/lib/transit/search'
 import { translateCityName } from '@/lib/translate-fields'
+
+// "~¥30M" read as "about ¥30M", so the limit is spelled out in each language.
+function maxPriceLabel(value: number, locale: string): string {
+  if (locale === 'en') return `Up to ${formatPrice(value, 'en')}`
+  if (locale === 'zh-TW') return `${formatPrice(value, locale)}以下`
+  if (locale === 'zh-CN') return `${formatPrice(value, locale)}以下`
+  return `${formatPrice(value, 'ja').replace('¥', '')}円以下`
+}
 
 interface HomeSearchFormProps {
   compact?: boolean
@@ -67,10 +76,7 @@ export function HomeSearchForm({ compact = false, locationIndex, transit }: Home
           <option value="">{t('search.priceRange')}</option>
           {priceOptions.map((value) => (
             <option key={value} value={value}>
-              {value === '30000000' ? (locale === 'en' ? '~¥30M' : '~3,000万') : null}
-              {value === '50000000' ? (locale === 'en' ? '~¥50M' : '~5,000万') : null}
-              {value === '100000000' ? (locale === 'en' ? '~¥100M' : '~1億') : null}
-              {value === '300000000' ? (locale === 'en' ? '~¥300M' : '~3億') : null}
+              {maxPriceLabel(Number(value), locale)}
             </option>
           ))}
         </select>

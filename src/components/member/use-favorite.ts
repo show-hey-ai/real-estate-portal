@@ -16,7 +16,7 @@ function subscribe(onChange: () => void) {
 
 const HINT: Record<string, string> = {
   ja: 'この端末に保存しました。ログインすると、スマホとパソコンで共有できます。',
-  en: 'Saved on this device. Sign in to see your favorites on your phone and computer.',
+  en: 'Saved on this device. Log in to see your favorites on your phone and computer.',
   'zh-TW': '已儲存在此裝置。登入後可在手機與電腦間共用。',
   'zh-CN': '已保存在此设备。登录后可在手机和电脑之间共享。',
 }

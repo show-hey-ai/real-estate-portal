@@ -1,8 +1,8 @@
 {
   "common": {
     "appName": "Welcome Home Tokyo",
-    "login": "Login",
-    "logout": "Logout",
+    "login": "Log in",
+    "logout": "Log out",
     "register": "Register",
     "search": "Search",
     "filter": "Filter",
@@ -40,7 +40,7 @@
     "builtYearValue": "Built {year}",
     "structure": "Structure",
     "landArea": "Land Area",
-    "buildingArea": "Building Area",
+    "buildingArea": "Floor area",
     "floorCount": "Floors",
     "floorCountValue": "{count} floors",
     "currentStatus": "Current Status",
@@ -329,7 +329,7 @@
     "popular": "Popular",
     "highReturn": "High Return",
     "recentViews": "{count} views this week",
-    "new": "New",
+    "new": "Just listed",
     "limitedTime": "Limited Time",
     "lastViewed": "Recently Viewed",
     "adConsentRequired": "Ad Consent Required"

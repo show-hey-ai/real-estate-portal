@@ -118,7 +118,7 @@ export default async function WardPage({ params }: Props) {
       <p className="mt-3 max-w-3xl text-sm leading-7 text-[#536274]">{summary.count ? text.intro(label, summary.count) : text.empty(label)}</p>
 
       {summary.count > 0 && <dl className="mt-6 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-4"><dt className="text-xs font-semibold text-[#4a6789]">{text.range}</dt><dd className="mt-1 text-lg font-bold">{summary.minPrice && summary.maxPrice ? `${formatYenWords(summary.minPrice, locale)} 〜 ${formatYenWords(summary.maxPrice, locale)}` : '—'}</dd></div>
+        <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-4"><dt className="text-xs font-semibold text-[#4a6789]">{text.range}</dt><dd className="mt-1 text-lg font-bold">{summary.minPrice && summary.maxPrice ? `${formatYenWords(summary.minPrice, locale)}${locale === 'en' ? ' – ' : '〜'}${formatYenWords(summary.maxPrice, locale)}` : '—'}</dd></div>
         <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-4"><dt className="text-xs font-semibold text-[#4a6789]">{text.types}</dt><dd className="mt-2 flex flex-wrap gap-2">{summary.types.map(({ type, count }) => <span key={type} className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-medium ring-1 ring-[#dbe2e9]"><Building2 aria-hidden="true" className="h-3.5 w-3.5 text-[#274d7d]" />{translatePropertyType(type, locale)} {count}</span>)}</dd></div>
       </dl>}
 

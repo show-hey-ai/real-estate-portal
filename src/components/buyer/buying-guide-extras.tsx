@@ -23,10 +23,10 @@ const copy = {
     timelineTitle: 'From offer to handover: a typical timeline',
     timelineNote: 'A typical schedule with a mortgage. Cash purchases or seller circumstances can make it shorter or longer. Mortgages for foreign nationals are explained below.',
     timeline: [
-      { label: 'Purchase application', duration: '1 day', detail: 'You put your price and conditions in writing.' },
-      { label: 'Disclosure and contract', duration: 'About 1–2 weeks after', detail: 'You hear the legal and management disclosure, sign, and pay the deposit.' },
+      { label: 'Purchase application', duration: 'Day 1', detail: 'You put your price and conditions in writing.' },
+      { label: 'Disclosure and contract', duration: 'About 1–2 weeks after', detail: 'You receive the formal pre-contract disclosure (jūyō jikō setsumei), sign, and pay the deposit.' },
       { label: 'Loan approval and preparation', duration: 'About 3–6 weeks after', detail: 'Final loan review, funds and fees, and registration arrangements.' },
-      { label: 'Settlement and handover', duration: '1 day', detail: 'You pay the balance, ownership is registered, and you receive the keys.' },
+      { label: 'Settlement and handover', duration: 'Settlement day', detail: 'You pay the balance, ownership is registered, and you receive the keys.' },
     ],
     guidesTitle: 'In-depth guides',
     minutes: (count: number) => `${count} min read`,
