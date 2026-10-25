@@ -25,7 +25,7 @@ const PRIMARY_TONE: Record<MessagingChannel, string> = {
 const OUTLINE_TONE = 'border border-[#cfd9e3] bg-white text-[#274d7d] hover:bg-[#f2f6fa]'
 const BUTTON = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors'
 
-function recordClick(channel: ContactChannel, locale: string) {
+export function recordClick(channel: ContactChannel, locale: string) {
   const payload = JSON.stringify({ locale, search: window.location.search, channel, path: window.location.pathname })
   if (navigator.sendBeacon) navigator.sendBeacon('/api/analytics/contact-click', new Blob([payload], { type: 'application/json' }))
   else void fetch('/api/analytics/contact-click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true })
@@ -80,7 +80,7 @@ export function AskUs({ topic, pageUrl }: AskUsProps) {
 }
 
 /** Pages that already show their own contact block, or where asking makes no sense. */
-const OWN_CONTACT = [/^\/listings\/[^/]+$/, /^\/guides\/[^/]+$/, /^\/areas\/[^/]+$/, /^\/(chats|favorites|login|register|alerts|preview)(\/|$)/]
+const OWN_CONTACT = [/^\/other-listings$/, /^\/listings\/[^/]+$/, /^\/guides\/[^/]+$/, /^\/areas\/[^/]+$/, /^\/(chats|favorites|login|register|alerts|preview)(\/|$)/]
 
 /** Site-wide contact block above the footer, except on pages listed in OWN_CONTACT. */
 export function SiteAskUs() {

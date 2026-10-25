@@ -10,6 +10,7 @@ import { JsonLd } from '@/components/common/json-ld'
 import { MarketShortcuts } from '@/components/listing/market-shortcuts'
 import { WardMap } from '@/components/listing/ward-map'
 import { LineShortcuts } from '@/components/transit/line-shortcuts'
+import { getOtherListingsCopy } from '@/content/other-listings'
 import { getTransitIndex } from '@/lib/transit/public-index'
 import { transitOptions } from '@/lib/transit/search'
 import { RecentlyViewed } from '@/components/listing/browser-lists-client'
@@ -134,6 +135,10 @@ export default async function HomePage() {
       <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#657487]">{copy.trust.map((item) => <span key={item} className="inline-flex items-center gap-1.5"><Check aria-hidden="true" className="h-3.5 w-3.5 text-[#57769b]" />{item}</span>)}</div>
       <Link href="/buy-property-in-tokyo" className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-[#cfd9e3] bg-white px-5 py-4 transition-shadow hover:shadow-md" data-testid="home-international-link">
         <span><span className="block font-semibold text-[#1b293a]">{INTERNATIONAL_CTA[locale]?.title ?? INTERNATIONAL_CTA.en.title}</span><span className="mt-0.5 block text-sm text-[#536274]">{INTERNATIONAL_CTA[locale]?.body ?? INTERNATIONAL_CTA.en.body}</span></span>
+        <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
+      </Link>
+      <Link href="/other-listings" className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-[#cfd9e3] bg-white px-5 py-4 transition-shadow hover:shadow-md" data-testid="home-other-listings-link">
+        <span><span className="block font-semibold text-[#1b293a]">{getOtherListingsCopy(locale).entryTitle}</span><span className="mt-0.5 block text-sm text-[#536274]">{getOtherListingsCopy(locale).entryBody}</span></span>
         <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
       </Link>
       <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} showAreas={false} /></div>
