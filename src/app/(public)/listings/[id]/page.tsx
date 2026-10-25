@@ -375,7 +375,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
             {/* Phones: the no-sign-up contact box right under the price (it sits in the sidebar on wide screens).
                 The sign-in chat used to be here and nobody started one; it stays further down. */}
-            <div className="mb-6 lg:hidden" data-testid="quick-contact-inline">
+            <div id="quick-contact-inline" className="mb-6 scroll-mt-24 lg:hidden" data-testid="quick-contact-inline">
               <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
             </div>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type MouseEvent } from 'react'
+import { useId, useState, type MouseEvent } from 'react'
 import { usePathname } from 'next/navigation'
 import { Mail, MessageCircle, MessagesSquare } from 'lucide-react'
 import { useLocale } from 'next-intl'
@@ -8,6 +8,8 @@ import {
   CONTACT_EMAIL, WECHAT_DEEP_LINK, WECHAT_ID,
   lineMessageUrl, messagingOrder, whatsappUrl, type ContactChannel, type MessagingChannel,
 } from '@/lib/contact-channels'
+import { BuyerProfileFields, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
+import { getProfileCopy, isProfileComplete, profileText } from '@/lib/buyer-profile'
 
 const copy = {
   ja: { unlistedTitle: 'ここに載っていない物件も探せます', unlistedNote: '公開前の物件や他社が扱う物件も含めて、条件に合う物件を探してご連絡します。登録は不要です。', unlistedMessage: (topic: string) => `サイトに載っていない物件も含めて、条件に合う物件を探してほしいです。\n条件：${topic}\n予算・広さ・希望（あれば）：`, title: '購入の相談は登録なしで', note: '物件探し、購入の流れ、費用のことなど、LINE・WhatsApp・WeChat・メールで直接ご相談いただけます。日本語・英語・中国語で対応します。', whatsapp: 'WhatsAppで相談', line: 'LINEで相談', wechat: 'WeChatで相談', email: 'メールで相談', wechatCopied: `WeChat ID「${WECHAT_ID}」をコピーしました。開かない場合は、友だち追加の検索に貼り付けてください。`, message: (topic: string) => `東京の不動産購入について相談したいです。\n（見ていたページ：${topic}）` },
@@ -46,7 +48,11 @@ export function AskUs({ topic, pageUrl, variant = 'general' }: AskUsProps) {
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const [wechatCopied, setWechatCopied] = useState(false)
   const unlisted = variant === 'unlisted'
-  const messageFor = (title: string, url: string) => `${unlisted ? text.unlistedMessage(title) : text.message(title)}\n${url}`
+  const [profile, answer] = useBuyerProfile()
+  const [triedToSend, setTriedToSend] = useState(false)
+  const ready = isProfileComplete(profile)
+  const fieldsId = useId()
+  const messageFor = (title: string, url: string) => `${unlisted ? text.unlistedMessage(title) : text.message(title)}\n${url}\n\n${profileText(profile, locale)}`
   const message = messageFor(topic ?? 'Welcome Home Tokyo', pageUrl ?? '')
   const hrefFor = (channel: ContactChannel, body: string) => channel === 'whatsapp' ? whatsappUrl(body)
     : channel === 'line' ? lineMessageUrl(body)
@@ -55,6 +61,13 @@ export function AskUs({ topic, pageUrl, variant = 'general' }: AskUsProps) {
   const hrefs: Record<MessagingChannel, string> = { whatsapp: whatsappUrl(message), line: lineMessageUrl(message), wechat: WECHAT_DEEP_LINK }
   const [primary, ...secondary] = messagingOrder(locale)
   const onClick = (channel: ContactChannel, event?: MouseEvent<HTMLAnchorElement>) => {
+    // The buyer questions are required: point at them instead of sending.
+    if (!ready) {
+      event?.preventDefault()
+      setTriedToSend(true)
+      document.getElementById(fieldsId)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
     // Without a topic, quote the page actually open (title and address are only known in the browser).
     if (event && (!topic || !pageUrl)) event.currentTarget.href = hrefFor(channel, messageFor(topic ?? document.title, pageUrl ?? window.location.href))
     recordClick(channel, locale)
@@ -73,7 +86,9 @@ export function AskUs({ topic, pageUrl, variant = 'general' }: AskUsProps) {
   return <section className="mt-10 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-5" aria-labelledby="ask-us-title" data-testid={unlisted ? 'ask-us-unlisted' : 'ask-us'}>
     <h2 id="ask-us-title" className="text-lg font-semibold">{unlisted ? text.unlistedTitle : text.title}</h2>
     <p className="mt-1 max-w-2xl text-sm leading-6 text-[#536274]">{unlisted ? text.unlistedNote : text.note}</p>
-    <div className="mt-4 grid gap-2 sm:grid-cols-4">
+    <div id={fieldsId} className="mt-4 max-w-2xl scroll-mt-24"><BuyerProfileFields locale={locale} profile={profile} onAnswer={answer} showMissing={triedToSend} idPrefix={fieldsId} /></div>
+    {triedToSend && !ready && <p className="mt-2 text-xs font-semibold text-[#b42318]" role="alert">{getProfileCopy(locale).missing}</p>}
+    <div className={`mt-4 grid gap-2 sm:grid-cols-4 ${ready ? '' : 'opacity-60'}`}>
       <a {...linkProps(primary)} className={`${BUTTON} ${PRIMARY_TONE[primary]}`}><MessageCircle aria-hidden="true" className="h-4 w-4" />{text[primary]}</a>
       {secondary.map((channel) => <a key={channel} {...linkProps(channel)} className={`${BUTTON} ${OUTLINE_TONE}`}><MessagesSquare aria-hidden="true" className="h-4 w-4" />{text[channel]}</a>)}
       <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(topic ?? 'Welcome Home Tokyo')}&body=${encodeURIComponent(message)}`} onClick={(event) => onClick('email', event)} className={`${BUTTON} ${OUTLINE_TONE}`}><Mail aria-hidden="true" className="h-4 w-4" />{text.email}</a>

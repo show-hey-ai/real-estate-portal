@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState, type MouseEvent } from 'react'
 import { CalendarCheck, FileText, HelpCircle, Images, Mail, MessageCircle, MessagesSquare, SearchCheck } from 'lucide-react'
 import { useLocale } from 'next-intl'
 import {
   CONTACT_EMAIL, WECHAT_DEEP_LINK, WECHAT_ID,
   lineMessageUrl, messagingOrder, whatsappUrl, type ContactChannel, type MessagingChannel,
 } from '@/lib/contact-channels'
+import { BuyerProfileFields, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
+import { getProfileCopy, isProfileComplete, profileText } from '@/lib/buyer-profile'
 
 type Intent = 'question' | 'photos' | 'documents' | 'viewing' | 'similar'
 
@@ -60,7 +62,11 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const [intent, setIntent] = useState<Intent>('question')
   const [wechatCopied, setWechatCopied] = useState(false)
-  const message = `${text.intentMessage[intent]}\n${listingTitle}\n${listingUrl}`
+  const [profile, answer] = useBuyerProfile()
+  const [triedToSend, setTriedToSend] = useState(false)
+  const ready = isProfileComplete(profile)
+  const fieldsId = useId()
+  const message = `${text.intentMessage[intent]}\n${listingTitle}\n${listingUrl}\n\n${profileText(profile, locale)}`
   const subject = intent === 'question' ? listingTitle : `${text.intents[intent]}: ${listingTitle}`
 
   const messaging: Record<MessagingChannel, ContactLink> = {
@@ -72,7 +78,14 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
   const [primary, ...secondary] = order.map((channel) => messaging[channel])
   const email: ContactLink = { channel: 'email', href: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`, label: text.email, Icon: Mail, external: false }
 
-  const onClick = (channel: ContactChannel) => {
+  const onClick = (channel: ContactChannel, event: MouseEvent<HTMLAnchorElement>) => {
+    // The buyer questions are required: point at them instead of sending.
+    if (!ready) {
+      event.preventDefault()
+      setTriedToSend(true)
+      document.getElementById(fieldsId)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return
+    }
     recordClick(listingId, channel, locale)
     // WeChat has no web chat link: copy the ID as well, in case the app does not open.
     if (channel === 'wechat') {
@@ -82,14 +95,17 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
   }
   const linkProps = (link: ContactLink) => ({
     href: link.href,
-    onClick: () => onClick(link.channel),
+    onClick: (event: MouseEvent<HTMLAnchorElement>) => onClick(link.channel, event),
+    'aria-disabled': !ready,
     ...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
   })
 
   if (variant === 'bar') {
+    // Until the buyer questions are answered, the bar takes visitors to the contact box that asks them.
+    const barProps = (link: ContactLink) => (ready ? linkProps(link) : { href: '#quick-contact-inline' })
     return <nav aria-label={text.title} data-testid="quick-contact-bar" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-[#dbe2e9] bg-white/95 p-2 shadow-[0_-4px_16px_rgba(27,41,58,0.08)] backdrop-blur lg:hidden">
-      <a {...linkProps(primary)} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><primary.Icon aria-hidden="true" className="h-4 w-4" />{primary.label}</a>
-      <a {...linkProps(secondary[0])} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${OUTLINE_TONE}`}><MessageCircle aria-hidden="true" className="h-4 w-4" />{secondary[0].label}</a>
+      <a {...barProps(primary)} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><primary.Icon aria-hidden="true" className="h-4 w-4" />{primary.label}</a>
+      <a {...barProps(secondary[0])} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${OUTLINE_TONE}`}><MessageCircle aria-hidden="true" className="h-4 w-4" />{secondary[0].label}</a>
     </nav>
   }
 
@@ -100,7 +116,9 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
     <div role="radiogroup" aria-label={text.intentLabel} className="mt-3 grid grid-cols-2 gap-1 rounded-xl bg-[#eef2f6] p-1 sm:grid-cols-4 lg:grid-cols-2">
       {INTENTS.map(({ key, Icon }) => <button key={key} type="button" role="radio" aria-checked={intent === key} onClick={() => setIntent(key)} className={`${key === 'similar' ? 'col-span-2 sm:col-span-4 lg:col-span-2 ' : ''}flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-xs font-semibold transition ${intent === key ? 'bg-white text-[#274d7d] shadow-sm' : 'text-[#536274] hover:bg-white/60'}`}><Icon aria-hidden="true" className="h-4 w-4" />{text.intents[key]}</button>)}
     </div>
-    <div className="mt-3 grid gap-2">
+    <div id={fieldsId} className="mt-3 scroll-mt-24"><BuyerProfileFields locale={locale} profile={profile} onAnswer={answer} showMissing={triedToSend} idPrefix={fieldsId} /></div>
+    {triedToSend && !ready && <p className="mt-2 text-xs font-semibold text-[#b42318]" role="alert">{getProfileCopy(locale).missing}</p>}
+    <div className={`mt-3 grid gap-2 ${ready ? '' : 'opacity-60'}`}>
       <a {...linkProps(primary)} className={`${button} ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><primary.Icon aria-hidden="true" className="h-4 w-4" />{primary.label}</a>
       <div className="grid grid-cols-2 gap-2">
         {secondary.map((link) => <a key={link.channel} {...linkProps(link)} className={`${button} ${OUTLINE_TONE}`}><link.Icon aria-hidden="true" className="h-4 w-4" />{link.label}</a>)}
