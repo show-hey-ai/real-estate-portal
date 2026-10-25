@@ -24,9 +24,10 @@ export function Header({ user }: HeaderProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const links = [
-    { href: '/listings', label: copy.discover, active: pathname === '/' || pathname.startsWith('/listings') },
-    { href: '/match', label: copy.recommendations, active: pathname.startsWith('/match') },
-    { href: '/mypage', label: getMemberCopy(locale).nav, active: pathname.startsWith('/mypage') },
+    // The first three fit a phone's tab row; the rest stay in the menu (≡) on phones.
+    { href: '/listings', label: copy.discover, active: pathname === '/' || pathname.startsWith('/listings'), phone: true },
+    { href: '/match', label: copy.recommendations, active: pathname.startsWith('/match'), phone: true },
+    { href: '/mypage', label: getMemberCopy(locale).nav, active: pathname.startsWith('/mypage'), phone: true },
     // The private chat needs an account; visitors use the no-sign-up LINE/WhatsApp/WeChat buttons instead.
     ...(user ? [{ href: '/chats', label: chat.title, active: pathname.startsWith('/chats') }] : []),
     { href: '/buying-guide', label: t('nav.guides'), active: pathname.startsWith('/buying-guide') },
@@ -73,8 +74,8 @@ export function Header({ user }: HeaderProps) {
         </Sheet>
       </div>
     </div>
-    <div className="border-t border-[#edf0f4]"><nav aria-label={copy.navigation} className="container flex gap-6 overflow-x-auto whitespace-nowrap md:gap-8">
-      {links.map(({ href, label, active }) => <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`flex min-h-12 shrink-0 items-center border-b-2 px-1 text-sm font-medium transition-colors ${active ? 'border-[#274d7d] text-[#274d7d]' : 'border-transparent text-[#657487] hover:text-[#274d7d]'}`}>{label}</Link>)}
+    <div className="border-t border-[#edf0f4]"><nav aria-label={copy.navigation} className="container flex gap-2 overflow-x-auto whitespace-nowrap md:gap-8">
+      {links.map(({ href, label, active, phone }) => <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`${phone ? 'flex max-md:flex-1 max-md:justify-center' : 'hidden md:flex'} min-h-12 shrink-0 items-center border-b-2 px-1 text-sm font-medium transition-colors ${active ? 'border-[#274d7d] text-[#274d7d]' : 'border-transparent text-[#657487] hover:text-[#274d7d]'}`}>{label}</Link>)}
     </nav></div>
   </header>
 }
