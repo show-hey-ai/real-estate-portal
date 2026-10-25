@@ -9,6 +9,9 @@ import { ArrowRight, ArrowUpRight, Check, ChevronDown, ClipboardList, FileSignat
 import { JsonLd } from '@/components/common/json-ld'
 import { MarketShortcuts } from '@/components/listing/market-shortcuts'
 import { WardMap } from '@/components/listing/ward-map'
+import { LineShortcuts } from '@/components/transit/line-shortcuts'
+import { getTransitIndex } from '@/lib/transit/public-index'
+import { transitOptions } from '@/lib/transit/search'
 import { RecentlyViewed } from '@/components/listing/browser-lists-client'
 import { countByWard } from '@/lib/ward-tile-map'
 import { countPriceBands } from '@/lib/price-bands'
@@ -88,8 +91,8 @@ export default async function HomePage() {
   const locale = await getLocale()
   const copy = getPortalHomeCopy(locale)
   const market = getMarketplaceCopy(locale)
-  const [homes, viewer, locationIndex, wardCounts, articles] = await Promise.all([
-    getLatestListings(), getOptionalPublicViewer(), getPublicSearchLocationIndex(), getWardCounts(), getPublicArticles(),
+  const [homes, viewer, locationIndex, wardCounts, articles, transitIndex] = await Promise.all([
+    getLatestListings(), getOptionalPublicViewer(), getPublicSearchLocationIndex(), getWardCounts(), getPublicArticles(), getTransitIndex(locale),
   ])
   const listings = homes.map((home) => ({ ...home,
     price: home.price ? BigInt(home.price) : null,
@@ -138,11 +141,12 @@ export default async function HomePage() {
         <WardMap locale={locale} counts={wardCounts.wards} />
         <PriceBandShortcuts locale={locale} counts={wardCounts.bands} />
       </div>
+      <div className="mt-8"><LineShortcuts index={transitIndex} locale={locale} /></div>
 
       <section data-testid="home-search-panel" className="mt-8 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] px-4 md:px-5">
         <details className="group">
           <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold [&::-webkit-details-marker]:hidden"><span className="flex items-center gap-2"><Search aria-hidden="true" className="h-4 w-4 text-[#57769b]" />{market.filterDetails}</span><ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" /></summary>
-          <div className="pb-5"><HomeSearchForm locationIndex={locationIndex} /></div>
+          <div className="pb-5"><HomeSearchForm locationIndex={locationIndex} transit={transitOptions(transitIndex)} /></div>
         </details>
       </section>
 

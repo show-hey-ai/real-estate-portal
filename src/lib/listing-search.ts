@@ -1,5 +1,6 @@
 import { getMarketCategory, type MarketListingFacts } from './market-category'
 import { matchesTransitFilters } from './public-search'
+import { isSelectionValue } from './transit/selection-value'
 
 export const SEARCH_FILTER_KEYS = [
   'q',
@@ -8,6 +9,8 @@ export const SEARCH_FILTER_KEYS = [
   'ward',
   'line',
   'station',
+  'stations',
+  'lines',
   'prefecture',
   'priceMin',
   'priceMax',
@@ -37,8 +40,10 @@ export function searchNumber(
 export function canonicalSearchQuery(input: URLSearchParams): string {
   const output = new URLSearchParams()
   for (const key of SEARCH_FILTER_KEYS) {
-    const value = input.get(key)?.trim().slice(0, 120)
+    const isSelection = key === 'stations' || key === 'lines'
+    const value = input.get(key)?.trim().slice(0, isSelection ? 800 : 120)
     if (!value) continue
+    if (isSelection && !isSelectionValue(value)) continue
     if (key.startsWith('price') && searchNumber(value, 'price') === null)
       continue
     if (key.startsWith('area') && searchNumber(value, 'area') === null) continue

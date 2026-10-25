@@ -17,7 +17,7 @@ const STATION_ALIASES: Record<string, string> = {
   モノレール浜松町: '浜松町',
   新線新宿: '新宿',
   京王新線新宿: '新宿',
-  羽田空港第1・第2ターミナル駅: '羽田空港第1・第2ターミナル',
+  '羽田空港第1・第2ターミナル駅': '羽田空港第1・第2ターミナル',
 }
 
 const stationByKey = new Map<string, string>([

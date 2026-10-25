@@ -34,6 +34,8 @@ import { publicFreshnessFilters } from '@/lib/public-listing-scope'
 import { normalizePropertyKeyword } from '@/lib/property-keyword'
 import { getSearchExperienceCopy } from '@/lib/search-experience-copy'
 import { getPublicSearchLocationIndex } from '@/lib/public-search-server'
+import { getTransitOptions } from '@/lib/transit/public-index'
+import { hasSelection, matchesStationSelection, parseStationSelection, selectedStations, selectionLabel, transitLabels } from '@/lib/transit/search'
 import {
   getFavoriteIdsForViewer,
   getOptionalPublicViewer,
@@ -64,6 +66,8 @@ interface ListingsPageProps {
     ward?: string
     line?: string
     station?: string
+    stations?: string
+    lines?: string
     prefecture?: string
     priceMin?: string
     priceMax?: string
@@ -85,6 +89,8 @@ function hasActiveSearchFilters(
     params.ward ||
     params.line ||
     params.station ||
+    params.stations ||
+    params.lines ||
     params.prefecture ||
     params.priceMin ||
     params.priceMax ||
@@ -102,9 +108,12 @@ export async function generateMetadata({
   const [params, locale] = await Promise.all([searchParams, getLocale()])
   const siteCopy = getSiteCopy(locale)
   const activeFilters = hasActiveSearchFilters(params)
+  const stationFilterLabel = selectionLabel(parseStationSelection(params.stations, params.lines), locale)
   const filterLabel = isMarketCategory(params.category)
     ? getPortalCategoryLabel(locale, params.category)
-    : params.ward
+    : stationFilterLabel
+      ? stationFilterLabel
+      : params.ward
       ? translateCityName(params.ward, locale) || params.ward
       : params.line
         ? translateRailwayLine(params.line, locale) || params.line
@@ -206,6 +215,7 @@ export default async function ListingsPage({
   const supabase = createServiceClient()
   const viewerPromise = getOptionalPublicViewer()
   const locationIndexPromise = getPublicSearchLocationIndex()
+  const transitPromise = getTransitOptions(locale)
   const distributionPromise = getInventoryDistributions(supabase)
 
   const page = Math.max(1, Number.parseInt(params.page || '1', 10) || 1)
@@ -302,8 +312,12 @@ export default async function ListingsPage({
     searchNumber(params.walkMax, 'walk') !== null ||
     params.line ||
     params.station ||
+    params.stations ||
+    params.lines ||
     (!typedAreaField && (minArea !== null || maxArea !== null))
   )
+  const stationSelection = parseStationSelection(params.stations, params.lines)
+  const selectedStationSet = hasSelection(stationSelection) ? selectedStations(stationSelection) : null
 
   if (requiresManualFiltering) {
     const candidates: ListingRow[] = []
@@ -321,7 +335,8 @@ export default async function ListingsPage({
       matchesListingDetails(listing, {
         ...params,
         category: category || undefined,
-      })
+      }) &&
+      (!selectedStationSet || matchesStationSelection(listing.stations, selectedStationSet, searchNumber(params.walkMax, 'walk')))
     )
 
     total = filteredListings.length
@@ -344,10 +359,11 @@ export default async function ListingsPage({
     media: (listing.media || []).filter((item) => item.isAdopted),
   }))
 
-  const [locationIndex, viewer, distribution] = await Promise.all([
+  const [locationIndex, viewer, distribution, transit] = await Promise.all([
     locationIndexPromise,
     viewerPromise,
     distributionPromise,
+    transitPromise,
   ])
   const copy = getPortalListingsCopy(locale)
   const searchCopy = getSearchExperienceCopy(locale)
@@ -405,6 +421,7 @@ export default async function ListingsPage({
               <Suspense fallback={<Skeleton className="h-96 rounded-[8px]" />}>
                 <ListingFilters
                   locationIndex={locationIndex}
+                  transit={transit}
                   total={total}
                   distribution={distribution}
                 />
@@ -418,6 +435,7 @@ export default async function ListingsPage({
                 total={total}
                 page={page}
                 perPage={perPage}
+                transitLabels={transitLabels(stationSelection, locale)}
               />
             </Suspense>
 

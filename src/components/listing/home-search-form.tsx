@@ -6,27 +6,21 @@ import { ChevronDown, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getPortalHomeCopy, getPortalPropertyTypes } from '@/lib/portal-copy'
 import { cn } from '@/lib/utils'
-import {
-  getStationsForLine,
-  normalizeRailwayLine,
-  type PublicSearchLocationIndex,
-} from '@/lib/public-search'
-import {
-  translateCityName,
-  translateRailwayLine,
-  translateStationName,
-} from '@/lib/translate-fields'
+import { type PublicSearchLocationIndex } from '@/lib/public-search'
+import type { TransitOptions } from '@/lib/transit/search'
+import { translateCityName } from '@/lib/translate-fields'
 
 interface HomeSearchFormProps {
   compact?: boolean
   locationIndex: PublicSearchLocationIndex
+  transit: TransitOptions
 }
 
 const areaOptions = ['20', '50', '100', '200']
 const priceOptions = ['30000000', '50000000', '100000000', '300000000']
 const walkOptions = ['5', '10', '15']
 
-export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFormProps) {
+export function HomeSearchForm({ compact = false, locationIndex, transit }: HomeSearchFormProps) {
   const t = useTranslations()
   const locale = useLocale()
   const [line, setLine] = useState('')
@@ -34,7 +28,7 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
   const propertyTypes = getPortalPropertyTypes(locale)
   const copy = getPortalHomeCopy(locale)
 
-  const stations = getStationsForLine(locationIndex, line)
+  const stations = transit.lines.find((option) => option.value === line)?.stations ?? []
 
   const fieldClassName = cn(
     'rounded-[4px] border border-[#cbd5df] bg-white text-sm text-[#1b293a] outline-none transition focus:border-[#274d7d] focus:ring-2 focus:ring-[#274d7d]/15',
@@ -99,26 +93,27 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
           <option value="">{t('search.allTypes')}</option>
           {propertyTypes.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
         </select>
+        {/* A chosen station narrows the line to that station, so only one of the two is sent. */}
         <select
-          name="line"
+          name={station ? undefined : 'lines'}
           aria-label={t('search.allLines')}
           value={line}
           onChange={(event) => {
-            setLine(normalizeRailwayLine(event.target.value))
+            setLine(event.target.value)
             setStation('')
           }}
           className={fieldClassName}
         >
           <option value="">{t('search.allLines')}</option>
-          {locationIndex.lines.map((option) => (
-            <option key={option} value={option}>
-              {translateRailwayLine(option, locale) || option}
+          {transit.lines.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>
 
         <select
-          name="station"
+          name="stations"
           aria-label={t('search.allStations')}
           value={station}
           onChange={(event) => setStation(event.target.value)}
@@ -126,9 +121,9 @@ export function HomeSearchForm({ compact = false, locationIndex }: HomeSearchFor
           className={fieldClassName}
         >
           <option value="">{line ? t('search.allStations') : t('search.selectLineFirst')}</option>
-          {stations.map((station) => (
-            <option key={station} value={station}>
-              {translateStationName(station, locale) || station}
+          {stations.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>

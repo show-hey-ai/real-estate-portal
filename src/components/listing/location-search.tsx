@@ -4,21 +4,20 @@ import { useId, useMemo, useState } from 'react'
 import { MapPin, Search, TrainFront } from 'lucide-react'
 import type { PublicSearchLocationIndex } from '@/lib/public-search'
 import { getSearchExperienceCopy } from '@/lib/search-experience-copy'
-import {
-  translateCityName,
-  translateRailwayLine,
-  translateStationName,
-} from '@/lib/translate-fields'
+import type { TransitOptions } from '@/lib/transit/search'
+import { translateCityName } from '@/lib/translate-fields'
 
 interface LocationSearchProps {
   locale: string
   locationIndex: PublicSearchLocationIndex
+  transit: TransitOptions
   onSelect: (updates: Record<string, string>) => void
 }
 
 export function LocationSearch({
   locale,
   locationIndex,
+  transit,
   onSelect,
 }: LocationSearchProps) {
   const id = useId()
@@ -33,22 +32,23 @@ export function LocationSearch({
       label: translateCityName(value, locale) || value,
       type: copy.ward,
     }))
-    const lines = locationIndex.lines.map((value) => ({
-      kind: 'line',
+    // Lines and stations select the line/station search (`lines`, `stations`).
+    const lines = transit.lines.map(({ value, label }) => ({
+      kind: 'lines',
       value,
-      label: translateRailwayLine(value, locale) || value,
+      label,
       type: copy.line,
     }))
     const stations = [
-      ...new Set(Object.values(locationIndex.stationsByLine).flat()),
-    ].map((value) => ({
-      kind: 'station',
+      ...new Map(transit.lines.flatMap((line) => line.stations).map((station) => [station.value, station])).values(),
+    ].map(({ value, label }) => ({
+      kind: 'stations',
       value,
-      label: translateStationName(value, locale) || value,
+      label,
       type: copy.station,
     }))
     return [...wards, ...lines, ...stations]
-  }, [locationIndex, locale, copy])
+  }, [locationIndex, transit, locale, copy])
   const needle = query.normalize('NFKC').toLocaleLowerCase().trim()
   const matches = needle
     ? options
@@ -67,6 +67,8 @@ export function LocationSearch({
       ward: '',
       line: '',
       station: '',
+      stations: '',
+      lines: '',
       prefecture: '',
       [option.kind]: option.value,
     })

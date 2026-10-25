@@ -1,19 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
-import { ChevronDown, Search, SlidersHorizontal } from 'lucide-react'
+import { ChevronDown, Search, SlidersHorizontal, TrainFront, X } from 'lucide-react'
 import { getPortalHomeCopy, getPortalPropertyTypes } from '@/lib/portal-copy'
-import {
-  getStationsForLine,
-  normalizeRailwayLine,
-  type PublicSearchLocationIndex,
-} from '@/lib/public-search'
+import { type PublicSearchLocationIndex } from '@/lib/public-search'
 import {
   SEARCH_FILTER_KEYS,
   type InventoryDistributions,
 } from '@/lib/listing-search'
 import { getSearchExperienceCopy } from '@/lib/search-experience-copy'
+import { getTransitCopy } from '@/lib/transit/copy'
+import type { TransitOptions } from '@/lib/transit/search'
 import {
   translateCityName,
   translateRailwayLine,
@@ -25,6 +24,7 @@ import { useListingSearch } from './use-listing-search'
 
 interface ListingFiltersProps {
   locationIndex: PublicSearchLocationIndex
+  transit: TransitOptions
   total: number
   distribution: InventoryDistributions
 }
@@ -59,8 +59,38 @@ function FilterSelect({
   )
 }
 
+/** The chosen lines and stations (and older single line/station links), each removable. */
+function TransitChoice({ transit, locale, searchParams, update }: {
+  transit: TransitOptions
+  locale: string
+  searchParams: URLSearchParams
+  update: (updates: Record<string, string>) => void
+}) {
+  const copy = getTransitCopy(locale)
+  const lineIds = (searchParams.get('lines') ?? '').split(',').filter(Boolean)
+  const slugs = (searchParams.get('stations') ?? '').split(',').filter(Boolean)
+  const stationLabels = new Map(transit.lines.flatMap((line) => line.stations.map((station): [string, string] => [station.value, station.label])))
+  const without = (values: string[], value: string) => values.filter((item) => item !== value).join(',')
+  const chips: { key: string; label: string; remove: Record<string, string> }[] = [
+    ...lineIds.map((id) => ({ key: `lines:${id}`, label: transit.lines.find((line) => line.value === id)?.label ?? id, remove: { lines: without(lineIds, id) } })),
+    ...slugs.map((slug) => ({ key: `stations:${slug}`, label: stationLabels.get(slug) ?? slug, remove: { stations: without(slugs, slug) } })),
+    ...(searchParams.get('line') ? [{ key: 'line', label: translateRailwayLine(searchParams.get('line'), locale) || searchParams.get('line')!, remove: { line: '', station: '' } }] : []),
+    ...(searchParams.get('station') ? [{ key: 'station', label: translateStationName(searchParams.get('station'), locale) || searchParams.get('station')!, remove: { station: '' } }] : []),
+  ]
+  return <div className="space-y-2" data-testid="transit-choice">
+    <h3 className="flex items-center gap-1.5 text-xs font-medium text-[#536d76]"><TrainFront aria-hidden="true" className="h-3.5 w-3.5" />{copy.entryTitle}</h3>
+    {chips.length > 0 && <ul className="flex flex-wrap gap-1.5">
+      {chips.map((chip) => <li key={chip.key}>
+        <button type="button" onClick={() => update(chip.remove)} aria-label={copy.remove(chip.label)} className="inline-flex items-center gap-1 rounded-full bg-[#e4efe9] px-2.5 py-1 text-xs font-semibold text-[#2d5148]">{chip.label}<X aria-hidden="true" className="h-3 w-3" /></button>
+      </li>)}
+    </ul>}
+    <Link href={`/lines${searchParams.toString() ? `?${searchParams.toString()}` : ''}`} className="flex h-10 items-center justify-center rounded-lg border border-[#cfddd6] bg-white text-xs font-semibold text-[#39786e] hover:bg-[#edf5f1]">{chips.length ? copy.change : copy.choose}</Link>
+  </div>
+}
+
 export function ListingFilters({
   locationIndex,
+  transit,
   total,
   distribution,
 }: ListingFiltersProps) {
@@ -71,12 +101,6 @@ export function ListingFilters({
   const homeCopy = getPortalHomeCopy(locale)
   const { searchParams, isPending, update, navigate } = useListingSearch()
   const propertyTypes = getPortalPropertyTypes(locale)
-  const selectedLine = normalizeRailwayLine(searchParams.get('line'))
-  const stationOptions = selectedLine
-    ? getStationsForLine(locationIndex, selectedLine)
-    : [...new Set(Object.values(locationIndex.stationsByLine).flat())].sort(
-        (a, b) => a.localeCompare(b, 'ja')
-      )
   const activeCount = SEARCH_FILTER_KEYS.filter((key) =>
     searchParams.get(key)
   ).length
@@ -119,8 +143,10 @@ export function ListingFilters({
         <LocationSearch
           locale={locale}
           locationIndex={locationIndex}
+          transit={transit}
           onSelect={update}
         />
+        <TransitChoice transit={transit} locale={locale} searchParams={new URLSearchParams(searchParams.toString())} update={update} />
         <div className="space-y-2">
           <h3 className="text-xs font-medium text-[#536d76]">
             {homeCopy.categoryTitle}
@@ -188,9 +214,7 @@ export function ListingFilters({
           open={Boolean(
             searchParams.get('type') ||
             searchParams.get('q') ||
-            searchParams.get('ward') ||
-            selectedLine ||
-            searchParams.get('station')
+            searchParams.get('ward')
           )}
         >
           <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-[#3e6258] [&::-webkit-details-marker]:hidden">
@@ -219,30 +243,6 @@ export function ListingFilters({
                 ...locationIndex.wards.map((ward): [string, string] => [
                   ward,
                   translateCityName(ward, locale) || ward,
-                ]),
-              ]}
-            />
-            <FilterSelect
-              label={copy.line}
-              value={selectedLine}
-              onChange={(value) => update({ line: value, station: '' })}
-              options={[
-                ['', t('allLines')],
-                ...locationIndex.lines.map((line): [string, string] => [
-                  line,
-                  translateRailwayLine(line, locale) || line,
-                ]),
-              ]}
-            />
-            <FilterSelect
-              label={copy.station}
-              value={searchParams.get('station') || ''}
-              onChange={(value) => update({ station: value })}
-              options={[
-                ['', t('allStations')],
-                ...stationOptions.map((station): [string, string] => [
-                  station,
-                  translateStationName(station, locale) || station,
                 ]),
               ]}
             />

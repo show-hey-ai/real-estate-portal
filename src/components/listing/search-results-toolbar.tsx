@@ -47,8 +47,13 @@ function serverSnapshot() {
   return null
 }
 
-function criterionLabel(key: SearchFilterKey, value: string, locale: string) {
+// Slugs read well enough when a saved search names stations the page has no labels for.
+const prettySlug = (slug: string) => slug.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
+
+function criterionLabel(key: SearchFilterKey, value: string, locale: string, transitLabels: Record<string, string> = {}) {
   const copy = getSearchExperienceCopy(locale)
+  if (key === 'stations' || key === 'lines')
+    return value.split(',').map((item) => transitLabels[item] ?? prettySlug(item)).join(locale === 'en' ? ', ' : '・')
   if (key === 'category' && isMarketCategory(value))
     return getPortalCategoryLabel(locale, value)
   if (key === 'ward') return translateCityName(value, locale) || value
@@ -67,10 +72,13 @@ export function SearchResultsToolbar({
   total,
   page,
   perPage,
+  transitLabels,
 }: {
   total: number
   page: number
   perPage: number
+  /** Names of the selected lines and stations, by line id and station slug. */
+  transitLabels?: Record<string, string>
 }) {
   const locale = useLocale()
   const t = useTranslations('search')
@@ -82,7 +90,7 @@ export function SearchResultsToolbar({
   const criteria = SEARCH_FILTER_KEYS.flatMap((key) => {
     const value = new URLSearchParams(canonical).get(key)
     return value
-      ? [{ key, value, label: criterionLabel(key, value, locale) }]
+      ? [{ key, value, label: criterionLabel(key, value, locale, transitLabels) }]
       : []
   })
   const raw = useSyncExternalStore(subscribe, snapshot, serverSnapshot)
@@ -117,7 +125,7 @@ export function SearchResultsToolbar({
     const params = new URLSearchParams(query)
     return SEARCH_FILTER_KEYS.flatMap((key) => {
       const value = params.get(key)
-      return value ? [criterionLabel(key, value, locale)] : []
+      return value ? [criterionLabel(key, value, locale, transitLabels)] : []
     }).join(' · ')
   }
   const currentSaved = saved.some((item) => item.query === canonical)
