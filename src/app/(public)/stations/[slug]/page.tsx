@@ -110,7 +110,7 @@ export default async function StationPage({ params }: Props) {
         </div>
         <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-4">
           <dt className="text-xs font-semibold text-[#4a6789]">{copy.neighbours}</dt>
-          <dd className="mt-2 space-y-1.5 text-sm">{lines.map((line) => <p key={line.id} className="flex flex-wrap items-center gap-x-2 gap-y-1"><span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: line.color }} /><span className="sr-only">{lineLabel(line, locale)}: </span>{lineNeighbours(line, name).map((other, index) => <span key={other} className="inline-flex items-center gap-2">{index > 0 && <span aria-hidden="true" className="text-[#a9b3bd]">·</span>}{stationLink(other)}</span>)}</p>)}</dd>
+          <dd className="mt-2 space-y-1.5 text-sm">{lines.map((line) => <p key={line.id} className="flex flex-wrap items-center gap-x-2 gap-y-1"><span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: line.color }} /><span className="text-xs text-[#536274]">{lineLabel(line, locale)}</span>{lineNeighbours(line, name).map((other, index) => <span key={other} className="inline-flex items-center gap-2">{index > 0 && <span aria-hidden="true" className="text-[#a9b3bd]">·</span>}{stationLink(other)}</span>)}</p>)}</dd>
         </div>
       </dl>
 

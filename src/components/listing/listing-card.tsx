@@ -37,6 +37,8 @@ import { useFxRates } from '@/components/fx/fx-rates-context'
 import { formatApproxPrice } from '@/lib/fx'
 import { getTradeChatCopy } from '@/lib/trade-chat'
 
+// Signed-out visitors go to the listing's no-sign-up contact box instead of the sign-in page.
+const ASK_LABEL: Record<string, string> = { ja: 'この物件について相談（登録不要）', en: 'Ask about this property (no sign-up)', 'zh-TW': '諮詢此物件（免註冊）', 'zh-CN': '咨询此房源（免注册）' }
 const YIELD_LABEL: Record<string, string> = { ja: '表面利回り', en: 'Gross yield', 'zh-TW': '表面投報率', 'zh-CN': '表面收益率' }
 
 const NEW_LISTING_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
@@ -192,9 +194,9 @@ export function ListingCard({
                 variant="ghost"
                 size="icon"
                 className="h-11 w-11 rounded-lg text-[#657487] hover:bg-[#e9f0f7] hover:text-[#274d7d]"
-                aria-label={getTradeChatCopy(locale).start}
+                aria-label={userId ? getTradeChatCopy(locale).start : ASK_LABEL[locale] ?? ASK_LABEL.en}
               >
-                <Link href={`/chats?listing=${listing.id}&start=1`} rel="nofollow"><MessageCircle aria-hidden="true" className="h-4 w-4" /></Link>
+                <Link href={userId ? `/chats?listing=${listing.id}&start=1` : `/listings/${listing.id}#quick-contact-inline`} rel="nofollow"><MessageCircle aria-hidden="true" className="h-4 w-4" /></Link>
               </Button>
             {showFavoriteButton && (
               <FavoriteIconButton
