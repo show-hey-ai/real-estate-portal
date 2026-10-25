@@ -21,6 +21,8 @@ export const SEARCH_FILTER_KEYS = [
 export type SearchFilterKey = (typeof SEARCH_FILTER_KEYS)[number]
 export type SearchCriteria = Partial<Record<SearchFilterKey | 'sort', string>>
 export const SAVED_SEARCH_STORAGE_KEY = 'ziyou:searches:v1'
+export const SAVED_SEARCH_LIMIT = 20
+export const SAVED_SEARCH_CHANGE_EVENT = 'ziyou-searches-change'
 
 export function searchNumber(
   value: string | undefined,
@@ -174,7 +176,7 @@ export function readSavedSearches(raw: string | null): SavedSearch[] {
     const entries: unknown = JSON.parse(raw)
     if (!Array.isArray(entries)) return []
     const seen = new Set<string>()
-    return entries.slice(0, 8).flatMap((entry) => {
+    return entries.slice(0, SAVED_SEARCH_LIMIT).flatMap((entry) => {
       if (
         !entry ||
         typeof entry.query !== 'string' ||

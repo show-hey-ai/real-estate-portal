@@ -41,8 +41,8 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // 認証が必要なページ（お気に入り、問い合わせ）
-  const protectedPaths = ['/favorites', '/inquiry']
+  // 認証が必要なページ（問い合わせ）。お気に入りはマイページに移り、ログインなしでも使える。
+  const protectedPaths = ['/inquiry']
   const isProtectedPath = protectedPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
   )

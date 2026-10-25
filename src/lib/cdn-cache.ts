@@ -11,7 +11,7 @@ export const CDN_CACHE_HEADER = 'Vercel-CDN-Cache-Control'
 export const CDN_CACHE_VALUE = 'max-age=600, stale-while-revalidate=600'
 
 // Pages that depend on the visitor (forms, saved items, sign-in) or are never meant for search.
-const PERSONAL = /^\/(?:admin|favorites|inquiry|chats|login|register|match|alerts|preview|compare|auth)(?:\/|$)/
+const PERSONAL = /^\/(?:admin|favorites|mypage|inquiry|chats|login|register|match|alerts|preview|compare|auth)(?:\/|$)/
 
 export type CachePlan = { action: 'cache' } | { action: 'none' } | { action: 'redirect'; location: string }
 

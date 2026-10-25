@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from 'next-intl'
 import { Bookmark, Check, SlidersHorizontal, X } from 'lucide-react'
 import {
   SEARCH_FILTER_KEYS,
+  SAVED_SEARCH_CHANGE_EVENT,
+  SAVED_SEARCH_LIMIT,
   SAVED_SEARCH_STORAGE_KEY,
   canonicalSearchQuery,
   readSavedSearches,
@@ -23,8 +25,9 @@ import {
   translateStationName,
 } from '@/lib/translate-fields'
 import { useListingSearch } from './use-listing-search'
+import { MEMBER_REMOVE_SEARCH_EVENT } from '@/lib/member-lists'
 
-const changeEvent = 'ziyou-searches-change'
+const changeEvent = SAVED_SEARCH_CHANGE_EVENT
 function subscribe(callback: () => void) {
   function changed(event: StorageEvent) {
     if (event.key === SAVED_SEARCH_STORAGE_KEY || event.key === null) callback()
@@ -66,6 +69,15 @@ function criterionLabel(key: SearchFilterKey, value: string, locale: string, tra
     return `${value}m² ${key === 'areaMin' ? copy.from : copy.to}`
   if (key === 'walkMax') return `${copy.walk} ${value} ${copy.minutes}`
   return value
+}
+
+/** A saved search as a short readable line ("港区 · 1億円 以下"), for lists outside the results page. */
+export function describeSavedSearch(query: string, locale: string): string {
+  const params = new URLSearchParams(query)
+  return SEARCH_FILTER_KEYS.flatMap((key) => {
+    const value = params.get(key)
+    return value ? [criterionLabel(key, value, locale)] : []
+  }).join(' · ')
 }
 
 export function SearchResultsToolbar({
@@ -114,7 +126,7 @@ export function SearchResultsToolbar({
         [
           { query: canonical, savedAt: new Date().toISOString() },
           ...saved.filter((item) => item.query !== canonical),
-        ].slice(0, 8)
+        ].slice(0, SAVED_SEARCH_LIMIT)
       )
     ) {
       setNotice(copy.savedNotice)
@@ -254,9 +266,9 @@ export function SearchResultsToolbar({
               <button
                 type="button"
                 aria-label={`${copy.deleteSaved}: ${savedLabel(item.query)}`}
-                onClick={() =>
-                  persist(saved.filter((entry) => entry.query !== item.query))
-                }
+                onClick={() => {
+                  if (persist(saved.filter((entry) => entry.query !== item.query))) window.dispatchEvent(new CustomEvent(MEMBER_REMOVE_SEARCH_EVENT, { detail: item.query }))
+                }}
                 className="mr-2 shrink-0 rounded-md p-2 text-[#7c8e90] hover:bg-[#eef4f1]"
               >
                 <X className="h-4 w-4" />

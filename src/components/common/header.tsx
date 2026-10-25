@@ -11,6 +11,7 @@ import { getMarketplaceCopy } from '@/lib/marketplace-copy'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { LocaleSwitcher } from './locale-switcher'
+import { getMemberCopy } from '@/lib/member-copy'
 
 interface HeaderProps { user?: { email: string; role: string } | null }
 
@@ -25,7 +26,7 @@ export function Header({ user }: HeaderProps) {
   const links = [
     { href: '/listings', label: copy.discover, active: pathname === '/' || pathname.startsWith('/listings') },
     { href: '/match', label: copy.recommendations, active: pathname.startsWith('/match') },
-    { href: '/favorites', label: t('nav.favorites'), active: pathname.startsWith('/favorites') },
+    { href: '/mypage', label: getMemberCopy(locale).nav, active: pathname.startsWith('/mypage') },
     // The private chat needs an account; visitors use the no-sign-up LINE/WhatsApp/WeChat buttons instead.
     ...(user ? [{ href: '/chats', label: chat.title, active: pathname.startsWith('/chats') }] : []),
     { href: '/buying-guide', label: t('nav.guides'), active: pathname.startsWith('/buying-guide') },
@@ -59,7 +60,7 @@ export function Header({ user }: HeaderProps) {
           <SheetContent side="right" className="w-[280px] overflow-y-auto">
             <SheetHeader><SheetTitle>{t('common.appName')}</SheetTitle><SheetDescription className="sr-only">{copy.navigation}</SheetDescription></SheetHeader>
             <nav aria-label={copy.navigation} className="mt-3 flex flex-col gap-4 px-4 pb-6">
-              {links.map(({ href, label, active }) => <Link key={href} href={href} onClick={() => setIsOpen(false)} aria-current={active ? 'page' : undefined} className="flex min-h-10 items-center gap-2 text-base font-medium hover:text-primary">{href === '/favorites' && <Heart aria-hidden="true" className="h-4 w-4" />}{label}</Link>)}
+              {links.map(({ href, label, active }) => <Link key={href} href={href} onClick={() => setIsOpen(false)} aria-current={active ? 'page' : undefined} className="flex min-h-10 items-center gap-2 text-base font-medium hover:text-primary">{href === '/mypage' && <Heart aria-hidden="true" className="h-4 w-4" />}{label}</Link>)}
               {user ? <>
                 {user.role === 'ADMIN' && <Link href="/admin" onClick={() => setIsOpen(false)} className="text-base font-medium">{t('nav.admin')}</Link>}
                 <div className="mt-2 border-t pt-4"><p className="mb-3 break-all text-sm text-muted-foreground">{user.email}</p><form action="/api/auth/logout" method="POST"><Button variant="outline" className="w-full" type="submit">{t('common.logout')}</Button></form></div>

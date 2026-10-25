@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
     return [{
       // Every public page except personal ones; a plain URL is always English (the proxy sends
       // visitors who chose another language to its ?lang= URL before the cache).
-      source: '/((?!admin|favorites|inquiry|chats|login|register|match|alerts|preview|compare|auth|api/|_next/).*)',
+      source: '/((?!admin|favorites|mypage|inquiry|chats|login|register|match|alerts|preview|compare|auth|api/|_next/).*)',
       missing: signedInCookies,
       headers: [{ key: 'Vercel-CDN-Cache-Control', value: 'max-age=600, stale-while-revalidate=600' }],
     }]

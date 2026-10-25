@@ -97,22 +97,22 @@ export const helpArticles: HelpArticle[] = [
     text: {
       ja: {
         title: '検索条件の保存と、お気に入りの違いは？',
-        body: '物件一覧の「検索条件を保存」は、そのブラウザーに条件を最大8件保存します。ログインは不要です。別の端末には同期されず、ブラウザーの保存データを消すと失われます。新着通知はありません。物件自体を保存するには、ログインして物件ページの「お気に入りに追加」を使ってください。',
+        body: '物件一覧の「この条件を保存」で、検索条件を最大20件保存できます。ログインしなくても使え、そのブラウザーに保存されます。ログインすると会員情報にも保存され、スマホとパソコンで同じ条件を使えます。保存した条件はマイページから開けます。物件そのものを残したいときは、物件のハート（お気に入り）を使います。',
         action: '検索条件を保存する',
       },
       en: {
         title: 'What are saved searches?',
-        body: 'Save search on the listings page stores up to eight sets of filters in this browser, without signing in. They do not sync to another device and are lost if browser storage is cleared. There are no new-listing alerts. To save an individual property, sign in and use Add to favorites on its page.',
+        body: 'Save this search on the listings page keeps up to 20 sets of filters. It works without signing in and is kept in this browser; when you sign in it is also saved to your account, so the same searches appear on your phone and computer. Open them from My page. To keep an individual property, tap its heart (favorites).',
         action: 'Save search filters',
       },
       'zh-TW': {
         title: '儲存搜尋條件與收藏有何不同？',
-        body: '物件列表的「儲存搜尋」可在目前瀏覽器保存最多8組條件，不必登入。不會同步到其他裝置，清除瀏覽器儲存資料後會消失。目前沒有新物件通知。若要收藏單一物件，請登入後在物件頁加入收藏。',
+        body: '在物件列表點選「儲存這組條件」，最多可保存20組條件。不登入也能使用，會保存在目前的瀏覽器；登入後也會保存到帳號，手機與電腦可使用相同條件。可從「我的頁面」開啟。若要保留單一物件，請點選物件上的愛心（收藏）。',
         action: '儲存搜尋條件',
       },
       'zh-CN': {
         title: '保存搜索条件与收藏有何不同？',
-        body: '房产列表的“保存搜索”可在当前浏览器保存最多8组条件，不必登录。不会同步到其他设备，清除浏览器存储数据后会消失。目前没有新房源通知。若要收藏单个房产，请登录后在房产页加入收藏。',
+        body: '在房源列表点击“保存这组条件”，最多可保存20组条件。不登录也能使用，会保存在当前浏览器；登录后也会保存到账号，手机和电脑可使用相同条件。可从“我的页面”打开。若要保留单个房源，请点击房源上的爱心（收藏）。',
         action: '保存搜索条件',
       },
     },
@@ -120,7 +120,7 @@ export const helpArticles: HelpArticle[] = [
   {
     id: 'favorites',
     category: 'account',
-    href: '/favorites',
+    href: '/mypage',
     keywords: [
       'お気に入り',
       'ブックマーク',
@@ -132,23 +132,23 @@ export const helpArticles: HelpArticle[] = [
     text: {
       ja: {
         title: '物件をお気に入りに追加するには？',
-        body: 'ログインして物件ページの「お気に入りに追加」を押すと保存できます。保存済みの物件は、お気に入りページから開けます。掲載が終了した物件や公開対象外の物件は表示されません。',
-        action: 'お気に入りを開く',
+        body: '物件のハート（お気に入りに追加）を押すと保存できます。ログインは不要で、そのブラウザーに保存されます。ログインすると会員情報にも保存され、どの端末からでも見られます。保存した物件はマイページから開けます。掲載が終了した物件や公開対象外の物件は表示されません。',
+        action: 'マイページを開く',
       },
       en: {
         title: 'How do I save a favorite property?',
-        body: 'Sign in and select Add to favorites on the property page. Open the favorites page to revisit saved properties. Listings that are no longer published or eligible for public display will not appear.',
-        action: 'Open favorites',
+        body: 'Tap the heart (Add to favorites) on a property. No account is needed: it is kept in this browser, and when you sign in it is also saved to your account so you can see it on any device. Open saved properties from My page. Listings that are no longer published or eligible for public display will not appear.',
+        action: 'Open My page',
       },
       'zh-TW': {
         title: '如何收藏物件？',
-        body: '登入後在物件頁按「加入收藏」即可儲存。已收藏的物件可從收藏頁查看。已停止刊登或不再公開的物件不會顯示。',
-        action: '開啟收藏',
+        body: '點選物件上的愛心（加入收藏）即可儲存。不必登入，會保存在目前的瀏覽器；登入後也會保存到帳號，任何裝置都能查看。已收藏的物件可從「我的頁面」開啟。已停止刊登或不再公開的物件不會顯示。',
+        action: '開啟我的頁面',
       },
       'zh-CN': {
         title: '如何收藏房产？',
-        body: '登录后在房产页按“加入收藏”即可保存。已收藏的房产可从收藏页查看。已停止刊登或不再公开的房产不会显示。',
-        action: '打开收藏',
+        body: '点击房源上的爱心（加入收藏）即可保存。不必登录，会保存在当前浏览器；登录后也会保存到账号，任何设备都能查看。已收藏的房源可从“我的页面”打开。已停止刊登或不再公开的房源不会显示。',
+        action: '打开我的页面',
       },
     },
   },

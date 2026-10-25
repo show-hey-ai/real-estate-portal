@@ -10,6 +10,7 @@ import { FxRatesProvider } from '@/components/fx/fx-rates-context'
 import { LanguageSuggestion } from '@/components/common/language-suggestion'
 import { LocaleMemory } from '@/components/common/locale-memory'
 import { Suspense } from 'react'
+import { MemberSync } from '@/components/member/member-sync'
 
 export default async function PublicLayout({
   children,
@@ -29,6 +30,7 @@ export default async function PublicLayout({
         <LocaleMemory />
         <Footer guides={<FooterGuides />} />
         <CompareBar />
+        {user && <MemberSync userId={user.id} />}
       </div>
     </FxRatesProvider>
   )

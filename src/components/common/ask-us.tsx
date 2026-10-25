@@ -138,7 +138,7 @@ export function AskUs({ topic, pageUrl, variant = 'general', initialPurpose = ''
 }
 
 /** Pages that already show their own contact block, or where asking makes no sense. */
-const OWN_CONTACT = [/^\/(match|other-listings|listings|lines\/[^/]+|stations\/[^/]+)$/, /^\/listings\/[^/]+$/, /^\/guides\/[^/]+$/, /^\/areas\/[^/]+$/, /^\/(chats|favorites|login|register|alerts|preview)(\/|$)/]
+const OWN_CONTACT = [/^\/(match|other-listings|listings|lines\/[^/]+|stations\/[^/]+)$/, /^\/listings\/[^/]+$/, /^\/guides\/[^/]+$/, /^\/areas\/[^/]+$/, /^\/(chats|favorites|mypage|login|register|alerts|preview)(\/|$)/]
 
 /** Site-wide contact block above the footer, except on pages listed in OWN_CONTACT. */
 export function SiteAskUs() {

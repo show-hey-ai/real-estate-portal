@@ -3,7 +3,7 @@ import { updateSession } from '@/lib/supabase/middleware'
 import { LOCALE_HEADER, LOCALE_QUERY, isLocale } from '@/lib/locale-url'
 import { publicCachePlan } from '@/lib/cdn-cache'
 
-const SESSION_PATHS = ['/admin', '/favorites', '/inquiry', '/chats']
+const SESSION_PATHS = ['/admin', '/favorites', '/mypage', '/inquiry', '/chats']
 
 export async function proxy(request: NextRequest) {
   const { pathname, searchParams, search } = request.nextUrl
@@ -32,6 +32,7 @@ export const config = {
   matcher: [
     '/admin/:path*',
     '/favorites/:path*',
+    '/mypage/:path*',
     '/inquiry/:path*',
     '/chats/:path*',
     // Public pages, excluding Next.js assets, API routes and files with an extension.

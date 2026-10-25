@@ -16,7 +16,7 @@ test('retrieves grounded saved-filter instructions in all four languages', () =>
       result.body,
       helpArticles.find((a) => a.id === result.id)!.text[locale].body
     )
-    assert.match(result.body, /8|eight/)
+    assert.match(result.body, /20/)
   }
 })
 test('supports natural questions and multi-topic retrieval without fabricating facts', () => {
@@ -60,7 +60,7 @@ test('all topics have complete localized content, stable section IDs and safe in
   assert.equal(new Set(helpArticles.map((a) => a.id)).size, helpArticles.length)
   for (const article of helpArticles) {
     assert.match(article.id, /^[a-z-]+$/)
-    assert.match(article.href, /^\/(?:listings|favorites|buying-guide|login)$/)
+    assert.match(article.href, /^\/(?:listings|mypage|buying-guide|login)$/)
     for (const locale of ['ja', 'en', 'zh-TW', 'zh-CN'] as const) {
       assert.ok(
         article.text[locale].title &&

@@ -16,6 +16,7 @@ model User {
   updatedAt DateTime   @updatedAt
   adminLogs AdminLog[]
   favorites Favorite[]
+  memberLists MemberLists?
   leads     Lead[]
   listings  Listing[]  @relation("CreatedBy")
 
@@ -239,6 +240,18 @@ model ExtractionEvidence {
   listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 
   @@map("extraction_evidences")
+}
+
+/// A signed-in member's recently viewed listings, saved searches and buyer answers, shared across devices.
+model MemberLists {
+  userId        String   @id
+  recent        Json     @default("[]")
+  savedSearches Json     @default("[]")
+  buyerProfile  Json     @default("{}")
+  updatedAt     DateTime @default(now()) @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("member_lists")
 }
 
 model Favorite {

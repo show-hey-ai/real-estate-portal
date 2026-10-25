@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Heart } from 'lucide-react'
 import { toast } from 'sonner'
+import { useFavorite } from '@/components/member/use-favorite'
 
 interface FavoriteIconButtonProps {
   listingId: string
@@ -21,37 +20,14 @@ export function FavoriteIconButton({
   className,
 }: FavoriteIconButtonProps) {
   const t = useTranslations('listing')
-  const router = useRouter()
-  const [isFavorite, setIsFavorite] = useState(initialFavorite)
-  const [isLoading, setIsLoading] = useState(false)
+  const { isFavorite, busy, toggle } = useFavorite(listingId, userId, initialFavorite)
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-
-    if (!userId) {
-      router.push(`/login?redirect=/listings/${listingId}`)
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      const res = await fetch('/api/favorites', {
-        method: isFavorite ? 'DELETE' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ listingId }),
-      })
-
-      if (!res.ok) throw new Error()
-
-      setIsFavorite(!isFavorite)
-      router.refresh()
-    } catch {
-      toast.error(t('error'))
-    } finally {
-      setIsLoading(false)
-    }
+    const result = await toggle()
+    if (!result.ok) toast.error(t('error'))
+    else if (result.hint) toast.success(result.hint)
   }
 
   return (
@@ -59,7 +35,7 @@ export function FavoriteIconButton({
       variant="ghost"
       size="icon"
       onClick={handleToggle}
-      disabled={isLoading}
+      disabled={busy}
       aria-label={isFavorite ? t('removeFavorite') : t('addFavorite')}
       aria-pressed={isFavorite}
       className={className}

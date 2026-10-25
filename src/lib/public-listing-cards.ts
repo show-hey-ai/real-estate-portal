@@ -25,6 +25,26 @@ export async function getLatestListingCards(limit: number) {
   }))
 }
 
+/** Published listings with these ids, shaped like getLatestListingCards; unknown or hidden ids are left out. */
+export async function getListingCardsByIds(ids: string[]) {
+  if (!ids.length) return []
+  const { data, error } = await createServiceClient()
+    .from('listings')
+    .select(CARD_FIELDS)
+    .in('id', ids)
+    .eq('status', 'PUBLISHED').eq('adAllowed', true).eq('adConsentRequired', false)
+    .in('propertyType', [...PUBLIC_PROPERTY_TYPES]).is('hospitalityCategory', null)
+    .or(publicFreshnessFilters()[0]).or(publicFreshnessFilters()[1])
+  if (error || !data) return []
+  return data.map((home) => ({
+    ...home,
+    buildingArea: home.buildingArea ? Number(home.buildingArea) : null,
+    landArea: home.landArea ? Number(home.landArea) : null,
+    yieldGross: home.yieldGross ? Number(home.yieldGross) : null,
+    media: (home.media || []).filter((item) => item.isAdopted),
+  }))
+}
+
 const ROW_FIELDS = 'id, city, propertyType, price, addressPublic, descriptionJa, descriptionEn, stations, builtYear, buildingArea, landArea, zoning, currentStatus, yieldGross, publishedAt, media (url, category, caption, isAdopted, sortOrder)'
 
 /** All published listings (up to 500) as raw rows for collection pages. */

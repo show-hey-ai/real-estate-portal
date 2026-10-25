@@ -32,7 +32,7 @@ export function getSiteAnalyticsPageType(pathname: string): SiteAnalyticsPageTyp
   if (pathname === '/youtube') return 'youtube_landing'
   if (pathname === '/listings') return 'listing_index'
   if (pathname.startsWith('/listings/')) return 'listing_detail'
-  if (pathname === '/favorites') return 'favorites'
+  if (pathname === '/favorites' || pathname === '/mypage') return 'favorites'
   return 'other'
 }
 

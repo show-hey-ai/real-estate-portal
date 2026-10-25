@@ -114,3 +114,6 @@ export function parseStoredProfile(raw: string | null): BuyerProfile {
 }
 
 export const PROFILE_STORAGE_KEY = 'ziyou:buyer-profile:v1'
+/** When the answers last changed in this browser, so a member's sync knows to send them. */
+export const PROFILE_CHANGED_AT_KEY = 'ziyou:buyer-profile-at'
+export const PROFILE_CHANGE_EVENT = 'ziyou-buyer-profile-change'

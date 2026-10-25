@@ -21,7 +21,7 @@ test('a remembered language on a plain URL redirects to that language URL instea
 test('signed-in visitors, personal pages and non-GET requests are never cached', () => {
   assert.deepEqual(visit({ cookieNames: ['sb-abc-auth-token'] }), { action: 'none' })
   assert.deepEqual(visit({ cookieNames: ['sb-abc-auth-token'], localeCookie: 'ja' }), { action: 'none' })
-  for (const pathname of ['/match', '/alerts', '/login', '/register', '/compare', '/preview/x', '/favorites']) {
+  for (const pathname of ['/match', '/alerts', '/login', '/register', '/compare', '/preview/x', '/favorites', '/mypage']) {
     assert.deepEqual(visit({ pathname }), { action: 'none' }, pathname)
   }
   assert.deepEqual(visit({ method: 'POST' }), { action: 'none' })

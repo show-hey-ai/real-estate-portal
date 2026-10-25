@@ -1,10 +1,10 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
-import { PROFILE_OPTIONS, PROFILE_QUESTIONS, PROFILE_STORAGE_KEY, getProfileCopy, parseStoredProfile, type BuyerProfile, type ProfileQuestion } from '@/lib/buyer-profile'
+import { PROFILE_CHANGED_AT_KEY, PROFILE_CHANGE_EVENT, PROFILE_OPTIONS, PROFILE_QUESTIONS, PROFILE_STORAGE_KEY, getProfileCopy, parseStoredProfile, type BuyerProfile, type ProfileQuestion } from '@/lib/buyer-profile'
 
-// Every contact box on the page shares the answers; they are kept in this browser only.
-const CHANGE_EVENT = 'ziyou-buyer-profile-change'
+// Every contact box on the page shares the answers; they are kept in this browser (and in a member's account).
+const CHANGE_EVENT = PROFILE_CHANGE_EVENT
 let memory: string | null = null
 
 function read(): string | null {
@@ -30,6 +30,7 @@ export function useBuyerProfile(): [BuyerProfile, (question: ProfileQuestion, an
     memory = JSON.stringify({ ...parseStoredProfile(read()), [question]: value })
     try {
       localStorage.setItem(PROFILE_STORAGE_KEY, memory)
+      localStorage.setItem(PROFILE_CHANGED_AT_KEY, String(Date.now()))
     } catch {
       // Private windows may refuse storage; the answers still last for this page.
     }

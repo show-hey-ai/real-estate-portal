@@ -15,6 +15,8 @@ const copy = {
   'zh-CN': { add: '加入比较', remove: '移出比较', bar: (count: number) => `比较清单 ${count}/${COMPARE_LIMIT}`, open: '开始比较', clear: '清空比较清单', recent: '最近浏览的房源' },
 } as const
 
+const STRIP_LIMIT = 8
+
 function useCopy() {
   const locale = useLocale()
   return copy[locale as keyof typeof copy] ?? copy.en
@@ -80,7 +82,8 @@ export function ListingViewTracker({ listing }: { listing: Omit<RecentListing, '
 export function RecentlyViewed({ excludeId }: { excludeId?: string }) {
   const text = useCopy()
   const locale = useLocale()
-  const recent = useRecent().filter((item) => item.id !== excludeId)
+  // The strip shows the latest few; My page lists the whole history.
+  const recent = useRecent().filter((item) => item.id !== excludeId).slice(0, STRIP_LIMIT)
   // The server snapshot is empty, so the strip appears only after hydration.
   if (!recent.length) return null
   return <section className="mt-12" aria-labelledby="recently-viewed-title" data-testid="recently-viewed">
