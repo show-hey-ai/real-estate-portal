@@ -18,9 +18,10 @@ export function LocaleSwitcher() {
   const handleLocaleChange = (newLocale: string) => {
     startTransition(() => {
       document.cookie = `locale=${newLocale};path=/;max-age=31536000`
-      // Drop a ?lang= from a search-result URL so the newly chosen language applies.
+      // Each language has its own URL (English is the plain one), so go straight to it.
       const url = new URL(window.location.href)
-      url.searchParams.delete('lang')
+      if (newLocale === 'en') url.searchParams.delete('lang')
+      else url.searchParams.set('lang', newLocale)
       window.location.replace(url.toString())
     })
   }

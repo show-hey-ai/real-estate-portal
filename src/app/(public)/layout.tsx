@@ -8,6 +8,7 @@ import { getOptionalPublicViewer } from '@/lib/public-viewer'
 import { getJpyRates } from '@/lib/fx'
 import { FxRatesProvider } from '@/components/fx/fx-rates-context'
 import { LanguageSuggestion } from '@/components/common/language-suggestion'
+import { LocaleMemory } from '@/components/common/locale-memory'
 import { Suspense } from 'react'
 
 export default async function PublicLayout({
@@ -25,6 +26,7 @@ export default async function PublicLayout({
         <Suspense fallback={null}><LanguageSuggestion /></Suspense>
         <main className="flex-1">{children}</main>
         <SiteAskUs />
+        <LocaleMemory />
         <Footer guides={<FooterGuides />} />
         <CompareBar />
       </div>
