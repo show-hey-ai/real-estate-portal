@@ -65,3 +65,25 @@ export function summarizeWard(rows: { propertyType: string | null; price: number
     types: [...types].map(([type, count]) => ({ type, count })).sort((left, right) => right.count - left.count),
   }
 }
+
+/**
+ * Average residential land price per ward (円/㎡), 令和8年地価公示 as of 2026-01-01, from the Tokyo
+ * Metropolitan Government's 区市町村別用途別平均価格表 (住宅地). Update each March when the new
+ * figures are published.
+ */
+export const WARD_LAND_PRICE = {
+  year: 2026,
+  source: 'https://www.zaimu.metro.tokyo.lg.jp/documents/d/zaimu/05_r8kouji_heikin-kakaku',
+  yenPerSqm: {
+    千代田区: 3_631_400, 中央区: 1_930_000, 港区: 3_013_700, 新宿区: 1_131_600, 渋谷区: 1_874_100, 文京区: 1_448_100,
+    台東区: 1_320_800, 墨田区: 613_300, 江東区: 661_500, 品川区: 1_244_100, 目黒区: 1_404_500, 大田区: 647_600,
+    世田谷区: 779_900, 中野区: 782_700, 杉並区: 703_200, 豊島区: 912_100, 北区: 742_000, 荒川区: 718_700,
+    板橋区: 553_600, 練馬区: 480_500, 足立区: 410_800, 葛飾区: 387_500, 江戸川区: 441_100,
+  } as Record<string, number>,
+} as const
+
+/** Three shades for the ward map: 0 = under ¥650,000/㎡, 1 = up to ¥1.2M, 2 = ¥1.2M and above. */
+export function landPriceTier(ward: string): 0 | 1 | 2 {
+  const price = WARD_LAND_PRICE.yenPerSqm[ward] ?? 0
+  return price >= 1_200_000 ? 2 : price >= 650_000 ? 1 : 0
+}

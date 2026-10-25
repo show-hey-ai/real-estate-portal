@@ -38,3 +38,15 @@ test('a ward summary reports count, asking-price range and types by frequency', 
     { propertyType: '戸建', price: null },
   ]), { count: 3, minPrice: 20_000_000, maxPrice: 385_000_000, types: [{ type: '区分マンション', count: 2 }, { type: '戸建', count: 1 }] })
 })
+
+test('ward shading follows the 2026 official residential land price', async () => {
+  const { WARD_LAND_PRICE, WARD_SLUGS, landPriceTier } = await import('../src/lib/ward-tile-map')
+  assert.equal(Object.keys(WARD_LAND_PRICE.yenPerSqm).length, 23)
+  for (const ward of Object.keys(WARD_SLUGS)) assert.ok(WARD_LAND_PRICE.yenPerSqm[ward] > 0, ward)
+  assert.equal(landPriceTier('千代田区'), 2)
+  assert.equal(landPriceTier('品川区'), 2)
+  assert.equal(landPriceTier('豊島区'), 1)
+  assert.equal(landPriceTier('江東区'), 1)
+  assert.equal(landPriceTier('墨田区'), 0)
+  assert.equal(landPriceTier('葛飾区'), 0)
+})
