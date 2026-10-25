@@ -17,6 +17,8 @@ import { getTransitPageCopy, stationHeading } from '@/lib/transit/page-copy'
 import { getPublicCardRows, toCardListing } from '@/lib/transit/public-listings'
 import { lineLabel, stationLabel, stationListingCounts } from '@/lib/transit/search'
 import { WARD_LAND_PRICE, WARD_SLUGS, wardLabel } from '@/lib/ward-tile-map'
+import { directHubs, stationMarket } from '@/lib/transit/station-facts'
+import { StationFaq, StationMarketFacts, stationFaq } from '@/components/transit/station-facts'
 
 export const dynamic = 'force-dynamic'
 
@@ -75,6 +77,10 @@ export default async function StationPage({ params }: Props) {
     ? <Link key={other} href={`/stations/${STATIONS[other].slug}`} className="font-semibold text-[#274d7d] hover:underline">{stationLabel(other, locale)}</Link>
     : <span key={other} className="text-[#657487]">{stationLabel(other, locale)}</span>
   const pageUrl = localeAlternates(`/stations/${slug}`, locale).canonical
+  const market = stationMarket(rows, name)
+  const hubs = directHubs(name)
+  const faq = stationFaq({ locale, station, market, hubs })
+  const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', inLanguage: getSchemaLanguage(locale), mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.question, acceptedAnswer: { '@type': 'Answer', text: item.answer } })) }
   const structured = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -93,6 +99,7 @@ export default async function StationPage({ params }: Props) {
   return <div className="bg-white text-[#1b293a]" data-testid="station-page">
     <JsonLd data={structured} />
     <JsonLd data={breadcrumb} />
+    <JsonLd data={faqJsonLd} />
     <div className="container pb-14 pt-8">
       <nav aria-label="Breadcrumb" className="text-xs text-[#536274]"><Link href="/" className="hover:underline">{copy.home}</Link> / <Link href="/lines" className="hover:underline">{copy.hub}</Link> / <span>{station}</span></nav>
       <h1 className="mt-4 flex items-center gap-2 text-2xl font-semibold md:text-3xl"><TrainFront aria-hidden="true" className="h-6 w-6 shrink-0 text-[#274d7d]" />{copy.stationTitle(station)}</h1>
@@ -119,6 +126,8 @@ export default async function StationPage({ params }: Props) {
         <Link href={`/listings?stations=${slug}`} className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-[#cfd9e3] px-4 text-sm font-semibold text-[#274d7d] hover:bg-[#f3f6f9]">{copy.search}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
       </div>
 
+      {market && <StationMarketFacts locale={locale} station={station} market={market} hubs={hubs} />}
+
       {listings.length > 0 && <section className="mt-10" aria-labelledby="station-listings-title">
         <h2 id="station-listings-title" className="text-xl font-semibold">{copy.stationListings}</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
@@ -128,6 +137,8 @@ export default async function StationPage({ params }: Props) {
         <h2 id="station-nearby-title" className="text-lg font-semibold">{copy.nearby}</h2>
         <ul className="mt-3 flex flex-wrap gap-2">{nearby.map((other) => <li key={other}><Link href={`/stations/${STATIONS[other].slug}`} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#cfd9e3] bg-white px-3 text-sm font-semibold text-[#274d7d] hover:bg-[#f3f6f9]">{stationLabel(other, locale)}<span className="text-xs font-normal text-[#657487]">{counts.get(other)}</span></Link></li>)}</ul>
       </section>}
+
+      <StationFaq locale={locale} items={faq} />
 
       <AskUs topic={station} pageUrl={pageUrl} variant="unlisted" />
     </div>
