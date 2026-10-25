@@ -1,6 +1,6 @@
 import { prisma } from './db'
 import { getPublicListingScope } from './public-listing-scope'
-import { articleLocalesSchema, sourceFingerprint } from './autonomy/article-content'
+import { articleLocalesSchema, sourceSnapshotMatches } from './autonomy/article-content'
 import { RESEARCH_ARTICLE_VERSION, researchArticleIsCurrent } from './autonomy/editorial-policy'
 
 export const articleSourceSelect = { id: true, city: true, propertyType: true, price: true, buildingArea: true, builtYear: true, updatedAt: true } as const
@@ -20,7 +20,7 @@ async function readPublicArticles(slug?: string) {
       if (article.version === RESEARCH_ARTICLE_VERSION) {
         const review = reviews.find(r => r.dedupeKey === `research-article:${article.slug}`)
         if (!researchArticleIsCurrent(article, review) || Object.values(input.data).some(locale => !locale.references?.length || JSON.stringify(locale.references) !== JSON.stringify(Object.values(input.data)[0].references))) return []
-      } else if (rows.length < 3 || sourceFingerprint(rows) !== article.sourceHash) return []
+      } else if (rows.length < 3 || !sourceSnapshotMatches(article.sourceHash, rows)) return []
       return [{ ...article, locales: input.data, sources: rows }]
     })
   } catch { return [] } // Deployment before migration has no generated articles.

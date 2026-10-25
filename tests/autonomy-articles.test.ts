@@ -30,3 +30,14 @@ test('article snapshot dates use Tokyo midnight rather than the UTC day', () => 
   const content = generateArticleContent('目黒区', rows, new Date('2026-10-02T00:30:00+09:00'))
   assert.ok(content.en.sections[0].paragraphs[0].includes('2026-10-02'))
 })
+
+test('a weekly re-check that only moves updatedAt keeps the article snapshot valid', async () => {
+  const { legacySourceFingerprint, sourceSnapshotMatches } = await import('../src/lib/autonomy/article-content')
+  const rechecked = rows.map((row) => ({ ...row, updatedAt: new Date('2026-10-09T00:00:00Z') }))
+  assert.equal(sourceFingerprint(rows), sourceFingerprint(rechecked))
+  // Articles released before this change carry the old fingerprint and stay valid until their sources move.
+  assert.ok(sourceSnapshotMatches(legacySourceFingerprint(rows), rows))
+  assert.ok(!sourceSnapshotMatches(legacySourceFingerprint(rows), rechecked))
+  assert.ok(sourceSnapshotMatches(sourceFingerprint(rows), rechecked))
+  assert.ok(!sourceSnapshotMatches(sourceFingerprint(rows), [{ ...rows[0], price: BigInt(90_000_000) }, ...rows.slice(1)]))
+})

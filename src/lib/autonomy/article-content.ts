@@ -12,8 +12,27 @@ const contentSchema = z.object({ title: z.string().min(10).max(180), description
 export const articleLocalesSchema = z.object({ ja: contentSchema, en: contentSchema, 'zh-TW': contentSchema, 'zh-CN': contentSchema }).strict()
 export type ArticleContent = z.infer<typeof contentSchema>
 
+const factsOf = (row: ArticleSource) => [row.id, row.city, row.propertyType, row.price?.toString(), Number(row.buildingArea) || null, row.builtYear]
+const hashRows = (rows: ArticleSource[], fields: (row: ArticleSource) => unknown[]) =>
+  createHash('sha256').update(JSON.stringify([...rows].sort((a, b) => a.id.localeCompare(b.id)).map(fields))).digest('hex')
+
+/**
+ * Snapshot of the facts an article quotes. The weekly re-check moves a listing's updatedAt without
+ * changing these facts, so updatedAt is left out (2026-10-25); a price, size or year change still
+ * invalidates the article.
+ */
 export function sourceFingerprint(rows: ArticleSource[]) {
-  return createHash('sha256').update(JSON.stringify([...rows].sort((a, b) => a.id.localeCompare(b.id)).map((row) => [row.id, row.city, row.propertyType, row.price?.toString(), Number(row.buildingArea) || null, row.builtYear, row.updatedAt.toISOString()]))).digest('hex')
+  return hashRows(rows, factsOf)
+}
+
+/** Fingerprint used before 2026-10-25, which also included updatedAt. */
+export function legacySourceFingerprint(rows: ArticleSource[]) {
+  return hashRows(rows, (row) => [...factsOf(row), row.updatedAt.toISOString()])
+}
+
+/** Whether a stored snapshot still describes these sources, under either fingerprint. */
+export function sourceSnapshotMatches(sourceHash: string, rows: ArticleSource[]) {
+  return sourceHash === sourceFingerprint(rows) || sourceHash === legacySourceFingerprint(rows)
 }
 
 /** Generate useful inventory reporting from observed facts; no unsupported market forecast. */

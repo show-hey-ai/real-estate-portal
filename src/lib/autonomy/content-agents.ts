@@ -19,7 +19,8 @@ export async function generateArticle(job: AutonomyJob) {
   const existing = await prisma.portalArticle.findMany({ select: { city: true, updatedAt: true } })
   const cities = Object.keys(wardSlugs).sort((a, b) => (existing.find((row) => row.city === a)?.updatedAt.getTime() || 0) - (existing.find((row) => row.city === b)?.updatedAt.getTime() || 0))
   for (const city of cities) {
-    const sources = await prisma.listing.findMany({ where: { ...getArticlePublicScope(), city, price: { gt: 0 } }, select: articleSourceSelect, orderBy: { updatedAt: 'desc' }, take: 20 })
+    // First-publication order, not updatedAt: the weekly re-check would otherwise reshuffle the sources.
+    const sources = await prisma.listing.findMany({ where: { ...getArticlePublicScope(), city, price: { gt: 0 } }, select: articleSourceSelect, orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }], take: 20 })
     if (sources.length < 3) continue
     const sourceHash = sourceFingerprint(sources)
     const slug = `tokyo-${wardSlugs[city]}-property-selection`
