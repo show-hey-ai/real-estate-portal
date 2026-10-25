@@ -15,17 +15,18 @@ function photoName(url: string): string {
 }
 
 /**
- * How well a photo works as a listing's cover, best first: the whole building, then the main room,
- * then the entrance, other rooms, partial exterior views, wet rooms, and the floor plan only when
- * there is nothing else (2026-10-25). Unnamed uploads count as the best of their category.
+ * How well a photo works as a listing's cover, best first: the whole building, the main room, the
+ * entrance, other rooms, then the floor plan, and only after it wet rooms and partial exterior views
+ * (owner decision 2026-10-25: without a whole-building photo, use a room or the floor plan rather
+ * than an odd crop). Unnamed uploads count as the best of their category.
  */
 export function coverTier(item: CoverCandidate): number {
   const name = photoName(item.url)
   switch (item.category) {
-    case 'EXTERIOR': return PARTIAL_EXTERIOR.test(name) ? 4 : ENTRANCE.test(name) ? 2 : 0
+    case 'EXTERIOR': return PARTIAL_EXTERIOR.test(name) ? 6 : ENTRANCE.test(name) ? 2 : 0
     case 'INTERIOR': return WET_ROOM.test(name) ? 5 : SECONDARY_ROOM.test(name) ? 3 : 1
-    case 'OTHER': return 6
-    case 'FLOORPLAN': return 7
+    case 'FLOORPLAN': return 4
+    case 'OTHER': return 7
     default: return 8
   }
 }

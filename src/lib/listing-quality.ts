@@ -24,8 +24,8 @@ export const ISSUE_FIX: Record<IssueType, string> = {
   'en-japanese': 'descriptionEn に日本語が残っている。建物名・駅名などを英語にし、冒頭は「English Name: 」で始める',
   'zh-kana-name': '建物名がカタカナで英語名がない（中国語ページでカタカナ表示）。descriptionEn を「English Name: 」で始める',
   'station-untranslated': '駅名・路線名の英語がない。Claude が辞書に追加する（Codex 対応不要）',
-  'weak-cover': '建物全体の外観写真がない。原資料に使える外観があれば追加（なければ対応不要）',
-  'few-photos': '写真が1枚以下。原資料に使える写真があれば追加（なければ対応不要）',
+  'weak-cover': '建物全体の外観写真がない。原資料に外観写真があれば追加（なければ表紙は自動で室内か間取り図になるので対応不要）',
+  'few-photos': '写真が1枚以下。原資料に写真があれば追加（なければ間取り図・室内のままで対応不要）',
 }
 
 const JAPANESE = /[぀-ヿ一-鿿]/u

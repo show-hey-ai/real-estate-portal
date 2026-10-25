@@ -26,9 +26,14 @@ test('a full facade beats a partial or odd exterior shot even when listed first'
 test('without a full exterior, the living room comes before odd exterior views and wet rooms', () => {
   assert.equal(pickCoverImage([shot('balcony', 'EXTERIOR'), shot('bath', 'INTERIOR'), shot('living', 'INTERIOR')])?.url, shot('living', 'INTERIOR').url)
   assert.equal(pickCoverImage([shot('kitchen', 'INTERIOR', 1), shot('room', 'INTERIOR', 2)])?.url, shot('room', 'INTERIOR').url)
-  assert.equal(pickCoverImage([shot('toilet', 'INTERIOR'), shot('plan', 'FLOORPLAN')])?.url, shot('toilet', 'INTERIOR').url)
+  assert.equal(pickCoverImage([shot('toilet', 'INTERIOR'), shot('plan', 'FLOORPLAN')])?.url, shot('plan', 'FLOORPLAN').url)
 })
 
 test('unnamed uploads keep the category order', () => {
   assert.equal(pickCoverImage([shot('3f9a1c', 'INTERIOR'), shot('9b2e77', 'EXTERIOR')])?.url, shot('9b2e77', 'EXTERIOR').url)
+})
+
+test('without a whole-building photo or a room, the floor plan beats an odd exterior crop', () => {
+  assert.equal(pickCoverImage([shot('upper-facade', 'EXTERIOR'), shot('plan', 'FLOORPLAN')])?.url, shot('plan', 'FLOORPLAN').url)
+  assert.equal(pickCoverImage([shot('view', 'EXTERIOR'), shot('kitchen', 'INTERIOR')])?.url, shot('kitchen', 'INTERIOR').url)
 })
