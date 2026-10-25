@@ -131,7 +131,7 @@ export default async function WardPage({ params }: Props) {
 
       {ward && <ListingAlertForm ward={ward} scopeLabel={label} />}
 
-      <AskUs topic={label} pageUrl={pageUrl} />
+      <AskUs topic={label} pageUrl={pageUrl} variant="unlisted" />
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold">
         {article && <Link href={`/articles/${article.slug}/${locale}`} className="inline-flex items-center gap-1 text-[#274d7d] hover:underline">{text.article}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>}

@@ -129,7 +129,7 @@ export default async function StationPage({ params }: Props) {
         <ul className="mt-3 flex flex-wrap gap-2">{nearby.map((other) => <li key={other}><Link href={`/stations/${STATIONS[other].slug}`} className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-[#cfd9e3] bg-white px-3 text-sm font-semibold text-[#274d7d] hover:bg-[#f3f6f9]">{stationLabel(other, locale)}<span className="text-xs font-normal text-[#657487]">{counts.get(other)}</span></Link></li>)}</ul>
       </section>}
 
-      <AskUs topic={station} pageUrl={pageUrl} />
+      <AskUs topic={station} pageUrl={pageUrl} variant="unlisted" />
     </div>
   </div>
 }

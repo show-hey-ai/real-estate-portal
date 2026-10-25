@@ -10,10 +10,10 @@ import {
 } from '@/lib/contact-channels'
 
 const copy = {
-  ja: { title: '購入の相談は登録なしで', note: '物件探し、購入の流れ、費用のことなど、LINE・WhatsApp・WeChat・メールで直接ご相談いただけます。日本語・英語・中国語で対応します。', whatsapp: 'WhatsAppで相談', line: 'LINEで相談', wechat: 'WeChatで相談', email: 'メールで相談', wechatCopied: `WeChat ID「${WECHAT_ID}」をコピーしました。開かない場合は、友だち追加の検索に貼り付けてください。`, message: (topic: string) => `東京の不動産購入について相談したいです。\n（見ていたページ：${topic}）` },
-  en: { title: 'Ask us, no sign-up', note: 'Questions about finding a property, the buying steps or costs? Message us on WhatsApp, LINE, WeChat or email. We reply in English, Japanese and Chinese.', whatsapp: 'Chat on WhatsApp', line: 'Chat on LINE', wechat: 'Chat on WeChat', email: 'Email us', wechatCopied: `WeChat ID “${WECHAT_ID}” copied. If WeChat does not open, paste it into Add Contacts.`, message: (topic: string) => `I'd like to ask about buying property in Tokyo.\n(Page I was reading: ${topic})` },
-  'zh-TW': { title: '免註冊直接諮詢', note: '找物件、購屋流程、費用等問題，都可透過 LINE、WeChat、WhatsApp 或電子郵件直接詢問。提供中文、日文、英文服務。', whatsapp: 'WhatsApp 諮詢', line: 'LINE 諮詢', wechat: '微信諮詢', email: '電子郵件諮詢', wechatCopied: `已複製微信號「${WECHAT_ID}」。若微信未開啟，請在「新增朋友」中貼上搜尋。`, message: (topic: string) => `我想諮詢在東京買房的事。\n（正在看的頁面：${topic}）` },
-  'zh-CN': { title: '免注册直接咨询', note: '找房源、购房流程、费用等问题，都可以通过微信、WhatsApp、LINE 或邮件直接咨询。提供中文、日语、英语服务。', whatsapp: 'WhatsApp 咨询', line: 'LINE 咨询', wechat: '微信咨询', email: '邮件咨询', wechatCopied: `已复制微信号“${WECHAT_ID}”。若微信未打开，请在“添加朋友”中粘贴搜索。`, message: (topic: string) => `我想咨询在东京买房的事。\n（正在看的页面：${topic}）` },
+  ja: { unlistedTitle: 'ここに載っていない物件も探せます', unlistedNote: '公開前の物件や他社が扱う物件も含めて、条件に合う物件を探してご連絡します。登録は不要です。', unlistedMessage: (topic: string) => `サイトに載っていない物件も含めて、条件に合う物件を探してほしいです。\n条件：${topic}\n予算・広さ・希望（あれば）：`, title: '購入の相談は登録なしで', note: '物件探し、購入の流れ、費用のことなど、LINE・WhatsApp・WeChat・メールで直接ご相談いただけます。日本語・英語・中国語で対応します。', whatsapp: 'WhatsAppで相談', line: 'LINEで相談', wechat: 'WeChatで相談', email: 'メールで相談', wechatCopied: `WeChat ID「${WECHAT_ID}」をコピーしました。開かない場合は、友だち追加の検索に貼り付けてください。`, message: (topic: string) => `東京の不動産購入について相談したいです。\n（見ていたページ：${topic}）` },
+  en: { unlistedTitle: 'Looking for something not listed here?', unlistedNote: 'We can search properties not yet published and those handled by other agents, and send you what matches. No sign-up.', unlistedMessage: (topic: string) => `Could you look for properties that match, including ones not listed on your site?\nSearch: ${topic}\nBudget, size and wishes (if any): `, title: 'Ask us, no sign-up', note: 'Questions about finding a property, the buying steps or costs? Message us on WhatsApp, LINE, WeChat or email. We reply in English, Japanese and Chinese.', whatsapp: 'Chat on WhatsApp', line: 'Chat on LINE', wechat: 'Chat on WeChat', email: 'Email us', wechatCopied: `WeChat ID “${WECHAT_ID}” copied. If WeChat does not open, paste it into Add Contacts.`, message: (topic: string) => `I'd like to ask about buying property in Tokyo.\n(Page I was reading: ${topic})` },
+  'zh-TW': { unlistedTitle: '網站上沒有的物件也能幫您找', unlistedNote: '包含尚未公開或由其他公司經手的物件，我們會找出符合條件的物件並與您聯絡。免註冊。', unlistedMessage: (topic: string) => `希望幫我找符合條件的物件，包含網站上未刊登的物件。\n條件：${topic}\n預算、面積與需求（如有）：`, title: '免註冊直接諮詢', note: '找物件、購屋流程、費用等問題，都可透過 LINE、WeChat、WhatsApp 或電子郵件直接詢問。提供中文、日文、英文服務。', whatsapp: 'WhatsApp 諮詢', line: 'LINE 諮詢', wechat: '微信諮詢', email: '電子郵件諮詢', wechatCopied: `已複製微信號「${WECHAT_ID}」。若微信未開啟，請在「新增朋友」中貼上搜尋。`, message: (topic: string) => `我想諮詢在東京買房的事。\n（正在看的頁面：${topic}）` },
+  'zh-CN': { unlistedTitle: '网站上没有的房源也能帮您找', unlistedNote: '包括尚未公开或由其他公司经手的房源，我们会找出符合条件的房源并与您联系。免注册。', unlistedMessage: (topic: string) => `希望帮我找符合条件的房源，包括网站上未刊登的房源。\n条件：${topic}\n预算、面积和需求（如有）：`, title: '免注册直接咨询', note: '找房源、购房流程、费用等问题，都可以通过微信、WhatsApp、LINE 或邮件直接咨询。提供中文、日语、英语服务。', whatsapp: 'WhatsApp 咨询', line: 'LINE 咨询', wechat: '微信咨询', email: '邮件咨询', wechatCopied: `已复制微信号“${WECHAT_ID}”。若微信未打开，请在“添加朋友”中粘贴搜索。`, message: (topic: string) => `我想咨询在东京买房的事。\n（正在看的页面：${topic}）` },
 } as const
 
 // White text needs at least 4.5:1 contrast, so brand greens are darkened (same tones as listing pages).
@@ -36,14 +36,17 @@ interface AskUsProps {
   topic?: string
   /** Absolute URL of the page, added to the prefilled message. Defaults to the current address. */
   pageUrl?: string
+  /** 'unlisted' asks us to search beyond the listings on the site, for the topic's conditions. */
+  variant?: 'general' | 'unlisted'
 }
 
 /** Direct contact for pages without a listing (guides, ward pages). */
-export function AskUs({ topic, pageUrl }: AskUsProps) {
+export function AskUs({ topic, pageUrl, variant = 'general' }: AskUsProps) {
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const [wechatCopied, setWechatCopied] = useState(false)
-  const messageFor = (title: string, url: string) => `${text.message(title)}\n${url}`
+  const unlisted = variant === 'unlisted'
+  const messageFor = (title: string, url: string) => `${unlisted ? text.unlistedMessage(title) : text.message(title)}\n${url}`
   const message = messageFor(topic ?? 'Welcome Home Tokyo', pageUrl ?? '')
   const hrefFor = (channel: ContactChannel, body: string) => channel === 'whatsapp' ? whatsappUrl(body)
     : channel === 'line' ? lineMessageUrl(body)
@@ -67,9 +70,9 @@ export function AskUs({ topic, pageUrl }: AskUsProps) {
     ...(channel === 'wechat' ? {} : { target: '_blank', rel: 'noopener noreferrer' }),
   })
 
-  return <section className="mt-10 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-5" aria-labelledby="ask-us-title" data-testid="ask-us">
-    <h2 id="ask-us-title" className="text-lg font-semibold">{text.title}</h2>
-    <p className="mt-1 max-w-2xl text-sm leading-6 text-[#536274]">{text.note}</p>
+  return <section className="mt-10 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-5" aria-labelledby="ask-us-title" data-testid={unlisted ? 'ask-us-unlisted' : 'ask-us'}>
+    <h2 id="ask-us-title" className="text-lg font-semibold">{unlisted ? text.unlistedTitle : text.title}</h2>
+    <p className="mt-1 max-w-2xl text-sm leading-6 text-[#536274]">{unlisted ? text.unlistedNote : text.note}</p>
     <div className="mt-4 grid gap-2 sm:grid-cols-4">
       <a {...linkProps(primary)} className={`${BUTTON} ${PRIMARY_TONE[primary]}`}><MessageCircle aria-hidden="true" className="h-4 w-4" />{text[primary]}</a>
       {secondary.map((channel) => <a key={channel} {...linkProps(channel)} className={`${BUTTON} ${OUTLINE_TONE}`}><MessagesSquare aria-hidden="true" className="h-4 w-4" />{text[channel]}</a>)}
@@ -80,7 +83,7 @@ export function AskUs({ topic, pageUrl }: AskUsProps) {
 }
 
 /** Pages that already show their own contact block, or where asking makes no sense. */
-const OWN_CONTACT = [/^\/other-listings$/, /^\/listings\/[^/]+$/, /^\/guides\/[^/]+$/, /^\/areas\/[^/]+$/, /^\/(chats|favorites|login|register|alerts|preview)(\/|$)/]
+const OWN_CONTACT = [/^\/(other-listings|listings|lines\/[^/]+|stations\/[^/]+)$/, /^\/listings\/[^/]+$/, /^\/guides\/[^/]+$/, /^\/areas\/[^/]+$/, /^\/(chats|favorites|login|register|alerts|preview)(\/|$)/]
 
 /** Site-wide contact block above the footer, except on pages listed in OWN_CONTACT. */
 export function SiteAskUs() {

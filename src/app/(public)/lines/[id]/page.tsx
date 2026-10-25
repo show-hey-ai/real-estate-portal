@@ -95,7 +95,7 @@ export default async function LinePage({ params }: Props) {
         {rows.length > SHOWN && <div className="mt-6 text-center"><Link href={`/listings?lines=${line.id}`} className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#274d7d] hover:underline">{copy.seeAll(rows.length)}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>}
       </section>}
 
-      <AskUs topic={label} pageUrl={pageUrl} />
+      <AskUs topic={label} pageUrl={pageUrl} variant="unlisted" />
 
       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold">
         <Link href={`/listings?lines=${line.id}`} className="inline-flex items-center gap-1 text-[#274d7d] hover:underline">{copy.search}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>

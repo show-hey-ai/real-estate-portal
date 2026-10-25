@@ -10,6 +10,7 @@ import { ListingCard } from '@/components/listing/listing-card'
 import { ListingFilters } from '@/components/listing/listing-filters'
 import { SearchResultsToolbar } from '@/components/listing/search-results-toolbar'
 import { Pagination } from '@/components/common/pagination'
+import { AskUs } from '@/components/common/ask-us'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   getPortalCategoryLabel,
@@ -491,6 +492,8 @@ export default async function ListingsPage({
                 searchParams={params}
               />
             </div>
+            {/* Searches beyond the site, quoting this search (the message carries the page address). */}
+            <AskUs variant="unlisted" topic={selectionLabel(stationSelection, locale) ?? (params.ward ? translateCityName(params.ward, locale) || params.ward : null) ?? getSiteCopy(locale).listingsTitle} />
           </div>
         </div>
       </div>
