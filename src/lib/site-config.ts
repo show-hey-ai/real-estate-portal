@@ -5,6 +5,7 @@ import { buildingNameFor, buildingNameOf, extractBuildingNameEn } from '@/lib/bu
 import { wardLabel } from '@/lib/ward-tile-map'
 import { INSTAGRAM_URL } from '@/lib/contact-channels'
 import { formatPrice } from '@/lib/format'
+import { toPublicDescription } from '@/lib/public-description'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import {
   formatTransitAccessLabel,
@@ -111,16 +112,17 @@ function toNumber(value: bigint | number | string | null | undefined): number | 
   return Number.isFinite(parsed) ? parsed : null
 }
 
-function getLocalizedListingDescription(listing: SeoListingLike, locale: Locale): string | null {
+/** The description in the page language (Japanese when untranslated), worded for buyers. */
+export function getLocalizedListingDescription(listing: SeoListingLike, locale: string): string | null {
   switch (locale) {
     case 'en':
-      return listing.descriptionEn ? romanizeStationNames(listing.descriptionEn) : listing.descriptionJa || null
+      return listing.descriptionEn ? toPublicDescription(romanizeStationNames(listing.descriptionEn), 'en') : toPublicDescription(listing.descriptionJa, 'ja')
     case 'zh-TW':
-      return listing.descriptionZhTw || listing.descriptionJa || null
+      return listing.descriptionZhTw ? toPublicDescription(listing.descriptionZhTw, 'zh-TW') : toPublicDescription(listing.descriptionJa, 'ja')
     case 'zh-CN':
-      return listing.descriptionZhCn || listing.descriptionJa || null
+      return listing.descriptionZhCn ? toPublicDescription(listing.descriptionZhCn, 'zh-CN') : toPublicDescription(listing.descriptionJa, 'ja')
     default:
-      return listing.descriptionJa || null
+      return toPublicDescription(listing.descriptionJa, 'ja')
   }
 }
 

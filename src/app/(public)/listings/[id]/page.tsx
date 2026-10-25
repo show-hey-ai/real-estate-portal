@@ -46,7 +46,7 @@ import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
 import { formatApprovedPublicAddress, hasDetailedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
-import { formatTransitAccessLabel, romanizeStationNames, translateAddress, translatePropertyType } from '@/lib/translate-fields'
+import { formatTransitAccessLabel, translateAddress, translatePropertyType } from '@/lib/translate-fields'
 import { STATIONS, resolveStation } from '@/lib/transit'
 import { getIsFavoriteForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 import { getMarketCategory, PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
@@ -61,6 +61,7 @@ import {
   buildListingTitle,
   getOpenGraphLocale,
   getPrimaryListingImage,
+  getLocalizedListingDescription,
   getSchemaLanguage,
 } from '@/lib/site-config'
 import { pickCoverImage } from '@/lib/cover-image'
@@ -236,20 +237,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
   const walkTimes = stations.map((station) => station.walk_minutes).filter((value): value is number => typeof value === 'number' && value > 0)
   const highlights = listingHighlights({ descriptionJa: listing.descriptionJa, features: listing.features, builtYear: listing.builtYear, propertyType: listing.propertyType, landRights: listing.landRights, walkMinutes: walkTimes.length ? Math.min(...walkTimes) : null })
 
-  // 言語に応じた説明文を取得
-  const getDescription = () => {
-    switch (locale) {
-      case 'en':
-        return listing.descriptionEn ? romanizeStationNames(listing.descriptionEn) : listing.descriptionJa
-      case 'zh-TW':
-        return listing.descriptionZhTw || listing.descriptionJa
-      case 'zh-CN':
-        return listing.descriptionZhCn || listing.descriptionJa
-      default:
-        return listing.descriptionJa
-    }
-  }
-  const description = getDescription()
+  const description = getLocalizedListingDescription(listing, locale)
 
   // Prisma互換の形式に変換
   const formattedListing = {
@@ -405,7 +393,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <Sparkles className="h-5 w-5 text-primary" />
-                    {t('overview')}
+                    {t('descriptionTitle')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -445,7 +433,6 @@ export default async function ListingPage({ params }: ListingPageProps) {
             <div className="hidden lg:block">
               <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
             </div>
-            <PropertyChatLink listingId={formattedListing.id} />
             <ListingChat
               key={formattedListing.id}
               listingId={formattedListing.id}

@@ -53,6 +53,8 @@
     "removeFavorite": "Remove from favorites",
     "noImage": "No Image",
     "overview": "Property Overview",
+    "descriptionTitle": "About this property",
+    "layout": "Layout",
     "property": "Property",
     "error": "An error occurred",
     "addressPrivacyNote": "Address shown to district level for privacy. Contact us for details",
