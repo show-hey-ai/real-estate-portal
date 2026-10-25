@@ -26,6 +26,7 @@ export interface TransitCopy {
   metaDescription: (count: number) => string
   linePages: string
   viewList: string
+  rangeHint: string
   viewMap: string
   mapHint: string
   zoomIn: string
@@ -60,6 +61,7 @@ const ja: TransitCopy = {
   metaDescription: (count) => `東京23区の55路線・約490駅から、駅近くの売り物件${count}件を探せます。JR・東京メトロ・都営・私鉄に対応、駅徒歩でも絞り込めます。`,
   linePages: '路線ごとの物件ページ',
   viewList: 'リストで選ぶ',
+  rangeHint: 'チェック欄をなぞると、続いた駅をまとめて選べます（パソコンはShift＋クリックでも可）。',
   viewMap: '路線図で選ぶ',
   mapHint: 'ドラッグで移動、ピンチやボタンで拡大。駅を押すと選べます。色の付いた駅は物件ありです。',
   zoomIn: '拡大',
@@ -94,6 +96,7 @@ const en: TransitCopy = {
   metaDescription: (count) => `Find ${count} properties for sale near stations in Tokyo's 23 wards: 55 lines and about 490 stations on JR, Tokyo Metro, Toei and private railways, with a walk-time filter.`,
   linePages: 'Properties by line',
   viewList: 'Choose from a list',
+  rangeHint: 'Drag along the tick boxes to select a run of stations (or Shift-click on a computer).',
   viewMap: 'Choose on the route map',
   mapHint: 'Drag to move, pinch or use the buttons to zoom, tap a station to select it. Shaded stations have listings.',
   zoomIn: 'Zoom in',
@@ -128,6 +131,7 @@ const zhTW: TransitCopy = {
   metaDescription: (count) => `從東京23區55條路線、約490個車站中，尋找車站附近的待售物件（${count}件）。支援JR、東京Metro、都營與私鐵，並可依步行時間篩選。`,
   linePages: '各路線物件頁面',
   viewList: '從清單選擇',
+  rangeHint: '沿著勾選框拖曳，可一次選擇連續的車站（電腦也可用Shift＋點選）。',
   viewMap: '從路線圖選擇',
   mapHint: '拖曳可移動，雙指或按鈕可縮放，點選車站即可選擇。有顏色的車站代表有物件。',
   zoomIn: '放大',
@@ -163,6 +167,7 @@ const zhCN: TransitCopy = {
   metaDescription: (count) => `从东京23区55条线路、约490个车站中，查找车站附近的在售房源（${count}套）。支持JR、东京Metro、都营和私铁，并可按步行时间筛选。`,
   linePages: '各线路房源页面',
   viewList: '从列表选择',
+  rangeHint: '沿着勾选框拖动，可一次选择连续的车站（电脑也可用Shift＋点击）。',
   viewMap: '从线路图选择',
   mapHint: '拖动可移动，双指或按钮可缩放，点击车站即可选择。有颜色的车站表示有房源。',
   zoomIn: '放大',

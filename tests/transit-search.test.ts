@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { canonicalSearchQuery } from '../src/lib/listing-search'
-import { countMatches, effectiveStations, initialSelection, isLineSelected, listingsHref, toggleLine, toggleStation } from '../src/lib/transit/picker-state'
+import { EMPTY_SELECTION, countMatches, effectiveStations, initialSelection, isLineSelected, listingsHref, setStations, toggleLine, toggleStation } from '../src/lib/transit/picker-state'
 import { buildTransitIndex, matchesStationSelection, parseStationSelection, selectedStations, selectionLabel, transitLabels, transitOptions } from '../src/lib/transit/search'
 
 const rows = [
@@ -67,4 +67,16 @@ test('the picker selects whole lines, keeps the rest of a line when one station 
   selection = toggleLine(index, toggleLine(index, selection, 'metro-ginza'), 'metro-ginza')
   assert.equal(isLineSelected(index, selection, 'metro-ginza'), false)
   assert.equal(listingsHref(index, toggleLine(index, selection, 'metro-ginza'), 10, 'priceMax=50000000&page=3&line=x'), '/listings?priceMax=50000000&stations=ebisu&lines=metro-ginza&walkMax=10')
+})
+
+test('a dragged run of stations is turned on or off together, even inside a whole selected line', () => {
+  const index = buildTransitIndex(rows, 'ja')
+  const run = ['shibuya', 'omotesando', 'gaiemmae'].map((slug) => index.stations.findIndex((item) => item.slug === slug))
+  const on = setStations(index, EMPTY_SELECTION, run, true)
+  assert.deepEqual([...effectiveStations(index, on)].sort(), [...run].sort())
+  const line = toggleLine(index, EMPTY_SELECTION, 'metro-ginza')
+  const off = setStations(index, line, run, false)
+  assert.equal(off.lines.has('metro-ginza'), false)
+  assert.ok(run.every((station) => !effectiveStations(index, off).has(station)))
+  assert.equal(effectiveStations(index, off).size, 16)
 })

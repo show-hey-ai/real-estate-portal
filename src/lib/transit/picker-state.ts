@@ -73,3 +73,8 @@ export function listingsHref(index: TransitIndex, selection: PickerSelection, ma
   const query = params.toString().replace(/%2C/g, ',')
   return query ? `/listings?${query}` : '/listings'
 }
+
+/** Turn a run of stations on or off together (drag or Shift+click across a line). */
+export function setStations(index: TransitIndex, selection: PickerSelection, stations: readonly number[], on: boolean): PickerSelection {
+  return stations.reduce((current, station) => (effectiveStations(index, current).has(station) === on ? current : toggleStation(index, current, station)), selection)
+}

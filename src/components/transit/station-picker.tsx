@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { ArrowRight, List, Map as MapIcon, Search, X } from 'lucide-react'
 import { getTransitCopy } from '@/lib/transit/copy'
 import type { LineCategory } from '@/lib/transit/lines'
-import { countMatches, effectiveStations, initialSelection, isLineSelected, listingsHref, toggleLine, toggleStation, type PickerSelection } from '@/lib/transit/picker-state'
+import { countMatches, effectiveStations, initialSelection, isLineSelected, listingsHref, setStations, toggleLine, toggleStation, type PickerSelection } from '@/lib/transit/picker-state'
 import type { TransitIndex } from '@/lib/transit/search'
 import { LineRow } from './line-row'
 
@@ -108,7 +108,8 @@ export function StationPicker({ index, locale, initialStations, initialLines, in
             {lines.filter((line) => !operator || line.operator === operator).map((line) => <LineRow key={line.id} line={line} stations={index.stations} copy={copy}
               open={open.has(line.id)} lineSelected={isLineSelected(index, selection, line.id)} selected={selected}
               onOpen={() => toggleOpen(line.id)} onToggleLine={() => setSelection(toggleLine(index, selection, line.id))}
-              onToggleStation={(station) => setSelection(toggleStation(index, selection, station))} />)}
+              onToggleStation={(station) => setSelection(toggleStation(index, selection, station))}
+              onSetStations={(stations, on) => setSelection(setStations(index, selection, stations, on))} />)}
           </ul>
         </div>)}
       </section>
