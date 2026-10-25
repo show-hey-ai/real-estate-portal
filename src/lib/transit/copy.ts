@@ -25,6 +25,13 @@ export interface TransitCopy {
   metaTitle: string
   metaDescription: (count: number) => string
   linePages: string
+  viewList: string
+  viewMap: string
+  mapHint: string
+  zoomIn: string
+  zoomOut: string
+  resetView: string
+  mapCredit: string
 }
 
 const ja: TransitCopy = {
@@ -52,6 +59,13 @@ const ja: TransitCopy = {
   metaTitle: '路線・駅から探す｜東京23区の売り物件',
   metaDescription: (count) => `東京23区の55路線・約490駅から、駅近くの売り物件${count}件を探せます。JR・東京メトロ・都営・私鉄に対応、駅徒歩でも絞り込めます。`,
   linePages: '路線ごとの物件ページ',
+  viewList: 'リストで選ぶ',
+  viewMap: '路線図で選ぶ',
+  mapHint: 'ドラッグで移動、ピンチやボタンで拡大。駅を押すと選べます。色の付いた駅は物件ありです。',
+  zoomIn: '拡大',
+  zoomOut: '縮小',
+  resetView: '元の表示に戻す',
+  mapCredit: '路線図：「国土数値情報（鉄道データ）」（国土交通省）をもとに自由不動産合同会社が加工して作成（模式図のため実際の位置・距離とは異なります）',
 }
 
 const en: TransitCopy = {
@@ -79,6 +93,13 @@ const en: TransitCopy = {
   metaTitle: 'Tokyo Property for Sale by Train Line and Station',
   metaDescription: (count) => `Find ${count} properties for sale near stations in Tokyo's 23 wards: 55 lines and about 490 stations on JR, Tokyo Metro, Toei and private railways, with a walk-time filter.`,
   linePages: 'Properties by line',
+  viewList: 'Choose from a list',
+  viewMap: 'Choose on the route map',
+  mapHint: 'Drag to move, pinch or use the buttons to zoom, tap a station to select it. Shaded stations have listings.',
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  resetView: 'Reset view',
+  mapCredit: 'Route map: based on “National Land Numerical Information (Railways)” (MLIT), edited by Ziyou Real Estate LLC. A schematic: positions and distances are not to scale.',
 }
 
 const zhTW: TransitCopy = {
@@ -106,6 +127,13 @@ const zhTW: TransitCopy = {
   metaTitle: '依路線・車站尋找東京23區待售物件',
   metaDescription: (count) => `從東京23區55條路線、約490個車站中，尋找車站附近的待售物件（${count}件）。支援JR、東京Metro、都營與私鐵，並可依步行時間篩選。`,
   linePages: '各路線物件頁面',
+  viewList: '從清單選擇',
+  viewMap: '從路線圖選擇',
+  mapHint: '拖曳可移動，雙指或按鈕可縮放，點選車站即可選擇。有顏色的車站代表有物件。',
+  zoomIn: '放大',
+  zoomOut: '縮小',
+  resetView: '回到原始畫面',
+  mapCredit: '路線圖：依據「国土数値情報（鉄道データ）」（日本國土交通省）由自由不動産合同会社加工製作（示意圖，位置與距離與實際不同）',
 }
 
 const zhCN: TransitCopy = {
@@ -134,6 +162,13 @@ const zhCN: TransitCopy = {
   metaTitle: '按线路・车站查找东京23区在售房源',
   metaDescription: (count) => `从东京23区55条线路、约490个车站中，查找车站附近的在售房源（${count}套）。支持JR、东京Metro、都营和私铁，并可按步行时间筛选。`,
   linePages: '各线路房源页面',
+  viewList: '从列表选择',
+  viewMap: '从线路图选择',
+  mapHint: '拖动可移动，双指或按钮可缩放，点击车站即可选择。有颜色的车站表示有房源。',
+  zoomIn: '放大',
+  zoomOut: '缩小',
+  resetView: '恢复原始视图',
+  mapCredit: '线路图：依据“国土数値情報（鉄道データ）”（日本国土交通省）由自由不動産合同会社加工制作（示意图，位置和距离与实际不同）',
 }
 
 export function getTransitCopy(locale: string): TransitCopy {

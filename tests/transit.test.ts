@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { STATIONS, TRANSIT_LINES, lineNeighbours, lineStations, linesOfStation, listingStations, resolveLine, resolveStation, stationFromSlug } from '../src/lib/transit'
+import { MAP_LINES, MAP_STATIONS, MAP_VIEWBOX } from '../src/lib/transit/map-layout.generated'
 import { translateStationName } from '../src/lib/translate-fields'
 import { WARD_SLUGS } from '../src/lib/ward-tile-map'
 
@@ -76,4 +77,12 @@ test('neighbouring stations follow loops and spurs', () => {
   assert.deepEqual(lineNeighbours(line('toei-oedo'), '都庁前').sort(), ['新宿', '新宿西口', '西新宿五丁目'].sort())
   assert.deepEqual(lineNeighbours(line('metro-marunouchi'), '中野坂上').sort(), ['中野新橋', '新中野', '西新宿'].sort())
   assert.deepEqual(lineNeighbours(line('jr-keiyo'), '東京'), ['八丁堀'])
+})
+
+test('the route map draws every station once and every line', () => {
+  assert.deepEqual(new Set(MAP_STATIONS.map(([slug]) => slug)), new Set(Object.values(STATIONS).map(({ slug }) => slug)))
+  assert.equal(MAP_STATIONS.length, Object.keys(STATIONS).length)
+  for (const [slug, x, y] of MAP_STATIONS) assert.ok(x > 0 && x < MAP_VIEWBOX.width && y > 0 && y < MAP_VIEWBOX.height, slug)
+  assert.deepEqual(MAP_LINES.map((line) => line.id), TRANSIT_LINES.map((line) => line.id))
+  assert.ok(MAP_LINES.every((line) => line.d.startsWith('M')))
 })

@@ -1,13 +1,17 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { ArrowRight, Search, X } from 'lucide-react'
+import { ArrowRight, List, Map as MapIcon, Search, X } from 'lucide-react'
 import { getTransitCopy } from '@/lib/transit/copy'
 import type { LineCategory } from '@/lib/transit/lines'
 import { countMatches, effectiveStations, initialSelection, isLineSelected, listingsHref, toggleLine, toggleStation, type PickerSelection } from '@/lib/transit/picker-state'
 import type { TransitIndex } from '@/lib/transit/search'
 import { LineRow } from './line-row'
+
+// The route map and its drawing load only when a visitor opens the map.
+const RouteMap = dynamic(() => import('./route-map').then((module) => module.RouteMap), { ssr: false })
 
 const CATEGORIES: LineCategory[] = ['jr', 'metro', 'toei', 'private']
 const WALK_OPTIONS = [5, 10, 15]
@@ -28,6 +32,7 @@ export function StationPicker({ index, locale, initialStations, initialLines, in
   const [selection, setSelection] = useState<PickerSelection>(() => initialSelection(index, initialStations, initialLines))
   const [walk, setWalk] = useState<number | null>(initialWalk)
   const [query, setQuery] = useState('')
+  const [view, setView] = useState<'list' | 'map'>('list')
   // Open the chosen whole lines, and for single stations the first line that stops there.
   const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set([
     ...selection.lines,
@@ -60,6 +65,12 @@ export function StationPicker({ index, locale, initialStations, initialLines, in
   })
 
   return <div data-testid="station-picker">
+    <div className="mb-4 grid grid-cols-2 gap-1 rounded-xl bg-[#eef2f6] p-1" role="group">
+      {(['list', 'map'] as const).map((mode) => <button key={mode} type="button" aria-pressed={view === mode} onClick={() => setView(mode)}
+        className={`flex min-h-10 items-center justify-center gap-1.5 rounded-lg text-sm font-semibold ${view === mode ? 'bg-white text-[#274d7d] shadow-sm' : 'text-[#536274]'}`}>
+        {mode === 'list' ? <List aria-hidden="true" className="h-4 w-4" /> : <MapIcon aria-hidden="true" className="h-4 w-4" />}{mode === 'list' ? copy.viewList : copy.viewMap}
+      </button>)}
+    </div>
     <div className="relative">
       <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#82939b]" />
       <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} aria-label={copy.search} className="h-11 w-full rounded-lg border border-[#cbd5df] bg-white pl-9 pr-3 text-sm outline-none focus:border-[#274d7d] focus:ring-2 focus:ring-[#274d7d]/15" />
@@ -75,6 +86,13 @@ export function StationPicker({ index, locale, initialStations, initialLines, in
       </li>)}
     </ul>}
 
+    {view === 'map' && <div className="mt-4">
+      <RouteMap index={index} locale={locale} selected={selected} onToggle={(station) => setSelection(toggleStation(index, selection, station))}
+        hint={copy.mapHint} zoomIn={copy.zoomIn} zoomOut={copy.zoomOut} reset={copy.resetView} />
+      <p className="mt-1 text-[10px] leading-4 text-[#7a8796]">{copy.mapCredit}</p>
+    </div>}
+
+    {view === 'list' && <>
     <nav className="mt-5 flex flex-wrap gap-2" aria-label={copy.title}>
       {CATEGORIES.map((category) => <a key={category} href={`#lines-${category}`} className="rounded-full border border-[#cfd9e3] bg-white px-3 py-1.5 text-xs font-semibold text-[#274d7d] hover:bg-[#f3f6f9]">{copy.categories[category]}</a>)}
     </nav>
@@ -95,6 +113,7 @@ export function StationPicker({ index, locale, initialStations, initialLines, in
         </div>)}
       </section>
     })}
+    </>}
 
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[#dbe2e9] bg-white/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_16px_rgba(27,41,58,0.08)] backdrop-blur">
       <div className="mx-auto max-w-3xl">
