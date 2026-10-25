@@ -1,3 +1,5 @@
+import { formatYenWords } from './yen-words'
+
 export function formatPrice(price: bigint | number, locale: string = 'ja'): string {
   const num = typeof price === 'bigint' ? Number(price) : price
 
@@ -17,7 +19,10 @@ export function formatPrice(price: bigint | number, locale: string = 'ja'): stri
     return `¥${num.toLocaleString('en')}`
   }
 
-  // ja, zh-TW, zh-CN all use 億/万 without rounding the advertised price.
+  // Chinese pages write the units in Chinese (9,800萬日圓 / 9,800万日元), never rounding the price.
+  if (locale === 'zh-TW' || locale === 'zh-CN') return formatYenWords(num, locale)
+
+  // Japanese uses 億/万 without rounding the advertised price.
   if (num >= 100000000) {
     const oku = Math.floor(num / 100000000)
     const remainder = num % 100000000
@@ -88,6 +93,7 @@ export function formatPriceLabel(value: number, locale: string = 'ja'): string {
     if (value >= 1_000_000) return `¥${(value / 1_000_000)}M`
     return `¥${value.toLocaleString('en')}`
   }
+  if (locale === 'zh-TW' || locale === 'zh-CN') return formatYenWords(value, locale)
   if (value >= 100_000_000) return `¥${(value / 100_000_000)}億`
   if (value >= 10_000) return `¥${(value / 10_000).toLocaleString()}万`
   return `¥${value.toLocaleString()}`

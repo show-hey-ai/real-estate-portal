@@ -40,7 +40,7 @@
     "builtYearValue": "{year}年建成",
     "structure": "結構",
     "landArea": "土地面積",
-    "buildingArea": "建築面積",
+    "buildingArea": "面積",
     "floorCount": "樓層數",
     "floorCountValue": "{count}層",
     "currentStatus": "現況",

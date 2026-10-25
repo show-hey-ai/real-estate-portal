@@ -8,7 +8,8 @@ const SESSION_PATHS = ['/admin', '/favorites', '/mypage', '/inquiry', '/chats']
 export async function proxy(request: NextRequest) {
   const { pathname, searchParams, search } = request.nextUrl
   if (SESSION_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
-    return updateSession(request)
+    const sessionLocale = searchParams.get(LOCALE_QUERY)
+    return updateSession(request, isLocale(sessionLocale) ? sessionLocale : undefined)
   }
   const plan = publicCachePlan({
     method: request.method,

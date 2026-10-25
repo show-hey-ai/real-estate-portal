@@ -1,4 +1,5 @@
 import { translateStationName } from '../translate-fields'
+import { chineseLineName, isChineseLocale } from '../zh-script'
 import { STATIONS, TRANSIT_LINES, lineById, lineStations, listingStations, stationFromSlug, type LineCategory, type TransitLine } from './index'
 import { isSelectionValue } from './selection-value'
 
@@ -33,6 +34,7 @@ export function matchesStationSelection(stations: unknown, selected: ReadonlySet
 }
 
 export function lineLabel(line: TransitLine, locale: string): string {
+  if (isChineseLocale(locale)) return chineseLineName(line.ja, line.en, locale)
   return locale === 'ja' ? line.ja : line.en
 }
 

@@ -1,6 +1,7 @@
 import { englishStreet } from './english-address'
 import { stationKey } from './transit/station-key'
 import { EXTRA_STATION_NAMES_EN } from './transit/station-names-en'
+import { chineseLineName, chinesePlaceName, isChineseLocale, toChineseScript } from './zh-script'
 
 /**
  * DB上の日本語フィールド値を言語に応じて翻訳するマッピング
@@ -678,6 +679,8 @@ function translateRailwayLineSegment(segment: string): string {
 
 export function translateRailwayLine(line: string | null | undefined, locale: string): string | null {
   if (!line || locale === 'ja') return line || null
+  // Chinese pages write the Japanese line name in Chinese characters, English only when kana remains.
+  if (isChineseLocale(locale)) return chineseLineName(normalizeRailwayLineLabel(line), translateRailwayLine(line, 'en') ?? line, locale)
 
   const normalizedLine = normalizeRailwayLineLabel(line)
   if (railwayLineMap[normalizedLine]) {
@@ -731,16 +734,20 @@ const stationNamesByKey = new Map(Object.entries({ ...EXTRA_STATION_NAMES_EN, ..
 
 export function translateStationName(name: string | null | undefined, locale: string): string | null {
   if (!name || locale === 'ja') return name || null
-  return stationNamesByKey.get(stationKey(name)) ?? name
+  const english = stationNamesByKey.get(stationKey(name)) ?? name
+  return isChineseLocale(locale) ? chinesePlaceName(name.replace(/駅$/u, ''), english, locale) : english
 }
 
 export function translateCityName(city: string | null | undefined, locale: string): string | null {
   if (!city || locale === 'ja') return city || null
+  if (isChineseLocale(locale)) return toChineseScript(city, locale)
   return cityMap[city] || city
 }
 
 export function translateAddress(address: string | null | undefined, locale: string): string | null {
-  if (!address || locale === 'ja' || locale === 'zh-TW' || locale === 'zh-CN') return address || null
+  if (!address || locale === 'ja') return address || null
+  // Chinese readers can read the Japanese address; only the character forms change (中野区 → 中野區).
+  if (isChineseLocale(locale)) return toChineseScript(address, locale)
 
   let result = address
   // 都道府県を変換
@@ -774,14 +781,15 @@ export function formatTransitAccessLabel(
 
   // Drafts store the Japanese name in name_en/line_en when no romanisation was known; ignore those.
   const latin = (value: string | null | undefined) => (value && !JAPANESE_SCRIPT.test(value) ? value : null)
+  // English pages prefer the stored romanisation; Chinese pages convert the Japanese names.
   const lineLabel =
-    locale !== 'ja'
-      ? latin(station.line_en) || translateRailwayLine(station.line, locale)
-      : station.line || null
+    locale === 'ja' ? station.line || null
+      : isChineseLocale(locale) ? translateRailwayLine(station.line, locale) || latin(station.line_en)
+        : latin(station.line_en) || translateRailwayLine(station.line, locale)
   const stationLabel =
-    locale !== 'ja'
-      ? latin(station.name_en) || translateStationName(station.name, locale)
-      : station.name || null
+    locale === 'ja' ? station.name || null
+      : isChineseLocale(locale) ? translateStationName(station.name, locale) || latin(station.name_en)
+        : latin(station.name_en) || translateStationName(station.name, locale)
 
   if (lineLabel && stationLabel) {
     return `${lineLabel} / ${stationLabel}`

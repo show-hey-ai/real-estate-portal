@@ -1,10 +1,16 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { LOCALE_HEADER } from '@/lib/locale-url'
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+/** `locale` is the language from ?lang=, passed on to the page as the public proxy does. */
+export async function updateSession(request: NextRequest, locale?: string) {
+  // Rebuilt after cookies change, so the page sees both the refreshed cookies and the language.
+  const next = () => {
+    const headers = new Headers(request.headers)
+    if (locale) headers.set(LOCALE_HEADER, locale)
+    return NextResponse.next({ request: { headers } })
+  }
+  let supabaseResponse = next()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,9 +22,7 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({
-            request,
-          })
+          supabaseResponse = next()
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )

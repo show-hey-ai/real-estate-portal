@@ -1,3 +1,4 @@
+import { chinesePlaceName, isChineseLocale } from '../zh-script'
 /** Text for the line pages (/lines/[id]) and station pages (/stations/[slug]). */
 export interface TransitPageCopy {
   home: string
@@ -128,7 +129,6 @@ export function getTransitPageCopy(locale: string): TransitPageCopy {
   return locale === 'ja' ? ja : locale === 'zh-TW' ? zhTW : locale === 'zh-CN' ? zhCN : en
 }
 
-const KANA = /[぀-ゟ゠-ヿ]/u
 
 /**
  * A station as a page heading: 渋谷駅 / Shibuya Station / 渋谷站（Shibuya）. Chinese pages keep the
@@ -136,6 +136,9 @@ const KANA = /[぀-ゟ゠-ヿ]/u
  */
 export function stationHeading(name: string, english: string, locale: string): string {
   if (locale === 'ja') return name.endsWith('駅前') ? name : `${name}駅`
-  if (locale === 'zh-TW' || locale === 'zh-CN') return KANA.test(name) ? `${english}站` : `${name}站（${english}）`
+  if (isChineseLocale(locale)) {
+    const chinese = chinesePlaceName(name, english, locale)
+    return chinese === english ? `${english}站` : `${chinese}站（${english}）`
+  }
   return `${english} Station`
 }

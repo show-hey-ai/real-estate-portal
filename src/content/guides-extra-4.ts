@@ -174,8 +174,8 @@ export const extraGuideArticles4: GuideArticle[] = [
         ctaDescription: 'Compare current listings with this glossary at hand.',
       },
       'zh-TW': {
-        category: '用語集',
-        title: '日本物件資訊用語集｜LDK、坪、壁芯、帶租約（オーナーチェンジ）等',
+        category: '術語解說',
+        title: '日本房產術語解說｜LDK、坪、壁芯、帶租約（Owner Change）等',
         excerpt: '整理日本物件資訊常見用語：格局「LDK」、面積的「壁芯」與「內法」、「帶租約」、「不可重建」等，讓海外買家也能看懂。',
         seoDescription: '日本不動產物件資訊用語集：1LDK等格局、坪與平方公尺、壁芯與內法面積、管理費與修繕公積金、新耐震、所有權與借地權、帶租約、表面與實質投報率。',
         intro: '日本的物件資訊有很多獨特的縮寫與專業用語。以下以本站物件頁面會出現的用語為主，整理意思與確認重點。',
@@ -256,8 +256,8 @@ export const extraGuideArticles4: GuideArticle[] = [
         ctaDescription: '對照用語集，比較目前刊登中的物件資訊。',
       },
       'zh-CN': {
-        category: '用语集',
-        title: '日本房源信息用语集｜LDK、坪、壁芯、带租约（オーナーチェンジ）等',
+        category: '术语解说',
+        title: '日本房产术语解说｜LDK、坪、壁芯、带租约（Owner Change）等',
         excerpt: '整理日本房源信息常见用语：户型“LDK”、面积的“壁芯”与“内法”、“带租约”、“不可重建”等，让海外买家也能看懂。',
         seoDescription: '日本房产房源信息用语集：1LDK等户型、坪与平方米、壁芯与内法面积、管理费与修缮基金、新耐震、所有权与借地权、带租约、表面与实际收益率。',
         intro: '日本的房源信息有很多独特的缩写与专业用语。以下以本站房源页面会出现的用语为主，整理含义与确认要点。',
