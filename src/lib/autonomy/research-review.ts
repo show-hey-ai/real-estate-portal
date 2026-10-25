@@ -1,3 +1,5 @@
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { prisma } from '../db'
 import { renewedResearchReview, researchReviewSchema, RESEARCH_ARTICLE_VERSION } from './editorial-policy'
 import { PORTAL_VENTURE_ID } from './policy'
@@ -12,11 +14,20 @@ import { json } from './store'
 const LINK_TIMEOUT_MS = 15_000
 const RENEW_WITHIN_MS = 2 * 24 * 3600_000
 
+// www.reins.or.jp serves an incomplete certificate chain: Node rejects it, while the macOS
+// certificate check (via curl, which fetches the missing intermediate) verifies it.
+async function liveByCurl(url: string): Promise<boolean> {
+  const status = await promisify(execFile)('curl', ['-s', '-L', '-o', '/dev/null', '-w', '%{http_code}', '--max-time', String(LINK_TIMEOUT_MS / 1000), url])
+    .then(({ stdout }) => Number(stdout.trim())).catch(() => 0)
+  return status >= 200 && status < 300
+}
+
 async function liveLinks(urls: string[]): Promise<Set<string>> {
   const results = await Promise.all([...new Set(urls)].map(async (url) => {
     const response = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(LINK_TIMEOUT_MS), headers: { 'User-Agent': 'WelcomeHomeTokyo-source-check' } }).catch(() => null)
     await response?.body?.cancel()
-    return response?.ok ? url : null
+    if (response?.ok) return url
+    return !response && await liveByCurl(url) ? url : null
   }))
   return new Set(results.filter((url): url is string => !!url))
 }
