@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { STATIONS, TRANSIT_LINES, lineStations, linesOfStation, listingStations, resolveLine, resolveStation, stationFromSlug } from '../src/lib/transit'
+import { STATIONS, TRANSIT_LINES, lineNeighbours, lineStations, linesOfStation, listingStations, resolveLine, resolveStation, stationFromSlug } from '../src/lib/transit'
 import { translateStationName } from '../src/lib/translate-fields'
 import { WARD_SLUGS } from '../src/lib/ward-tile-map'
 
@@ -68,4 +68,12 @@ test('station English names are found for every spelling', () => {
   assert.equal(translateStationName('大森駅', 'en'), 'Omori')
   assert.equal(translateStationName('扇大橋', 'en'), 'Ogi-Ohashi')
   assert.equal(translateStationName('渋谷', 'ja'), '渋谷')
+})
+
+test('neighbouring stations follow loops and spurs', () => {
+  const line = (id: string) => TRANSIT_LINES.find((item) => item.id === id)!
+  assert.deepEqual(lineNeighbours(line('jr-yamanote'), '東京'), ['有楽町', '神田'])
+  assert.deepEqual(lineNeighbours(line('toei-oedo'), '都庁前').sort(), ['新宿', '新宿西口', '西新宿五丁目'].sort())
+  assert.deepEqual(lineNeighbours(line('metro-marunouchi'), '中野坂上').sort(), ['中野新橋', '新中野', '西新宿'].sort())
+  assert.deepEqual(lineNeighbours(line('jr-keiyo'), '東京'), ['八丁堀'])
 })

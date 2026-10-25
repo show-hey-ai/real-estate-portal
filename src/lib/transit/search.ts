@@ -131,3 +131,10 @@ export function transitLabels(selection: StationSelection, locale: string): Reco
     ...selection.stations.map((name) => [STATIONS[name].slug, stationLabel(name, locale)]),
   ])
 }
+
+/** How many listings are near each 23-ward station. */
+export function stationListingCounts(rows: readonly { stations: unknown }[]): Map<string, number> {
+  const counts = new Map<string, number>()
+  for (const row of rows) for (const { station } of listingStations(row.stations)) counts.set(station, (counts.get(station) ?? 0) + 1)
+  return counts
+}

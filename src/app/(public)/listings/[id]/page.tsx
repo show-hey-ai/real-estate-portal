@@ -47,6 +47,7 @@ import { ExclusiveCta } from '@/components/listing/exclusive-cta'
 import { formatApprovedPublicAddress, hasDetailedPublicAddress } from '@/lib/address'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
 import { formatTransitAccessLabel, romanizeStationNames, translateAddress, translatePropertyType } from '@/lib/translate-fields'
+import { STATIONS, resolveStation } from '@/lib/transit'
 import { getIsFavoriteForViewer, getOptionalPublicViewer } from '@/lib/public-viewer'
 import { getMarketCategory, PUBLIC_PROPERTY_TYPES } from '@/lib/market-category'
 import { getPortalCategoryLabel } from '@/lib/portal-copy'
@@ -150,6 +151,12 @@ export async function generateMetadata({
       images: image ? [image] : undefined,
     },
   }
+}
+
+/** The station page for a listing's nearby station, when it is one of the 23-ward stations. */
+function stationPagePath(name: string | null | undefined): string | null {
+  const station = resolveStation(name)
+  return station ? `/stations/${STATIONS[station].slug}` : null
 }
 
 function schemaPropertyType(propertyType: string | null | undefined): string {
@@ -353,7 +360,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                     </p>)}
                   </div>
                 )}
-                {stations.length > 0 && <StationAccess locale={locale} stations={stations.map((station) => ({ label: formatTransitAccessLabel(station, locale) || station.name || '', walkMinutes: station.walk_minutes ?? null }))} />}
+                {stations.length > 0 && <StationAccess locale={locale} stations={stations.map((station) => ({ label: formatTransitAccessLabel(station, locale) || station.name || '', walkMinutes: station.walk_minutes ?? null, href: stationPagePath(station.name) }))} />}
               </div>
               <div className="flex flex-wrap gap-2 sm:shrink-0 sm:flex-col sm:items-end">
                 <FavoriteButton

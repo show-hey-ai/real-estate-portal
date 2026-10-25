@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getLocale } from 'next-intl/server'
 import { TrainFront } from 'lucide-react'
 import { StationPicker } from '@/components/transit/station-picker'
@@ -51,5 +52,16 @@ export default async function LinesPage({ searchParams }: LinesPageProps) {
       <StationPicker index={index} locale={locale} initialStations={query.get('stations')} initialLines={query.get('lines')}
         initialWalk={searchNumber(query.get('walkMax') ?? undefined, 'walk')} keep={query.toString()} />
     </div>
+    {/* Bottom padding keeps the last links clear of the picker's fixed bar. */}
+    <section className="mt-12 pb-40" aria-labelledby="line-pages-title">
+      <h2 id="line-pages-title" className="text-base font-semibold">{copy.linePages}</h2>
+      <ul className="mt-3 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+        {index.lines.filter((line) => line.count > 0).map((line) => <li key={line.id}>
+          <Link href={`/lines/${line.id}`} className="flex min-h-9 items-center gap-2 text-sm text-[#274d7d] hover:underline">
+            <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: line.color }} />{line.label}<span className="text-xs text-[#657487]">{copy.count(line.count)}</span>
+          </Link>
+        </li>)}
+      </ul>
+    </section>
   </div>
 }

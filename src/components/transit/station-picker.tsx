@@ -59,7 +59,7 @@ export function StationPicker({ index, locale, initialStations, initialLines, in
     return next
   })
 
-  return <div data-testid="station-picker" className="pb-40">
+  return <div data-testid="station-picker">
     <div className="relative">
       <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#82939b]" />
       <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} aria-label={copy.search} className="h-11 w-full rounded-lg border border-[#cbd5df] bg-white pl-9 pr-3 text-sm outline-none focus:border-[#274d7d] focus:ring-2 focus:ring-[#274d7d]/15" />

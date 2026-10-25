@@ -24,6 +24,7 @@ export interface TransitCopy {
   change: string
   metaTitle: string
   metaDescription: (count: number) => string
+  linePages: string
 }
 
 const ja: TransitCopy = {
@@ -50,6 +51,7 @@ const ja: TransitCopy = {
   change: '路線・駅を変更',
   metaTitle: '路線・駅から探す｜東京23区の売り物件',
   metaDescription: (count) => `東京23区の55路線・約490駅から、駅近くの売り物件${count}件を探せます。JR・東京メトロ・都営・私鉄に対応、駅徒歩でも絞り込めます。`,
+  linePages: '路線ごとの物件ページ',
 }
 
 const en: TransitCopy = {
@@ -76,6 +78,7 @@ const en: TransitCopy = {
   change: 'Change lines and stations',
   metaTitle: 'Tokyo Property for Sale by Train Line and Station',
   metaDescription: (count) => `Find ${count} properties for sale near stations in Tokyo's 23 wards: 55 lines and about 490 stations on JR, Tokyo Metro, Toei and private railways, with a walk-time filter.`,
+  linePages: 'Properties by line',
 }
 
 const zhTW: TransitCopy = {
@@ -102,6 +105,7 @@ const zhTW: TransitCopy = {
   change: '變更路線・車站',
   metaTitle: '依路線・車站尋找東京23區待售物件',
   metaDescription: (count) => `從東京23區55條路線、約490個車站中，尋找車站附近的待售物件（${count}件）。支援JR、東京Metro、都營與私鐵，並可依步行時間篩選。`,
+  linePages: '各路線物件頁面',
 }
 
 const zhCN: TransitCopy = {
@@ -129,6 +133,7 @@ const zhCN: TransitCopy = {
   change: '更改线路・车站',
   metaTitle: '按线路・车站查找东京23区在售房源',
   metaDescription: (count) => `从东京23区55条线路、约490个车站中，查找车站附近的在售房源（${count}套）。支持JR、东京Metro、都营和私铁，并可按步行时间筛选。`,
+  linePages: '各线路房源页面',
 }
 
 export function getTransitCopy(locale: string): TransitCopy {

@@ -10,6 +10,7 @@ import { parseDbTimestamp } from '@/lib/db-timestamp'
 import { localizedSitemapUrls } from '@/lib/locale-url'
 import { pickCoverImage } from '@/lib/cover-image'
 import { WARD_SLUGS } from '@/lib/ward-tile-map'
+import { STATIONS, TRANSIT_LINES, lineStations, listingStations } from '@/lib/transit'
 import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, inBudget, typeSlugFor, type TypeSlug } from '@/lib/collections'
 
 export const dynamic = 'force-dynamic'
@@ -82,7 +83,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createClient(supabaseUrl, serviceRoleKey)
   const { data, error } = await supabase
     .from('listings')
-    .select('id, city, propertyType, price, updatedAt, publishedAt, media (url, category, isAdopted, sortOrder)')
+    .select('id, city, propertyType, price, stations, updatedAt, publishedAt, media (url, category, isAdopted, sortOrder)')
     .eq('status', 'PUBLISHED')
     .eq('adAllowed', true)
     .eq('adConsentRequired', false)
@@ -118,5 +119,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((slug) => rows.some((row) => inBudget(row.price, budgetBand(slug)!)))
     .flatMap((slug) => localized(`/budget/${slug}`, getLatestDate(rows.filter((row) => inBudget(row.price, budgetBand(slug)!)).map((row) => row.updatedAt)), 'daily', 0.8))
 
-  return [...adjustedStaticEntries, ...wardEntries, ...typeEntries, ...budgetEntries, ...guideEntries, ...listingEntries, ...articleEntries]
+  // Station and line pages near at least one published listing; the rest are noindex.
+  const nearStation = new Map<string, string[]>()
+  for (const row of rows) for (const { station } of listingStations(row.stations)) nearStation.set(station, [...(nearStation.get(station) ?? []), row.updatedAt])
+  const stationEntries: MetadataRoute.Sitemap = [...nearStation].flatMap(([station, dates]) => localized(`/stations/${STATIONS[station].slug}`, getLatestDate(dates), 'daily', 0.75))
+  const lineEntries: MetadataRoute.Sitemap = TRANSIT_LINES
+    .map((line) => ({ line, dates: lineStations(line).flatMap((station) => nearStation.get(station) ?? []) }))
+    .filter(({ dates }) => dates.length > 0)
+    .flatMap(({ line, dates }) => localized(`/lines/${line.id}`, getLatestDate(dates), 'daily', 0.8))
+
+  return [...adjustedStaticEntries, ...wardEntries, ...lineEntries, ...stationEntries, ...typeEntries, ...budgetEntries, ...guideEntries, ...listingEntries, ...articleEntries]
 }

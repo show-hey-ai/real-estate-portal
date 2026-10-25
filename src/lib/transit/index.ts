@@ -78,3 +78,14 @@ export function listingStations(stations: unknown): ListingStation[] {
   }
   return [...nearest].map(([station, walkMinutes]) => ({ station, walkMinutes }))
 }
+
+/** The stations next to `name` on a line, following its loop and spurs. */
+export function lineNeighbours(line: TransitLine, name: string): string[] {
+  const edges: [string, string][] = line.stations.slice(1).map((station, index) => [line.stations[index], station])
+  if (line.loopTo) edges.push([line.stations[line.stations.length - 1], line.loopTo])
+  for (const branch of line.branches ?? []) {
+    const path = [branch.from, ...branch.stations]
+    edges.push(...path.slice(1).map((station, index): [string, string] => [path[index], station]))
+  }
+  return [...new Set(edges.flatMap(([from, to]) => (from === name ? [to] : to === name ? [from] : [])))]
+}

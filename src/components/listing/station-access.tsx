@@ -1,8 +1,11 @@
+import Link from 'next/link'
 import { Footprints, Train } from 'lucide-react'
 
 export interface StationAccessItem {
   label: string
   walkMinutes: number | null
+  /** The station's page, for stations in the 23 wards. */
+  href?: string | null
 }
 
 const MAX_SCALE_MINUTES = 20
@@ -31,7 +34,7 @@ export function StationAccess({ locale, stations }: StationAccessProps) {
   return <ul className="mt-2 w-full max-w-sm space-y-2 sm:w-80" data-testid="station-access">
     {stations.map((station, index) => <li key={index} className="text-sm">
       <div className="flex items-center justify-between gap-3">
-        <span className="flex min-w-0 items-center gap-1.5 text-[#1b293a]"><Train aria-hidden="true" className="h-4 w-4 shrink-0 text-[#274d7d]" /><span className="truncate">{station.label}</span></span>
+        <span className="flex min-w-0 items-center gap-1.5 text-[#1b293a]"><Train aria-hidden="true" className="h-4 w-4 shrink-0 text-[#274d7d]" />{station.href ? <Link href={station.href} className="truncate text-[#274d7d] hover:underline">{station.label}</Link> : <span className="truncate">{station.label}</span>}</span>
         {station.walkMinutes !== null && <span className="flex shrink-0 items-center gap-1 font-semibold tabular-nums text-[#1b293a]"><Footprints aria-hidden="true" className="h-3.5 w-3.5 text-[#536274]" />{walk(station.walkMinutes)}</span>}
       </div>
       {station.walkMinutes !== null && <div className="ml-5.5 mt-1 h-1.5 overflow-hidden rounded-full bg-[#e6edf4]" aria-hidden="true"><div className={`h-full rounded-full ${tone(station.walkMinutes)}`} style={{ width: `${Math.min(100, Math.max(6, (station.walkMinutes / MAX_SCALE_MINUTES) * 100))}%` }} /></div>}
