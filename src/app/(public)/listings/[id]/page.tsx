@@ -37,11 +37,10 @@ import { ListingUpdateDates } from '@/components/listing/update-dates'
 import { listingUpdateDates } from '@/lib/freshness'
 import { ListingChat } from '@/components/listing/listing-chat'
 import { PropertyChatLink } from '@/components/chat/private-chats'
-import { getTradeChatCopy } from '@/lib/trade-chat'
 import { FavoriteButton } from '@/components/listing/favorite-button'
 import { ViewTracker } from '@/components/listing/view-tracker'
 import { formatPrice } from '@/lib/format'
-import { MapPin, Info, Sparkles, MessageCircle } from 'lucide-react'
+import { MapPin, Info, Sparkles } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ExclusiveCta } from '@/components/listing/exclusive-cta'
@@ -367,10 +366,11 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </div>
             </div>
 
-            <a href={`/chats?listing=${formattedListing.id}&start=1`} rel="nofollow" className="mb-6 inline-flex items-center gap-2 rounded-lg border border-[#cfded8] bg-[#f0f7f4] px-4 py-3 text-sm font-medium text-[#316957] lg:hidden">
-              <MessageCircle className="h-4 w-4" aria-hidden="true" />
-              {getTradeChatCopy(locale).start}
-            </a>
+            {/* Phones: the no-sign-up contact box right under the price (it sits in the sidebar on wide screens).
+                The sign-in chat used to be here and nobody started one; it stays further down. */}
+            <div className="mb-6 lg:hidden" data-testid="quick-contact-inline">
+              <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
+            </div>
 
             <ListingHighlightChips locale={locale} result={highlights} />
 
@@ -435,7 +435,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
 
         <div className="lg:col-span-1 min-w-0">
           <div className="sticky top-44 space-y-4">
-            <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
+            <div className="hidden lg:block">
+              <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
+            </div>
             <PropertyChatLink listingId={formattedListing.id} />
             <ListingChat
               key={formattedListing.id}
