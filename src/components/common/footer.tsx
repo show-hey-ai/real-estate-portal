@@ -56,7 +56,8 @@ export function Footer({ guides }: FooterProps) {
           {/* Quick Links */}
           <div>
             <h2 className="font-semibold mb-4">{t('nav.listings')}</h2>
-            <ul className="space-y-2 text-sm">
+            {/* Two columns on phones keep the footer from running several screens long. */}
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm md:block md:space-y-2">
               <li>
                 <Link href="/listings" className="text-white/65 hover:text-white transition-colors">
                   {t('home.viewListings')}
@@ -107,11 +108,6 @@ export function Footer({ guides }: FooterProps) {
                 <a href={`https://ziyou-fudosan.com${privacyPath}`} className="text-white/65 hover:text-white transition-colors">
                   {t('common.privacyPolicy')}
                 </a>
-              </li>
-              <li>
-                <span className="text-white/65">
-                  {t('common.termsOfService')}
-                </span>
               </li>
             </ul>
           </div>
