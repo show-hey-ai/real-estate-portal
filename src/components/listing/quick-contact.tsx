@@ -1,7 +1,8 @@
 'use client'
 
 import { useId, useState, type MouseEvent } from 'react'
-import { CalendarCheck, FileText, HelpCircle, Images, Mail, MessageCircle, MessagesSquare, SearchCheck } from 'lucide-react'
+import { CalendarCheck, FileText, HelpCircle, Images, Mail, SearchCheck } from 'lucide-react'
+import { ChannelIcon } from '@/components/contact/channel-icon'
 import { useLocale } from 'next-intl'
 import {
   CONTACT_EMAIL, WECHAT_DEEP_LINK, WECHAT_ID,
@@ -49,7 +50,6 @@ interface ContactLink {
   channel: ContactChannel
   href: string
   label: string
-  Icon: typeof Mail
   external: boolean
 }
 
@@ -74,13 +74,13 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
   const subject = intent === 'question' ? listingTitle : `${text.intents[intent]}: ${listingTitle}`
 
   const messaging: Record<MessagingChannel, ContactLink> = {
-    whatsapp: { channel: 'whatsapp', href: whatsappUrl(message), label: text.whatsapp, Icon: MessageCircle, external: true },
-    line: { channel: 'line', href: lineMessageUrl(message), label: text.line, Icon: MessagesSquare, external: true },
-    wechat: { channel: 'wechat', href: WECHAT_DEEP_LINK, label: text.wechat, Icon: MessagesSquare, external: false },
+    whatsapp: { channel: 'whatsapp', href: whatsappUrl(message), label: text.whatsapp, external: true },
+    line: { channel: 'line', href: lineMessageUrl(message), label: text.line, external: true },
+    wechat: { channel: 'wechat', href: WECHAT_DEEP_LINK, label: text.wechat, external: false },
   }
   const order = messagingOrder(locale)
   const [primary, ...secondary] = order.map((channel) => messaging[channel])
-  const email: ContactLink = { channel: 'email', href: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`, label: text.email, Icon: Mail, external: false }
+  const email: ContactLink = { channel: 'email', href: `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`, label: text.email, external: false }
 
   const onClick = (channel: ContactChannel, event: MouseEvent<HTMLAnchorElement>) => {
     // The buyer questions are required: point at them instead of sending.
@@ -108,8 +108,8 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
     // Until the buyer questions are answered, the bar takes visitors to the contact box that asks them.
     const barProps = (link: ContactLink) => (ready ? linkProps(link) : { href: '#quick-contact-inline' })
     return <nav aria-label={text.title} data-testid="quick-contact-bar" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-[#dbe2e9] bg-white/95 p-2 shadow-[0_-4px_16px_rgba(27,41,58,0.08)] backdrop-blur lg:hidden">
-      <a {...barProps(primary)} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><primary.Icon aria-hidden="true" className="h-4 w-4" />{primary.label}</a>
-      <a {...barProps(secondary[0])} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${OUTLINE_TONE}`}><MessageCircle aria-hidden="true" className="h-4 w-4" />{secondary[0].label}</a>
+      <a {...barProps(primary)} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><ChannelIcon channel={primary.channel as MessagingChannel} variant="mark" />{primary.label}</a>
+      <a {...barProps(secondary[0])} className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold ${OUTLINE_TONE}`}><ChannelIcon channel={secondary[0].channel as MessagingChannel} />{secondary[0].label}</a>
     </nav>
   }
 
@@ -124,13 +124,13 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
     <div id={fieldsId} className="mt-3 scroll-mt-24"><BuyerProfileFields locale={locale} profile={profile} onAnswer={answer} showMissing={triedToSend} idPrefix={fieldsId} /></div>
     {triedToSend && !ready && <p className="mt-2 text-xs font-semibold text-[#b42318]" role="alert">{getProfileCopy(locale).missing}</p>}
     <div className={`mt-3 grid gap-2 ${ready ? '' : 'opacity-60'}`}>
-      <a {...linkProps(primary)} className={`${button} ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><primary.Icon aria-hidden="true" className="h-4 w-4" />{primary.label}</a>
+      <a {...linkProps(primary)} className={`${button} ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><ChannelIcon channel={primary.channel as MessagingChannel} variant="mark" />{primary.label}</a>
       <div className="grid grid-cols-2 gap-2">
         {/* Half-width buttons show just the app name, so "WhatsAppで相談" does not wrap onto two lines on phones. */}
-        {secondary.map((link) => <a key={link.channel} {...linkProps(link)} aria-label={link.label} className={`${button} ${OUTLINE_TONE}`}><link.Icon aria-hidden="true" className="h-4 w-4" />{CHANNEL_NAME[link.channel as MessagingChannel]}</a>)}
+        {secondary.map((link) => <a key={link.channel} {...linkProps(link)} aria-label={link.label} className={`${button} ${OUTLINE_TONE}`}><ChannelIcon channel={link.channel as MessagingChannel} />{CHANNEL_NAME[link.channel as MessagingChannel]}</a>)}
       </div>
       {wechatCopied && <p className="rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{text.wechatCopied}</p>}
-      {[email].map((link) => <a key={link.channel} {...linkProps(link)} className={`${button} ${OUTLINE_TONE}`}><link.Icon aria-hidden="true" className="h-4 w-4" />{link.label}</a>)}
+      {[email].map((link) => <a key={link.channel} {...linkProps(link)} className={`${button} ${OUTLINE_TONE}`}><Mail aria-hidden="true" className="h-4 w-4" />{link.label}</a>)}
     </div>
   </section>
 }

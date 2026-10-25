@@ -10,6 +10,7 @@ import { getOtherListingsCopy } from '@/content/other-listings'
 import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, type TypeSlug } from '@/lib/collections'
 import { priceBandRange } from '@/lib/price-bands'
 import { conversionCheckUrl } from '@/lib/conversion-check'
+import { ChannelIcon } from '@/components/contact/channel-icon'
 import { INSTAGRAM_URL, LINE_ADD_URL, LINE_ID, WECHAT_DEEP_LINK, WECHAT_ID, WHATSAPP_NUMBER } from '@/lib/contact-channels'
 
 const OVERSEAS_LABEL: Record<string, string> = { ja: '海外から買う（お金の流れ）', en: 'Buying from overseas', 'zh-TW': '從海外購屋', 'zh-CN': '从海外买房' }
@@ -96,10 +97,10 @@ export function Footer({ guides }: FooterProps) {
               <p>{company.license}</p>
               <p>{company.address}</p>
               <p><a href="mailto:admin@ziyou-fudosan.com" className="hover:text-white">admin@ziyou-fudosan.com</a></p>
-              <p className="flex flex-wrap gap-x-4 gap-y-1">
-                <a href={LINE_ADD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-white">LINE {LINE_ID}</a>
-                <a href={WECHAT_DEEP_LINK} className="hover:text-white">WeChat {WECHAT_ID}</a>
-                <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a>
+              <p className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+                <a href={LINE_ADD_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white"><ChannelIcon channel="line" />LINE {LINE_ID}</a>
+                <a href={WECHAT_DEEP_LINK} className="inline-flex items-center gap-1.5 hover:text-white"><ChannelIcon channel="wechat" />WeChat {WECHAT_ID}</a>
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-white"><ChannelIcon channel="whatsapp" />WhatsApp</a>
                 <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer me" className="hover:text-white">Instagram</a>
               </p>
             </address>

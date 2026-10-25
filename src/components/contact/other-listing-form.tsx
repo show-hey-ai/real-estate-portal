@@ -1,7 +1,8 @@
 'use client'
 
-import { useId, useState } from 'react'
-import { Link2, Mail, MessageCircle, MessagesSquare } from 'lucide-react'
+import { useId, useState, type ReactNode } from 'react'
+import { Link2, Mail } from 'lucide-react'
+import { ChannelIcon } from '@/components/contact/channel-icon'
 import { recordClick } from '@/components/common/ask-us'
 import { BuyerProfileFields, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
 import { getProfileCopy, isProfileComplete, profileText } from '@/lib/buyer-profile'
@@ -47,9 +48,9 @@ export function OtherListingForm({ locale }: { locale: string }) {
       setWechatCopied(true)
     }
   }
-  const link = (channel: MessagingChannel | 'email', label: string, tone: string, Icon: typeof Mail) => <a key={channel} href={hrefs[channel]} onClick={(event) => send(channel, event)}
+  const link = (channel: MessagingChannel | 'email', label: string, tone: string, icon: ReactNode) => <a key={channel} href={hrefs[channel]} onClick={(event) => send(channel, event)}
     aria-disabled={!ready} className={`${BUTTON} ${tone} ${ready ? '' : 'opacity-60'}`} {...(channel === 'wechat' || channel === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
-    <Icon aria-hidden="true" className="h-4 w-4" />{label}
+    {icon}{label}
   </a>
 
   return <section aria-labelledby="other-listing-form-title" data-testid="other-listing-form" className="rounded-2xl border border-[#dbe2e9] bg-[#f8fafc] p-5 md:p-6">
@@ -78,9 +79,9 @@ export function OtherListingForm({ locale }: { locale: string }) {
 
     <p className="mt-5 text-sm font-semibold text-[#243b45]">{copy.sendVia}</p>
     <div className="mt-2 grid gap-2 sm:grid-cols-4">
-      {link(primary, copy[primary], PRIMARY, MessageCircle)}
-      {secondary.map((channel) => link(channel, copy[channel], OUTLINE, MessagesSquare))}
-      {link('email', copy.email, OUTLINE, Mail)}
+      {link(primary, copy[primary], PRIMARY, <ChannelIcon channel={primary} variant="mark" />)}
+      {secondary.map((channel) => link(channel, copy[channel], OUTLINE, <ChannelIcon channel={channel} />))}
+      {link('email', copy.email, OUTLINE, <Mail aria-hidden="true" className="h-4 w-4" />)}
     </div>
     {wechatCopied && <p className="mt-3 rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{copy.wechatCopied}</p>}
   </section>

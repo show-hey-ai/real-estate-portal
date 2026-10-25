@@ -2,6 +2,7 @@
 
 import { useLocale } from 'next-intl'
 import { Mail, MessagesSquare } from 'lucide-react'
+import { ChannelIcon } from '@/components/contact/channel-icon'
 import { CONTACT_EMAIL, LINE_ADD_URL, WECHAT_DEEP_LINK, WECHAT_ID, messagingOrder, whatsappUrl, type MessagingChannel } from '@/lib/contact-channels'
 
 const copy = {
@@ -25,7 +26,7 @@ export function NoSignupContact() {
     <h2 id="no-signup-title" className="flex items-center gap-2 font-semibold"><MessagesSquare aria-hidden="true" className="h-4 w-4 text-[#274d7d]" />{text.title}</h2>
     <p className="mt-1 text-sm text-[#536274]">{text.body}</p>
     <div className="mt-3 grid grid-cols-2 gap-2">
-      {messagingOrder(locale).map((channel) => { const link = links[channel]; return <a key={channel} href={link.href} {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className={button}>{link.label}</a> })}
+      {messagingOrder(locale).map((channel) => { const link = links[channel]; return <a key={channel} href={link.href} {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className={button}><ChannelIcon channel={channel} />{link.label}</a> })}
       <a href={`mailto:${CONTACT_EMAIL}`} className={button}><Mail aria-hidden="true" className="h-4 w-4" />Email</a>
     </div>
   </section>
