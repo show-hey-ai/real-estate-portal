@@ -43,3 +43,17 @@ export function compareEditorialMetrics(baseline: EditorialMetrics, candidate: E
   if (a - b > uncertainty && a > b + 0.02) return 'restore_baseline' as const
   return 'inconclusive' as const
 }
+
+// Weekly renewal of an unchanged, human-reviewed research article (see research-review.ts).
+const REVIEW_DAYS = 7
+const REVIEW_RENEW_WITHIN_MS = 2 * 24 * 3600_000
+
+type ResearchReview = z.infer<typeof researchReviewSchema>
+interface ArticleSnapshot { slug: string; sourceHash: string; locales: unknown }
+
+export function renewedResearchReview(article: ArticleSnapshot, review: ResearchReview, linkIsLive: (url: string) => boolean, now: Date): ResearchReview | null {
+  if (Date.parse(review.validUntil) - now.getTime() > REVIEW_RENEW_WITHIN_MS) return null
+  if (review.slug !== article.slug || review.sourceHash !== article.sourceHash || review.contentHash !== editorialHash(article.locales)) return null
+  if (!review.references.every((reference) => linkIsLive(reference.url))) return null
+  return { ...review, verifiedAt: now.toISOString(), validUntil: new Date(now.getTime() + REVIEW_DAYS * 24 * 3600_000).toISOString() }
+}

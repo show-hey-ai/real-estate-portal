@@ -11,6 +11,7 @@ import { withLiveLease } from './lease'
 import { json, writeRecord } from './store'
 import { checkPage } from './agents'
 import { checkArticleImage } from './article-image-verification'
+import { renewResearchReviews } from './research-review'
 
 const releaseSchema = z.object({ slug: z.string().regex(/^(?:tokyo-[a-z]+-property-selection|japan-[a-z]+(?:-[a-z]+){0,4}-guide)$/), sourceHash: z.string().regex(/^[a-f0-9]{64}$/), publishedAt: z.string().datetime(), updatedAt: z.string().datetime() }).strict()
 
@@ -68,13 +69,15 @@ export async function seo(job: AutonomyJob) {
     checkPage('/', (body) => body.includes('rel="canonical"') && body.includes('name="description"')),
     checkPage('/listings', (body) => body.includes('rel="canonical"') && body.includes('name="description"')),
   ])
+  // Keeps reviewed guides public while their text is unchanged and their official sources are live.
+  const researchReviews = await renewResearchReviews()
   const lastWeek = new Date(Date.now() - 7 * 24 * 3600_000)
   const audience = await getExternalAnalyticsWhere()
   const [articleViews, searchVisits] = await Promise.all([
     prisma.siteVisitEvent.count({ where: { ...audience, occurredAt: { gte: lastWeek }, pathname: { startsWith: '/articles' } } }),
     prisma.siteVisitEvent.count({ where: { ...audience, occurredAt: { gte: lastWeek }, referrerHost: { in: ['google.com', 'www.google.com', 'google.co.jp', 'bing.com', 'www.bing.com'] } } }),
   ])
-  await writeRecord(job, 'seo', 'Technical SEO checks and observed discovery', { checks, articleViews, searchReferrerVisits: searchVisits, measuredRankings: null, siteOrigin: getSiteUrl(), actions: ['source-backed article refresh', 'canonical and language alternates', 'article structured data', 'sitemap and internal links'] }, checks.map((check) => check.url), 'verified')
+  await writeRecord(job, 'seo', 'Technical SEO checks and observed discovery', { checks, researchReviews, articleViews, searchReferrerVisits: searchVisits, measuredRankings: null, siteOrigin: getSiteUrl(), actions: ['source-backed article refresh', 'canonical and language alternates', 'article structured data', 'sitemap and internal links'] }, checks.map((check) => check.url), 'verified')
   if (checks.some((check) => !check.ok)) throw new Error('Technical SEO check failed.')
-  return { healthy: true, articleViews, searchVisits }
+  return { healthy: true, articleViews, searchVisits, researchReviews }
 }
