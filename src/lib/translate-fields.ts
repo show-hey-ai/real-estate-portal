@@ -1,4 +1,6 @@
 import { englishStreet } from './english-address'
+import { stationKey } from './transit/station-key'
+import { EXTRA_STATION_NAMES_EN } from './transit/station-names-en'
 
 /**
  * DB上の日本語フィールド値を言語に応じて翻訳するマッピング
@@ -448,7 +450,7 @@ const stationNameMap: Record<string, string> = {
   '保谷': 'Hoya',
   '大泉学園': 'Oizumi-Gakuen',
   '石神井公園': 'Shakujii-Koen',
-  '中村橋': 'Nakamura-Bashi',
+  '中村橋': 'Nakamurabashi',
   '富士見台': 'Fujimidai',
   '桜台': 'Sakuradai',
   '江古田': 'Ekoda',
@@ -593,7 +595,7 @@ const stationNameMap: Record<string, string> = {
   '舎人': 'Toneri',
   '舎人公園': 'Toneri-Koen',
   '見沼代親水公園': 'Minumadai-Shinsuikoen',
-  '扇大橋': 'Ogibashi',
+  '扇大橋': 'Ogi-Ohashi',
   '足立小台': 'Adachi-Odai',
   '江北': 'Kohoku',
   // 江東区周辺
@@ -724,14 +726,12 @@ export function romanizeStationNames(text: string): string {
     .replace(/(?<= Station \()([^()]*[぀-ヿ一-鿿][^()]*)(?=\))/gu, romanLine)
 }
 
+// Looked up by stationKey, so 大森駅, 市ヶ谷 and 押上〈スカイツリー前〉 find 大森, 市ケ谷 and 押上.
+const stationNamesByKey = new Map(Object.entries({ ...EXTRA_STATION_NAMES_EN, ...stationNameMap }).map(([ja, en]) => [stationKey(ja), en]))
+
 export function translateStationName(name: string | null | undefined, locale: string): string | null {
   if (!name || locale === 'ja') return name || null
-  // 直接一致
-  if (stationNameMap[name]) return stationNameMap[name]
-  // 「駅」サフィックスを除いて再検索（例: "大森駅" → "大森"）
-  const nameWithoutSuffix = name.replace(/駅$/, '')
-  if (nameWithoutSuffix !== name && stationNameMap[nameWithoutSuffix]) return stationNameMap[nameWithoutSuffix]
-  return name
+  return stationNamesByKey.get(stationKey(name)) ?? name
 }
 
 export function translateCityName(city: string | null | undefined, locale: string): string | null {

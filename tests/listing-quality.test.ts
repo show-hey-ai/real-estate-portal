@@ -15,7 +15,8 @@ test('a clean listing has no issues', () => {
 test('Japanese left on English pages and kana names without an English name are reported', () => {
   const types = (overrides: object) => listingQualityIssues({ ...good, ...overrides }).map((issue) => issue.type)
   assert.deepEqual(types({ descriptionEn: 'シティプラザ若林: 16.73 m², 1R.' }), ['en-japanese', 'zh-kana-name'])
-  assert.deepEqual(types({ stations: [{ name: '未知駅', name_en: null, line: null }] }), ['station-untranslated'])
+  assert.deepEqual(types({ stations: [{ name: '未知駅', name_en: null, line: null }] }), ['station-untranslated', 'station-not-listed'])
+  assert.equal(listingQualityIssues({ ...good, stations: [{ name: '未知駅', name_en: 'Michi', line: null }] }).find((issue) => issue.type === 'station-not-listed')?.optional, true)
   assert.deepEqual(types({ descriptionEn: 'A condominium unit near Shinsen Station.' }), ['zh-kana-name'])
 })
 
