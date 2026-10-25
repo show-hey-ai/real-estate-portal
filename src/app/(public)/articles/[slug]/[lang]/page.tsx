@@ -5,6 +5,7 @@ import { notFound, redirect } from 'next/navigation'
 import { locales, type Locale, localeNames } from '@/i18n/config'
 import { getPublicArticle } from '@/lib/portal-articles'
 import { articleFallbackPath } from '@/lib/article-fallback'
+import { pickCoverImage } from '@/lib/cover-image'
 import { absoluteUrl, getSchemaLanguage } from '@/lib/site-config'
 import { JsonLd } from '@/components/common/json-ld'
 import { ArticleSourceGallery } from '@/components/articles/article-source-gallery'
@@ -17,7 +18,10 @@ async function coverImages(listingIds: string[]): Promise<Map<string, string>> {
   if (!listingIds.length) return new Map()
   const media = await prisma.media.findMany({ where: { listingId: { in: listingIds }, isAdopted: true, category: { in: [...COVER_PRIORITY] } }, select: { listingId: true, url: true, category: true, sortOrder: true }, orderBy: { sortOrder: 'asc' } }).catch(() => [])
   const covers = new Map<string, string>()
-  for (const category of COVER_PRIORITY) for (const item of media) if (item.category === category && !covers.has(item.listingId)) covers.set(item.listingId, item.url)
+  for (const id of listingIds) {
+    const cover = pickCoverImage(media.filter((item) => item.listingId === id))
+    if (cover) covers.set(id, cover.url)
+  }
   return covers
 }
 
