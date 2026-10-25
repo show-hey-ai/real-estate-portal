@@ -4,6 +4,7 @@ import { useId, useState, type MouseEvent } from 'react'
 import { usePathname } from 'next/navigation'
 import { Mail } from 'lucide-react'
 import { ChannelIcon } from '@/components/contact/channel-icon'
+import { PrivateListingsNote } from '@/components/contact/private-listings-note'
 import { browserCanOpenLineChat, lineDesktopNote } from '@/lib/line-desktop'
 import { useLocale } from 'next-intl'
 import {
@@ -116,6 +117,7 @@ export function AskUs({ topic, pageUrl, variant = 'general', initialPurpose = ''
   return <section className={`${brief ? '' : 'mt-10 '}rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-5`} aria-labelledby="ask-us-title" data-testid={brief ? 'ask-us-brief' : unlisted ? 'ask-us-unlisted' : 'ask-us'}>
     <h2 id="ask-us-title" className="text-lg font-semibold">{brief ? text.briefTitle : unlisted ? text.unlistedTitle : text.title}</h2>
     <p className="mt-1 max-w-2xl text-sm leading-6 text-[#536274]">{brief ? text.briefNote : unlisted ? text.unlistedNote : text.note}</p>
+    <PrivateListingsNote locale={locale} className="mt-3 max-w-2xl" />
     <div className="mt-4 max-w-2xl space-y-3">
       {brief
         ? <><ChoiceChips label={text.areaLabel} options={text.areas} chosen={areas} onChange={setAreas} /><ChoiceChips label={text.budgetLabel} options={text.budgets} chosen={budget} onChange={setBudget} single /><ChoiceChips label={text.typesLabel} options={text.types} chosen={types} onChange={setTypes} /><ChoiceChips label={text.timingLabel} options={text.timings} chosen={timing} onChange={setTiming} single /></>

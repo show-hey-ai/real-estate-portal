@@ -3,6 +3,7 @@
 import { useId, useState, type MouseEvent } from 'react'
 import { CalendarCheck, FileText, HelpCircle, Images, Mail, SearchCheck } from 'lucide-react'
 import { ChannelIcon } from '@/components/contact/channel-icon'
+import { PrivateListingsNote } from '@/components/contact/private-listings-note'
 import { browserCanOpenLineChat, lineDesktopNote } from '@/lib/line-desktop'
 import { useLocale } from 'next-intl'
 import {
@@ -126,6 +127,7 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
   return <section className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-4" aria-labelledby="quick-contact-title" data-testid="quick-contact">
     <h2 id="quick-contact-title" className="font-semibold">{text.title}</h2>
     <p className="mt-1 text-xs leading-5 text-[#536274]">{text.note}</p>
+    <PrivateListingsNote locale={locale} className="mt-2" />
     <div role="radiogroup" aria-label={text.intentLabel} className="mt-3 grid grid-cols-2 gap-1 rounded-xl bg-[#eef2f6] p-1 sm:grid-cols-4 lg:grid-cols-2">
       {INTENTS.map(({ key, Icon }) => <button key={key} type="button" role="radio" aria-checked={intent === key} onClick={() => { setIntent(key); setDetails([]) }} className={`${key === 'similar' ? 'col-span-2 sm:col-span-4 lg:col-span-2 ' : ''}flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-xs font-semibold transition ${intent === key ? 'bg-white text-[#274d7d] shadow-sm' : 'text-[#536274] hover:bg-white/60'}`}><Icon aria-hidden="true" className="h-4 w-4" />{text.intents[key]}</button>)}
     </div>
