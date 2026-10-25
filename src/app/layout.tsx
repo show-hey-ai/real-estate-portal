@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Noto_Sans_JP } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { JsonLd } from '@/components/common/json-ld'
@@ -15,12 +14,6 @@ import {
 import { BuyerFunnelProvider } from '@/components/analytics/buyer-funnel'
 import './globals.css'
 import { titleTemplate } from '@/lib/home-snippet'
-
-const notoSansJP = Noto_Sans_JP({
-  variable: '--font-noto-sans-jp',
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-})
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
@@ -86,7 +79,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${notoSansJP.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
           <JsonLd data={organizationJsonLd} />
           <JsonLd data={websiteJsonLd} />

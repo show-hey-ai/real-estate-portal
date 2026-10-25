@@ -1,7 +1,9 @@
 import { z } from 'zod'
 import { sendChatInput } from './private-chat-policy'
+import { getTradeChatCopy, stageLabel, tradeStages } from './trade-chat-copy'
 
-export const tradeStages = ['consultation','viewing','offer','contract','settlement','completed','cancelled'] as const
+export { getTradeChatCopy, stageLabel, tradeStages } from './trade-chat-copy'
+
 const common = { language: z.enum(['ja','en','zh-CN','zh-TW']), nonce: z.uuid() }
 const note = z.string().trim().max(1000).default('')
 export const tradeInput = z.union([
@@ -10,23 +12,6 @@ export const tradeInput = z.union([
   z.object({ ...common, action: z.literal('offer'), amountYen: z.string().regex(/^[1-9]\d{0,11}$/), note }).strict(),
   z.object({ ...common, action: z.literal('stage'), stage: z.enum(tradeStages), note }).strict(),
 ])
-const ja = {
-  manager: '担当者', managedNote: 'この物件の新しいチャットは、当社の担当者へ自動でつながります。', start: '担当者とチャット', privacy: 'この会話の買主と、対応する売主・当社の担当者だけが閲覧できます。', progress: '取引の進捗',
-  stages: ['相談中','内見調整','購入希望・条件交渉','契約手続き','決済・引渡し','完了','取り下げ'],
-  viewing: '内見を希望する', offer: '購入希望を伝える', date: '希望日', slot: '希望時間帯', amount: '購入希望価格（円）', note: '補足・希望条件', submit: 'チャットに送信', update: '進捗を記録', cancel: '閉じる',
-  requestNote: '希望内容を当社の担当者へ送ります。日程・条件の確定は、このチャットで確認してください。',
-  stageNote: '確認済みの取引状況を記録します。契約の締結や支払いは、この操作では実行されません。',
-  viewingMessage: '内見希望', offerMessage: '購入希望', stageMessage: '進捗の記録',
-}
-type TradeCopy = typeof ja
-const en: TradeCopy = {
-  manager: 'Our agent', managedNote: 'New conversations about this property go straight to our agent.', start: 'Chat with our agent', privacy: 'Only you and the responding seller or our agent can read this conversation.', progress: 'Transaction progress', stages: ['Enquiry','Viewing arrangements','Purchase request / negotiation','Contract process','Settlement / handover','Completed','Withdrawn'],
-  viewing: 'Request a viewing', offer: 'Send a purchase request', date: 'Preferred date', slot: 'Preferred time', amount: 'Proposed price (JPY)', note: 'Notes / conditions', submit: 'Send to chat', update: 'Record progress', cancel: 'Close', requestNote: 'Your request goes to our agent. Confirm the date and terms in this chat.', stageNote: 'Record verified progress. This action does not sign a contract or execute a payment.', viewingMessage: 'Viewing request', offerMessage: 'Purchase request', stageMessage: 'Progress recorded',
-}
-const cn: TradeCopy = { manager: '负责顾问', managedNote: '此房源的新对话会自动连接负责顾问。', start: '与负责顾问聊天', privacy: '仅此买家及负责的卖家或负责顾问可查看对话。', progress: '交易进度', stages: ['咨询中','安排看房','购买意向 / 条件协商','合同手续','结算 / 交房','已完成','已撤回'], viewing: '申请看房', offer: '提交购买意向', date: '希望日期', slot: '希望时间', amount: '意向价格（日元）', note: '备注 / 条件', submit: '发送到聊天', update: '记录进度', cancel: '关闭', requestNote: '向负责顾问发送意向。请在聊天中确认日期和条件。', stageNote: '记录已确认的进度。本操作不签署合同或执行付款。', viewingMessage: '看房申请', offerMessage: '购买意向', stageMessage: '进度记录' }
-const tw: TradeCopy = { manager: '負責顧問', managedNote: '此房源的新對話會自動連接負責顧問。', start: '與負責顧問聊天', privacy: '僅此買家及負責的賣家或負責顧問可查看對話。', progress: '交易進度', stages: ['諮詢中','安排看房','購買意向 / 條件協商','合約手續','結算 / 交屋','已完成','已撤回'], viewing: '申請看房', offer: '提交購買意向', date: '希望日期', slot: '希望時間', amount: '意向價格（日圓）', note: '備註 / 條件', submit: '傳送到聊天', update: '記錄進度', cancel: '關閉', requestNote: '向負責顧問傳送意向。請在聊天中確認日期和條件。', stageNote: '記錄已確認的進度。本操作不簽署合約或執行付款。', viewingMessage: '看房申請', offerMessage: '購買意向', stageMessage: '進度記錄' }
-export function getTradeChatCopy(locale: string): TradeCopy { return locale==='ja' ? ja : locale==='zh-CN' ? cn : locale==='zh-TW' ? tw : en }
-export function stageLabel(stage: string, locale: string) { return getTradeChatCopy(locale).stages[tradeStages.indexOf(stage as typeof tradeStages[number])] || getTradeChatCopy(locale).stages[0] }
 export function prepareTradeMessage(input: z.infer<typeof tradeInput>) {
   if (!('action' in input)) return { body: input.body, kind: 'text', details: {}, stage: null }
   const c = getTradeChatCopy(input.language)

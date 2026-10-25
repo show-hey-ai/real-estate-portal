@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState, type ReactNode 
 import { usePathname } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import { funnelCopy, catalogFingerprint, type FunnelField } from '@/lib/buyer-funnel-copy'
-import { variantSchema, type FunnelVariant } from '@/lib/buyer-funnel-policy'
+import { isFunnelVariant, type FunnelVariant } from '@/lib/buyer-funnel-variants'
 
 type Assignment={variant:FunnelVariant;tracking:boolean;experiment?:string;assignment?:string;hash?:string}
 const context=createContext<Assignment>({variant:'original',tracking:false})
@@ -21,7 +21,7 @@ export function BuyerFunnelProvider({children}:{children:ReactNode}) {
     if(pathname.startsWith('/admin')||pathname.startsWith('/preview')||pathname.startsWith('/api')) return
     let active=true
     void fetch('/api/analytics/funnel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:'assignment',enroll:['/','/match','/register'].includes(pathname)})}).then(r=>r.json()).then(data=>{
-      if(active && data.catalog===catalogFingerprint && variantSchema.safeParse(data.variant).success) setAssignment({variant:data.variant,tracking:data.tracking===true,experiment:typeof data.experiment==='string'?data.experiment:undefined,assignment:data.assignment,hash:data.hash})
+      if(active && data.catalog===catalogFingerprint && isFunnelVariant(data.variant)) setAssignment({variant:data.variant,tracking:data.tracking===true,experiment:typeof data.experiment==='string'?data.experiment:undefined,assignment:data.assignment,hash:data.hash})
     }).catch(()=>{if(active) setAssignment({variant:'original',tracking:false})})
     return ()=>{active=false}
   },[pathname])

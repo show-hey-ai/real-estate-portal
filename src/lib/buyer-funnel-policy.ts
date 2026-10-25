@@ -1,9 +1,10 @@
 import { z } from 'zod'
+import { FUNNEL_VARIANTS, type FunnelVariant } from './buyer-funnel-variants'
 
 export const funnelVersion = 'buyer-funnel-v1'
 export const day = 86_400_000
-export const variantSchema = z.enum(['original', 'criteria', 'question'])
-export type FunnelVariant = z.infer<typeof variantSchema>
+export const variantSchema = z.enum(FUNNEL_VARIANTS)
+export type { FunnelVariant }
 export const stateSchema = z.object({
   revision: z.number().int().nonnegative(), enabled: z.boolean(), manual: variantSchema.nullable(),
   id: z.string().uuid(), hash: z.string().regex(/^[a-f0-9]{64}$/),

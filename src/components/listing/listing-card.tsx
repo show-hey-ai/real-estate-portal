@@ -35,7 +35,7 @@ import { FavoriteIconButton } from './favorite-icon-button'
 import { CompareToggle } from './browser-lists-client'
 import { useFxRates } from '@/components/fx/fx-rates-context'
 import { formatApproxPrice } from '@/lib/fx'
-import { getTradeChatCopy } from '@/lib/trade-chat'
+import { getTradeChatCopy } from '@/lib/trade-chat-copy'
 
 // Signed-out visitors go to the listing's no-sign-up contact box instead of the sign-in page.
 const ASK_LABEL: Record<string, string> = { ja: 'この物件について相談（登録不要）', en: 'Ask about this property (no sign-up)', 'zh-TW': '諮詢此物件（免註冊）', 'zh-CN': '咨询此房源（免注册）' }
