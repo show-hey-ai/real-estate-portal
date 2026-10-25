@@ -3,13 +3,14 @@ import { ArrowRight, MapPin } from 'lucide-react'
 import { WARD_LAND_PRICE, WARD_SLUGS, landPriceTier, wardLabel } from '@/lib/ward-tile-map'
 import { WARD_SHAPES, WARD_SHAPES_VIEWBOX, type WardShape } from '@/lib/ward-shapes'
 
-const MAP_CREDIT_URL = 'https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2024.html'
+// CC BY 4.0: the terms ask for the dataset name and that we edited it.
+const MAP_CREDIT_URL = 'https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-N03-2026.html'
 
 const copy = {
-  ja: { index: '23区の特徴をくらべる', title: 'エリアから探す', note: '東京23区の地図です。数字は公開中の物件数です。', empty: '公開中の物件なし', more: '色が濃いほど住宅地の平均地価が高い区', source: (year: number) => `地価：東京都 ${year}年地価公示 住宅地平均（1月1日時点）`, map: '地図：国土数値情報（行政区域）を加工', price: (yen: string) => `住宅地平均 ${yen}円/㎡`, listings: (count: number) => `${count}件` },
-  en: { index: 'Compare all 23 wards', title: 'Browse by area', note: 'A map of Tokyo’s 23 wards. Numbers show listings for sale now.', empty: 'No listings now', more: 'Darker wards have higher residential land prices', source: (year: number) => `Land prices: Tokyo Metropolitan Government, ${year} official land prices, residential average (1 January)`, map: 'Map: MLIT National Land Numerical Information (administrative areas), edited', price: (yen: string) => `Residential land ¥${yen}/m²`, listings: (count: number) => `${count} ${count === 1 ? 'listing' : 'listings'}` },
-  'zh-TW': { index: '比較23區特色', title: '依區域尋找', note: '東京23區地圖，數字為目前刊登中的物件數。', empty: '目前無刊登物件', more: '顏色越深，住宅地平均地價越高', source: (year: number) => `地價：東京都 ${year}年地價公示 住宅地平均（1月1日）`, map: '地圖：國土數值資訊（行政區域）加工', price: (yen: string) => `住宅地平均 ${yen}日圓/㎡`, listings: (count: number) => `${count}件` },
-  'zh-CN': { index: '比较23区特点', title: '按区域查找', note: '东京23区地图，数字为当前在售房源数。', empty: '当前无在售房源', more: '颜色越深，住宅地平均地价越高', source: (year: number) => `地价：东京都 ${year}年地价公示 住宅地平均（1月1日）`, map: '地图：国土数值信息（行政区域）加工', price: (yen: string) => `住宅地平均 ${yen}日元/㎡`, listings: (count: number) => `${count}套` },
+  ja: { index: '23区の特徴をくらべる', title: 'エリアから探す', note: '東京23区の地図です。数字は公開中の物件数です。', empty: '公開中の物件なし', more: '色が濃いほど住宅地の平均地価が高い区', source: (year: number) => `地価：東京都 ${year}年地価公示 住宅地平均（1月1日時点）`, map: '地図：「国土数値情報（行政区域データ）」（国土交通省）をもとに自由不動産合同会社が加工して作成', price: (yen: string) => `住宅地平均 ${yen}円/㎡`, listings: (count: number) => `${count}件` },
+  en: { index: 'Compare all 23 wards', title: 'Browse by area', note: 'A map of Tokyo’s 23 wards. Numbers show listings for sale now.', empty: 'No listings now', more: 'Darker wards have higher residential land prices', source: (year: number) => `Land prices: Tokyo Metropolitan Government, ${year} official land prices, residential average (1 January)`, map: 'Map: based on “National Land Numerical Information (Administrative Areas)” (MLIT), edited by Ziyou Real Estate LLC', price: (yen: string) => `Residential land ¥${yen}/m²`, listings: (count: number) => `${count} ${count === 1 ? 'listing' : 'listings'}` },
+  'zh-TW': { index: '比較23區特色', title: '依區域尋找', note: '東京23區地圖，數字為目前刊登中的物件數。', empty: '目前無刊登物件', more: '顏色越深，住宅地平均地價越高', source: (year: number) => `地價：東京都 ${year}年地價公示 住宅地平均（1月1日）`, map: '地圖：依據「国土数値情報（行政区域データ）」（日本國土交通省）由自由不動産合同会社加工製作', price: (yen: string) => `住宅地平均 ${yen}日圓/㎡`, listings: (count: number) => `${count}件` },
+  'zh-CN': { index: '比较23区特点', title: '按区域查找', note: '东京23区地图，数字为当前在售房源数。', empty: '当前无在售房源', more: '颜色越深，住宅地平均地价越高', source: (year: number) => `地价：东京都 ${year}年地价公示 住宅地平均（1月1日）`, map: '地图：依据“国土数値情報（行政区域データ）”（日本国土交通省）由自由不動産合同会社加工制作', price: (yen: string) => `住宅地平均 ${yen}日元/㎡`, listings: (count: number) => `${count}套` },
 } as const
 
 // Shade by the official average residential land price (owner decision 2026-10-25), not by how
