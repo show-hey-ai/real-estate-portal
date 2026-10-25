@@ -17,12 +17,21 @@ export function cardGrossYield(listing: CardSource): number | null {
   return grossYieldFromRent(parseMonthlyFigures(listing.descriptionJa).rent, Number(listing.price) || null)
 }
 
+const LAYOUT_PATTERN = /(?<![0-9A-Za-z０-９])([1-9]S?(?:LDK|DK|LK|K|R))(?![A-Za-z])/g
+
+/** The floor plan type ("2LDK") named in the description; null when none or several are named. */
+export function cardLayout(descriptionJa: string | null | undefined): string | null {
+  const found = new Set([...(descriptionJa ?? '').matchAll(LAYOUT_PATTERN)].map((match) => match[1]))
+  return found.size === 1 ? [...found][0] : null
+}
+
 export interface CardFacts {
   /** Building name in Japanese script, for Japanese and Chinese cards. */
   buildingName: string | null
   /** Romanised building name from the English description, for English cards. */
   buildingNameEn: string | null
   grossYield: number | null
+  layout: string | null
 }
 
 /**
@@ -36,5 +45,6 @@ export function withCardFacts<T extends CardSource>(listing: T): Omit<T, 'descri
     buildingName: buildingNameOf({ descriptionJa, addressPublic: (listing as { addressPublic?: string | null }).addressPublic }),
     buildingNameEn: extractBuildingNameEn(descriptionEn),
     grossYield: cardGrossYield(listing),
+    layout: cardLayout(descriptionJa),
   }
 }

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import {
   CalendarDays,
+  LayoutGrid,
   Building2,
   Eye,
   Flame,
@@ -59,6 +60,7 @@ interface ListingCardProps {
     buildingName?: string | null
     buildingNameEn?: string | null
     grossYield?: number | null
+    layout?: string | null
     stations?: Station[] | null
     builtYear: number | null
     buildingArea: number | null
@@ -113,12 +115,12 @@ export function ListingCard({
   const isNew = publishedAtTime != null && publishedAtTime > NEW_LISTING_CUTOFF
 
   return (
-    <Card className="group relative overflow-hidden rounded-xl border-[#dbe2e9] bg-white py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="group relative gap-0 overflow-hidden rounded-xl border-[#dbe2e9] bg-white py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
       <div className="absolute right-2 top-2 z-10 rounded-lg bg-white/90 shadow-sm backdrop-blur">
         <CompareToggle listingId={listing.id} compact />
       </div>
       <Link href={`/listings/${listing.id}`} className="block">
-        <div className="relative aspect-square overflow-hidden bg-[#e9f0f7]">
+        <div className="relative aspect-[4/3] overflow-hidden bg-[#e9f0f7]">
           {mainImage ? (
             <Image
               src={mainImage.url}
@@ -226,7 +228,7 @@ export function ListingCard({
           )}
         </div>
 
-        <div className="mt-4 grid grid-cols-2 overflow-hidden rounded-[4px] border border-[#dbe2e9] bg-[#f5f7f9] text-xs">
+        <div className={`mt-4 grid ${listing.layout ? 'grid-cols-3' : 'grid-cols-2'} overflow-hidden rounded-[4px] border border-[#dbe2e9] bg-[#f5f7f9] text-xs`}>
           <div className="border-r border-[#e1dac8] p-2">
             <div className="flex items-center gap-1 text-[#5c6560]">
               <Ruler className="h-3 w-3" />
@@ -238,6 +240,13 @@ export function ListingCard({
                 : '-'}
             </p>
           </div>
+          {listing.layout && <div className="border-r border-[#e1dac8] p-2">
+            <div className="flex items-center gap-1 text-[#5c6560]">
+              <LayoutGrid className="h-3 w-3" />
+              {t('layout')}
+            </div>
+            <p className="mt-1 font-semibold text-[#1b293a]">{listing.layout}</p>
+          </div>}
           <div className="p-2">
             <div className="flex items-center gap-1 text-[#5c6560]">
               <CalendarDays className="h-3 w-3" />

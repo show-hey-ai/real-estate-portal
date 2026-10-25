@@ -34,6 +34,7 @@ const PRIMARY_TONE: Record<MessagingChannel, string> = {
   line: 'bg-[#06733a] text-white hover:bg-[#055c2e]',
   wechat: 'bg-[#11763d] text-white hover:bg-[#0c5e30]',
 }
+const CHANNEL_NAME: Record<MessagingChannel, string> = { whatsapp: 'WhatsApp', line: 'LINE', wechat: 'WeChat' }
 const OUTLINE_TONE = 'border border-[#cfd9e3] bg-white text-[#274d7d] hover:bg-[#f2f6fa]'
 
 interface QuickContactProps {
@@ -125,7 +126,8 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
     <div className={`mt-3 grid gap-2 ${ready ? '' : 'opacity-60'}`}>
       <a {...linkProps(primary)} className={`${button} ${PRIMARY_TONE[primary.channel as MessagingChannel]}`}><primary.Icon aria-hidden="true" className="h-4 w-4" />{primary.label}</a>
       <div className="grid grid-cols-2 gap-2">
-        {secondary.map((link) => <a key={link.channel} {...linkProps(link)} className={`${button} ${OUTLINE_TONE}`}><link.Icon aria-hidden="true" className="h-4 w-4" />{link.label}</a>)}
+        {/* Half-width buttons show just the app name, so "WhatsAppで相談" does not wrap onto two lines on phones. */}
+        {secondary.map((link) => <a key={link.channel} {...linkProps(link)} aria-label={link.label} className={`${button} ${OUTLINE_TONE}`}><link.Icon aria-hidden="true" className="h-4 w-4" />{CHANNEL_NAME[link.channel as MessagingChannel]}</a>)}
       </div>
       {wechatCopied && <p className="rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{text.wechatCopied}</p>}
       {[email].map((link) => <a key={link.channel} {...linkProps(link)} className={`${button} ${OUTLINE_TONE}`}><link.Icon aria-hidden="true" className="h-4 w-4" />{link.label}</a>)}
