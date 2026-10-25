@@ -17,15 +17,13 @@ export interface OtherListingsCopy {
   urlInvalid: string
   topicsLabel: string
   topics: string[]
-  questionLabel: string
-  questionPlaceholder: string
   sendVia: string
   whatsapp: string
   line: string
   wechat: string
   email: string
   wechatCopied: string
-  message: (url: string, topics: string[], question: string) => string
+  message: (url: string, topics: string[]) => string
   subject: string
   notesTitle: string
   notes: string[]
@@ -51,15 +49,13 @@ const ja: OtherListingsCopy = {
   urlInvalid: 'https:// から始まるURLを入れてください',
   topicsLabel: '知りたいこと（いくつでも）',
   topics: ['内見したい', 'まだ売出し中か知りたい', '詳しい資料・写真がほしい', '価格や条件を相談したい', '外国籍・海外在住でも買えるか'],
-  questionLabel: 'ご質問（任意）',
-  questionPlaceholder: '例：管理費の内訳と、リフォームの履歴を知りたいです。',
   sendVia: '送る方法を選んでください',
   whatsapp: 'WhatsAppで送る',
   line: 'LINEで送る',
   wechat: 'WeChatで送る',
   email: 'メールで送る',
   wechatCopied: '送る内容をコピーしました。WeChatが開いたら、トークに貼り付けて送ってください。',
-  message: (url, topics, question) => ['他社サイトで見つけた物件について相談したいです。', `URL：${url}`, topics.length ? `知りたいこと：${topics.join('、')}` : '', question ? `質問：${question}` : ''].filter(Boolean).join('\n'),
+  message: (url, topics) => ['他社サイトで見つけた物件について相談したいです。', `URL：${url}`, topics.length ? `知りたいこと：${topics.join('、')}` : ''].filter(Boolean).join('\n'),
   subject: '他社サイトの物件について',
   notesTitle: 'ご了承ください',
   notes: [
@@ -89,15 +85,13 @@ const en: OtherListingsCopy = {
   urlInvalid: 'Enter a link starting with https://',
   topicsLabel: 'What would you like to know? (any)',
   topics: ['I want to view it', 'Is it still for sale?', 'More documents and photos', 'Price or terms', 'Can I buy as a foreigner or from overseas?'],
-  questionLabel: 'Your question (optional)',
-  questionPlaceholder: 'e.g. What do the monthly fees cover, and has it been renovated?',
   sendVia: 'Choose how to send it',
   whatsapp: 'Send on WhatsApp',
   line: 'Send on LINE',
   wechat: 'Send on WeChat',
   email: 'Send by email',
   wechatCopied: 'Your message is copied. When WeChat opens, paste it into the chat and send.',
-  message: (url, topics, question) => ['I found a property on another site and would like to ask about it.', `Link: ${url}`, topics.length ? `I'd like to know: ${topics.join(', ')}` : '', question ? `Question: ${question}` : ''].filter(Boolean).join('\n'),
+  message: (url, topics) => ['I found a property on another site and would like to ask about it.', `Link: ${url}`, topics.length ? `I'd like to know: ${topics.join(', ')}` : ''].filter(Boolean).join('\n'),
   subject: 'A property on another site',
   notesTitle: 'Please note',
   notes: [
@@ -127,15 +121,13 @@ const zhTW: OtherListingsCopy = {
   urlInvalid: '請輸入以 https:// 開頭的網址',
   topicsLabel: '想了解的事（可複選）',
   topics: ['想看房', '是否仍在出售', '想要更詳細的資料與照片', '想討論價格或條件', '外國人或海外居住者能否購買'],
-  questionLabel: '問題（選填）',
-  questionPlaceholder: '例：想了解管理費的內容與裝修紀錄。',
   sendVia: '請選擇傳送方式',
   whatsapp: '用WhatsApp傳送',
   line: '用LINE傳送',
   wechat: '用微信傳送',
   email: '用電子郵件傳送',
   wechatCopied: '已複製訊息內容。微信開啟後，請貼到對話中傳送。',
-  message: (url, topics, question) => ['我在其他網站看到一個物件，想諮詢。', `網址：${url}`, topics.length ? `想了解：${topics.join('、')}` : '', question ? `問題：${question}` : ''].filter(Boolean).join('\n'),
+  message: (url, topics) => ['我在其他網站看到一個物件，想諮詢。', `網址：${url}`, topics.length ? `想了解：${topics.join('、')}` : ''].filter(Boolean).join('\n'),
   subject: '其他網站的物件',
   notesTitle: '注意事項',
   notes: [
@@ -165,15 +157,13 @@ const zhCN: OtherListingsCopy = {
   urlInvalid: '请输入以 https:// 开头的链接',
   topicsLabel: '想了解的事（可多选）',
   topics: ['想看房', '是否仍在出售', '想要更详细的资料和照片', '想商量价格或条件', '外国人或海外居住者能否购买'],
-  questionLabel: '问题（选填）',
-  questionPlaceholder: '例：想了解管理费的内容和装修记录。',
   sendVia: '请选择发送方式',
   whatsapp: '用WhatsApp发送',
   line: '用LINE发送',
   wechat: '用微信发送',
   email: '用邮件发送',
   wechatCopied: '已复制消息内容。微信打开后，请粘贴到对话中发送。',
-  message: (url, topics, question) => ['我在其他网站看到一个房源，想咨询。', `链接：${url}`, topics.length ? `想了解：${topics.join('、')}` : '', question ? `问题：${question}` : ''].filter(Boolean).join('\n'),
+  message: (url, topics) => ['我在其他网站看到一个房源，想咨询。', `链接：${url}`, topics.length ? `想了解：${topics.join('、')}` : ''].filter(Boolean).join('\n'),
   subject: '其他网站的房源',
   notesTitle: '注意事项',
   notes: [

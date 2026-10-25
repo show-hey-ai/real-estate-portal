@@ -8,7 +8,6 @@ import { getProfileCopy, isProfileComplete, profileText } from '@/lib/buyer-prof
 import { cleanListingUrl, getOtherListingsCopy } from '@/content/other-listings'
 import { CONTACT_EMAIL, WECHAT_DEEP_LINK, lineMessageUrl, messagingOrder, whatsappUrl, type ContactChannel, type MessagingChannel } from '@/lib/contact-channels'
 
-const MAX_QUESTION = 600
 const BUTTON = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors'
 const PRIMARY = 'bg-[#1f7a4d] text-white hover:bg-[#17633e]'
 const OUTLINE = 'border border-[#cfd9e3] bg-white text-[#274d7d] hover:bg-[#f2f6fa]'
@@ -18,14 +17,13 @@ export function OtherListingForm({ locale }: { locale: string }) {
   const copy = getOtherListingsCopy(locale)
   const [url, setUrl] = useState('')
   const [topics, setTopics] = useState<string[]>([])
-  const [question, setQuestion] = useState('')
   const [touched, setTouched] = useState(false)
   const [wechatCopied, setWechatCopied] = useState(false)
   const [profile, answer] = useBuyerProfile()
   const fieldsId = useId()
   const cleanUrl = cleanListingUrl(url)
   const ready = Boolean(cleanUrl) && isProfileComplete(profile)
-  const message = cleanUrl ? `${copy.message(cleanUrl, topics, question.trim())}\n\n${profileText(profile, locale)}` : ''
+  const message = cleanUrl ? `${copy.message(cleanUrl, topics)}\n\n${profileText(profile, locale)}` : ''
   const hrefs: Record<ContactChannel, string> = {
     whatsapp: whatsappUrl(message),
     line: lineMessageUrl(message),
@@ -74,10 +72,6 @@ export function OtherListingForm({ locale }: { locale: string }) {
         </label>)}
       </div>
     </fieldset>
-
-    <label htmlFor="other-listing-question" className="mt-5 block text-sm font-semibold text-[#243b45]">{copy.questionLabel}</label>
-    <textarea id="other-listing-question" value={question} maxLength={MAX_QUESTION} rows={3} placeholder={copy.questionPlaceholder} onChange={(event) => setQuestion(event.target.value)}
-      className="mt-2 w-full rounded-lg border border-[#cbd5df] bg-white px-3 py-2 text-sm outline-none focus:border-[#274d7d] focus:ring-2 focus:ring-[#274d7d]/15" />
 
     <div id={fieldsId} className="mt-5 scroll-mt-24"><BuyerProfileFields locale={locale} profile={profile} onAnswer={answer} showMissing={touched && Boolean(cleanUrl)} idPrefix={fieldsId} /></div>
     {touched && cleanUrl && !isProfileComplete(profile) && <p className="mt-2 text-xs font-semibold text-[#b42318]" role="alert">{getProfileCopy(locale).missing}</p>}

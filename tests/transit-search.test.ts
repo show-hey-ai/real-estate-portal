@@ -86,5 +86,5 @@ test('links pasted on the other-listings page are kept only when they are web ad
   assert.equal(cleanListingUrl('  https://suumo.jp/ms/chuko/tokyo/sc_shibuya/nc_12345/ '), 'https://suumo.jp/ms/chuko/tokyo/sc_shibuya/nc_12345/')
   assert.equal(cleanListingUrl('javascript:alert(1)'), null)
   assert.equal(cleanListingUrl('suumo'), null)
-  assert.match(getOtherListingsCopy('ja').message('https://example.com/a', ['内見したい'], ''), /URL：https:\/\/example.com\/a\n知りたいこと：内見したい$/)
+  assert.match(getOtherListingsCopy('ja').message('https://example.com/a', ['内見したい']), /URL：https:\/\/example.com\/a\n知りたいこと：内見したい$/)
 })
