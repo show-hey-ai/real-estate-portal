@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { LOCALE_HEADER, LOCALE_QUERY, isLocale } from '@/lib/locale-url'
-import { CDN_CACHE_HEADER, CDN_CACHE_VALUE, publicCachePlan } from '@/lib/cdn-cache'
+import { publicCachePlan } from '@/lib/cdn-cache'
 
 const SESSION_PATHS = ['/admin', '/favorites', '/inquiry', '/chats']
 
@@ -24,9 +24,8 @@ export async function proxy(request: NextRequest) {
   // A language URL (from search results or hreflang) renders that language. The browser
   // remembers it for later pages (LocaleMemory); a Set-Cookie here would stop the CDN caching the page.
   if (isLocale(requested)) headers.set(LOCALE_HEADER, requested)
-  const response = NextResponse.next({ request: { headers } })
-  if (plan.action === 'cache') response.headers.set(CDN_CACHE_HEADER, CDN_CACHE_VALUE)
-  return response
+  // The CDN cache header itself is set in next.config.ts headers(), on the page response.
+  return NextResponse.next({ request: { headers } })
 }
 
 export const config = {

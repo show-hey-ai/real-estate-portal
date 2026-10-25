@@ -4,7 +4,8 @@ import { defaultLocale } from '@/i18n/config'
 /**
  * Public pages render on every request (Fluid Active CPU on Vercel's free plan). Anonymous
  * pages whose language is fixed by the URL are the same for everyone, so the CDN may keep them
- * for a few minutes; listings change weekly, so ten minutes stale is harmless.
+ * for a few minutes; listings change weekly, so ten minutes stale is harmless. The header is set
+ * in next.config.ts (keep the values and personal paths in step); the proxy applies the redirect.
  */
 export const CDN_CACHE_HEADER = 'Vercel-CDN-Cache-Control'
 export const CDN_CACHE_VALUE = 'max-age=600, stale-while-revalidate=600'
