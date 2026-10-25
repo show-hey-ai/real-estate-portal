@@ -58,15 +58,19 @@ interface InitialCostSimulatorProps {
   price?: number
   defaultPrice?: number
   showGuideLink?: boolean
+  /** Conditions chosen elsewhere (the purchase simulator); the controls are then hidden. */
+  conditions?: { useLoan: boolean; downPaymentRate: number }
 }
 
-export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGuideLink = true }: InitialCostSimulatorProps) {
+export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGuideLink = true, conditions }: InitialCostSimulatorProps) {
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const id = useId()
   const [typedPrice, setTypedPrice] = useState(defaultPrice / text.unitValue)
-  const [useLoan, setUseLoan] = useState(true)
-  const [downPaymentRate, setDownPaymentRate] = useState(DEFAULT_DOWN_PAYMENT_RATE)
+  const [ownUseLoan, setUseLoan] = useState(true)
+  const [ownDownPaymentRate, setDownPaymentRate] = useState(DEFAULT_DOWN_PAYMENT_RATE)
+  const useLoan = conditions?.useLoan ?? ownUseLoan
+  const downPaymentRate = conditions?.downPaymentRate ?? ownDownPaymentRate
   const effectivePrice = price ?? Math.min(Math.max(typedPrice, 0) * text.unitValue, MAX_PRICE_YEN)
   const costs = estimateInitialCosts({ price: effectivePrice, downPaymentRate, useLoan })
   const rates = useFxRates()
@@ -87,8 +91,8 @@ export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGui
 
   return <section className="mt-6 rounded-xl border border-[#dbe2e9] bg-white p-4 md:p-6" aria-labelledby={`${id}-title`} data-testid="initial-cost-simulator">
     <h2 id={`${id}-title`} className="flex items-center gap-2 text-lg font-semibold"><Receipt aria-hidden="true" className="h-5 w-5 text-primary" />{text.title}</h2>
-    <div className="mt-4 grid gap-6 md:grid-cols-[1fr_1.2fr]">
-      <div className="space-y-5">
+    <div className={`mt-4 grid gap-6 ${conditions ? '' : 'md:grid-cols-[1fr_1.2fr]'}`}>
+      {!conditions && <div className="space-y-5">
         {price === undefined && <div>
           <label htmlFor={`${id}-price`} className="text-sm text-[#536274]">{text.price}</label>
           <div className="mt-1 flex items-center gap-2">
@@ -108,7 +112,7 @@ export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGui
           <input id={`${id}-down`} type="range" min={0} max={100} step={5} value={downPaymentRate * 100} onChange={(event) => setDownPaymentRate(Number(event.target.value) / 100)} className="mt-1 w-full accent-[#274d7d]" />
           <p className="mt-2 flex justify-between gap-2 text-sm"><span className="text-[#536274]">{text.loanAmount}</span><span className="font-semibold tabular-nums">{yen(costs.loanAmount)}</span></p>
         </div>}
-      </div>
+      </div>}
       <div className="rounded-lg bg-[#f4f7fb] p-4">
         <p className="text-xs font-semibold text-[#4a6789]">{text.cashNeeded}</p>
         <p className="mt-1 text-2xl font-bold tabular-nums text-[#1b293a] md:text-3xl" aria-live="polite">{range(costs.cashNeeded)}</p>

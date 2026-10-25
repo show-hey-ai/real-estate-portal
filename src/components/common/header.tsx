@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { LocaleSwitcher } from './locale-switcher'
 import { getMemberCopy } from '@/lib/member-copy'
+import { getSimulatorCopy } from '@/lib/simulator-copy'
 
 interface HeaderProps { user?: { email: string; role: string } | null }
 
@@ -24,13 +25,15 @@ export function Header({ user }: HeaderProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const links = [
-    // The first three fit a phone's tab row; the rest stay in the menu (≡) on phones.
+    // The first three fit a phone's tab row, tablets add the simulator and guide, the rest appear
+    // on wide screens; every page stays in the menu (≡).
     { href: '/listings', label: copy.discover, active: pathname === '/' || pathname.startsWith('/listings'), phone: true },
     { href: '/match', label: copy.recommendations, active: pathname.startsWith('/match'), phone: true },
     { href: '/mypage', label: getMemberCopy(locale).nav, active: pathname.startsWith('/mypage'), phone: true },
     // The private chat needs an account; visitors use the no-sign-up LINE/WhatsApp/WeChat buttons instead.
     ...(user ? [{ href: '/chats', label: chat.title, active: pathname.startsWith('/chats') }] : []),
-    { href: '/buying-guide', label: t('nav.guides'), active: pathname.startsWith('/buying-guide') },
+    { href: '/simulator', label: getSimulatorCopy(locale).nav, active: pathname.startsWith('/simulator'), tablet: true },
+    { href: '/buying-guide', label: t('nav.guides'), active: pathname.startsWith('/buying-guide'), tablet: true },
     { href: '/articles', label: copy.articles, active: pathname.startsWith('/articles') },
     { href: '/help', label: help.nav, active: pathname.startsWith('/help') },
   ]
@@ -75,7 +78,7 @@ export function Header({ user }: HeaderProps) {
       </div>
     </div>
     <div className="border-t border-[#edf0f4]"><nav aria-label={copy.navigation} className="container flex gap-2 overflow-x-auto whitespace-nowrap md:gap-8">
-      {links.map(({ href, label, active, phone }) => <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`${phone ? 'flex max-md:flex-1 max-md:justify-center' : 'hidden md:flex'} min-h-12 shrink-0 items-center border-b-2 px-1 text-sm font-medium transition-colors ${active ? 'border-[#274d7d] text-[#274d7d]' : 'border-transparent text-[#657487] hover:text-[#274d7d]'}`}>{label}</Link>)}
+      {links.map(({ href, label, active, phone, tablet }) => <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`${phone ? 'flex max-md:flex-1 max-md:justify-center' : tablet ? 'hidden md:flex' : 'hidden lg:flex'} min-h-12 shrink-0 items-center border-b-2 px-1 text-sm font-medium transition-colors ${active ? 'border-[#274d7d] text-[#274d7d]' : 'border-transparent text-[#657487] hover:text-[#274d7d]'}`}>{label}</Link>)}
     </nav></div>
   </header>
 }

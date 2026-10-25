@@ -65,6 +65,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...localized('/areas', withListings('2026-10-07T00:00:00+09:00'), 'weekly', 0.8),
       ...localized('/lines', withListings('2026-10-25T00:00:00+09:00'), 'weekly', 0.8),
       ...localized('/other-listings', new Date('2026-10-25T00:00:00+09:00'), 'monthly', 0.7),
+      ...localized('/simulator', new Date('2026-10-26T00:00:00+09:00'), 'monthly', 0.8),
       ...localized('/buying-guide', new Date('2026-10-07T00:00:00+09:00'), 'monthly', 0.85),
       ...localized('/match', new Date('2026-10-06T00:00:00+09:00'), 'monthly', 0.8),
       ...localized('/help', new Date('2026-10-06T00:00:00+09:00'), 'monthly', 0.6),

@@ -21,15 +21,20 @@ interface LoanSimulatorProps {
   monthlyFees?: number | null
   /** Current monthly rent for a let unit, when stated. */
   monthlyRent?: number | null
+  /** Conditions chosen elsewhere (the purchase simulator); the sliders are then hidden. */
+  conditions?: { downPaymentRate: number; annualRatePercent: number; years: number }
 }
 
-export function LoanSimulator({ price, monthlyFees = null, monthlyRent = null }: LoanSimulatorProps) {
+export function LoanSimulator({ price, monthlyFees = null, monthlyRent = null, conditions }: LoanSimulatorProps) {
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const id = useId()
-  const [downPaymentRate, setDownPaymentRate] = useState(DEFAULTS.downPaymentRate)
-  const [annualRatePercent, setAnnualRatePercent] = useState(DEFAULTS.annualRatePercent)
-  const [years, setYears] = useState(DEFAULTS.years)
+  const [ownDownPaymentRate, setDownPaymentRate] = useState(DEFAULTS.downPaymentRate)
+  const [ownAnnualRatePercent, setAnnualRatePercent] = useState(DEFAULTS.annualRatePercent)
+  const [ownYears, setYears] = useState(DEFAULTS.years)
+  const downPaymentRate = conditions?.downPaymentRate ?? ownDownPaymentRate
+  const annualRatePercent = conditions?.annualRatePercent ?? ownAnnualRatePercent
+  const years = conditions?.years ?? ownYears
   const result = estimateLoan({ price, downPaymentRate, annualRatePercent, years })
   const yen = (value: number) => formatYenWords(Math.round(value / 10_000) * 10_000, locale)
   const total = result.downPayment + result.principal + result.totalInterest
@@ -47,13 +52,13 @@ export function LoanSimulator({ price, monthlyFees = null, monthlyRent = null }:
   ]
   return <section className="mt-6 rounded-xl border border-[#dbe2e9] bg-white p-4 md:p-6" aria-labelledby={`${id}-title`} data-testid="loan-simulator">
     <h2 id={`${id}-title`} className="flex items-center gap-2 text-lg font-semibold"><Calculator aria-hidden="true" className="h-5 w-5 text-primary" />{text.title}</h2>
-    <div className="mt-4 grid gap-6 md:grid-cols-[1fr_1fr]">
-      <div className="space-y-4">
+    <div className={`mt-4 grid gap-6 ${conditions ? '' : 'md:grid-cols-[1fr_1fr]'}`}>
+      {!conditions && <div className="space-y-4">
         {sliders.map((slider) => <div key={slider.key}>
           <div className="flex items-baseline justify-between gap-2 text-sm"><label htmlFor={`${id}-${slider.key}`} className="text-[#536274]">{slider.label}</label><span className="font-semibold tabular-nums">{slider.display}</span></div>
           <input id={`${id}-${slider.key}`} type="range" min={slider.min} max={slider.max} step={slider.step} value={slider.value} onChange={(event) => slider.onChange(Number(event.target.value))} className="mt-1 w-full accent-[#274d7d]" />
         </div>)}
-      </div>
+      </div>}
       <div className="rounded-lg bg-[#f4f7fb] p-4">
         <p className="text-xs font-semibold text-[#4a6789]">{text.monthly}</p>
         <p className="mt-1 text-3xl font-bold tabular-nums text-[#1b293a]" aria-live="polite">{result.monthlyPayment ? exact(result.monthlyPayment) : '—'}</p>

@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { WARD_SLUGS, WARD_TILES, wardLabel } from '@/lib/ward-tile-map'
 import { getTransitCopy } from '@/lib/transit/copy'
 import { getOtherListingsCopy } from '@/content/other-listings'
+import { getSimulatorCopy } from '@/lib/simulator-copy'
 import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, type TypeSlug } from '@/lib/collections'
 import { priceBandRange } from '@/lib/price-bands'
 import { conversionCheckUrl } from '@/lib/conversion-check'
@@ -70,6 +71,7 @@ export function Footer({ guides }: FooterProps) {
                 </Link>
               </li>
               <li><Link href="/match" className="text-white/65 hover:text-white transition-colors">{t('nav.match')}</Link></li>
+              <li><Link href="/simulator" className="text-white/65 hover:text-white transition-colors">{getSimulatorCopy(locale).nav}</Link></li>
               <li><Link href="/articles" className="text-white/65 hover:text-white transition-colors">{t('nav.articles')}</Link></li>
               <li><Link href="/help" className="text-white/65 hover:text-white transition-colors">{help.nav}</Link></li>
               <li><Link href="/buy-property-in-tokyo" className="text-white/65 hover:text-white transition-colors">{INTL_LABEL[locale] ?? INTL_LABEL.en}</Link></li>
