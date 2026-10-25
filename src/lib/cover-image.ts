@@ -19,7 +19,7 @@ function photoName(url: string): string {
  * then the entrance, other rooms, partial exterior views, wet rooms, and the floor plan only when
  * there is nothing else (2026-10-25). Unnamed uploads count as the best of their category.
  */
-function tierOf(item: CoverCandidate): number {
+export function coverTier(item: CoverCandidate): number {
   const name = photoName(item.url)
   switch (item.category) {
     case 'EXTERIOR': return PARTIAL_EXTERIOR.test(name) ? 4 : ENTRANCE.test(name) ? 2 : 0
@@ -32,5 +32,5 @@ function tierOf(item: CoverCandidate): number {
 
 export function pickCoverImage<T extends CoverCandidate>(media: readonly T[] | null | undefined): T | null {
   if (!media?.length) return null
-  return [...media].sort((left, right) => tierOf(left) - tierOf(right) || (left.sortOrder ?? 0) - (right.sortOrder ?? 0))[0]
+  return [...media].sort((left, right) => coverTier(left) - coverTier(right) || (left.sortOrder ?? 0) - (right.sortOrder ?? 0))[0]
 }

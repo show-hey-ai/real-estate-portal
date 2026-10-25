@@ -182,3 +182,12 @@ export async function runNotifications(now = new Date(), env: Record<string, str
   }
   return result
 }
+
+/** One operator mail, sent at most once per key (e.g. the weekly quality escalation). */
+export async function sendOperatorMail(subject: string, text: string, key: string, env: Record<string, string | undefined> = process.env) {
+  const config = readNotificationConfig(await withPasswordFile(env))
+  if (!config) return { state: 'not_configured' as const }
+  if ((await alreadySent([key])).size) return { state: 'already_sent' as const }
+  await sendAndRecord(config, { subject, text, keys: [key] })
+  return { state: 'sent' as const }
+}

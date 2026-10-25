@@ -24,7 +24,8 @@
     "portal:status": "tsx scripts/portal-status.ts",
     "queue:triage": "tsx scripts/triage-queue.ts",
     "verify:published": "tsx scripts/verify-published.ts",
-    "draft:reviewed": "tsx scripts/draft-reviewed.ts"
+    "draft:reviewed": "tsx scripts/draft-reviewed.ts",
+    "quality:report": "node --import tsx scripts/quality-report.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.77",
