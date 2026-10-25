@@ -1,7 +1,8 @@
 import { type Locale, defaultLocale, locales } from '@/i18n/config'
 import { formatApprovedPublicAddress } from '@/lib/address'
 import { pickCoverImage } from '@/lib/cover-image'
-import { buildingNameOf, extractBuildingNameEn } from '@/lib/building-name'
+import { buildingNameFor, buildingNameOf, extractBuildingNameEn } from '@/lib/building-name'
+import { wardLabel } from '@/lib/ward-tile-map'
 import { INSTAGRAM_URL } from '@/lib/contact-channels'
 import { formatPrice } from '@/lib/format'
 import { normalizeTransitStations } from '@/lib/transit-normalization'
@@ -206,7 +207,7 @@ export function buildListingTitle(listing: SeoListingLike, locale: string): stri
   }
 
   // Japanese and Chinese searchers often search by building name, which leads the title when known.
-  const buildingName = buildingNameOf(listing)
+  const buildingName = buildingNameFor(normalizedLocale, buildingNameOf(listing), extractBuildingNameEn(listing.descriptionEn))
   return [buildingName, translatedType, translatedAddress, formattedPrice].filter(Boolean).join(' | ')
 }
 
@@ -214,8 +215,8 @@ export function buildListingTitle(listing: SeoListingLike, locale: string): stri
 export function buildListingHeading(listing: SeoListingLike, locale: string): string {
   const normalizedLocale = normalizeLocale(locale)
   const type = translatePropertyType(listing.propertyType || null, normalizedLocale) || siteCopy[normalizedLocale].listingsTitle
-  const ward = listing.city ? (normalizedLocale === 'en' ? translateCityName(listing.city, 'en') || listing.city : normalizedLocale === 'zh-TW' ? listing.city.replace('区', '區') : listing.city) : null
-  const buildingName = buildingNameOf(listing)
+  const ward = listing.city ? wardLabel(listing.city, normalizedLocale) : null
+  const buildingName = buildingNameFor(normalizedLocale, buildingNameOf(listing), extractBuildingNameEn(listing.descriptionEn))
   // English pages avoid a Japanese-script heading: the romanised name from the English description, or type and ward.
   if (normalizedLocale === 'en') return extractBuildingNameEn(listing.descriptionEn) ?? `${type} in ${ward ? `${ward}, ` : ''}Tokyo`
   if (buildingName) return buildingName

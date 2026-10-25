@@ -64,3 +64,16 @@ export function extractBuildingNameEn(descriptionEn: string | null | undefined):
 export function buildingNameOf(listing: { descriptionJa?: string | null; addressPublic?: string | null }): string | null {
   return extractBuildingName(listing.descriptionJa) ?? buildingNameFromAddress(listing.addressPublic)
 }
+
+const KANA = /[぀-ゟ゠-ヿ]/u
+
+/**
+ * The building name to show in a language: Japanese pages the Japanese name, English pages the
+ * romanised one, and Chinese pages the Japanese name unless it is written in kana, which Chinese
+ * readers cannot read, when the romanised one is used instead.
+ */
+export function buildingNameFor(locale: string, ja: string | null, en: string | null): string | null {
+  if (locale === 'en') return en
+  if (locale.startsWith('zh') && ja && KANA.test(ja) && en) return en
+  return ja
+}

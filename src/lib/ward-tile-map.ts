@@ -17,9 +17,22 @@ export const WARD_SLUGS: Record<string, string> = {
 
 export const WARD_GRID = { rows: 5, cols: 7 } as const
 
+/** The 23 wards in English, Traditional and Simplified Chinese; other cities stay as written. */
+export const WARD_NAMES: Record<string, [string, string, string]> = {
+  千代田区: ['Chiyoda', '千代田區', '千代田区'], 中央区: ['Chuo', '中央區', '中央区'], 港区: ['Minato', '港區', '港区'],
+  新宿区: ['Shinjuku', '新宿區', '新宿区'], 文京区: ['Bunkyo', '文京區', '文京区'], 台東区: ['Taito', '台東區', '台东区'],
+  墨田区: ['Sumida', '墨田區', '墨田区'], 江東区: ['Koto', '江東區', '江东区'], 品川区: ['Shinagawa', '品川區', '品川区'],
+  目黒区: ['Meguro', '目黑區', '目黑区'], 大田区: ['Ota', '大田區', '大田区'], 世田谷区: ['Setagaya', '世田谷區', '世田谷区'],
+  渋谷区: ['Shibuya', '澀谷區', '涩谷区'], 中野区: ['Nakano', '中野區', '中野区'], 杉並区: ['Suginami', '杉並區', '杉并区'],
+  豊島区: ['Toshima', '豐島區', '丰岛区'], 北区: ['Kita', '北區', '北区'], 荒川区: ['Arakawa', '荒川區', '荒川区'],
+  板橋区: ['Itabashi', '板橋區', '板桥区'], 練馬区: ['Nerima', '練馬區', '练马区'], 足立区: ['Adachi', '足立區', '足立区'],
+  葛飾区: ['Katsushika', '葛飾區', '葛饰区'], 江戸川区: ['Edogawa', '江戶川區', '江户川区'],
+}
+
 export function wardLabel(ward: string, locale: string): string {
   if (locale === 'en') return translateCityName(ward, locale) || ward
-  if (locale === 'zh-TW') return ward.replace('区', '區')
+  if (locale === 'zh-TW') return WARD_NAMES[ward]?.[1] ?? ward.replace('区', '區')
+  if (locale === 'zh-CN') return WARD_NAMES[ward]?.[2] ?? ward
   return ward
 }
 

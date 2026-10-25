@@ -38,3 +38,14 @@ test('card facts carry both names and drop the descriptions', async () => {
   assert.equal(card.buildingNameEn, 'Lions Shakujii Koen')
   assert.equal('descriptionEn' in card, false)
 })
+
+test('Chinese pages show the romanised name when the Japanese one is in kana', async () => {
+  const { buildingNameFor } = await import('../src/lib/building-name')
+  assert.equal(buildingNameFor('zh-CN', 'ブランズタワー芝浦', 'Brillia Tower Shibaura'), 'Brillia Tower Shibaura')
+  assert.equal(buildingNameFor('zh-TW', '第18宮廷マンション', 'Kyutei Mansion No 18'), 'Kyutei Mansion No 18')
+  assert.equal(buildingNameFor('zh-CN', '品川東急大厦', 'Shinagawa Tokyu Building'), '品川東急大厦')
+  assert.equal(buildingNameFor('zh-CN', 'ブランズタワー芝浦', null), 'ブランズタワー芝浦')
+  assert.equal(buildingNameFor('ja', 'ブランズタワー芝浦', 'Brillia Tower Shibaura'), 'ブランズタワー芝浦')
+  assert.equal(buildingNameFor('en', 'ブランズタワー芝浦', 'Brillia Tower Shibaura'), 'Brillia Tower Shibaura')
+  assert.equal(buildingNameFor('en', 'ブランズタワー芝浦', null), null)
+})

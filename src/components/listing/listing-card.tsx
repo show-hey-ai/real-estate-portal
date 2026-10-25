@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { buildingNameFor } from '@/lib/building-name'
 import { pickCoverImage } from '@/lib/cover-image'
 import { aiImageDisclosure } from '@/lib/image-disclosure'
 import { parseDbTimestamp } from '@/lib/db-timestamp'
@@ -99,8 +100,8 @@ export function ListingCard({
   const mainImage = pickCoverImage(listing.media)
   const disclosure = aiImageDisclosure(mainImage?.caption, locale)
   const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
-  // English cards show the romanised name; the others the Japanese one.
-  const buildingName = locale === 'en' ? listing.buildingNameEn : listing.buildingName
+  // English cards show the romanised name, Chinese cards too when the Japanese one is in kana.
+  const buildingName = buildingNameFor(locale, listing.buildingName ?? null, listing.buildingNameEn ?? null)
   const stations = normalizeTransitStations(listing.stations)
   const primaryStation = stations[0]
   const primaryTransitLabel = formatTransitAccessLabel(primaryStation, locale)

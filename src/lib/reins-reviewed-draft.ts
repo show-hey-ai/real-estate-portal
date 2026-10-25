@@ -1,6 +1,7 @@
 import type { ReinsDetailFacts, ReinsStation } from './reins-detail-facts'
 import { normalizeRailwayLine, normalizeStationName } from './public-search'
 import { translateRailwayLine, translateStationName, translateZoning } from './translate-fields'
+import { WARD_NAMES } from './ward-tile-map'
 
 /**
  * Drafts the reviewed.json `facts` block from parsed REINS facts. Descriptions are fixed templates
@@ -92,17 +93,6 @@ const DIRECTIONS: Record<string, Words> = {
   西: { ja: '西', en: 'west', zhTw: '西', zhCn: '西' },
   北西: { ja: '北西', en: 'northwest', zhTw: '西北', zhCn: '西北' },
 }
-/** The 23 wards in English, Traditional and Simplified Chinese; other cities stay as written. */
-const WARDS: Record<string, [string, string, string]> = {
-  千代田区: ['Chiyoda', '千代田區', '千代田区'], 中央区: ['Chuo', '中央區', '中央区'], 港区: ['Minato', '港區', '港区'],
-  新宿区: ['Shinjuku', '新宿區', '新宿区'], 文京区: ['Bunkyo', '文京區', '文京区'], 台東区: ['Taito', '台東區', '台东区'],
-  墨田区: ['Sumida', '墨田區', '墨田区'], 江東区: ['Koto', '江東區', '江东区'], 品川区: ['Shinagawa', '品川區', '品川区'],
-  目黒区: ['Meguro', '目黑區', '目黑区'], 大田区: ['Ota', '大田區', '大田区'], 世田谷区: ['Setagaya', '世田谷區', '世田谷区'],
-  渋谷区: ['Shibuya', '澀谷區', '涩谷区'], 中野区: ['Nakano', '中野區', '中野区'], 杉並区: ['Suginami', '杉並區', '杉并区'],
-  豊島区: ['Toshima', '豐島區', '丰岛区'], 北区: ['Kita', '北區', '北区'], 荒川区: ['Arakawa', '荒川區', '荒川区'],
-  板橋区: ['Itabashi', '板橋區', '板桥区'], 練馬区: ['Nerima', '練馬區', '练马区'], 足立区: ['Adachi', '足立區', '足立区'],
-  葛飾区: ['Katsushika', '葛飾區', '葛饰区'], 江戸川区: ['Edogawa', '江戶川區', '江户川区'],
-}
 /** REINS 用途地域 abbreviations → the names translate-fields.ts knows. */
 const ZONING: Record<string, string> = {
   一低: '第1種低層住居専用地域', 二低: '第2種低層住居専用地域', 一中: '第1種中高層住居専用地域', 二中: '第2種中高層住居専用地域',
@@ -183,7 +173,7 @@ function accessPhrases(stations: readonly DraftStation[]): Words {
 
 function placeWords(city: string | null): Words | null {
   if (!city) return null
-  const ward = WARDS[city]
+  const ward = WARD_NAMES[city]
   return { ja: city, en: ward?.[0] ?? city, zhTw: ward?.[1] ?? city, zhCn: ward?.[2] ?? city }
 }
 

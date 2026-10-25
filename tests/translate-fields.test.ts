@@ -33,3 +33,13 @@ test('station labels ignore a Japanese name_en and English text gets known stati
   assert.equal(translateRailwayLine('京浜急線', 'en'), 'Keikyu Main Line')
   assert.equal(translateRailwayLine('日暮里舎人', 'en'), 'Nippori-Toneri Liner')
 })
+
+test('ward labels use the Chinese characters in Chinese', async () => {
+  const { wardLabel } = await import('../src/lib/ward-tile-map')
+  assert.equal(wardLabel('渋谷区', 'zh-CN'), '涩谷区')
+  assert.equal(wardLabel('渋谷区', 'zh-TW'), '澀谷區')
+  assert.equal(wardLabel('台東区', 'zh-CN'), '台东区')
+  assert.equal(wardLabel('豊島区', 'zh-TW'), '豐島區')
+  assert.equal(wardLabel('渋谷区', 'ja'), '渋谷区')
+  assert.equal(wardLabel('渋谷区', 'en'), 'Shibuya')
+})
