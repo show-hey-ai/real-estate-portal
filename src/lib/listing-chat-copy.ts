@@ -75,7 +75,7 @@ const copies = {
     restricted:
       'Detailed addresses and internal documents are not provided in this chat. Please use the private chat for the information you need.',
     confirmation:
-      'Viewing dates, negotiation, purchase terms, financing and licences require confirmation beyond the published facts. Tell us your request through the private chat. No booking or message has been sent.',
+      'Viewing dates, negotiation, purchase terms, financing and licenses require confirmation beyond the published facts. Tell us your request through the private chat. No booking or message has been sent.',
     error: 'We could not load an answer. Please try again.',
     rate: 'Please wait a little before asking another question.',
     unavailable:
@@ -111,7 +111,7 @@ const copies = {
     clear: '清除對話',
     question: '關於這間房產的問題',
     working: '正在確認公開資訊…',
-    inquiry: '看房與詳細諮詢',
+    inquiry: '看屋與詳細諮詢',
     source: '參考：這間房產的公開資訊',
     privacy: '對話僅保留於本頁。聯絡團隊請使用專用聊天。',
     unknown: '公開資訊未載明。',
@@ -119,7 +119,7 @@ const copies = {
       '公開資訊無法確認這個問題。可以詢問價格、面積、車站與建築資訊；其他問題請透過專用聊天確認。',
     restricted: '聊天不提供詳細門牌或內部文件。所需資訊請透過專用聊天洽詢。',
     confirmation:
-      '看房時間、議價、購買條件、貸款與許可需另行確認。請透過專用聊天告知需求。目前尚未預約或送出聯絡訊息。',
+      '看屋時間、議價、購買條件、貸款與許可需另行確認。請透過專用聊天告知需求。目前尚未預約或送出聯絡訊息。',
     error: '暫時無法取得回答，請再試一次。',
     rate: '提問較頻繁，請稍候再試。',
     unavailable: '這間房產已停止公開，無法使用聊天。',
@@ -142,7 +142,7 @@ const copies = {
       '價格與面積是多少？',
       '最近車站步行幾分鐘？',
       '建築年份與構造是？',
-      '想諮詢看房',
+      '想諮詢看屋',
     ],
   },
   'zh-CN': {

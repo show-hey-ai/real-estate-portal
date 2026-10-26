@@ -58,7 +58,7 @@ export function OtherListingForm({ locale }: { locale: string }) {
     }
   }
   const link = (channel: MessagingChannel | 'email', label: string, tone: string, icon: ReactNode) => <a key={channel} href={hrefs[channel]} onClick={(event) => send(channel, event)}
-    aria-disabled={!ready} className={`${BUTTON} ${tone} ${ready ? '' : 'opacity-60'}`} {...(channel === 'wechat' || channel === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
+    aria-disabled={!ready} className={`${BUTTON} ${tone}`} {...(channel === 'wechat' || channel === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
     {icon}{label}
   </a>
 
@@ -85,6 +85,7 @@ export function OtherListingForm({ locale }: { locale: string }) {
 
     <div id={fieldsId} className="mt-5 scroll-mt-24"><BuyerProfileFields locale={locale} profile={profile} onAnswer={answer} showMissing={touched && Boolean(cleanUrl)} idPrefix={fieldsId} /></div>
     {touched && cleanUrl && !isProfileComplete(profile) && <p className="mt-2 text-xs font-semibold text-[#b42318]" role="alert">{getProfileCopy(locale).missing}</p>}
+    {!touched && !isProfileComplete(profile) && <p className="mt-2 text-xs text-[#536274]">{getProfileCopy(locale).answerFirst}</p>}
 
     <p className="mt-5 text-sm font-semibold text-[#243b45]">{copy.sendVia}</p>
     <div className="mt-2 grid gap-2 sm:grid-cols-4">

@@ -125,7 +125,7 @@ export const helpArticles: HelpArticle[] = [
       'お気に入り',
       'ブックマーク',
       'favorite',
-      'favourite',
+      'favorite',
       'bookmark',
       '收藏',
     ],
@@ -165,7 +165,7 @@ export const helpArticles: HelpArticle[] = [
       '予約',
       '連絡',
       'inquiry',
-      'enquiry',
+      'inquiry',
       'contact',
       'viewing',
       'book',
@@ -197,7 +197,7 @@ export const helpArticles: HelpArticle[] = [
         action: 'Choose a property to ask about',
       },
       'zh-TW': {
-        title: '如何詢問物件詳情或預約看房？',
+        title: '如何詢問物件詳情或預約看屋？',
         body: '不必註冊或登入。在物件頁的「免註冊立即諮詢」點選諮詢內容（提問、更多照片、索取資料、預約看屋等）並回答購屋者問題，再透過LINE、WeChat、WhatsApp或電子郵件傳送。閱讀自動回答不會送出詢問。',
         action: '選擇要詢問的物件',
       },
@@ -237,7 +237,7 @@ export const helpArticles: HelpArticle[] = [
       },
       'zh-TW': {
         title: '物件聊天可以回答什麼？',
-        body: '物件頁的聊天功能會根據該物件已公開的價格、面積、車站及建築資料自動回答，不必登入。目前使用公開資料的固定回答，並非與工作人員即時對話。不明詳情或看房需求請透過詢問表單提出。',
+        body: '物件頁的聊天功能會根據該物件已公開的價格、面積、車站及建築資料自動回答，不必登入。目前使用公開資料的固定回答，並非與工作人員即時對話。不明詳情或看屋需求請透過詢問表單提出。',
         action: '使用物件聊天',
       },
       'zh-CN': {
@@ -536,7 +536,7 @@ const copy = {
     privacy: '請勿輸入密碼或個人資料。',
     browse: '查看物件',
     guide: '購買指南',
-    examples: ['想找靠近車站的物件', '如何儲存搜尋條件？', '如何預約看房？'],
+    examples: ['想找靠近車站的物件', '如何儲存搜尋條件？', '如何預約看屋？'],
     open: '閱讀詳細指引',
   },
   'zh-CN': {

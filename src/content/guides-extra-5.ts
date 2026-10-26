@@ -77,11 +77,11 @@ export const extraGuideArticles5: GuideArticle[] = [
       en: {
         category: 'Owning',
         title: 'Airbnb in a Tokyo Condo? Japan\'s Three Short-Term Rental Systems',
-        excerpt: 'The minpaku law with its 180-night cap, hotel business licences, the special-zone scheme, and how condo bylaws and ward rules restrict short-term rentals.',
-        seoDescription: 'Can you run an Airbnb in a Tokyo condominium? The 180-night minpaku law, simple lodging licences, special-zone minpaku, condo bylaw bans, ward rules and what to check before buying.',
+        excerpt: 'The minpaku law with its 180-night cap, hotel business licenses, the special-zone scheme, and how condo bylaws and ward rules restrict short-term rentals.',
+        seoDescription: 'Can you run an Airbnb in a Tokyo condominium? The 180-night minpaku law, simple lodging licenses, special-zone minpaku, condo bylaw bans, ward rules and what to check before buying.',
         intro: 'Many buyers ask whether they can use a Tokyo condominium as an Airbnb. In practice, laws and building rules restrict it heavily, and some owners find out only after buying that they cannot operate. Here is what to check first.',
         keyTakeaways: [
-          'There are three systems: the minpaku law, the hotel business licence and the special-zone scheme',
+          'There are three systems: the minpaku law, the hotel business license and the special-zone scheme',
           'Minpaku under the law is capped at 180 nights a year, and wards add limits',
           'Most condominium bylaws ban short-term rentals',
           'Check the bylaws, ward rules and zoning before you buy',
@@ -90,10 +90,10 @@ export const extraGuideArticles5: GuideArticle[] = [
           {
             id: 'systems',
             heading: 'Three systems',
-            paragraphs: ['Paid overnight stays need a notification or licence under one of these.'],
+            paragraphs: ['Paid overnight stays need a notification or license under one of these.'],
             bullets: [
               'Private Lodging Business Act (minpaku law): notification; up to 180 nights a year',
-              'Hotel Business Act (for example a simple lodging licence): no night cap, but strict rules on building use, facilities and zoning',
+              'Hotel Business Act (for example a simple lodging license): no night cap, but strict rules on building use, facilities and zoning',
               'National Strategic Special Zones: in Tokyo\'s 23 wards, Ota Ward; minimum stay lengths and other conditions apply',
             ],
           },
@@ -115,7 +115,7 @@ export const extraGuideArticles5: GuideArticle[] = [
             id: 'alternatives',
             heading: 'If short-term rental is not allowed',
             paragraphs: [
-              'You can still let the unit on an ordinary or fixed-term lease, or as a furnished monthly rental of 30 days or more. For a lodging business, a whole building or a property that can obtain a hotel licence is usually more realistic.',
+              'You can still let the unit on an ordinary or fixed-term lease, or as a furnished monthly rental of 30 days or more. For a lodging business, a whole building or a property that can obtain a hotel license is usually more realistic.',
             ],
           },
           {
@@ -125,7 +125,7 @@ export const extraGuideArticles5: GuideArticle[] = [
             bullets: [
               'Whether the bylaws ban or allow short-term rentals',
               'The ward\'s minpaku ordinance (area and period limits)',
-              'Zoning, and whether a hotel licence is possible',
+              'Zoning, and whether a hotel license is possible',
               'Fire safety equipment and escape routes, and their cost',
               'The numbers as an ordinary rental if short-term letting fails',
             ],
@@ -133,7 +133,7 @@ export const extraGuideArticles5: GuideArticle[] = [
         ],
         faq: [
           { question: 'Can your listings be used for Airbnb?', answer: 'Most condominium units are covered by bylaw bans. We check the bylaws for each property; use “Get documents” to ask.' },
-          { question: 'Can I operate more than 180 nights?', answer: 'Not under the minpaku law. Year-round operation needs a Hotel Business Act licence.' },
+          { question: 'Can I operate more than 180 nights?', answer: 'Not under the minpaku law. Year-round operation needs a Hotel Business Act license.' },
           { question: 'Do you handle hotel and ryokan properties?', answer: 'Our operator, Ziyou Real Estate, also advises on hotel and ryokan properties. Tell us your purpose.' },
         ],
         ctaTitle: 'Tell us how you plan to use it',

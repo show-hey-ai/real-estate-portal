@@ -18,7 +18,7 @@ const copy = {
     body: 'With 30+ inn projects behind us, we check seven gates on paper, including zoning, roads, egress and fire code. Stage 1: JPY 9,800 (excl. tax), 3 administrative business days.',
   },
   'zh-TW': {
-    title: '診斷此物件能否開設飯店・民宿',
+    title: '診斷此物件能否開設飯店、民宿',
     body: '經手旅館業案件30件以上的我們，依據文件與公開資訊，檢查用途地域、道路、避難、消防等七道關卡。一次調查9,800日圓（未稅），3個行政工作日。',
   },
   'zh-CN': {

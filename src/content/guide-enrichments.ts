@@ -36,12 +36,12 @@ export const guideEnrichments: Record<string, Partial<Record<Locale, GuideEnrich
       sections: { 'how-to-tell': { table: { caption: 'Rule of thumb from the completion year (the permit date decides)', headers: ['Completed', 'Likely standard', 'What to check'], rows: [['1984 or later', 'New standard', '—'], ['1981–1983', 'Either', 'Building permit date'], ['1980 or earlier', 'Old standard', 'Seismic assessment or reinforcement']] } } },
     },
     'zh-TW': {
-      sources: [{ label: '國土交通省「住宅・建築物的耐震化」（日文）', url: MLIT_SEISMIC }],
-      sections: { 'how-to-tell': { table: { caption: '依完工年份的參考（最終以建築許可日期判斷）', headers: ['完工年份', '參考', '需確認'], rows: [['1984年以後', '多為新耐震', '—'], ['1981〜1983年', '兩者皆有可能', '建築許可日期'], ['1980年以前', '多為舊耐震', '耐震診斷・補強']] } } },
+      sources: [{ label: '國土交通省「住宅、建築物的耐震化」（日文）', url: MLIT_SEISMIC }],
+      sections: { 'how-to-tell': { table: { caption: '依完工年份的參考（最終以建築許可日期判斷）', headers: ['完工年份', '參考', '需確認'], rows: [['1984年以後', '多為新耐震', '—'], ['1981〜1983年', '兩者皆有可能', '建築許可日期'], ['1980年以前', '多為舊耐震', '耐震診斷、補強']] } } },
     },
     'zh-CN': {
-      sources: [{ label: '国土交通省“住宅・建筑物的抗震化”（日文）', url: MLIT_SEISMIC }],
-      sections: { 'how-to-tell': { table: { caption: '按竣工年份的参考（最终以建筑许可日期判断）', headers: ['竣工年份', '参考', '需确认'], rows: [['1984年以后', '多为新耐震', '—'], ['1981〜1983年', '两者都有可能', '建筑许可日期'], ['1980年以前', '多为旧耐震', '抗震诊断・加固']] } } },
+      sources: [{ label: '国土交通省“住宅、建筑物的抗震化”（日文）', url: MLIT_SEISMIC }],
+      sections: { 'how-to-tell': { table: { caption: '按竣工年份的参考（最终以建筑许可日期判断）', headers: ['竣工年份', '参考', '需确认'], rows: [['1984年以后', '多为新耐震', '—'], ['1981〜1983年', '两者都有可能', '建筑许可日期'], ['1980年以前', '多为旧耐震', '抗震诊断、加固']] } } },
     },
   },
   'tokyo-condo-management-fee-repair-reserve': {
@@ -123,22 +123,22 @@ export const guideEnrichments: Record<string, Partial<Record<Locale, GuideEnrich
       sources: [{ label: '國稅廳 No.2880 支付不動產租金給非居住者時（日文）', url: NTA_RENT_TO_NON_RESIDENT }],
       sections: {
         management: { table: { headers: ['', '委託管理', '包租'], rows: [['收到的租金', '實際租金扣除手續費', '固定租金（低於行情）'], ['空置風險', '屋主', '管理公司'], ['手續費參考', '租金的5%左右', '反映在較低租金中'], ['注意事項', '空置期間收入減少', '租金調整與解約條件']] } },
-        costs: { example: { title: '2,080萬日圓、月租11.3萬日圓的物件（舉例）', lines: ['年租金：113,000×12＝1,356,000日圓 → 表面投報率6.5%', '管理費・修繕公積金：每年250,320日圓', '委託管理費（租金5%）：每年67,800日圓', '固定資產稅等（假設）：每年60,000日圓', '實收：每年977,880日圓 → 實質投報率約4.7%'], note: '不含空置、換租費用與所得稅，並非對未來收益的保證。' } },
+        costs: { example: { title: '2,080萬日圓、月租11.3萬日圓的物件（舉例）', lines: ['年租金：113,000×12＝1,356,000日圓 → 表面投報率6.5%', '管理費、修繕公積金：每年250,320日圓', '委託管理費（租金5%）：每年67,800日圓', '固定資產稅等（假設）：每年60,000日圓', '實收：每年977,880日圓 → 實質投報率約4.7%'], note: '不含空置、換租費用與所得稅，並非對未來收益的保證。' } },
       },
     },
     'zh-CN': {
       sources: [{ label: '国税厅 No.2880 向非居住者支付房产租金时（日文）', url: NTA_RENT_TO_NON_RESIDENT }],
       sections: {
         management: { table: { headers: ['', '委托管理', '包租'], rows: [['收到的租金', '实际租金扣除手续费', '固定租金（低于市场）'], ['空置风险', '业主', '管理公司'], ['手续费参考', '租金的5%左右', '反映在较低租金中'], ['注意事项', '空置期间收入减少', '租金调整与解约条件']] } },
-        costs: { example: { title: '2,080万日元、月租11.3万日元的房源（举例）', lines: ['年租金：113,000×12＝1,356,000日元 → 表面收益率6.5%', '管理费・修缮基金：每年250,320日元', '委托管理费（租金5%）：每年67,800日元', '固定资产税等（假设）：每年60,000日元', '实收：每年977,880日元 → 实际收益率约4.7%'], note: '不含空置、换租费用与所得税，并非对未来收益的保证。' } },
+        costs: { example: { title: '2,080万日元、月租11.3万日元的房源（举例）', lines: ['年租金：113,000×12＝1,356,000日元 → 表面收益率6.5%', '管理费、修缮基金：每年250,320日元', '委托管理费（租金5%）：每年67,800日元', '固定资产税等（假设）：每年60,000日元', '实收：每年977,880日元 → 实际收益率约4.7%'], note: '不含空置、换租费用与所得税，并非对未来收益的保证。' } },
       },
     },
   },
   'leasehold-vs-freehold-tokyo': {
     ja: { sections: { types: { table: { headers: ['種類', '契約の時期・期間', '更新', '期間が終わったら'], rows: [['旧法借地権', '1992年7月以前の契約', '更新されることが多い', '更新が続くのが一般的'], ['普通借地権', '当初30年以上', '地主の拒絶には正当な理由が必要', '更新が基本'], ['定期借地権（一般）', '50年以上など', 'なし', '更地にして返す']] } } } },
     en: { sections: { types: { table: { headers: ['Type', 'When / term', 'Renewal', 'At the end'], rows: [['Old-law leasehold', 'Leases before August 1992', 'Usually renewed', 'Renewals continue'], ['Ordinary leasehold', '30 years or more at first', 'Landowner needs just cause to refuse', 'Renewal is the norm'], ['Fixed-term leasehold', 'For example 50 years or more', 'None', 'Land returned cleared']] } } } },
-    'zh-TW': { sections: { types: { table: { headers: ['種類', '簽約時間・期間', '續約', '期滿後'], rows: [['舊法借地權', '1992年7月以前的契約', '多半續約', '通常持續續約'], ['普通借地權', '初始30年以上', '地主拒絕需正當理由', '以續約為原則'], ['定期借地權（一般）', '50年以上等', '不續約', '拆除建物歸還土地']] } } } },
-    'zh-CN': { sections: { types: { table: { headers: ['种类', '签约时间・期限', '续约', '期满后'], rows: [['旧法借地权', '1992年7月以前的合同', '大多续约', '通常持续续约'], ['普通借地权', '初始30年以上', '地主拒绝需正当理由', '以续约为原则'], ['定期借地权（一般）', '50年以上等', '不续约', '拆除建筑归还土地']] } } } },
+    'zh-TW': { sections: { types: { table: { headers: ['種類', '簽約時間、期間', '續約', '期滿後'], rows: [['舊法借地權', '1992年7月以前的契約', '多半續約', '通常持續續約'], ['普通借地權', '初始30年以上', '地主拒絕需正當理由', '以續約為原則'], ['定期借地權（一般）', '50年以上等', '不續約', '拆除建物歸還土地']] } } } },
+    'zh-CN': { sections: { types: { table: { headers: ['种类', '签约时间、期限', '续约', '期满后'], rows: [['旧法借地权', '1992年7月以前的合同', '大多续约', '通常持续续约'], ['普通借地权', '初始30年以上', '地主拒绝需正当理由', '以续约为原则'], ['定期借地权（一般）', '50年以上等', '不续约', '拆除建筑归还土地']] } } } },
   },
   'tokyo-condo-minpaku-short-term-rental-rules': {
     ja: {
@@ -147,7 +147,7 @@ export const guideEnrichments: Record<string, Partial<Record<Locale, GuideEnrich
     },
     en: {
       sources: [{ label: 'Japan Tourism Agency: Minpaku portal (English available)', url: MLIT_MINPAKU }],
-      sections: { systems: { table: { headers: ['System', 'Procedure', 'Nights per year', 'Main conditions'], rows: [['Minpaku law', 'Notification', 'Up to 180', 'Ward ordinances add limits'], ['Hotel Business Act (simple lodging etc.)', 'Licence', 'No cap', 'Zoning, building use, facilities'], ['Special-zone minpaku', 'Certification', 'No cap (minimum stay applies)', 'Ota Ward in the 23 wards']] } } },
+      sections: { systems: { table: { headers: ['System', 'Procedure', 'Nights per year', 'Main conditions'], rows: [['Minpaku law', 'Notification', 'Up to 180', 'Ward ordinances add limits'], ['Hotel Business Act (simple lodging etc.)', 'License', 'No cap', 'Zoning, building use, facilities'], ['Special-zone minpaku', 'Certification', 'No cap (minimum stay applies)', 'Ota Ward in the 23 wards']] } } },
     },
     'zh-TW': {
       sources: [{ label: '觀光廳「民宿制度入口網站」', url: MLIT_MINPAKU }],

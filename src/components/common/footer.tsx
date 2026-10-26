@@ -35,10 +35,10 @@ export function Footer({ guides }: FooterProps) {
   const currentYear = new Date().getFullYear()
   const company = {
     ja: { name: '自由不動産合同会社', license: '宅地建物取引業 東京都知事（1）第108831号', address: '〒111-0052 東京都台東区柳橋1丁目11番5号 柳橋ビル305号室', wards: '東京23区から探す', types: '種類から探す', budget: '予算から探す' },
-    en: { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage licence: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards", types: 'Browse by property type', budget: 'Browse by budget' },
+    en: { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage license: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards", types: 'Browse by property type', budget: 'Browse by budget' },
     'zh-TW': { name: '自由不動產合同會社', license: '宅地建物交易業 東京都知事（1）第108831號', address: '〒111-0052 東京都台東區柳橋1丁目11番5號 柳橋大樓305號室', wards: '依東京23區尋找', types: '依類型尋找', budget: '依預算尋找' },
     'zh-CN': { name: '自由不动产合同会社', license: '宅地建物交易业 东京都知事（1）第108831号', address: '〒111-0052 东京都台东区柳桥1丁目11番5号 柳桥大楼305号室', wards: '按东京23区查找', types: '按类型查找', budget: '按预算查找' },
-  }[locale] ?? { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage licence: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards", types: 'Browse by property type', budget: 'Browse by budget' }
+  }[locale] ?? { name: 'Ziyou Real Estate LLC', license: 'Real estate brokerage license: Tokyo Governor (1) No. 108831', address: 'Yanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan', wards: "Browse Tokyo's 23 wards", types: 'Browse by property type', budget: 'Browse by budget' }
 
   return (
     <footer className="border-t border-[#dbe2e9] bg-[#142337] text-white">

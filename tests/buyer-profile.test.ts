@@ -4,7 +4,7 @@ import { isProfileComplete, parseStoredProfile, profileText } from '../src/lib/b
 
 const full = { buyer: 'company-foreign', nationality: 'foreign', residence: 'overseas', funding: 'cash', purpose: 'invest' }
 
-test('an enquiry can be sent only when every buyer question is answered', () => {
+test('an inquiry can be sent only when every buyer question is answered', () => {
   assert.equal(isProfileComplete(full), true)
   assert.equal(isProfileComplete({ ...full, funding: undefined }), false)
   assert.equal(isProfileComplete({ ...full, buyer: 'alien' }), false)

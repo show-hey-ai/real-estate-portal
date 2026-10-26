@@ -51,7 +51,7 @@ export function WardMap({ locale, counts, current, showIndexLink = true }: WardM
       {currentShape && <path d={currentShape.d} aria-hidden="true" className="pointer-events-none fill-none stroke-[#c2410c] [stroke-linejoin:round] [stroke-width:3] [vector-effect:non-scaling-stroke]" />}
       {WARD_SHAPES.map((shape) => <WardLabel key={shape.ward} shape={shape} count={counts[shape.ward] ?? 0} locale={locale} />)}
     </svg>
-    <p className="mt-3 text-center text-[10px] leading-4 text-[#7a8796]">
+    <p className="mt-3 text-center text-[11px] leading-4 text-[#536274]">
       <a href={WARD_LAND_PRICE.source} target="_blank" rel="noopener noreferrer" className="hover:underline">{text.source(WARD_LAND_PRICE.year)}</a>
       <span aria-hidden="true"> / </span>
       <a href={MAP_CREDIT_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">{text.map}</a>

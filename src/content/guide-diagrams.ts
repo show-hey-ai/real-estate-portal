@@ -17,15 +17,15 @@ export const guideDiagrams: Record<string, Partial<Record<Locale, Record<string,
   },
   'tokyo-condo-minpaku-short-term-rental-rules': {
     ja: { checklist: { kind: 'flow', title: '民泊ができるかの判断の順番', steps: [{ label: '管理規約', detail: '民泊が禁止されていないか' }, { label: '区の条例', detail: '区域・期間の制限' }, { label: '制度を選ぶ', detail: '年180日以内は届出、通年は旅館業の許可' }, { label: 'できない場合', detail: '賃貸・マンスリーで運用' }] } },
-    en: { checklist: { kind: 'flow', title: 'Deciding whether short-term rental is possible', steps: [{ label: 'Bylaws', detail: 'Not banned?' }, { label: 'Ward ordinance', detail: 'Area and period limits' }, { label: 'Choose the system', detail: 'Up to 180 nights: notification; all year: hotel licence' }, { label: 'If not possible', detail: 'Ordinary or monthly rental' }] } },
+    en: { checklist: { kind: 'flow', title: 'Deciding whether short-term rental is possible', steps: [{ label: 'Bylaws', detail: 'Not banned?' }, { label: 'Ward ordinance', detail: 'Area and period limits' }, { label: 'Choose the system', detail: 'Up to 180 nights: notification; all year: hotel license' }, { label: 'If not possible', detail: 'Ordinary or monthly rental' }] } },
     'zh-TW': { checklist: { kind: 'flow', title: '判斷能否做民宿的順序', steps: [{ label: '管理規約', detail: '是否禁止民宿' }, { label: '區條例', detail: '區域與期間限制' }, { label: '選擇制度', detail: '每年180天內申報，全年需旅館業許可' }, { label: '無法經營時', detail: '一般出租或月租' }] } },
     'zh-CN': { checklist: { kind: 'flow', title: '判断能否做民宿的顺序', steps: [{ label: '管理规约', detail: '是否禁止民宿' }, { label: '区条例', detail: '区域与期间限制' }, { label: '选择制度', detail: '每年180天内申报，全年需旅馆业许可' }, { label: '无法经营时', detail: '普通出租或月租' }] } },
   },
   'buying-property-japan-visa': {
     ja: { documents: { kind: 'flow', title: '海外からの購入の流れ', steps: [{ label: '購入を決める' }, { label: '書類の準備', detail: 'サイン証明・宣誓供述書など（2〜3週間）' }, { label: '売買契約', detail: '手付金を支払う' }, { label: '送金', detail: '決済の1〜2週間前に開始' }, { label: '決済・登記', detail: '鍵の受け取り' }] } },
     en: { documents: { kind: 'flow', title: 'Buying from overseas, step by step', steps: [{ label: 'Decide to buy' }, { label: 'Prepare documents', detail: 'Signature certificate, sworn statement (2–3 weeks)' }, { label: 'Sale contract', detail: 'Pay the deposit' }, { label: 'Transfer funds', detail: 'Start 1–2 weeks before closing' }, { label: 'Closing and registration', detail: 'Receive the keys' }] } },
-    'zh-TW': { documents: { kind: 'flow', title: '從海外購屋的流程', steps: [{ label: '決定購買' }, { label: '準備文件', detail: '簽名證明、宣誓供述書等（2〜3週）' }, { label: '簽訂買賣契約', detail: '支付訂金' }, { label: '匯款', detail: '交割前1〜2週開始' }, { label: '交割・登記', detail: '領取鑰匙' }] } },
-    'zh-CN': { documents: { kind: 'flow', title: '从海外购房的流程', steps: [{ label: '决定购买' }, { label: '准备文件', detail: '签名证明、宣誓供述书等（2〜3周）' }, { label: '签订买卖合同', detail: '支付定金' }, { label: '汇款', detail: '交割前1〜2周开始' }, { label: '交割・登记', detail: '领取钥匙' }] } },
+    'zh-TW': { documents: { kind: 'flow', title: '從海外購屋的流程', steps: [{ label: '決定購買' }, { label: '準備文件', detail: '簽名證明、宣誓供述書等（2〜3週）' }, { label: '簽訂買賣契約', detail: '支付訂金' }, { label: '匯款', detail: '交割前1〜2週開始' }, { label: '交割、登記', detail: '領取鑰匙' }] } },
+    'zh-CN': { documents: { kind: 'flow', title: '从海外购房的流程', steps: [{ label: '决定购买' }, { label: '准备文件', detail: '签名证明、宣誓供述书等（2〜3周）' }, { label: '签订买卖合同', detail: '支付定金' }, { label: '汇款', detail: '交割前1〜2周开始' }, { label: '交割、登记', detail: '领取钥匙' }] } },
   },
   'renting-out-tokyo-condo-from-overseas': {
     ja: { remittance: { kind: 'flow', title: '家賃が手元に届くまで', steps: [{ label: '入居者が家賃を支払う' }, { label: '管理会社が回収', detail: '管理委託料などを差し引く' }, { label: 'オーナーの口座へ送金', detail: '毎月の収支報告書つき' }, { label: '翌年に確定申告', detail: '納税管理人を通じて' }] } },
@@ -36,7 +36,7 @@ export const guideDiagrams: Record<string, Partial<Record<Locale, Record<string,
   'how-to-buy-japan-investment-property': {
     ja: { process: { kind: 'flow', title: '購入の流れ', steps: [{ label: '条件を整理' }, { label: '候補を比較・調査' }, { label: '買付・重要事項説明' }, { label: '売買契約' }, { label: '決済・引渡し' }, { label: '管理開始' }] } },
     en: { process: { kind: 'flow', title: 'The purchase, step by step', steps: [{ label: 'Set criteria' }, { label: 'Compare and inspect' }, { label: 'Offer and disclosure' }, { label: 'Sale contract' }, { label: 'Closing and handover' }, { label: 'Start management' }] } },
-    'zh-TW': { process: { kind: 'flow', title: '購買流程', steps: [{ label: '整理條件' }, { label: '比較與調查' }, { label: '出價・重要事項說明' }, { label: '買賣契約' }, { label: '交割・交屋' }, { label: '開始管理' }] } },
-    'zh-CN': { process: { kind: 'flow', title: '购买流程', steps: [{ label: '整理条件' }, { label: '比较与调查' }, { label: '出价・重要事项说明' }, { label: '买卖合同' }, { label: '交割・交房' }, { label: '开始管理' }] } },
+    'zh-TW': { process: { kind: 'flow', title: '購買流程', steps: [{ label: '整理條件' }, { label: '比較與調查' }, { label: '出價、重要事項說明' }, { label: '買賣契約' }, { label: '交割、交屋' }, { label: '開始管理' }] } },
+    'zh-CN': { process: { kind: 'flow', title: '购买流程', steps: [{ label: '整理条件' }, { label: '比较与调查' }, { label: '出价、重要事项说明' }, { label: '买卖合同' }, { label: '交割、交房' }, { label: '开始管理' }] } },
   },
 }

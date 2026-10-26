@@ -9,9 +9,9 @@ import { chineseLineName, chinesePlaceName, isChineseLocale, toChineseScript } f
 
 const propertyTypeMap: Record<string, Record<string, string>> = {
   '区分マンション': { en: 'Condominium', 'zh-TW': '公寓', 'zh-CN': '公寓' },
-  '一棟マンション': { en: 'Whole Building (Mansion)', 'zh-TW': '整棟公寓', 'zh-CN': '整栋公寓' },
-  '一棟アパート': { en: 'Whole Building (Apartment)', 'zh-TW': '整棟公寓', 'zh-CN': '整栋公寓' },
-  '一棟ビル': { en: 'Whole Building (Commercial)', 'zh-TW': '整棟大樓', 'zh-CN': '整栋大楼' },
+  '一棟マンション': { en: 'Whole apartment building', 'zh-TW': '整棟公寓大樓', 'zh-CN': '整栋公寓楼' },
+  '一棟アパート': { en: 'Small apartment building (apāto)', 'zh-TW': '整棟小型出租公寓', 'zh-CN': '整栋小型出租公寓' },
+  '一棟ビル': { en: 'Whole commercial building', 'zh-TW': '整棟商業大樓', 'zh-CN': '整栋商业大楼' },
   '戸建': { en: 'House', 'zh-TW': '獨棟住宅', 'zh-CN': '独栋住宅' },
   '土地': { en: 'Land', 'zh-TW': '土地', 'zh-CN': '土地' },
   '店舗・事務所': { en: 'Commercial / Office', 'zh-TW': '商業/辦公', 'zh-CN': '商业/办公' },

@@ -25,7 +25,7 @@ const copy: Record<string, { good: string; check: string; highlights: Labels<Hig
   'zh-TW': {
     good: '物件優點', check: '需確認事項',
     highlights: { freehold: '所有權（永久產權）', nearStation: (n) => `步行${n}分鐘到站`, newSeismic: '新耐震基準', corner: '邊間', topFloor: '頂樓', renovated: '已翻新', renovationPlanned: '預定翻新', pets: '可養寵物', autoLock: '自動門禁', deliveryBox: '宅配箱', sunny: '朝南' },
-    cautions: { noRebuild: '不可重建', subleaseRequired: '需承接包租契約', oldSeismic: '可能為舊耐震基準', checkSeismic: '需確認耐震基準', noElevator: '無電梯', selfManaged: '自主管理', noAssociation: '尚未成立管理組合', noViewing: '不可看房', leasehold: '借地權', farFromStation: (n) => `距車站步行${n}分鐘` },
+    cautions: { noRebuild: '不可重建', subleaseRequired: '需承接包租契約', oldSeismic: '可能為舊耐震基準', checkSeismic: '需確認耐震基準', noElevator: '無電梯', selfManaged: '自主管理', noAssociation: '尚未成立管理組合', noViewing: '不可看屋', leasehold: '借地權', farFromStation: (n) => `距車站步行${n}分鐘` },
   },
   'zh-CN': {
     good: '房源优点', check: '需确认事项',

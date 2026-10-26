@@ -97,7 +97,7 @@ const en: OtherListingsCopy = {
   notes: [
     'Some properties cannot be introduced through us, such as new homes sold directly by the developer. We will tell you why.',
     'If we introduce or broker a property for you, we charge the buyer a brokerage fee within the legal maximum. We tell you the amount in advance.',
-    'We use the link and questions you send only to answer this enquiry.',
+    'We use the link and questions you send only to answer this inquiry.',
   ],
   entryTitle: 'Found a property on another site?',
   entryBody: 'Send us the SUUMO (or other) link. We check it and help you buy, in English, Japanese or Chinese.',

@@ -41,7 +41,7 @@ export async function geocodeAddress(address: string | null | undefined): Promis
   }
 }
 
-/** 重ねるハザードマップ centred on the property. */
+/** 重ねるハザードマップ centered on the property. */
 export function hazardMapUrl(point: LatLng | null): string {
   const base = 'https://disaportal.gsi.go.jp/maps/'
   return point ? `${base}?ll=${point.lat.toFixed(6)},${point.lng.toFixed(6)}&z=16&base=pale` : base

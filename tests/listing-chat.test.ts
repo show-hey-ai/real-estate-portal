@@ -76,7 +76,7 @@ test('unknown measurements and unavailable terms are not invented', () => {
     true
   )
   assert.equal(
-    answerListingQuestion(listing, 'Is a hotel licence guaranteed?', 'en')
+    answerListingQuestion(listing, 'Is a hotel license guaranteed?', 'en')
       .needsInquiry,
     true
   )

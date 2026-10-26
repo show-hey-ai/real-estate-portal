@@ -28,7 +28,7 @@
     "favorites": "收藏",
     "admin": "管理后台",
     "match": "购房咨询",
-    "articles": "购房资讯"
+    "articles": "购房知识"
   },
   "listing": {
     "price": "价格",
@@ -310,8 +310,8 @@
   "warnings": {
     "title": "注意事项",
     "returnDisclaimer": "回报率仅供参考，不保证实际收益。",
-    "minpakuDisclaimer": "民宿・旅馆业需要许可。请确认当地法规。",
-    "legalDisclaimer": "税务・法律问题请咨询专业人士。",
+    "minpakuDisclaimer": "民宿、旅馆业需要许可。请确认当地法规。",
+    "legalDisclaimer": "税务、法律问题请咨询专业人士。",
     "abnormalValue": "数值可能异常，请确认。"
   },
   "home": {

@@ -425,7 +425,7 @@ export const extraGuideArticles6: GuideArticle[] = [
           'The owner on 1 January pays for the whole fiscal year',
           'In the 23 wards: fixed asset tax 1.4%, city planning tax 0.3%, charged on the assessed value, not the price',
           'Residential land is taxed on a reduced base (up to 200㎡: 1/6 for fixed asset tax, 1/3 for city planning tax, which Tokyo halves again)',
-          'Paid in four instalments: June, September, December and February. If you live abroad, appoint a tax agent',
+          'Paid in four installments: June, September, December and February. If you live abroad, appoint a tax agent',
         ],
         sections: [
           {
@@ -465,7 +465,7 @@ export const extraGuideArticles6: GuideArticle[] = [
                 'Assume the land share is assessed at ¥6M and the building at ¥9M',
                 'Fixed asset tax: land ¥6M × 1/6 × 1.4% = ¥14,000; building ¥9M × 1.4% = ¥126,000',
                 'City planning tax: land ¥6M × 1/3 × 0.3% = ¥6,000, halved by Tokyo to ¥3,000; building ¥9M × 0.3% = ¥27,000',
-                'Total: about ¥170,000 a year, paid in four instalments',
+                'Total: about ¥170,000 a year, paid in four installments',
               ],
               note: 'Illustrative figures. Check the actual amounts on the tax notice or assessment certificate.',
             },
@@ -481,7 +481,7 @@ export const extraGuideArticles6: GuideArticle[] = [
             id: 'payment',
             heading: 'Paying, and splitting the tax when you buy',
             paragraphs: [
-              'In the 23 wards the tax is paid in four instalments: June, September, December and February. In the year of a sale the seller, as owner on 1 January, receives the whole year’s bill, so buyer and seller usually split it by days from the handover date. The contract sets whether the year counts from 1 January or 1 April.',
+              'In the 23 wards the tax is paid in four installments: June, September, December and February. In the year of a sale the seller, as owner on 1 January, receives the whole year’s bill, so buyer and seller usually split it by days from the handover date. The contract sets whether the year counts from 1 January or 1 April.',
             ],
           },
           {
@@ -507,7 +507,7 @@ export const extraGuideArticles6: GuideArticle[] = [
         category: '稅金',
         title: '東京的固定資產稅與都市計畫稅：稅率、試算範例與繳納方式（海外居住者也適用）',
         excerpt: '東京23區固定資產稅1.4%、都市計畫稅0.3%。整理住宅用地特例、每年4期的繳納、買賣時按日分攤，以及海外居住者的納稅管理人。',
-        seoDescription: '東京23區固定資產稅（1.4%）與都市計畫稅（0.3%）的機制：依評定額課稅、住宅用地特例（1/6、1/3）與東京都減輕措施、6・9・12・2月繳納、公寓試算範例、海外居住者的納稅管理人。',
+        seoDescription: '東京23區固定資產稅（1.4%）與都市計畫稅（0.3%）的機制：依評定額課稅、住宅用地特例（1/6、1/3）與東京都減輕措施、6、9、12、2月繳納、公寓試算範例、海外居住者的納稅管理人。',
         intro: '持有不動產後，每年須繳的稅是固定資產稅與都市計畫稅。在東京23區由東京都（都稅事務所）課徵。金額不是依物件售價，而是依政府評定的價格計算。以下說明機制並附上試算範例。',
         keyTakeaways: [
           '由1月1日當時的所有人繳納該年度一整年的稅',
@@ -562,7 +562,7 @@ export const extraGuideArticles6: GuideArticle[] = [
             id: 'new-building',
             heading: '新建住宅的減額',
             paragraphs: [
-              '符合一定樓地板面積條件的新建住宅，建物固定資產稅（120㎡以內部分）在一定期間內減半：一般為3個年度，3層以上的耐火・準耐火建築為5個年度。此措施有適用期限等條件，購買新建住宅時請確認最新規定。購買中古屋通常不適用。',
+              '符合一定樓地板面積條件的新建住宅，建物固定資產稅（120㎡以內部分）在一定期間內減半：一般為3個年度，3層以上的耐火、準耐火建築為5個年度。此措施有適用期限等條件，購買新建住宅時請確認最新規定。購買中古屋通常不適用。',
             ],
           },
           {
@@ -588,14 +588,14 @@ export const extraGuideArticles6: GuideArticle[] = [
         ctaTitle: '也能查看每個物件的每月費用',
         ctaDescription: '每個物件頁面都會顯示管理費與修繕基金。也歡迎諮詢含稅金在內的持有成本。',
         sources: [
-          { label: '東京都主稅局「固定資產稅・都市計畫稅（土地・房屋）」（日文）', url: TOKYO_TAX },
+          { label: '東京都主稅局「固定資產稅、都市計畫稅（土地、房屋）」（日文）', url: TOKYO_TAX },
         ],
       },
       'zh-CN': {
         category: '税金',
         title: '东京的固定资产税和都市计划税：税率、计算示例与缴纳方式（海外居住者也适用）',
         excerpt: '东京23区固定资产税1.4%、都市计划税0.3%。整理住宅用地特例、每年4期缴纳、买卖时按天分摊，以及海外居住者的纳税管理人。',
-        seoDescription: '东京23区固定资产税（1.4%）和都市计划税（0.3%）的机制：按评估额计税、住宅用地特例（1/6、1/3）与东京都减免措施、6・9・12・2月缴纳、公寓计算示例、海外居住者的纳税管理人。',
+        seoDescription: '东京23区固定资产税（1.4%）和都市计划税（0.3%）的机制：按评估额计税、住宅用地特例（1/6、1/3）与东京都减免措施、6、9、12、2月缴纳、公寓计算示例、海外居住者的纳税管理人。',
         intro: '持有房产后，每年要交的税是固定资产税和都市计划税。在东京23区由东京都（都税事务所）征收。金额不是按房价，而是按政府评估的价格计算。下面说明机制并附上计算示例。',
         keyTakeaways: [
           '由1月1日时的所有人缴纳该年度一整年的税',
@@ -650,7 +650,7 @@ export const extraGuideArticles6: GuideArticle[] = [
             id: 'new-building',
             heading: '新建住宅的减免',
             paragraphs: [
-              '符合一定建筑面积条件的新建住宅，建筑部分的固定资产税（120㎡以内部分）在一定期间内减半：一般为3个年度，3层以上的耐火・准耐火建筑为5个年度。该措施有适用期限等条件，购买新房时请确认最新规定。购买二手房通常不适用。',
+              '符合一定建筑面积条件的新建住宅，建筑部分的固定资产税（120㎡以内部分）在一定期间内减半：一般为3个年度，3层以上的耐火、准耐火建筑为5个年度。该措施有适用期限等条件，购买新房时请确认最新规定。购买二手房通常不适用。',
             ],
           },
           {
@@ -676,7 +676,7 @@ export const extraGuideArticles6: GuideArticle[] = [
         ctaTitle: '也能查看每套房源的每月费用',
         ctaDescription: '每个房源页面都显示管理费和修缮积立金。也欢迎咨询含税金在内的持有成本。',
         sources: [
-          { label: '东京都主税局"固定资产税・都市计划税（土地・房屋）"（日文）', url: TOKYO_TAX },
+          { label: '东京都主税局"固定资产税、都市计划税（土地、房屋）"（日文）', url: TOKYO_TAX },
         ],
       },
     },

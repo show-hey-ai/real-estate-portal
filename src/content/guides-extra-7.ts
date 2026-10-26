@@ -165,7 +165,7 @@ export const extraGuideArticles7: GuideArticle[] = [
           { question: 'Can I get earthquake insurance while living abroad?', answer: 'It is added to the fire insurance for the Japanese property. Ask your property manager or an insurance agent.' },
         ],
         ctaTitle: 'Check the hazard map for any listing',
-        ctaDescription: 'Every listing page links to the GSI hazard map centred on the property and to Tokyo’s district risk page.',
+        ctaDescription: 'Every listing page links to the GSI hazard map centered on the property and to Tokyo’s district risk page.',
         sources: [
           { label: 'Ministry of Land, Infrastructure, Transport and Tourism: flood risk in the disclosure briefing (Japanese)', url: MLIT_FLOOD },
           { label: 'Tokyo Metropolitan Government: district risk list, 9th survey (Japanese)', url: TOKYO_RISK },

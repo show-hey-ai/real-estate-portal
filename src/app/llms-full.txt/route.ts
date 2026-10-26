@@ -28,7 +28,7 @@ export async function GET() {
   const [listings, articles] = await Promise.all([publishedListings(), getPublicArticles()])
   const markdown = [
     '# Welcome Home Tokyo', '',
-    'Welcome Home Tokyo is a Tokyo property portal for international buyers, operated by Ziyou Real Estate LLC (自由不動産合同会社, Tokyo Governor licence (1) No. 108831; Yanagibashi, Taito-ku, Tokyo; admin@ziyou-fudosan.com). It helps buyers look for investment property, residential homes, and land in Tokyo\'s 23 wards. The public site supports Japanese, English, Traditional Chinese, and Simplified Chinese.', '',
+    'Welcome Home Tokyo is a Tokyo property portal for international buyers, operated by Ziyou Real Estate LLC (自由不動産合同会社, Tokyo Governor license (1) No. 108831; Yanagibashi, Taito-ku, Tokyo; admin@ziyou-fudosan.com). It helps buyers look for investment property, residential homes, and land in Tokyo\'s 23 wards. The public site supports Japanese, English, Traditional Chinese, and Simplified Chinese.', '',
     'Every page has a URL per language: English is the plain URL; add ?lang=ja, ?lang=zh-TW or ?lang=zh-CN for Japanese, Traditional Chinese or Simplified Chinese.', '',
     'The portal lists properties for which advertising permission has been confirmed. A search result does not confirm current availability or suitability for an individual buyer. Prices are seller asking prices, not transaction prices.', '',
     'Signed-in buyers can save their purpose, budget, wards, property type, timing and other criteria on the personal search page. Saved criteria are rechecked against published listings, and matches are shown with matched, unmatched and unconfirmed points. The match score compares entered criteria only; it is not a loan, eligibility, yield or availability decision.', '',
@@ -42,7 +42,7 @@ export async function GET() {
     `- [Personal search and saved criteria](${absoluteUrl('/match')})`,
     `- [Articles](${absoluteUrl('/articles')})`,
     `- [Help center](${absoluteUrl('/help')})`,
-    `- [About us: operator, licence and content reviewer](${absoluteUrl('/about')})`,
+    `- [About us: operator, license and content reviewer](${absoluteUrl('/about')})`,
     `- [Buying property in Tokyo as a foreigner: quick answers and listings](${absoluteUrl('/buy-property-in-tokyo')})`,
     `- [Buying from overseas: how the money moves, with a checklist](${absoluteUrl('/buy-from-overseas')})`,
     `- [Sitemap](${absoluteUrl('/sitemap.xml')})`, '',

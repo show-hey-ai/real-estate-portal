@@ -1,5 +1,5 @@
 /**
- * Who is asking, collected before every enquiry (owner decision 2026-10-25): where the buyer lives,
+ * Who is asking, collected before every inquiry (owner decision 2026-10-25): where the buyer lives,
  * nationality, individual or company, how they will pay and why they buy. The answers go at the top of
  * the prefilled chat or email; nothing is sent to our servers.
  */
@@ -19,6 +19,8 @@ interface ProfileCopy {
   title: string
   note: string
   missing: string
+  /** Shown above the send buttons until the questions are answered. */
+  answerFirst: string
   heading: string
   questions: Record<ProfileQuestion, string>
   options: Record<ProfileQuestion, Record<string, string>>
@@ -28,6 +30,7 @@ const ja: ProfileCopy = {
   title: 'ご購入者について（必須）',
   note: 'ご状況に合わせてご案内するため、送信前に選んでください。選んだ内容はメッセージに入ります。',
   missing: '先に「ご購入者について」の質問にすべて答えてください。',
+  answerFirst: '「ご購入者について」に答えると、下のボタンで送れます。',
   heading: '【購入者情報】',
   questions: { residence: 'お住まい（法人は所在地）', nationality: '国籍（法人は代表者）', buyer: '購入名義', funding: '資金', purpose: '目的' },
   options: {
@@ -43,6 +46,7 @@ const en: ProfileCopy = {
   title: 'About you (required)',
   note: 'Please choose before sending so we can advise on your situation. Your answers are added to the message.',
   missing: 'Please answer all the “About you” questions first.',
+  answerFirst: 'Answer the “About you” questions, then send with a button below.',
   heading: '[About me]',
   questions: { residence: 'Based in', nationality: 'Nationality (for a company, its representative)', buyer: 'Buying as', funding: 'Funding', purpose: 'Purpose' },
   options: {
@@ -58,6 +62,7 @@ const zhTW: ProfileCopy = {
   title: '關於購買者（必填）',
   note: '為了依您的狀況說明，請在傳送前選擇。所選內容會加入訊息中。',
   missing: '請先回答「關於購買者」的所有問題。',
+  answerFirst: '回答「關於購買者」的問題後，即可用下方按鈕傳送。',
   heading: '【購買者資訊】',
   questions: { residence: '居住地（法人為所在地）', nationality: '國籍（法人為代表人）', buyer: '購買名義', funding: '資金', purpose: '目的' },
   options: {
@@ -73,6 +78,7 @@ const zhCN: ProfileCopy = {
   title: '关于购买者（必填）',
   note: '为了根据您的情况说明，请在发送前选择。所选内容会加入消息中。',
   missing: '请先回答“关于购买者”的所有问题。',
+  answerFirst: '回答“关于购买者”的问题后，即可用下方按钮发送。',
   heading: '【购买者信息】',
   questions: { residence: '居住地（法人为所在地）', nationality: '国籍（法人为代表人）', buyer: '购买名义', funding: '资金', purpose: '目的' },
   options: {

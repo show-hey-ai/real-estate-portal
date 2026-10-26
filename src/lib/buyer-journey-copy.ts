@@ -22,7 +22,7 @@ const copy = {
   'zh-TW': {
     matchTitle: '諮詢購屋條件', matchIntro: '填寫意向地區、預算和購買時間，透過 WhatsApp 諮詢。傳送前可以確認內容。',
     area: '意向地區', areaPlaceholder: '例如：目黑區、澀谷區、山手線沿線', budget: '預算', purpose: '購買目的', purposeOptions: ['投資用', '居住用', '土地'], type: '物件類型', timing: '購買時間', priority: '最重視的條件',
-    select: '未決定', budgetOptions: ['5,000萬日圓以下', '5,000萬～1億日圓', '1億～2億日圓', '2億日圓以上'], typeOptions: ['公寓住宅', '獨棟住宅', '土地', '整棟收益物件', '店鋪・辦公室'], timingOptions: ['盡快', '今年內', '較晚'], priorityOptions: ['地點', '面積', '價格', '通勤'],
+    select: '未決定', budgetOptions: ['5,000萬日圓以下', '5,000萬～1億日圓', '1億～2億日圓', '2億日圓以上'], typeOptions: ['公寓住宅', '獨棟住宅', '土地', '整棟收益物件', '店鋪、辦公室'], timingOptions: ['盡快', '今年內', '較晚'], priorityOptions: ['地點', '面積', '價格', '通勤'],
     contact: '透過 WhatsApp 諮詢', contactNote: '將開啟 WhatsApp 草稿，傳送前可先確認內容。',
     guideTitle: '東京不動產購買指南', guideIntro: '從找房到簽約交屋的基本流程。費用與條件需依個別物件確認。',
     guideSteps: [['1. 整理需求', '確認預算、地區、面積、通勤與購買時間的優先順序。'], ['2. 比較物件', '依目的確認現況、建物狀況、收益或土地條件。'], ['3. 規劃資金', '確認房價以外的費用與付款方式。'], ['4. 簽約與交屋', '確認重要事項和契約條件，再進行結算與交屋。']],
@@ -30,7 +30,7 @@ const copy = {
   'zh-CN': {
     matchTitle: '咨询购房条件', matchIntro: '填写意向地区、预算和购买时间，通过 WhatsApp 咨询。发送前可以确认内容。',
     area: '意向地区', areaPlaceholder: '例如：目黑区、涩谷区、山手线沿线', budget: '预算', purpose: '购买目的', purposeOptions: ['投资用', '居住用', '土地'], type: '房产类型', timing: '购买时间', priority: '最重视的条件',
-    select: '未决定', budgetOptions: ['5,000万日元以下', '5,000万～1亿日元', '1亿～2亿日元', '2亿日元以上'], typeOptions: ['公寓住宅', '独栋住宅', '土地', '整栋收益房产', '商铺・办公室'], timingOptions: ['尽快', '今年内', '以后'], priorityOptions: ['位置', '面积', '价格', '通勤'],
+    select: '未决定', budgetOptions: ['5,000万日元以下', '5,000万～1亿日元', '1亿～2亿日元', '2亿日元以上'], typeOptions: ['公寓住宅', '独栋住宅', '土地', '整栋收益房产', '商铺、办公室'], timingOptions: ['尽快', '今年内', '以后'], priorityOptions: ['位置', '面积', '价格', '通勤'],
     contact: '通过 WhatsApp 咨询', contactNote: '将打开 WhatsApp 草稿，发送前可先确认内容。',
     guideTitle: '东京房产购买指南', guideIntro: '从找房到签约交房的基本流程。费用和条件需依具体房源确认。',
     guideSteps: [['1. 整理需求', '确认预算、地区、面积、通勤与购买时间的优先顺序。'], ['2. 比较房产', '按购买目的确认现状、建筑状况、收益或土地条件。'], ['3. 规划资金', '确认房价以外的费用和付款方式。'], ['4. 签约与交房', '确认重要事项和合同条件，再进行结算与交房。']],

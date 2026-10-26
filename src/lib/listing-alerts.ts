@@ -77,7 +77,7 @@ const copy = {
     digestSubject: (count: number) => `[${SITE_NAME}] ${count} new ${count === 1 ? 'property' : 'properties'}`,
     digestIntro: (criteria: string) => `New listings matching your criteria (${criteria}).`,
     unsubscribe: 'Unsubscribe',
-    footer: `Sender: ${SITE_NAME}, operated by ${OPERATOR_NAME} (real estate brokerage licence: Tokyo Governor (1) No. 108831)\nYanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan\nContact: admin@ziyou-fudosan.com`,
+    footer: `Sender: ${SITE_NAME}, operated by ${OPERATOR_NAME} (real estate brokerage license: Tokyo Governor (1) No. 108831)\nYanagibashi Bldg. 305, 1-11-5 Yanagibashi, Taito-ku, Tokyo 111-0052, Japan\nContact: admin@ziyou-fudosan.com`,
   },
   'zh-TW': {
     all: '東京23區所有物件',

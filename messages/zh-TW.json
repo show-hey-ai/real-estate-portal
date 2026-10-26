@@ -28,7 +28,7 @@
     "favorites": "收藏",
     "admin": "管理後台",
     "match": "購屋諮詢",
-    "articles": "購屋資訊"
+    "articles": "購屋知識"
   },
   "listing": {
     "price": "價格",
@@ -310,8 +310,8 @@
   "warnings": {
     "title": "注意事項",
     "returnDisclaimer": "報酬率僅供參考，不保證實際收益。",
-    "minpakuDisclaimer": "民宿・旅館業需要許可。請確認當地法規。",
-    "legalDisclaimer": "稅務・法律問題請諮詢專業人士。",
+    "minpakuDisclaimer": "民宿、旅館業需要許可。請確認當地法規。",
+    "legalDisclaimer": "稅務、法律問題請諮詢專業人士。",
     "abnormalValue": "數值可能異常，請確認。"
   },
   "home": {

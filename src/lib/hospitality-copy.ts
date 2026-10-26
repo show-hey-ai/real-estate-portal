@@ -36,14 +36,14 @@ const hospitalityCategoryOptions: LocalizedCopy<{ value: HospitalityCategory; la
     { value: 'CONVERSION_CANDIDATE', label: 'Conversion candidate (review required)', desc: 'Zoning, inspection cert, fire code verified pre-purchase' },
   ],
   'zh-TW': [
-    { value: 'EXISTING_HOTEL', label: '既有飯店・旅館收購', desc: '營運中、持有許可、設備完備' },
+    { value: 'EXISTING_HOTEL', label: '既有飯店、旅館收購', desc: '營運中、持有許可、設備完備' },
     { value: 'LICENSED_PROPERTY', label: '附既有營業權物件', desc: '旅館業／簡易宿所／民宿許可承接' },
     { value: 'RENOVATION_TARGET', label: '改裝再生候選', desc: '住宿前提的整修與品牌再造' },
     { value: 'NEW_BUILD_LAND', label: '新建前提住宿用地', desc: '從土地設計旅館或簡易宿所' },
     { value: 'CONVERSION_CANDIDATE', label: '轉用候選（需審查）', desc: '用途地域、檢查濟證、消防購買前確認' },
   ],
   'zh-CN': [
-    { value: 'EXISTING_HOTEL', label: '既有酒店・旅馆收购', desc: '营业中、持有许可、设备完备' },
+    { value: 'EXISTING_HOTEL', label: '既有酒店、旅馆收购', desc: '营业中、持有许可、设备完备' },
     { value: 'LICENSED_PROPERTY', label: '附既有营业权物件', desc: '旅馆业／简易住宿／民宿许可承接' },
     { value: 'RENOVATION_TARGET', label: '改造再生候选', desc: '住宿前提的翻新与品牌再造' },
     { value: 'NEW_BUILD_LAND', label: '新建前提住宿用地', desc: '从土地设计酒店或简易住宿' },
@@ -75,7 +75,7 @@ const propertyTypeOptions: LocalizedCopy<{ value: string; label: string }[]> = {
     { value: '一棟アパート', label: '整棟公寓 / 民宿候選' },
     { value: '一棟ビル', label: '整棟商業樓 / 飯店轉用候選' },
     { value: '戸建', label: '獨棟 / 小型住宿候選' },
-    { value: '店舗・事務所', label: '店鋪辦公 / 轉用候選' },
+    { value: '店舗、事務所', label: '店鋪辦公 / 轉用候選' },
     { value: '土地', label: '飯店開發用地' },
     { value: '区分マンション', label: '區分物件 / 營運檢討' },
   ],
@@ -84,7 +84,7 @@ const propertyTypeOptions: LocalizedCopy<{ value: string; label: string }[]> = {
     { value: '一棟アパート', label: '整栋公寓 / 民宿候选' },
     { value: '一棟ビル', label: '整栋商业楼 / 酒店转用候选' },
     { value: '戸建', label: '独栋 / 小型住宿候选' },
-    { value: '店舗・事務所', label: '店铺办公 / 转用候选' },
+    { value: '店舗、事務所', label: '店铺办公 / 转用候选' },
     { value: '土地', label: '酒店开发用地' },
     { value: '区分マンション', label: '区分物件 / 运营评估' },
   ],
@@ -186,7 +186,7 @@ const homeCopy = {
     assetDescription:
       '不只看一般收益。我們從許可、消防、建築與營運角度，評估飯店、民宿整棟、轉用候選與觀光地用地。',
     assetPaths: [
-      { title: '飯店・旅館', desc: '營運中資產、翻新、營運交接' },
+      { title: '飯店、旅館', desc: '營運中資產、翻新、營運交接' },
       { title: '民宿整棟', desc: '獨棟、小型整棟、車站周邊候選' },
       { title: '轉用候選', desc: '店鋪、辦公、住宅轉住宿用途' },
       { title: '開發用地', desc: '飯店、簡易宿所、觀光地開發' },
@@ -224,7 +224,7 @@ const homeCopy = {
     assetDescription:
       '不只看一般收益。我们从许可、消防、建筑与运营角度，评估酒店、民宿整栋、转用候选与观光地用地。',
     assetPaths: [
-      { title: '酒店・旅馆', desc: '运营中资产、翻新、运营交接' },
+      { title: '酒店、旅馆', desc: '运营中资产、翻新、运营交接' },
       { title: '民宿整栋', desc: '独栋、小型整栋、车站周边候选' },
       { title: '转用候选', desc: '店铺、办公、住宅转住宿用途' },
       { title: '开发用地', desc: '酒店、简易住宿、观光地开发' },

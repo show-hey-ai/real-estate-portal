@@ -88,7 +88,7 @@ const en: BuyingCostsCopy = {
       { name: 'Real estate acquisition tax', amount: 'Assessed value × rate (relief available)', note: 'The tax notice arrives a few months after handover.' },
     ] },
     holding: { title: 'While you own it', items: [
-      { name: 'Fixed asset and city planning tax', amount: 'Every year', note: 'Charged to the owner on 1 January, paid in four instalments.' },
+      { name: 'Fixed asset and city planning tax', amount: 'Every year', note: 'Charged to the owner on 1 January, paid in four installments.' },
       { name: 'Management and repair reserve fees', amount: 'Monthly (condominiums)', note: 'Set for each property.' },
       { name: 'Rental management fee', amount: 'A few % of rent', note: 'If you let it through a management company.' },
       { name: 'Income and resident tax', amount: 'If you receive rent', note: 'File a tax return; overseas owners appoint a tax representative.' },

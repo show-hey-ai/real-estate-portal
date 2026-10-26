@@ -97,7 +97,7 @@ const portalCopy = {
     ],
     moreFilters: '更多條件：路線、車站、面積',
     imageNote: '示意圖片',
-    trust: ['東京都持牌房地產仲介', '日語・英語・中文', '依目的尋找物件'],
+    trust: ['東京都持牌房地產仲介', '日語、英語、中文', '依目的尋找物件'],
     availableTitle: '公開中的物件',
     availableDescription: '我們會持續加入可公開刊登的物件。若暫時沒有合適物件，也歡迎傳送您的需求。',
     emptyTitle: '目前沒有公開中的物件',
@@ -134,7 +134,7 @@ const portalCopy = {
     ],
     moreFilters: '更多条件：线路、车站、面积',
     imageNote: '示意图片',
-    trust: ['东京都持牌房地产中介', '日语・英语・中文', '按目的寻找房源'],
+    trust: ['东京都持牌房地产中介', '日语、英语、中文', '按目的寻找房源'],
     availableTitle: '公开中的房产',
     availableDescription: '我们会持续加入可公开刊登的房源。如果暂时没有合适房产，也欢迎发送您的需求。',
     emptyTitle: '目前没有公开中的房产',
@@ -165,9 +165,9 @@ const listingsCopy = {
 
 const propertyTypes = {
   ja: [{ value: '区分マンション', label: '区分マンション' }, { value: '戸建', label: '戸建て' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '一棟マンション' }, { value: '一棟アパート', label: '一棟アパート' }, { value: '一棟ビル', label: '一棟ビル' }, { value: '店舗・事務所', label: '店舗・事務所' }],
-  en: [{ value: '区分マンション', label: 'Condominium' }, { value: '戸建', label: 'House' }, { value: '土地', label: 'Land' }, { value: '一棟マンション', label: 'Apartment building' }, { value: '一棟アパート', label: 'Rental apartment building' }, { value: '一棟ビル', label: 'Commercial building' }, { value: '店舗・事務所', label: 'Commercial / office unit' }],
-  'zh-TW': [{ value: '区分マンション', label: '區分公寓' }, { value: '戸建', label: '獨棟住宅' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '整棟公寓' }, { value: '一棟アパート', label: '整棟出租公寓' }, { value: '一棟ビル', label: '整棟商業大樓' }, { value: '店舗・事務所', label: '店鋪・辦公室' }],
-  'zh-CN': [{ value: '区分マンション', label: '区分公寓' }, { value: '戸建', label: '独栋住宅' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '整栋公寓' }, { value: '一棟アパート', label: '整栋出租公寓' }, { value: '一棟ビル', label: '整栋商业楼' }, { value: '店舗・事務所', label: '商铺・办公室' }],
+  en: [{ value: '区分マンション', label: 'Condominium' }, { value: '戸建', label: 'House' }, { value: '土地', label: 'Land' }, { value: '一棟マンション', label: 'Whole apartment building' }, { value: '一棟アパート', label: 'Small apartment building (apāto)' }, { value: '一棟ビル', label: 'Commercial building' }, { value: '店舗・事務所', label: 'Commercial / office unit' }],
+  'zh-TW': [{ value: '区分マンション', label: '公寓（單戶）' }, { value: '戸建', label: '獨棟住宅' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '整棟公寓大樓' }, { value: '一棟アパート', label: '整棟小型出租公寓' }, { value: '一棟ビル', label: '整棟商業大樓' }, { value: '店舗、事務所', label: '店鋪、辦公室' }],
+  'zh-CN': [{ value: '区分マンション', label: '公寓（单户）' }, { value: '戸建', label: '独栋住宅' }, { value: '土地', label: '土地' }, { value: '一棟マンション', label: '整栋公寓楼' }, { value: '一棟アパート', label: '整栋小型出租公寓' }, { value: '一棟ビル', label: '整栋商业楼' }, { value: '店舗、事務所', label: '商铺、办公室' }],
 } as const
 
 export function getPortalHomeCopy(locale: string) { return portalCopy[normalizeLocale(locale)] }
