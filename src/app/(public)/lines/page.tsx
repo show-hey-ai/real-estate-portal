@@ -34,7 +34,8 @@ export async function generateMetadata({ searchParams }: LinesPageProps): Promis
     description,
     alternates,
     ...shareMetadata({ title: copy.metaTitle, description, url: alternates.canonical, locale }),
-    robots: Object.keys(params).length ? { index: false, follow: true } : undefined,
+    // A carried-over search (?stations=…) is not its own page; the language (?lang=) is.
+    robots: Object.keys(params).some((key) => key !== 'lang') ? { index: false, follow: true } : undefined,
   }
 }
 
