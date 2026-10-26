@@ -274,6 +274,7 @@
       "cards": {
         "pageviews7d": "Pageviews (7d)",
         "uniqueVisitors7d": "Unique visitors (7d)",
+        "engagedVisitors7d": "Visitors who used a page (7d, scroll/tap; from Oct 27)",
         "listingViews7d": "Listing detail views (7d)",
         "leads7d": "Leads (7d)",
         "contactClicks7d": "WhatsApp opens (7d)"

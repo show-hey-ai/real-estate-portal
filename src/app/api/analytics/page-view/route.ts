@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import {
   extractListingIdFromPath,
+  deviceTypeFromUserAgent,
   getReferrerHost,
   getSiteAnalyticsPageType,
   isBotReferrer,
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
       utmTerm: query.get('utm_term'),
       utmContent: query.get('utm_content'),
       listingId,
+      deviceType: deviceTypeFromUserAgent(request.headers.get('user-agent')),
     }
 
     try {

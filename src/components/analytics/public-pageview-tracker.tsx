@@ -30,6 +30,27 @@ function getOrCreateVisitorId() {
   return nextValue
 }
 
+function post(url: string, body: string) {
+  if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+    navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }))
+    return
+  }
+
+  void fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body,
+    keepalive: true,
+  })
+}
+
+// Real use of the page. Simple bots open a page and leave without any of these.
+const ENGAGEMENT_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'] as const
+// Scrolling the browser does by itself on load (restoring a position, jumping to #anchor) is ignored.
+const SCROLL_GRACE_MS = 1000
+
 export function PublicPageviewTracker() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -43,29 +64,27 @@ export function PublicPageviewTracker() {
     if (lastTrackedRef.current === signature) return
     lastTrackedRef.current = signature
 
-    const body = JSON.stringify({
+    post('/api/analytics/page-view', JSON.stringify({
       visitorId: getOrCreateVisitorId(),
       pathname,
       search: queryString ? `?${queryString}` : '',
       locale: document.documentElement.lang || null,
       referrer: document.referrer || null,
-    })
-
-    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
-      const blob = new Blob([body], { type: 'application/json' })
-      navigator.sendBeacon('/api/analytics/page-view', blob)
-      return
-    }
-
-    void fetch('/api/analytics/page-view', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body,
-      keepalive: true,
-    })
+    }))
   }, [pathname, searchParams])
+
+  useEffect(() => {
+    if (!pathname) return
+    const startedAt = Date.now()
+    const onUse = (event: Event) => {
+      if (event.type === 'scroll' && Date.now() - startedAt < SCROLL_GRACE_MS) return
+      stop()
+      post('/api/analytics/engaged', JSON.stringify({ visitorId: getOrCreateVisitorId(), pathname }))
+    }
+    const stop = () => ENGAGEMENT_EVENTS.forEach((type) => window.removeEventListener(type, onUse))
+    ENGAGEMENT_EVENTS.forEach((type) => window.addEventListener(type, onUse, { passive: true }))
+    return stop
+  }, [pathname])
 
   return null
 }

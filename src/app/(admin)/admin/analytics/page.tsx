@@ -12,6 +12,7 @@ import { excludeAdministratorVisitor } from '@/lib/site-analytics-server'
 type SummaryRow = {
   pageviews7d: number
   uniqueVisitors7d: number
+  engagedVisitors7d: number
   listingViews7d: number
   contactClicks7d: number
   totalTrackedPageviews: number
@@ -93,6 +94,7 @@ export default async function AdminAnalyticsPage() {
       SELECT
         COUNT(*) FILTER (WHERE "occurredAt" >= ${sevenDaysAgo} AND "pageType" <> 'contact_click')::int AS "pageviews7d",
         COUNT(DISTINCT CASE WHEN "occurredAt" >= ${sevenDaysAgo} AND "pageType" <> 'contact_click' THEN "visitorId" END)::int AS "uniqueVisitors7d",
+        COUNT(DISTINCT CASE WHEN "occurredAt" >= ${sevenDaysAgo} AND "engagedAt" IS NOT NULL THEN "visitorId" END)::int AS "engagedVisitors7d",
         COUNT(*) FILTER (
           WHERE "occurredAt" >= ${sevenDaysAgo}
             AND "pageType" = 'listing_detail'
@@ -182,6 +184,7 @@ export default async function AdminAnalyticsPage() {
   const summary = summaryRows[0] ?? {
     pageviews7d: 0,
     uniqueVisitors7d: 0,
+    engagedVisitors7d: 0,
     listingViews7d: 0,
     contactClicks7d: 0,
     totalTrackedPageviews: 0,
@@ -198,6 +201,7 @@ export default async function AdminAnalyticsPage() {
   const metricCards = [
     { title: t('cards.pageviews7d'), value: summary.pageviews7d.toLocaleString() },
     { title: t('cards.uniqueVisitors7d'), value: summary.uniqueVisitors7d.toLocaleString() },
+    { title: t('cards.engagedVisitors7d'), value: summary.engagedVisitors7d.toLocaleString() },
     { title: t('cards.listingViews7d'), value: summary.listingViews7d.toLocaleString() },
     { title: t('cards.contactClicks7d'), value: summary.contactClicks7d.toLocaleString() },
     { title: t('cards.leads7d'), value: leads7d.toLocaleString() },

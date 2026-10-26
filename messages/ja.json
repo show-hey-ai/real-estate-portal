@@ -274,6 +274,7 @@
       "cards": {
         "pageviews7d": "直近7日PV",
         "uniqueVisitors7d": "直近7日ユニーク訪問",
+        "engagedVisitors7d": "直近7日 操作した訪問者（スクロール・タップ等。10/27から計測）",
         "listingViews7d": "直近7日物件詳細PV",
         "leads7d": "直近7日リード",
         "contactClicks7d": "WhatsAppを開いた回数（直近7日）"

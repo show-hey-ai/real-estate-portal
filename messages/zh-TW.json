@@ -274,6 +274,7 @@
       "cards": {
         "pageviews7d": "近 7 天 PV",
         "uniqueVisitors7d": "近 7 天訪客",
+        "engagedVisitors7d": "近 7 天實際操作的訪客（捲動、點按；10/27 起）",
         "listingViews7d": "近 7 天物件詳情 PV",
         "leads7d": "近 7 天客戶",
         "contactClicks7d": "WhatsApp 開啟次數（近7日）"

@@ -12,6 +12,19 @@ export function isAutomatedAnalyticsAgent(userAgent: string | null) {
   return !!userAgent && /bot\b|bot\/|crawler|spider|HeadlessChrome|Playwright|Lighthouse|InspectionTool|PageSpeed|Ziyou-Autonomy/i.test(userAgent)
 }
 
+export type DeviceType = 'mobile' | 'tablet' | 'desktop'
+
+/** Phone, tablet or computer, from the User-Agent; null when there is none. */
+export function deviceTypeFromUserAgent(userAgent: string | null): DeviceType | null {
+  if (!userAgent) return null
+  if (/iPad|Tablet|Android(?!.*Mobile)/i.test(userAgent)) return 'tablet'
+  if (/Mobi|iPhone|iPod|Android/i.test(userAgent)) return 'mobile'
+  return 'desktop'
+}
+
+/** How long after a page view an "engaged" signal may still be attached to it. */
+export const ENGAGEMENT_WINDOW_MINUTES = 30
+
 export type SiteAnalyticsPageType =
   | 'home'
   | 'youtube_landing'
