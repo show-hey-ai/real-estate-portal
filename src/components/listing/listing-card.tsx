@@ -29,8 +29,7 @@ import { getMarketCategory } from '@/lib/market-category'
 import { getPortalCategoryLabel } from '@/lib/portal-copy'
 import { formatPrice } from '@/lib/format'
 import { formatApprovedPublicAddress } from '@/lib/address'
-import { normalizeTransitStations } from '@/lib/transit-normalization'
-import { formatTransitAccessLabel, translateAddress, translateZoning } from '@/lib/translate-fields'
+import { translateZoning } from '@/lib/translate-basic'
 import { FavoriteIconButton } from './favorite-icon-button'
 import { CompareToggle } from './browser-lists-client'
 import { useFxRates } from '@/components/fx/fx-rates-context'
@@ -63,6 +62,10 @@ interface ListingCardProps {
     buildingNameEn?: string | null
     grossYield?: number | null
     layout?: string | null
+    /** Translated on the server (withCardFacts), so the station and street dictionaries stay there. */
+    addressLabel?: string | null
+    accessLabel?: string | null
+    accessWalkMinutes?: number | null
     stations?: Station[] | null
     builtYear: number | null
     buildingArea: number | null
@@ -106,9 +109,7 @@ export function ListingCard({
   const safeAddress = formatApprovedPublicAddress(listing.addressPublic)
   // English cards show the romanised name, Chinese cards too when the Japanese one is in kana.
   const buildingName = buildingNameFor(locale, listing.buildingName ?? null, listing.buildingNameEn ?? null)
-  const stations = normalizeTransitStations(listing.stations)
-  const primaryStation = stations[0]
-  const primaryTransitLabel = formatTransitAccessLabel(primaryStation, locale)
+  const primaryTransitLabel = listing.accessLabel ?? null
 
   const viewCount = listing.viewCount || 0
   const favoriteCount = listing.favoriteCount || 0
@@ -214,17 +215,17 @@ export function ListingCard({
           {safeAddress && (
             <div className="flex items-center gap-2 text-sm text-[#657487]">
               <MapPin className="h-3.5 w-3.5 shrink-0 text-[#57769b]" />
-              <span className="truncate">{translateAddress(safeAddress, locale) || safeAddress}</span>
+              <span className="truncate">{listing.addressLabel || safeAddress}</span>
             </div>
           )}
 
-          {primaryStation && primaryTransitLabel && (
+          {primaryTransitLabel && (
             <div className="flex items-center gap-2 text-sm text-[#657487]">
               <Train className="h-3.5 w-3.5 shrink-0 text-[#57769b]" />
               <span className="truncate">
                 {primaryTransitLabel}
-                {primaryStation.walk_minutes &&
-                  ` ${t('walkMinutes', { minutes: primaryStation.walk_minutes })}`}
+                {listing.accessWalkMinutes &&
+                  ` ${t('walkMinutes', { minutes: listing.accessWalkMinutes })}`}
               </span>
             </div>
           )}

@@ -1,4 +1,4 @@
-import { translateCityName } from './translate-fields'
+import { translateCityName } from './translate-basic'
 
 // Tokyo's 23 wards on a rough north-to-south grid; the footer lists wards in this order.
 // The area map itself draws real outlines (see ward-shapes.ts).

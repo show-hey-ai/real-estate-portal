@@ -124,7 +124,7 @@ export default async function WardPage({ params }: Props) {
 
       {listings.length > 0 && <section className="mt-10" aria-labelledby="ward-listings-title">
         <h2 id="ward-listings-title" className="text-xl font-semibold">{text.listings}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home, locale)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
       </section>}
 
       {unitBars.length >= 2 && <UnitPriceChart locale={locale} title={text.unitTitle} note={text.unitNote} bars={unitBars} />}

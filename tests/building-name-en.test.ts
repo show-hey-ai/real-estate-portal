@@ -33,7 +33,7 @@ test('the English name is not used when it just repeats the ward and type', () =
 
 test('card facts carry both names and drop the descriptions', async () => {
   const { withCardFacts } = await import('../src/lib/card-facts')
-  const card = withCardFacts({ descriptionJa: 'ライオンズ石神井公園。75㎡', descriptionEn: 'Lions Shakujii Koen: 75 m²', price: 1 })
+  const card = withCardFacts({ descriptionJa: 'ライオンズ石神井公園。75㎡', descriptionEn: 'Lions Shakujii Koen: 75 m²', price: 1 }, 'en')
   assert.equal(card.buildingName, 'ライオンズ石神井公園')
   assert.equal(card.buildingNameEn, 'Lions Shakujii Koen')
   assert.equal('descriptionEn' in card, false)

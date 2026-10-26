@@ -5,7 +5,7 @@ import { MapPin, Search, TrainFront } from 'lucide-react'
 import type { PublicSearchLocationIndex } from '@/lib/public-search'
 import { getSearchExperienceCopy } from '@/lib/search-experience-copy'
 import type { TransitOptions } from '@/lib/transit/search'
-import { translateCityName } from '@/lib/translate-fields'
+import { translateCityName } from '@/lib/translate-basic'
 
 interface LocationSearchProps {
   locale: string

@@ -16,7 +16,25 @@ test('no floor plan type when the description names none or several', () => {
 })
 
 test('card facts carry the floor plan type but not the description', () => {
-  const facts = withCardFacts({ descriptionJa: '代々木公園。42.00㎡、2階の1LDK。', descriptionEn: null, price: 1, currentStatus: null })
+  const facts = withCardFacts({ descriptionJa: '代々木公園。42.00㎡、2階の1LDK。', descriptionEn: null, price: 1, currentStatus: null }, 'ja')
   assert.equal(facts.layout, '1LDK')
   assert.equal('descriptionJa' in facts, false)
+})
+
+test('card facts carry the address and nearest station already in the page language', () => {
+  const listing = {
+    descriptionJa: null, descriptionEn: null, price: 1,
+    addressPublic: '東京都渋谷区神宮前',
+    stations: [{ line: '東京メトロ銀座線', name: '表参道', walk_minutes: 4 }],
+  }
+  const ja = withCardFacts(listing, 'ja')
+  const en = withCardFacts(listing, 'en')
+  const tw = withCardFacts(listing, 'zh-TW')
+  assert.match(ja.addressLabel ?? '', /渋谷区/)
+  assert.match(en.addressLabel ?? '', /Shibuya/)
+  assert.match(tw.addressLabel ?? '', /澀谷區/)
+  assert.match(ja.accessLabel ?? '', /表参道/)
+  assert.match(en.accessLabel ?? '', /Omotesando/)
+  assert.match(tw.accessLabel ?? '', /東京地鐵/)
+  assert.equal(withCardFacts({ descriptionJa: null, price: 1 }, 'en').accessLabel, null)
 })

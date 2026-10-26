@@ -1,5 +1,8 @@
 import { buildingNameOf, extractBuildingNameEn } from '@/lib/building-name'
 import { grossYieldFromRent, parseMonthlyFigures } from '@/lib/monthly-costs'
+import { formatApprovedPublicAddress } from '@/lib/address'
+import { formatTransitAccessLabel, translateAddress } from '@/lib/translate-fields'
+import { normalizeTransitStations } from '@/lib/transit-normalization'
 
 interface CardSource {
   descriptionJa?: string | null
@@ -32,13 +35,20 @@ export interface CardFacts {
   buildingNameEn: string | null
   grossYield: number | null
   layout: string | null
+  /** The public address in the page language. */
+  addressLabel: string | null
+  /** "Line / Station" of the nearest station in the page language. */
+  accessLabel: string | null
+  accessWalkMinutes: number | null
 }
 
 /**
- * Card props carry only derived facts (building names, gross yield), so the full descriptions
- * are not sent to the browser.
+ * Card props carry only derived facts (building names, gross yield, translated address and
+ * station), so the full descriptions and the station and street dictionaries stay on the server.
  */
-export function withCardFacts<T extends CardSource>(listing: T): Omit<T, 'descriptionJa' | 'descriptionEn'> & CardFacts {
+export function withCardFacts<T extends CardSource>(listing: T, locale: string): Omit<T, 'descriptionJa' | 'descriptionEn'> & CardFacts {
+  const address = formatApprovedPublicAddress((listing as { addressPublic?: string | null }).addressPublic ?? null)
+  const station = normalizeTransitStations((listing as { stations?: unknown }).stations as Parameters<typeof normalizeTransitStations>[0])[0]
   const { descriptionJa, descriptionEn, ...rest } = listing
   return {
     ...rest,
@@ -46,5 +56,8 @@ export function withCardFacts<T extends CardSource>(listing: T): Omit<T, 'descri
     buildingNameEn: extractBuildingNameEn(descriptionEn),
     grossYield: cardGrossYield(listing),
     layout: cardLayout(descriptionJa),
+    addressLabel: address ? translateAddress(address, locale) || address : null,
+    accessLabel: station ? formatTransitAccessLabel(station, locale) : null,
+    accessWalkMinutes: station?.walk_minutes ?? null,
   }
 }

@@ -11,7 +11,7 @@ import { PropertyChatLink } from '@/components/chat/private-chats'
 import { BuyerCriteriaForm } from './buyer-criteria-form'
 import { getBuyerSearchCopy } from '@/lib/buyer-search-copy'
 import { buyerSearchReturnPath, currentComparisonIds, toggleComparison } from '@/lib/buyer-search-ui'
-import { translateCityName } from '@/lib/translate-fields'
+import { translateCityName } from '@/lib/translate-basic'
 
 type Profile={id:string;revision:number;criteria:BuyerCriteria;lastMatchedAt:string|null;lastSourceAt:string|null;sourceState:string}
 type Suggestion={listingId:string;listing:MatchFacts&{address:string|null;image:string|null;lastSourceAt:string|null};evaluation:Evaluation;feedback:{rating:number|null;status:string;reason:string}|null;suggestedAt:string}

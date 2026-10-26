@@ -30,7 +30,7 @@ export async function NotFoundContent() {
     </div>
     {latest.length > 0 && <section className="mt-14 text-left" aria-labelledby="not-found-latest">
       <h2 id="not-found-latest" className="text-lg font-semibold">{text.latest}</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{latest.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} showFavoriteButton={false} />)}</div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{latest.map((home) => <ListingCard key={home.id} listing={withCardFacts(home, locale)} showFavoriteButton={false} />)}</div>
     </section>}
   </main>
 }

@@ -65,12 +65,12 @@ export function MyPage({ email, userId }: MyPageProps) {
     // With no favorites nothing is shown (cards are filtered by the current ids), so nothing to load.
     if (!idsKey) return
     let cancelled = false
-    fetch(`/api/member/favorite-cards?ids=${encodeURIComponent(idsKey)}`)
+    fetch(`/api/member/favorite-cards?ids=${encodeURIComponent(idsKey)}&lang=${encodeURIComponent(locale)}`)
       .then((res) => (res.ok ? res.json() : { cards: [] }))
       .then((data: { cards: CardFromApi[] }) => { if (!cancelled) setCards(data.cards.map((card) => ({ ...card, price: card.price == null ? null : BigInt(card.price) }))) })
       .catch(() => undefined)
     return () => { cancelled = true }
-  }, [idsKey])
+  }, [idsKey, locale])
 
   const removeSearch = (query: string) => {
     try {

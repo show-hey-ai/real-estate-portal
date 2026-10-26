@@ -451,7 +451,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
       <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingHeading(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing), imageCaption: pickCoverImage(formattedListing.media)?.caption ?? null }} />
       {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withCardFacts(item)} userId={userId} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withCardFacts(item, locale)} userId={userId} />)}</div>
       </section>}
       {formattedListing.city && <div className="mt-12" data-testid="listing-page-alert"><ListingAlertForm ward={formattedListing.city} type={typeSlugFor(formattedListing.propertyType) ?? undefined} scopeLabel={[wardLabel(formattedListing.city, locale), translatePropertyType(formattedListing.propertyType || null, locale)].filter(Boolean).join(locale === 'en' ? ', ' : '・')} /></div>}
       <RecentlyViewed excludeId={formattedListing.id} />

@@ -79,7 +79,7 @@ export function CollectionView({ locale, path, title, intro, Icon, rows, filterH
 
       {listings.length > 0 && <section className="mt-10" aria-labelledby="collection-listings-title">
         <h2 id="collection-listings-title" className="text-xl font-semibold">{text.listings}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} isFavorite={favorites.has(home.id)} userId={userId} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home, locale)} isFavorite={favorites.has(home.id)} userId={userId} />)}</div>
       </section>}
 
       {unitBars.length >= 2 && <UnitPriceChart locale={locale} title={text.unitTitle} note={text.unitNote} bars={unitBars} />}

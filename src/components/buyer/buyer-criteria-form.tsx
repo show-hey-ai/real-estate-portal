@@ -4,7 +4,7 @@ import { type BuyerCriteria, types, wards } from '@/lib/buyer-matching-policy'
 import { getBuyerMatchingCopy } from '@/lib/buyer-matching-copy'
 import { getBuyerJourneyCopy } from '@/lib/buyer-journey-copy'
 import { getBuyerSearchCopy } from '@/lib/buyer-search-copy'
-import { translateCityName } from '@/lib/translate-fields'
+import { translateCityName } from '@/lib/translate-basic'
 
 type Props = {
   locale: string

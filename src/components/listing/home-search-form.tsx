@@ -9,7 +9,7 @@ import { getPortalHomeCopy, getPortalPropertyTypes } from '@/lib/portal-copy'
 import { cn } from '@/lib/utils'
 import { type PublicSearchLocationIndex } from '@/lib/public-search'
 import type { TransitOptions } from '@/lib/transit/search'
-import { translateCityName } from '@/lib/translate-fields'
+import { translateCityName } from '@/lib/translate-basic'
 
 // "~¥30M" read as "about ¥30M", so the limit is spelled out in each language.
 function maxPriceLabel(value: number, locale: string): string {

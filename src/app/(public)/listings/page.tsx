@@ -445,7 +445,7 @@ export default async function ListingsPage({
                 {formattedListings.map((listing, index) => (
                   <ListingCard
                     key={listing.id}
-                    listing={withCardFacts(listing)}
+                    listing={withCardFacts(listing, locale)}
                     isFavorite={favoriteIds.has(listing.id)}
                     userId={userId}
                     imagePriority={index === 0}

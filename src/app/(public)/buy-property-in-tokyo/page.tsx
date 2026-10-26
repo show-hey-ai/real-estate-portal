@@ -130,7 +130,7 @@ export default async function BuyPropertyInTokyoPage() {
         <h2 id="intl-latest" className="text-2xl font-semibold">{text.latest}</h2>
         <Link href="/listings" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#274d7d]">{text.all}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{latest.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} showFavoriteButton={false} />)}</div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{latest.map((home) => <ListingCard key={home.id} listing={withCardFacts(home, locale)} showFavoriteButton={false} />)}</div>
     </section>}
 
     <section className="mt-12" aria-labelledby="intl-budgets">

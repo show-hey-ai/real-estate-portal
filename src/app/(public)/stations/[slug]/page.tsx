@@ -130,7 +130,7 @@ export default async function StationPage({ params }: Props) {
 
       {listings.length > 0 && <section className="mt-10" aria-labelledby="station-listings-title">
         <h2 id="station-listings-title" className="text-xl font-semibold">{copy.stationListings}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home, locale)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
       </section>}
 
       {nearby.length > 0 && <section className="mt-10" aria-labelledby="station-nearby-title">

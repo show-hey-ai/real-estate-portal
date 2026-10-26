@@ -91,7 +91,7 @@ export default async function LinePage({ params }: Props) {
 
       {listings.length > 0 && <section className="mt-10" aria-labelledby="line-listings-title">
         <h2 id="line-listings-title" className="text-xl font-semibold">{copy.lineListings}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((home) => <ListingCard key={home.id} listing={withCardFacts(home, locale)} isFavorite={favorites.has(home.id)} userId={viewer?.id ?? null} />)}</div>
         {rows.length > SHOWN && <div className="mt-6 text-center"><Link href={`/listings?lines=${line.id}`} className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-[#274d7d] hover:underline">{copy.seeAll(rows.length)}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>}
       </section>}
 
