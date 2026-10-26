@@ -18,12 +18,7 @@ import {
 } from '@/lib/search-experience-copy'
 import { getPortalCategoryLabel } from '@/lib/portal-copy'
 import { isMarketCategory } from '@/lib/market-category'
-import {
-  translateCityName,
-  translatePropertyType,
-  translateRailwayLine,
-  translateStationName,
-} from '@/lib/translate-fields'
+import { translateCityName, translatePropertyType } from '@/lib/translate-basic'
 import { useListingSearch } from './use-listing-search'
 import { MEMBER_REMOVE_SEARCH_EVENT } from '@/lib/member-lists'
 
@@ -60,8 +55,8 @@ function criterionLabel(key: SearchFilterKey, value: string, locale: string, tra
   if (key === 'category' && isMarketCategory(value))
     return getPortalCategoryLabel(locale, value)
   if (key === 'ward') return translateCityName(value, locale) || value
-  if (key === 'line') return translateRailwayLine(value, locale) || value
-  if (key === 'station') return translateStationName(value, locale) || value
+  // Older single line/station links: named by the server for the current search, else as written.
+  if (key === 'line' || key === 'station') return transitLabels[`${key}:${value}`] ?? value
   if (key === 'type') return translatePropertyType(value, locale) || value
   if (key.startsWith('price'))
     return `${formatSearchPrice(Number(value), locale)} ${key === 'priceMin' ? copy.from : copy.to}`
@@ -89,7 +84,7 @@ export function SearchResultsToolbar({
   total: number
   page: number
   perPage: number
-  /** Names of the selected lines and stations, by line id and station slug. */
+  /** Names of the selected lines and stations, by line id and station slug ("line:…"/"station:…" for older links). */
   transitLabels?: Record<string, string>
 }) {
   const locale = useLocale()

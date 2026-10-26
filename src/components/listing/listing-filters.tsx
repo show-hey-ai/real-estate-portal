@@ -13,11 +13,7 @@ import {
 import { getSearchExperienceCopy } from '@/lib/search-experience-copy'
 import { getTransitCopy } from '@/lib/transit/copy'
 import type { TransitOptions } from '@/lib/transit/search'
-import {
-  translateCityName,
-  translateRailwayLine,
-  translateStationName,
-} from '@/lib/translate-fields'
+import { translateCityName } from '@/lib/translate-basic'
 import { LocationSearch } from './location-search'
 import { SearchRange } from './search-range'
 import { useListingSearch } from './use-listing-search'
@@ -25,6 +21,8 @@ import { useListingSearch } from './use-listing-search'
 interface ListingFiltersProps {
   locationIndex: PublicSearchLocationIndex
   transit: TransitOptions
+  /** Names for older single line/station links ("line:…", "station:…"), translated on the server. */
+  transitLabels?: Record<string, string>
   total: number
   distribution: InventoryDistributions
 }
@@ -60,8 +58,9 @@ function FilterSelect({
 }
 
 /** The chosen lines and stations (and older single line/station links), each removable. */
-function TransitChoice({ transit, locale, searchParams, update }: {
+function TransitChoice({ transit, transitLabels, locale, searchParams, update }: {
   transit: TransitOptions
+  transitLabels: Record<string, string>
   locale: string
   searchParams: URLSearchParams
   update: (updates: Record<string, string>) => void
@@ -74,8 +73,8 @@ function TransitChoice({ transit, locale, searchParams, update }: {
   const chips: { key: string; label: string; remove: Record<string, string> }[] = [
     ...lineIds.map((id) => ({ key: `lines:${id}`, label: transit.lines.find((line) => line.value === id)?.label ?? id, remove: { lines: without(lineIds, id) } })),
     ...slugs.map((slug) => ({ key: `stations:${slug}`, label: stationLabels.get(slug) ?? slug, remove: { stations: without(slugs, slug) } })),
-    ...(searchParams.get('line') ? [{ key: 'line', label: translateRailwayLine(searchParams.get('line'), locale) || searchParams.get('line')!, remove: { line: '', station: '' } }] : []),
-    ...(searchParams.get('station') ? [{ key: 'station', label: translateStationName(searchParams.get('station'), locale) || searchParams.get('station')!, remove: { station: '' } }] : []),
+    ...(searchParams.get('line') ? [{ key: 'line', label: transitLabels[`line:${searchParams.get('line')}`] ?? searchParams.get('line')!, remove: { line: '', station: '' } }] : []),
+    ...(searchParams.get('station') ? [{ key: 'station', label: transitLabels[`station:${searchParams.get('station')}`] ?? searchParams.get('station')!, remove: { station: '' } }] : []),
   ]
   return <div className="space-y-2" data-testid="transit-choice">
     <h3 className="flex items-center gap-1.5 text-xs font-medium text-[#536d76]"><TrainFront aria-hidden="true" className="h-3.5 w-3.5" />{copy.entryTitle}</h3>
@@ -91,6 +90,7 @@ function TransitChoice({ transit, locale, searchParams, update }: {
 export function ListingFilters({
   locationIndex,
   transit,
+  transitLabels = {},
   total,
   distribution,
 }: ListingFiltersProps) {
@@ -146,7 +146,7 @@ export function ListingFilters({
           transit={transit}
           onSelect={update}
         />
-        <TransitChoice transit={transit} locale={locale} searchParams={new URLSearchParams(searchParams.toString())} update={update} />
+        <TransitChoice transit={transit} transitLabels={transitLabels} locale={locale} searchParams={new URLSearchParams(searchParams.toString())} update={update} />
         <div className="space-y-2">
           <h3 className="text-xs font-medium text-[#536d76]">
             {homeCopy.categoryTitle}

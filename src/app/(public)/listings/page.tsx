@@ -54,6 +54,7 @@ import {
   translateCityName,
   translatePropertyType,
   translateRailwayLine,
+  translateStationName,
 } from '@/lib/translate-fields'
 import { withCardFacts } from '@/lib/card-facts'
 import { listingsSnippet, titleTemplate } from '@/lib/home-snippet'
@@ -318,6 +319,13 @@ export default async function ListingsPage({
     (!typedAreaField && (minArea !== null || maxArea !== null))
   )
   const stationSelection = parseStationSelection(params.stations, params.lines)
+  // Names for the search chips, translated here so the station dictionary stays on the server.
+  // Older links carry one Japanese line or station name ("line:…", "station:…").
+  const searchLabels: Record<string, string> = {
+    ...transitLabels(stationSelection, locale),
+    ...(params.line ? { [`line:${params.line}`]: translateRailwayLine(params.line, locale) || params.line } : {}),
+    ...(params.station ? { [`station:${params.station}`]: translateStationName(params.station, locale) || params.station } : {}),
+  }
   const selectedStationSet = hasSelection(stationSelection) ? selectedStations(stationSelection) : null
 
   if (requiresManualFiltering) {
@@ -423,6 +431,7 @@ export default async function ListingsPage({
                 <ListingFilters
                   locationIndex={locationIndex}
                   transit={transit}
+                  transitLabels={searchLabels}
                   total={total}
                   distribution={distribution}
                 />
@@ -436,7 +445,7 @@ export default async function ListingsPage({
                 total={total}
                 page={page}
                 perPage={perPage}
-                transitLabels={transitLabels(stationSelection, locale)}
+                transitLabels={searchLabels}
               />
             </Suspense>
 
