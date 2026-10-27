@@ -87,7 +87,7 @@ export function LocationSearch({
         htmlFor={id}
         className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#243b45]"
       >
-        <MapPin className="h-4 w-4 text-[#39786e]" />
+        <MapPin className="h-4 w-4 text-[#274d7d]" />
         {copy.location}
       </label>
       <div className="relative">
@@ -143,7 +143,7 @@ export function LocationSearch({
           id={`${id}-options`}
           role="listbox"
           aria-label={copy.location}
-          className="absolute z-30 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-[#d4e1e0] bg-white p-1.5 shadow-lg"
+          className="absolute z-30 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-[#d4dae1] bg-white p-1.5 shadow-lg"
         >
           {matches.map((option, index) => (
             <li key={`${option.kind}:${option.value}`} role="presentation">
@@ -155,17 +155,17 @@ export function LocationSearch({
                 tabIndex={-1}
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => select(index)}
-                className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-left text-sm ${active === index ? 'bg-[#edf5f2]' : 'hover:bg-[#f4f7f8]'}`}
+                className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2.5 text-left text-sm ${active === index ? 'bg-[#edf1f5]' : 'hover:bg-[#f4f7f8]'}`}
               >
                 {option.kind === 'ward' ? (
-                  <MapPin className="h-4 w-4 shrink-0 text-[#39786e]" />
+                  <MapPin className="h-4 w-4 shrink-0 text-[#274d7d]" />
                 ) : (
-                  <TrainFront className="h-4 w-4 shrink-0 text-[#39786e]" />
+                  <TrainFront className="h-4 w-4 shrink-0 text-[#274d7d]" />
                 )}
                 <span className="min-w-0 flex-1 break-words">
                   {option.label}
                 </span>
-                <span className="shrink-0 text-[10px] text-[#75898d]">
+                <span className="shrink-0 text-[10px] text-[#75808d]">
                   {option.type}
                 </span>
               </button>

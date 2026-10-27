@@ -222,11 +222,9 @@ export function ListingCard({
           {primaryTransitLabel && (
             <div className="flex items-center gap-2 text-sm text-[#657487]">
               <Train className="h-3.5 w-3.5 shrink-0 text-[#57769b]" />
-              <span className="truncate">
-                {primaryTransitLabel}
-                {listing.accessWalkMinutes &&
-                  ` ${t('walkMinutes', { minutes: listing.accessWalkMinutes })}`}
-              </span>
+              <span className="min-w-0 truncate" title={primaryTransitLabel}>{primaryTransitLabel}</span>
+              {/* The walk is what buyers compare, so a long line name is cut instead of the minutes. */}
+              {listing.accessWalkMinutes ? <span className="shrink-0 whitespace-nowrap font-medium text-[#1b293a]">{t('walkMinutes', { minutes: listing.accessWalkMinutes })}</span> : null}
             </div>
           )}
         </div>

@@ -405,18 +405,18 @@ export default async function ListingsPage({
   }
 
   return (
-    <div data-testid="listings-page" className="bg-[#fcfdfc] text-[#1b293a]">
+    <div data-testid="listings-page" className="bg-[#fcfcfd] text-[#1b293a]">
       <JsonLd data={itemListJsonLd} />
-      <section className="border-b border-[#dce6e1] bg-[#eff6f2] py-7 md:py-9">
+      <section className="border-b border-[#dce0e6] bg-[#eff2f6] py-7 md:py-9">
         <div className="container">
           <div className="max-w-4xl">
-            <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-[#4d6b5d] uppercase">
+            <p className="mb-3 text-[10px] font-bold tracking-[0.2em] text-[#4d5a6b] uppercase">
               WELCOME HOME TOKYO / PROPERTY SEARCH
             </p>
-            <h1 className="text-2xl font-medium tracking-tight text-[#264b3e] md:text-4xl">
+            <h1 className="text-2xl font-medium tracking-tight text-[#26374b] md:text-4xl">
               {copy.title}
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#566c61]">
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-[#56606c]">
               {searchCopy.intro}
             </p>
           </div>

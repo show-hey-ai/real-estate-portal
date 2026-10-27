@@ -363,16 +363,17 @@ export default async function ListingPage({ params }: ListingPageProps) {
               </div>
             </div>
 
-            {/* Phones: the no-sign-up contact box right under the price (it sits in the sidebar on wide screens).
-                The sign-in chat used to be here and nobody started one; it stays further down. */}
-            <div id="quick-contact-inline" className="mb-6 scroll-mt-24 lg:hidden" data-testid="quick-contact-inline">
-              <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
-            </div>
-
             <ListingHighlightChips locale={locale} result={highlights} />
 
             <div id="property-facts" className="scroll-mt-4 md:scroll-mt-44">
               <ListingSpecs listing={{ propertyType: formattedListing.propertyType, price: formattedListing.price, builtYear: formattedListing.builtYear, builtMonth: formattedListing.builtMonth, structure: formattedListing.structure, floorCount: formattedListing.floorCount, landArea: formattedListing.landArea, buildingArea: formattedListing.buildingArea, zoning: formattedListing.zoning, currentStatus: formattedListing.currentStatus, yieldGross: formattedListing.yieldGross, landRights: listing.landRights }} monthly={monthly} grossYield={grossYield} netYield={netYield} />
+            </div>
+
+            {/* Phones: the no-sign-up contact box right after the property facts (it sits in the sidebar on wide
+                screens). Above the facts it pushed size, age and zoning two screens down; the sticky bar still
+                reaches it from anywhere. */}
+            <div id="quick-contact-inline" className="mt-6 scroll-mt-24 lg:hidden" data-testid="quick-contact-inline">
+              <QuickContact listingId={formattedListing.id} listingTitle={buildListingTitle(formattedListing, locale)} listingUrl={absoluteUrl(`/listings/${formattedListing.id}`)} />
             </div>
 
             {isConversionCandidate(formattedListing.propertyType) && <ConversionCheckLink locale={locale} publicAddress={publicAddress} listingUrl={absoluteUrl(localizedPath(`/listings/${formattedListing.id}`, locale))} />}

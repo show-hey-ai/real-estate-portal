@@ -18,6 +18,7 @@ import { RecentlyViewed } from '@/components/listing/browser-lists-client'
 import { countByWard } from '@/lib/ward-tile-map'
 import { countPriceBands } from '@/lib/price-bands'
 import { PriceBandShortcuts } from '@/components/listing/price-band-shortcuts'
+import { HomeBrowseTabs } from '@/components/listing/home-browse-tabs'
 import { getMarketplaceCopy } from '@/lib/marketplace-copy'
 import { HomeSearchForm } from '@/components/listing/home-search-form'
 import { ListingCard } from '@/components/listing/listing-card'
@@ -134,7 +135,20 @@ export default async function HomePage() {
       </section>
 
       <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#657487]">{copy.trust.map((item) => <span key={item} className="inline-flex items-center gap-1.5"><Check aria-hidden="true" className="h-3.5 w-3.5 text-[#57769b]" />{item}</span>)}</div>
-      <Link href="/buy-property-in-tokyo" className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-[#cfd9e3] bg-white px-5 py-4 transition-shadow hover:shadow-md" data-testid="home-international-link">
+      {/* The newest properties straight after the intro; phones show four, then a button to the full list. */}
+      <section className="mt-8 md:mt-10" data-testid="home-latest-listings">
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div><h2 className="text-xl font-semibold md:text-2xl">{copy.availableTitle}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#657487]">{copy.availableDescription}</p></div>
+          <Link href="/listings" className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[#274d7d]">{market.all}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
+        </div>
+        {listings.length ? <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-sm:[&>*:nth-child(n+5)]:hidden">{listings.map((listing) => <ListingCard key={listing.id} listing={withCardFacts(listing, locale)} isFavorite={favorites.has(listing.id)} userId={viewer?.id ?? null} />)}</div>
+          <Link href="/listings" className="mt-4 flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#274d7d] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#18375f] sm:hidden" data-testid="home-latest-all">{hero.browse}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
+        </> :
+          <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-6 md:p-8"><h3 className="text-lg font-semibold">{copy.emptyTitle}</h3><p className="mt-2 max-w-2xl text-sm leading-7 text-[#657487]">{copy.emptyDescription}</p><Link href="/match" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]"><FunnelText field="consult" baseline={copy.consult} /><ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>}
+      </section>
+
+      <Link href="/buy-property-in-tokyo" className="mt-10 flex items-center justify-between gap-3 rounded-xl border border-[#cfd9e3] bg-white px-5 py-4 transition-shadow hover:shadow-md" data-testid="home-international-link">
         <span><span className="block font-semibold text-[#1b293a]">{INTERNATIONAL_CTA[locale]?.title ?? INTERNATIONAL_CTA.en.title}</span><span className="mt-0.5 block text-sm text-[#536274]">{INTERNATIONAL_CTA[locale]?.body ?? INTERNATIONAL_CTA.en.body}</span></span>
         <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
       </Link>
@@ -147,11 +161,7 @@ export default async function HomePage() {
         <ArrowRight aria-hidden="true" className="h-5 w-5 shrink-0 text-[#274d7d]" />
       </Link>
       <div className="mt-8 md:mt-10"><MarketShortcuts locale={locale} wards={locationIndex.wards} showAreas={false} /></div>
-      <div className="mt-9 grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:items-start">
-        <WardMap locale={locale} counts={wardCounts.wards} />
-        <PriceBandShortcuts locale={locale} counts={wardCounts.bands} />
-      </div>
-      <div className="mt-8"><LineShortcuts index={transitIndex} locale={locale} /></div>
+      <div className="mt-9"><HomeBrowseTabs locale={locale} area={<WardMap locale={locale} counts={wardCounts.wards} />} budget={<PriceBandShortcuts locale={locale} counts={wardCounts.bands} />} line={<LineShortcuts index={transitIndex} locale={locale} />} /></div>
 
       <section data-testid="home-search-panel" className="mt-8 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] px-4 md:px-5">
         <details className="group">
@@ -160,14 +170,6 @@ export default async function HomePage() {
         </details>
       </section>
 
-      <section className="mt-10 md:mt-12">
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-          <div><h2 className="text-xl font-semibold md:text-2xl">{copy.availableTitle}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#657487]">{copy.availableDescription}</p></div>
-          <Link href="/listings" className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[#274d7d]">{market.all}<ArrowRight aria-hidden="true" className="h-4 w-4" /></Link>
-        </div>
-        {listings.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{listings.map((listing) => <ListingCard key={listing.id} listing={withCardFacts(listing, locale)} isFavorite={favorites.has(listing.id)} userId={viewer?.id ?? null} />)}</div> :
-          <div className="rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-6 md:p-8"><h3 className="text-lg font-semibold">{copy.emptyTitle}</h3><p className="mt-2 max-w-2xl text-sm leading-7 text-[#657487]">{copy.emptyDescription}</p><Link href="/match" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#274d7d]"><FunnelText field="consult" baseline={copy.consult} /><ArrowRight aria-hidden="true" className="h-4 w-4" /></Link></div>}
-      </section>
 
       <ListingAlertForm />
 

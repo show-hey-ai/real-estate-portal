@@ -123,7 +123,7 @@ export function SearchRange({
       {distribution && (
         <div className="space-y-1.5">
           <div
-            className="flex h-24 items-end gap-[3px] border-b border-[#cfdcd8]"
+            className="flex h-24 items-end gap-[3px] border-b border-[#cfd5dc]"
             role="group"
             aria-label={`${kind === 'price' ? copy.distribution : copy.areaDistribution}: ${distribution.count} ${copy.results}`}
           >
@@ -140,9 +140,9 @@ export function SearchRange({
                   aria-label={label}
                   title={label}
                 >
-                  {bin.count > 0 && <span className="mb-0.5 text-center text-[9px] font-semibold tabular-nums text-[#4b6a62]">{bin.count}</span>}
+                  {bin.count > 0 && <span className="mb-0.5 text-center text-[9px] font-semibold tabular-nums text-[#4b596a]">{bin.count}</span>}
                   <span
-                    className={`block w-full rounded-t-[3px] transition-colors ${selected ? 'bg-[#39786e] group-hover:bg-[#2b655b]' : 'bg-[#cddbd7] group-hover:bg-[#9fbdb5]'}`}
+                    className={`block w-full rounded-t-[3px] transition-colors ${selected ? 'bg-[#274d7d] group-hover:bg-[#18375f]' : 'bg-[#cdd3db] group-hover:bg-[#9facbd]'}`}
                     style={{ height: `${bin.count ? Math.max(6, (bin.count / maxBin) * 72) : 2}%` }}
                   />
                 </button>
@@ -209,9 +209,9 @@ export function SearchRange({
         aria-label={`${title} (${unit})`}
         onPointerDown={selectOnTrack}
       >
-        <div className="pointer-events-none absolute inset-x-3 top-1/2 h-1 -translate-y-1/2 rounded-full bg-[#d6e3df]">
+        <div className="pointer-events-none absolute inset-x-3 top-1/2 h-1 -translate-y-1/2 rounded-full bg-[#d6dce3]">
           <div
-            className="absolute inset-y-0 rounded-full bg-[#39786e]"
+            className="absolute inset-y-0 rounded-full bg-[#274d7d]"
             style={{
               left: `${(Math.min(lowerValue, upperValue) / ceiling) * 100}%`,
               right: `${100 - (Math.max(lowerValue, upperValue) / ceiling) * 100}%`,
@@ -257,7 +257,7 @@ export function SearchRange({
       )}
       <button
         type="submit"
-        className="w-full rounded-lg border border-[#cadbd6] bg-[#f0f7f5] py-2 text-xs font-semibold text-[#2b655b] transition hover:bg-[#e3efeb]"
+        className="w-full rounded-lg border border-[#cad2db] bg-[#f0f3f7] py-2 text-xs font-semibold text-[#18375f] transition hover:bg-[#e3e8ef]"
       >
         {copy.apply}
       </button>

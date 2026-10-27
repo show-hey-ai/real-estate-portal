@@ -123,7 +123,8 @@ export function Footer({ guides }: FooterProps) {
           <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
             {WARD_TILES.map(({ ward }) => <li key={ward}><Link href={`/areas/${WARD_SLUGS[ward]}`} className="text-white/65 transition-colors hover:text-white">{wardLabel(ward, locale)}</Link></li>)}
           </ul>
-          <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold"><Link href="/lines" className="hover:underline">{getTransitCopy(locale).entryTitle}</Link><Link href="/other-listings" className="hover:underline">{getOtherListingsCopy(locale).entryTitle}</Link></p>
+          {/* Plain links with an arrow; in bold with nothing under them they read as empty headings. */}
+          <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm"><Link href="/lines" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getTransitCopy(locale).entryTitle} →</Link><Link href="/other-listings" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getOtherListingsCopy(locale).entryTitle} →</Link></p>
         </nav>
 
         <div className="mt-8 grid gap-8 md:grid-cols-2">

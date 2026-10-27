@@ -142,13 +142,13 @@ export function SearchResultsToolbar({
       data-testid="search-results-toolbar"
       aria-busy={isPending}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dce6e5] pb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dce0e6] pb-5">
         <div
           role="status"
           aria-live="polite"
           className="flex items-baseline gap-2"
         >
-          <span className="text-4xl font-medium tracking-tight text-[#214b43]">
+          <span className="text-4xl font-medium tracking-tight text-[#21344b]">
             {total.toLocaleString(locale)}
           </span>
           <span className="text-sm text-[#687e83]">
@@ -165,7 +165,7 @@ export function SearchResultsToolbar({
             aria-label={copy.sort}
             value={searchParams.get('sort') || 'newest'}
             onChange={(event) => update({ sort: event.target.value })}
-            className="h-10 max-w-full rounded-lg border border-[#d6e2e1] bg-white px-3 text-sm text-[#304950] outline-none focus:ring-2 focus:ring-[#274d7d]/15"
+            className="h-10 max-w-full rounded-lg border border-[#d6dbe2] bg-white px-3 text-sm text-[#304950] outline-none focus:ring-2 focus:ring-[#274d7d]/15"
           >
             <option value="newest">{t('sortNewest')}</option>
             <option value="price_asc">{t('sortPriceAsc')}</option>
@@ -186,7 +186,7 @@ export function SearchResultsToolbar({
                 })
               }
               aria-label={`${copy.remove}: ${label}`}
-              className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#d7e5df] bg-[#f0f7f4] px-3 py-1.5 text-xs text-[#316353]"
+              className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#d7dde5] bg-[#f0f3f7] px-3 py-1.5 text-xs text-[#314863]"
             >
               <span className="break-words text-left">{label}</span>
               <X className="h-3 w-3 shrink-0" />
@@ -206,7 +206,7 @@ export function SearchResultsToolbar({
           type="button"
           disabled={!criteria.length}
           onClick={save}
-          className="inline-flex items-center gap-2 rounded-lg border border-[#c9dcd5] px-3 py-2 text-xs font-medium text-[#2e6256] transition hover:bg-[#edf5f1] disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-lg border border-[#c9d2dc] px-3 py-2 text-xs font-medium text-[#2e4562] transition hover:bg-[#edf1f5] disabled:opacity-40"
         >
           {currentSaved ? (
             <Check className="h-3.5 w-3.5" />
@@ -223,7 +223,7 @@ export function SearchResultsToolbar({
           className="inline-flex items-center gap-2 px-3 py-2 text-xs text-[#56686e]"
         >
           {copy.saved}
-          <span className="rounded-full bg-[#edf2f3] px-2 py-0.5 text-[10px]">
+          <span className="rounded-full bg-[#edf0f3] px-2 py-0.5 text-[10px]">
             {saved.length}
           </span>
         </button>
@@ -237,16 +237,16 @@ export function SearchResultsToolbar({
       {showSaved && (
         <div
           id="saved-searches"
-          className="space-y-2 rounded-xl border border-[#d9e5e1] bg-[#f7faf9] p-4"
+          className="space-y-2 rounded-xl border border-[#d9dee5] bg-[#f7f8fa] p-4"
         >
-          <p className="text-xs text-[#73878b]">{copy.browserOnly}</p>
+          <p className="text-xs text-[#737e8b]">{copy.browserOnly}</p>
           {!saved.length && (
             <p className="text-sm text-[#667e83]">{copy.savedEmpty}</p>
           )}
           {saved.map((item) => (
             <div
               key={item.query}
-              className="flex items-center gap-2 rounded-lg border border-[#e0e9e4] bg-white"
+              className="flex items-center gap-2 rounded-lg border border-[#e0e4e9] bg-white"
             >
               <button
                 type="button"
@@ -254,7 +254,7 @@ export function SearchResultsToolbar({
                   navigate(item.query)
                   setNotice('')
                 }}
-                className="min-w-0 flex-1 break-words px-3 py-3 text-left text-xs leading-5 text-[#335b50]"
+                className="min-w-0 flex-1 break-words px-3 py-3 text-left text-xs leading-5 text-[#33455b]"
               >
                 {savedLabel(item.query)}
               </button>
@@ -264,7 +264,7 @@ export function SearchResultsToolbar({
                 onClick={() => {
                   if (persist(saved.filter((entry) => entry.query !== item.query))) window.dispatchEvent(new CustomEvent(MEMBER_REMOVE_SEARCH_EVENT, { detail: item.query }))
                 }}
-                className="mr-2 shrink-0 rounded-md p-2 text-[#7c8e90] hover:bg-[#eef4f1]"
+                className="mr-2 shrink-0 rounded-md p-2 text-[#7c8590] hover:bg-[#eef1f4]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -273,7 +273,7 @@ export function SearchResultsToolbar({
         </div>
       )}
       {notice && (
-        <p role="status" className="text-xs text-[#39786e]">
+        <p role="status" className="text-xs text-[#274d7d]">
           {notice}
         </p>
       )}

@@ -80,10 +80,10 @@ function TransitChoice({ transit, transitLabels, locale, searchParams, update }:
     <h3 className="flex items-center gap-1.5 text-xs font-medium text-[#536d76]"><TrainFront aria-hidden="true" className="h-3.5 w-3.5" />{copy.entryTitle}</h3>
     {chips.length > 0 && <ul className="flex flex-wrap gap-1.5">
       {chips.map((chip) => <li key={chip.key}>
-        <button type="button" onClick={() => update(chip.remove)} aria-label={copy.remove(chip.label)} className="inline-flex items-center gap-1 rounded-full bg-[#e4efe9] px-2.5 py-1 text-xs font-semibold text-[#2d5148]">{chip.label}<X aria-hidden="true" className="h-3 w-3" /></button>
+        <button type="button" onClick={() => update(chip.remove)} aria-label={copy.remove(chip.label)} className="inline-flex items-center gap-1 rounded-full bg-[#e4e9ef] px-2.5 py-1 text-xs font-semibold text-[#2d3d51]">{chip.label}<X aria-hidden="true" className="h-3 w-3" /></button>
       </li>)}
     </ul>}
-    <Link href={`/lines${searchParams.toString() ? `?${searchParams.toString()}` : ''}`} className="flex h-10 items-center justify-center rounded-lg border border-[#cfddd6] bg-white text-xs font-semibold text-[#39786e] hover:bg-[#edf5f1]">{chips.length ? copy.change : copy.choose}</Link>
+    <Link href={`/lines${searchParams.toString() ? `?${searchParams.toString()}` : ''}`} className="flex h-10 items-center justify-center rounded-lg border border-[#cfd5dd] bg-white text-xs font-semibold text-[#274d7d] hover:bg-[#edf1f5]">{chips.length ? copy.change : copy.choose}</Link>
   </div>
 }
 
@@ -107,7 +107,7 @@ export function ListingFilters({
 
   return (
     <section
-      className="overflow-hidden rounded-2xl border border-[#d6e3df] bg-[#f8fbfa]"
+      className="overflow-hidden rounded-2xl border border-[#d6dce3] bg-[#f8f9fb]"
       aria-busy={isPending}
     >
       <button
@@ -117,15 +117,15 @@ export function ListingFilters({
         aria-controls="listing-search-controls"
         className="flex w-full items-center gap-2.5 px-5 py-4 text-left lg:hidden"
       >
-        <SlidersHorizontal className="h-4 w-4 text-[#39786e]" />
-        <span className="flex-1 text-sm font-semibold text-[#2d5148]">
+        <SlidersHorizontal className="h-4 w-4 text-[#274d7d]" />
+        <span className="flex-1 text-sm font-semibold text-[#2d3d51]">
           {homeCopy.moreFilters}
         </span>
-        <span className="rounded-full bg-[#e4efe9] px-2 py-0.5 text-xs text-[#39786e]">
+        <span className="rounded-full bg-[#e4e9ef] px-2 py-0.5 text-xs text-[#274d7d]">
           {activeCount}
         </span>
         <ChevronDown
-          className={`h-4 w-4 text-[#627d72] transition ${isExpanded ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-[#626e7d] transition ${isExpanded ? 'rotate-180' : ''}`}
         />
       </button>
       <div
@@ -133,10 +133,10 @@ export function ListingFilters({
         className={`${isExpanded ? 'block' : 'hidden'} space-y-6 px-5 py-5 lg:block lg:max-h-[calc(100svh-7rem)] lg:overflow-y-auto`}
       >
         <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-[#2b5147]">
+          <h2 className="text-sm font-semibold text-[#2b3c51]">
             {copy.allCriteria}
           </h2>
-          <span className="rounded-full bg-[#e4efe9] px-2.5 py-1 text-xs tabular-nums text-[#39786e]">
+          <span className="rounded-full bg-[#e4e9ef] px-2.5 py-1 text-xs tabular-nums text-[#274d7d]">
             {total.toLocaleString(locale)} {copy.results}
           </span>
         </div>
@@ -163,11 +163,11 @@ export function ListingFilters({
                       searchParams.get('category') === value ? '' : value,
                   })
                 }
-                className={`rounded-lg border px-1 py-2.5 text-xs font-medium transition ${searchParams.get('category') === value ? 'border-[#39786e] bg-[#39786e] text-white' : 'border-[#d4e0dc] bg-white text-[#567168] hover:bg-[#edf5f1]'}`}
+                className={`rounded-lg border px-1 py-2.5 text-xs font-medium transition ${searchParams.get('category') === value ? 'border-[#274d7d] bg-[#274d7d] text-white' : 'border-[#d4d9e0] bg-white text-[#566271] hover:bg-[#edf1f5]'}`}
               >
                 <span className="block">{label}</span>
                 {distribution.categories && (
-                  <span className={`mt-0.5 block text-[10px] tabular-nums ${searchParams.get('category') === value ? 'text-white/80' : 'text-[#7b8f88]'}`}>
+                  <span className={`mt-0.5 block text-[10px] tabular-nums ${searchParams.get('category') === value ? 'text-white/80' : 'text-[#7b848f]'}`}>
                     {distribution.categories[value]} {copy.results}
                   </span>
                 )}
@@ -175,7 +175,7 @@ export function ListingFilters({
             ))}
           </div>
         </div>
-        <div className="border-t border-[#dde7e2] pt-5">
+        <div className="border-t border-[#dde2e7] pt-5">
           <SearchRange
             key={`price:${locale}:${searchParams.get('priceMin')}:${searchParams.get('priceMax')}`}
             locale={locale}
@@ -186,7 +186,7 @@ export function ListingFilters({
             onApply={(min, max) => update({ priceMin: min, priceMax: max })}
           />
         </div>
-        <div className="border-t border-[#dde7e2] pt-5">
+        <div className="border-t border-[#dde2e7] pt-5">
           <SearchRange
             key={`area:${locale}:${searchParams.get('areaMin')}:${searchParams.get('areaMax')}`}
             locale={locale}
@@ -210,14 +210,14 @@ export function ListingFilters({
           ]}
         />
         <details
-          className="group border-t border-[#dde7e2] pt-4"
+          className="group border-t border-[#dde2e7] pt-4"
           open={Boolean(
             searchParams.get('type') ||
             searchParams.get('q') ||
             searchParams.get('ward')
           )}
         >
-          <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-[#3e6258] [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold text-[#3e4e62] [&::-webkit-details-marker]:hidden">
             {copy.details}
             <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
           </summary>
@@ -273,7 +273,7 @@ export function ListingFilters({
                 <button
                   type="submit"
                   aria-label={t('search')}
-                  className="shrink-0 rounded-lg bg-[#39786e] px-3 text-white hover:bg-[#286054]"
+                  className="shrink-0 rounded-lg bg-[#274d7d] px-3 text-white hover:bg-[#284160]"
                 >
                   <Search className="h-4 w-4" />
                 </button>
@@ -284,7 +284,7 @@ export function ListingFilters({
         <button
           type="button"
           onClick={() => navigate('')}
-          className="w-full rounded-lg border border-[#cfddd6] bg-white py-2.5 text-xs font-semibold text-[#5f7b70] hover:bg-[#edf5f1]"
+          className="w-full rounded-lg border border-[#cfd5dd] bg-white py-2.5 text-xs font-semibold text-[#5f6c7b] hover:bg-[#edf1f5]"
         >
           {copy.clear}
         </button>
