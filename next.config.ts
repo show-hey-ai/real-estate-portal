@@ -38,8 +38,15 @@ const nextConfig: NextConfig = {
     if (!signedInCookies) return []
     return [{
       // Every public page except personal ones; a plain URL is always English (the proxy sends
-      // visitors who chose another language to its ?lang= URL before the cache).
+      // visitors who chose another language to its ?lang= URL before the cache). Lists, areas,
+      // stations and guides keep an hour.
       source: '/((?!admin|favorites|mypage|inquiry|chats|login|register|match|alerts|preview|compare|auth|api/|_next/).*)',
+      missing: signedInCookies,
+      headers: [{ key: 'Vercel-CDN-Cache-Control', value: 'max-age=3600, stale-while-revalidate=3600' }],
+    }, {
+      // A property page shows its price and whether it is still for sale, so it keeps ten minutes
+      // (the later rule wins for the same header).
+      source: '/listings/:id',
       missing: signedInCookies,
       headers: [{ key: 'Vercel-CDN-Cache-Control', value: 'max-age=600, stale-while-revalidate=600' }],
     }]
