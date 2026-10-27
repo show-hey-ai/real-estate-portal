@@ -12,6 +12,7 @@ import { BUDGET_SLUGS, TYPE_COLLECTIONS, budgetBand, type TypeSlug } from '@/lib
 import { priceBandRange } from '@/lib/price-bands'
 import { conversionCheckUrl } from '@/lib/conversion-check'
 import { ChannelIcon } from '@/components/contact/channel-icon'
+import { FooterFold } from './footer-fold'
 import { INSTAGRAM_URL, LINE_ADD_URL, LINE_ID, WECHAT_DEEP_LINK, WECHAT_ID, WHATSAPP_NUMBER } from '@/lib/contact-channels'
 
 const OVERSEAS_LABEL: Record<string, string> = { ja: '海外から買う（お金の流れ）', en: 'Buying from overseas', 'zh-TW': '從海外購屋', 'zh-CN': '从海外买房' }
@@ -42,7 +43,7 @@ export function Footer({ guides }: FooterProps) {
 
   return (
     <footer className="border-t border-[#dbe2e9] bg-[#142337] text-white">
-      <div className="container py-14">
+      <div className="container py-10 md:py-14">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
@@ -50,7 +51,8 @@ export function Footer({ guides }: FooterProps) {
               <span className="text-2xl font-semibold tracking-[0.08em]">WELCOME HOME</span>
               <span className="pb-1 text-xs font-semibold tracking-[0.16em] text-white/60">TOKYO</span>
             </Link>
-            <p className="text-sm leading-7 text-white/65 max-w-md">
+            {/* Phones skip the site description; the footer already runs long there. */}
+            <p className="hidden max-w-md text-sm leading-7 text-white/65 md:block">
               {t('home.heroDescription')}
             </p>
           </div>
@@ -118,25 +120,30 @@ export function Footer({ guides }: FooterProps) {
 
         {guides}
 
-        <nav aria-label={company.wards} className="mt-10">
-          <h2 className="mb-3 text-sm font-semibold"><Link href="/areas" className="hover:underline">{company.wards}</Link></h2>
-          <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
-            {WARD_TILES.map(({ ward }) => <li key={ward}><Link href={`/areas/${WARD_SLUGS[ward]}`} className="text-white/65 transition-colors hover:text-white">{wardLabel(ward, locale)}</Link></li>)}
-          </ul>
-          {/* Plain links with an arrow; in bold with nothing under them they read as empty headings. */}
-          <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm"><Link href="/lines" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getTransitCopy(locale).entryTitle} →</Link><Link href="/other-listings" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getOtherListingsCopy(locale).entryTitle} →</Link></p>
+        <nav aria-label={company.wards} className="md:mt-10">
+          <FooterFold title={company.wards} heading={<h2 className="mb-3 text-sm font-semibold"><Link href="/areas" className="hover:underline">{company.wards}</Link></h2>}>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+              {WARD_TILES.map(({ ward }) => <li key={ward}><Link href={`/areas/${WARD_SLUGS[ward]}`} className="text-white/65 transition-colors hover:text-white">{wardLabel(ward, locale)}</Link></li>)}
+            </ul>
+          </FooterFold>
+          {/* Plain links with an arrow; in bold with nothing under them they read as empty headings.
+              Phones show them below the folded sections instead. */}
+          <p className="mt-4 hidden flex-wrap gap-x-6 gap-y-2 text-sm md:flex"><Link href="/lines" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getTransitCopy(locale).entryTitle} →</Link><Link href="/other-listings" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getOtherListingsCopy(locale).entryTitle} →</Link></p>
         </nav>
 
-        <div className="mt-8 grid gap-8 md:grid-cols-2">
+        <div className="grid md:mt-8 md:grid-cols-2 md:gap-8">
           <nav aria-label={company.types}>
-            <h2 className="mb-3 text-sm font-semibold">{company.types}</h2>
-            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{(Object.keys(TYPE_COLLECTIONS) as TypeSlug[]).map((slug) => <li key={slug}><Link href={`/types/${slug}`} className="text-white/65 transition-colors hover:text-white">{TYPE_COLLECTIONS[slug].label[locale as keyof (typeof TYPE_COLLECTIONS)[TypeSlug]['label']] ?? TYPE_COLLECTIONS[slug].label.en}</Link></li>)}</ul>
+            <FooterFold title={company.types} heading={<h2 className="mb-3 text-sm font-semibold">{company.types}</h2>}>
+              <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{(Object.keys(TYPE_COLLECTIONS) as TypeSlug[]).map((slug) => <li key={slug}><Link href={`/types/${slug}`} className="text-white/65 transition-colors hover:text-white">{TYPE_COLLECTIONS[slug].label[locale as keyof (typeof TYPE_COLLECTIONS)[TypeSlug]['label']] ?? TYPE_COLLECTIONS[slug].label.en}</Link></li>)}</ul>
+            </FooterFold>
           </nav>
           <nav aria-label={company.budget}>
-            <h2 className="mb-3 text-sm font-semibold">{company.budget}</h2>
-            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{BUDGET_SLUGS.map((slug) => <li key={slug}><Link href={`/budget/${slug}`} className="text-white/65 transition-colors hover:text-white">{priceBandRange(budgetBand(slug)!, locale)}</Link></li>)}</ul>
+            <FooterFold title={company.budget} heading={<h2 className="mb-3 text-sm font-semibold">{company.budget}</h2>}>
+              <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">{BUDGET_SLUGS.map((slug) => <li key={slug}><Link href={`/budget/${slug}`} className="text-white/65 transition-colors hover:text-white">{priceBandRange(budgetBand(slug)!, locale)}</Link></li>)}</ul>
+            </FooterFold>
           </nav>
         </div>
+        <p className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm md:hidden"><Link href="/lines" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getTransitCopy(locale).entryTitle} →</Link><Link href="/other-listings" className="text-white/80 underline decoration-white/30 underline-offset-4 transition-colors hover:text-white">{getOtherListingsCopy(locale).entryTitle} →</Link></p>
 
         <Separator className="my-8 bg-white/12" />
 
