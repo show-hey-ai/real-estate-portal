@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { INITIAL_UPTIME_STATE, backupFileName, backupsToDelete, describeFetchFailure, isHealthy, nextUptimeState } from '../src/lib/ops-watch'
+import { INITIAL_UPTIME_STATE, backupFileName, backupsToDelete, describeFetchFailure, isHealthy, nextUptimeState, uptimePaths } from '../src/lib/ops-watch'
 
 const SITE = 'https://portal.example.com'
 const ok = [{ path: '/', status: 200 }, { path: '/listings', status: 200 }]
@@ -51,6 +51,18 @@ test('two failed runs mail, then only every six hours, then once on recovery', (
   assert.match(back.mail!.subject, /復旧/)
   assert.match(back.mail!.text, /約390分/)
   assert.deepEqual(back.state, INITIAL_UPTIME_STATE)
+})
+
+test('the app-rendered page is opened hourly, and on every run while something fails', () => {
+  const light = ['/robots.txt'], full = ['/robots.txt', '/']
+  assert.deepEqual(uptimePaths(INITIAL_UPTIME_STATE, at('2026-10-28T00:00:00Z')), full)
+  const checked = { ...INITIAL_UPTIME_STATE, lastFullAt: '2026-10-28T00:00:00.000Z' }
+  assert.deepEqual(uptimePaths(checked, at('2026-10-28T00:50:00Z')), light)
+  assert.deepEqual(uptimePaths(checked, at('2026-10-28T01:00:00Z')), full)
+  assert.deepEqual(uptimePaths({ ...checked, failedRuns: 1 }, at('2026-10-28T00:10:00Z')), full)
+  assert.deepEqual(uptimePaths({ ...checked, down: true }, at('2026-10-28T00:10:00Z')), full)
+  // Clearing a blip keeps the time of the last full look.
+  assert.equal(nextUptimeState({ ...checked, failedRuns: 1 }, ok, at('2026-10-28T00:10:00Z'), SITE).state.lastFullAt, checked.lastFullAt)
 })
 
 test('network failures are named by their cause', () => {
