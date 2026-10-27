@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises'
 import nodemailer from 'nodemailer'
+import { withPasswordFile } from './operator-mail'
 import { prisma } from '../db'
 import { getPublicListingScope } from '../public-listing-scope'
 import { getExternalAnalyticsWhere } from '../site-analytics-data'
@@ -7,9 +7,11 @@ import { getSiteUrl } from '../site-config'
 import { AUTONOMY_VERSION, PORTAL_VENTURE_ID } from './policy'
 import { latestSearchPerformance } from './search-sync'
 import {
-  EXPIRY_WARNING_HOURS, buildAlertMail, rankListingInterest, buildDigestMail, digestEnabled, digestKey, isDigestDue, normalizeAppPassword, readNotificationConfig,
+  EXPIRY_WARNING_HOURS, buildAlertMail, rankListingInterest, buildDigestMail, digestEnabled, digestKey, isDigestDue, readNotificationConfig,
   type NotificationConfig, type NotificationMail, type NotificationSnapshot,
 } from './notification-policy'
+
+export { sendOperatorMailDirect, withPasswordFile } from './operator-mail'
 
 const LOOKBACK_MS = 24 * 3600_000
 const MAX_ITEMS = 200
@@ -150,15 +152,6 @@ async function sendAndRecord(config: NotificationConfig, mail: NotificationMail)
 }
 
 // The app password may live in its own file so it can be pasted without editing the main settings.
-export async function withPasswordFile(env: Record<string, string | undefined>): Promise<Record<string, string | undefined>> {
-  if (env.SMTP_PASS || !env.SMTP_PASS_FILE) return env
-  try {
-    return { ...env, SMTP_PASS: normalizeAppPassword(await readFile(env.SMTP_PASS_FILE, 'utf8')) || undefined }
-  } catch {
-    return env
-  }
-}
-
 export async function runNotifications(now = new Date(), env: Record<string, string | undefined> = process.env) {
   const config = readNotificationConfig(await withPasswordFile(env))
   if (!config) return { state: 'not_configured' as const }
