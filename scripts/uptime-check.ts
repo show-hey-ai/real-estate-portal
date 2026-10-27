@@ -1,7 +1,7 @@
 /**
  * Uptime check (every 10 minutes, LaunchAgent com.ziyou.portal-uptime). Opens the home page and the
- * property list; when either fails twice in a row it mails the owner, repeats every few hours while
- * the site stays down, and mails once more when it is back. Needs no database.
+ * property list; when either fails on two runs in a row it mails the owner, repeats every few hours
+ * while the site stays down, and mails once more when it is back. Needs no database.
  *
  *   npm run ops:uptime [-- --dry-run]
  */
@@ -9,7 +9,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { setTimeout as wait } from 'node:timers/promises'
-import { INITIAL_UPTIME_STATE, UPTIME_PATHS, isHealthy, nextUptimeState, type CheckResult, type UptimeState } from '../src/lib/ops-watch'
+import { INITIAL_UPTIME_STATE, UPTIME_PATHS, describeFetchFailure, isHealthy, nextUptimeState, type CheckResult, type UptimeState } from '../src/lib/ops-watch'
 import { sendOperatorMailDirect } from '../src/lib/autonomy/operator-mail'
 import { getSiteUrl } from '../src/lib/site-config'
 
@@ -25,7 +25,7 @@ async function check(siteUrl: string): Promise<CheckResult[]> {
       await response.arrayBuffer()
       return { path, status: response.status }
     } catch (error: unknown) {
-      return { path, status: null, error: error instanceof Error && error.name === 'TimeoutError' ? '20秒以内に応答なし' : '接続できない' }
+      return { path, status: null, error: describeFetchFailure(error) }
     }
   }))
 }
