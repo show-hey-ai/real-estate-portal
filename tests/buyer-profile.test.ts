@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { isProfileComplete, parseStoredProfile, profileText } from '../src/lib/buyer-profile'
+import { getProfileCopy, isProfileComplete, parseStoredProfile, profileSummary, profileText } from '../src/lib/buyer-profile'
 
 const full = { buyer: 'company-foreign', nationality: 'foreign', residence: 'overseas', funding: 'cash', purpose: 'invest' }
 
@@ -19,4 +19,11 @@ test('saved answers keep only known choices', () => {
   assert.deepEqual(parseStoredProfile(JSON.stringify({ ...full, buyer: 'x', extra: 'y' })), { nationality: 'foreign', residence: 'overseas', funding: 'cash', purpose: 'invest' })
   assert.deepEqual(parseStoredProfile('not json'), {})
   assert.deepEqual(parseStoredProfile(null), {})
+})
+
+test('answered questions fold into one line, and the counter reads naturally', () => {
+  assert.equal(profileSummary(full, 'ja'), '外国法人・外国人・海外・現金（ローンなし）・賃貸・投資')
+  assert.equal(profileSummary({ buyer: 'individual' }, 'en'), 'An individual')
+  assert.equal(getProfileCopy('ja').step(2, 5), '質問 2/5')
+  assert.equal(getProfileCopy('en').step(2, 5), 'Question 2 of 5')
 })
