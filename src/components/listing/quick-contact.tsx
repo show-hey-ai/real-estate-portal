@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useState, type MouseEvent } from 'react'
+import { useEffect, useId, useState, type MouseEvent } from 'react'
 import { CalendarCheck, FileText, HelpCircle, Images, Mail, SearchCheck } from 'lucide-react'
 import { ChannelIcon } from '@/components/contact/channel-icon'
 import { PrivateListingsNote } from '@/components/contact/private-listings-note'
@@ -25,10 +25,10 @@ const INTENTS: { key: Intent; Icon: typeof Mail }[] = [
 ]
 
 const copy = {
-  ja: { title: '登録なしですぐ相談', note: 'LINE・WhatsApp・WeChat・メールで、この物件について直接お問い合わせいただけます。掲載以外の写真が見たいときは「追加の写真」を選んで送ってください。', whatsapp: 'WhatsAppで相談', line: 'LINEで相談', wechat: 'WeChatで相談', wechatCopied: `WeChat ID「${WECHAT_ID}」をコピーしました。WeChatが開かない場合は、友だち追加の検索にIDを貼り付けてください。`, email: 'メールで相談', intentLabel: 'ご用件', intents: { question: '質問する', photos: '追加の写真', documents: '資料請求', viewing: '内見予約', similar: '似た物件を探してほしい' }, intentMessage: { question: 'この物件について相談したいです。', photos: 'この物件の追加の写真を見たいです（室内・眺望・共用部など）。', documents: 'この物件の資料を希望します（重要事項調査報告書・長期修繕計画・管理規約など）。', viewing: 'この物件の内見を希望します。', similar: 'この物件に似た物件（エリア・価格帯・広さが近いもの）を、サイトに載っていない物件も含めて探してほしいです。' }, details: { question: ['価格・条件', '管理費・修繕積立金', '周辺環境', '購入の流れ・費用', 'ローン'], photos: ['室内', '眺望', '共用部', '外観・周辺'], documents: ['重要事項調査報告書', '長期修繕計画', '管理規約', '間取り図・図面'], viewing: ['現地で見たい', 'オンラインで見たい', 'できるだけ早く', '平日', '土日'], similar: ['同じくらいの条件で', 'もっと安く', 'もっと広く', '駅に近く', '別のエリアも'] }, detailLabel: '詳しく（任意・いくつでも）', detailOpen: '＋ 詳しく選ぶ（任意）', detailHeading: '詳細：' },
-  en: { title: 'Ask now, no sign-up', note: 'Contact us about this property directly by WhatsApp, LINE, WeChat or email. Want to see more than the photos here? Choose “More photos” and send.', whatsapp: 'Chat on WhatsApp', line: 'Chat on LINE', wechat: 'Chat on WeChat', wechatCopied: `WeChat ID “${WECHAT_ID}” copied. If WeChat does not open, paste the ID into Add Contacts in WeChat.`, email: 'Email us', intentLabel: 'I want to', intents: { question: 'Ask a question', photos: 'More photos', documents: 'Get documents', viewing: 'Book a viewing', similar: 'Find me similar properties' }, intentMessage: { question: 'I would like to ask about this property.', photos: 'I would like to see more photos of this property (rooms, view, common areas).', documents: 'I would like the documents for this property (building management report, long-term repair plan, bylaws).', viewing: 'I would like to view this property.', similar: 'Could you look for properties similar to this one (area, price, size), including ones not listed on your site?' }, details: { question: ['Price & terms', 'Monthly fees', 'Neighborhood', 'Buying steps & costs', 'Loans'], photos: ['Rooms', 'View', 'Common areas', 'Outside & area'], documents: ['Building management report', 'Long-term repair plan', 'Bylaws', 'Floor plans'], viewing: ['In person', 'By video call', 'As soon as possible', 'Weekdays', 'Weekends'], similar: ['Similar terms', 'Cheaper', 'Larger', 'Closer to a station', 'Other areas too'] }, detailLabel: 'Details (optional, choose any)', detailOpen: '+ Add details (optional)', detailHeading: 'Details: ' },
-  'zh-TW': { title: '免註冊立即諮詢', note: '可透過 LINE、WeChat、WhatsApp 或電子郵件直接詢問此物件。想看更多照片，請選擇「更多照片」後傳送。', whatsapp: 'WhatsApp 諮詢', line: 'LINE 諮詢', wechat: '微信諮詢', wechatCopied: `已複製微信號「${WECHAT_ID}」。若微信未開啟，請在微信「新增朋友」中貼上搜尋。`, email: '電子郵件諮詢', intentLabel: '諮詢內容', intents: { question: '提問', photos: '更多照片', documents: '索取資料', viewing: '預約看屋', similar: '幫我找類似物件' }, intentMessage: { question: '我想諮詢這個物件。', photos: '我想看此物件的更多照片（室內、景觀、公共區域等）。', documents: '希望索取此物件資料（重要事項調查報告書、長期修繕計畫、管理規約等）。', viewing: '希望預約看屋。', similar: '希望幫我找與此物件相似的物件（區域、價格帶、面積相近），包含網站上未刊登的物件。' }, details: { question: ['價格、條件', '管理費、修繕基金', '周邊環境', '購屋流程、費用', '貸款'], photos: ['室內', '景觀', '公共區域', '外觀、周邊'], documents: ['重要事項調查報告書', '長期修繕計畫', '管理規約', '格局圖、圖面'], viewing: ['現場看屋', '線上看屋', '越快越好', '平日', '週末'], similar: ['條件相近', '更便宜', '更大', '離車站更近', '其他區域也可'] }, detailLabel: '詳細（選填，可複選）', detailOpen: '＋ 選擇詳細（選填）', detailHeading: '詳細：' },
-  'zh-CN': { title: '免注册立即咨询', note: '可通过微信、WhatsApp、LINE 或电子邮件直接咨询此房源。想看更多照片，请选择“更多照片”后发送。', whatsapp: 'WhatsApp 咨询', line: 'LINE 咨询', wechat: '微信咨询', wechatCopied: `已复制微信号“${WECHAT_ID}”。若微信未打开，请在微信“添加朋友”中粘贴搜索。`, email: '邮件咨询', intentLabel: '咨询内容', intents: { question: '提问', photos: '更多照片', documents: '索取资料', viewing: '预约看房', similar: '帮我找类似房源' }, intentMessage: { question: '我想咨询这个房源。', photos: '我想看此房源的更多照片（室内、景观、公共区域等）。', documents: '希望索取此房源资料（重要事项调查报告书、长期修缮计划、管理规约等）。', viewing: '希望预约看房。', similar: '希望帮我找与此房源相似的房源（区域、价格区间、面积相近），包括网站上未刊登的房源。' }, details: { question: ['价格、条件', '管理费、修缮基金', '周边环境', '购房流程、费用', '贷款'], photos: ['室内', '景观', '公共区域', '外观、周边'], documents: ['重要事项调查报告书', '长期修缮计划', '管理规约', '户型图、图纸'], viewing: ['现场看房', '线上看房', '越快越好', '工作日', '周末'], similar: ['条件相近', '更便宜', '更大', '离车站更近', '其他区域也可'] }, detailLabel: '详细（选填，可多选）', detailOpen: '＋ 选择详细（选填）', detailHeading: '详细：' },
+  ja: { title: '登録なしですぐ相談', note: 'LINE・WhatsApp・WeChat・メールで、この物件について直接お問い合わせいただけます。掲載以外の写真が見たいときは「追加の写真」を選んで送ってください。', whatsapp: 'WhatsAppで相談', line: 'LINEで相談', wechat: 'WeChatで相談', wechatCopied: `① WeChat ID「${WECHAT_ID}」をコピーしました。WeChatの「友だち追加」で検索に貼り付けて追加してください。`, wechatMessage: '② 問い合わせ文をコピー（ご購入者情報入り）', wechatMessageCopied: 'コピーしました。WeChatのトークに貼り付けて送ってください。', email: 'メールで相談', intentLabel: 'ご用件', intents: { question: '質問する', photos: '追加の写真', documents: '資料請求', viewing: '内見予約', similar: '似た物件を探してほしい' }, intentMessage: { question: 'この物件について相談したいです。', photos: 'この物件の追加の写真を見たいです（室内・眺望・共用部など）。', documents: 'この物件の資料を希望します（重要事項調査報告書・長期修繕計画・管理規約など）。', viewing: 'この物件の内見を希望します。', similar: 'この物件に似た物件（エリア・価格帯・広さが近いもの）を、サイトに載っていない物件も含めて探してほしいです。' }, details: { question: ['価格・条件', '管理費・修繕積立金', '周辺環境', '購入の流れ・費用', 'ローン'], photos: ['室内', '眺望', '共用部', '外観・周辺'], documents: ['重要事項調査報告書', '長期修繕計画', '管理規約', '間取り図・図面'], viewing: ['現地で見たい', 'オンラインで見たい', 'できるだけ早く', '平日', '土日'], similar: ['同じくらいの条件で', 'もっと安く', 'もっと広く', '駅に近く', '別のエリアも'] }, detailLabel: '詳しく（任意・いくつでも）', detailOpen: '＋ 詳しく選ぶ（任意）', detailHeading: '詳細：' },
+  en: { title: 'Ask now, no sign-up', note: 'Contact us about this property directly by WhatsApp, LINE, WeChat or email. Want to see more than the photos here? Choose “More photos” and send.', whatsapp: 'Chat on WhatsApp', line: 'Chat on LINE', wechat: 'Chat on WeChat', wechatCopied: `1. WeChat ID “${WECHAT_ID}” copied. Paste it into Add Contacts in WeChat to add us.`, wechatMessage: '2. Copy my message (with my answers)', wechatMessageCopied: 'Copied. Paste it into the WeChat chat and send.', email: 'Email us', intentLabel: 'I want to', intents: { question: 'Ask a question', photos: 'More photos', documents: 'Get documents', viewing: 'Book a viewing', similar: 'Find me similar properties' }, intentMessage: { question: 'I would like to ask about this property.', photos: 'I would like to see more photos of this property (rooms, view, common areas).', documents: 'I would like the documents for this property (building management report, long-term repair plan, bylaws).', viewing: 'I would like to view this property.', similar: 'Could you look for properties similar to this one (area, price, size), including ones not listed on your site?' }, details: { question: ['Price & terms', 'Monthly fees', 'Neighborhood', 'Buying steps & costs', 'Loans'], photos: ['Rooms', 'View', 'Common areas', 'Outside & area'], documents: ['Building management report', 'Long-term repair plan', 'Bylaws', 'Floor plans'], viewing: ['In person', 'By video call', 'As soon as possible', 'Weekdays', 'Weekends'], similar: ['Similar terms', 'Cheaper', 'Larger', 'Closer to a station', 'Other areas too'] }, detailLabel: 'Details (optional, choose any)', detailOpen: '+ Add details (optional)', detailHeading: 'Details: ' },
+  'zh-TW': { title: '免註冊立即諮詢', note: '可透過 LINE、WeChat、WhatsApp 或電子郵件直接詢問此物件。想看更多照片，請選擇「更多照片」後傳送。', whatsapp: 'WhatsApp 諮詢', line: 'LINE 諮詢', wechat: '微信諮詢', wechatCopied: `① 已複製微信號「${WECHAT_ID}」。請在微信「新增朋友」中貼上搜尋並加入。`, wechatMessage: '② 複製諮詢內容（含購買者資訊）', wechatMessageCopied: '已複製。請貼到微信聊天中傳送。', email: '電子郵件諮詢', intentLabel: '諮詢內容', intents: { question: '提問', photos: '更多照片', documents: '索取資料', viewing: '預約看屋', similar: '幫我找類似物件' }, intentMessage: { question: '我想諮詢這個物件。', photos: '我想看此物件的更多照片（室內、景觀、公共區域等）。', documents: '希望索取此物件資料（重要事項調查報告書、長期修繕計畫、管理規約等）。', viewing: '希望預約看屋。', similar: '希望幫我找與此物件相似的物件（區域、價格帶、面積相近），包含網站上未刊登的物件。' }, details: { question: ['價格、條件', '管理費、修繕基金', '周邊環境', '購屋流程、費用', '貸款'], photos: ['室內', '景觀', '公共區域', '外觀、周邊'], documents: ['重要事項調查報告書', '長期修繕計畫', '管理規約', '格局圖、圖面'], viewing: ['現場看屋', '線上看屋', '越快越好', '平日', '週末'], similar: ['條件相近', '更便宜', '更大', '離車站更近', '其他區域也可'] }, detailLabel: '詳細（選填，可複選）', detailOpen: '＋ 選擇詳細（選填）', detailHeading: '詳細：' },
+  'zh-CN': { title: '免注册立即咨询', note: '可通过微信、WhatsApp、LINE 或电子邮件直接咨询此房源。想看更多照片，请选择“更多照片”后发送。', whatsapp: 'WhatsApp 咨询', line: 'LINE 咨询', wechat: '微信咨询', wechatCopied: `① 已复制微信号“${WECHAT_ID}”。请在微信“添加朋友”中粘贴搜索并添加。`, wechatMessage: '② 复制咨询内容（含购买者信息）', wechatMessageCopied: '已复制。请粘贴到微信聊天中发送。', email: '邮件咨询', intentLabel: '咨询内容', intents: { question: '提问', photos: '更多照片', documents: '索取资料', viewing: '预约看房', similar: '帮我找类似房源' }, intentMessage: { question: '我想咨询这个房源。', photos: '我想看此房源的更多照片（室内、景观、公共区域等）。', documents: '希望索取此房源资料（重要事项调查报告书、长期修缮计划、管理规约等）。', viewing: '希望预约看房。', similar: '希望帮我找与此房源相似的房源（区域、价格区间、面积相近），包括网站上未刊登的房源。' }, details: { question: ['价格、条件', '管理费、修缮基金', '周边环境', '购房流程、费用', '贷款'], photos: ['室内', '景观', '公共区域', '外观、周边'], documents: ['重要事项调查报告书', '长期修缮计划', '管理规约', '户型图、图纸'], viewing: ['现场看房', '线上看房', '越快越好', '工作日', '周末'], similar: ['条件相近', '更便宜', '更大', '离车站更近', '其他区域也可'] }, detailLabel: '详细（选填，可多选）', detailOpen: '＋ 选择详细（选填）', detailHeading: '详细：' },
 } as const
 
 // White text needs at least 4.5:1 contrast, so brand greens are darkened.
@@ -39,6 +39,8 @@ const PRIMARY_TONE: Record<MessagingChannel, string> = {
 }
 const CHANNEL_NAME: Record<MessagingChannel, string> = { whatsapp: 'WhatsApp', line: 'LINE', wechat: 'WeChat' }
 const OUTLINE_TONE = 'border border-[#cfd9e3] bg-white text-[#274d7d] hover:bg-[#f2f6fa]'
+/** A WeChat tap in the bottom bar opens the WeChat steps in the contact box, which holds the note. */
+const WECHAT_TAPPED = 'ziyou-wechat-tapped'
 
 interface QuickContactProps {
   listingId: string
@@ -65,7 +67,8 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const [intent, setIntent] = useState<Intent>('question')
-  const [wechatCopied, setWechatCopied] = useState(false)
+  // WeChat links cannot carry a message: first the ID is copied to add us, then the message on request.
+  const [wechatStep, setWechatStep] = useState<'id' | 'message' | null>(null)
   const [lineOnComputer, setLineOnComputer] = useState(false)
   const [profile, answer] = useBuyerProfile()
   const [triedToSend, setTriedToSend] = useState(false)
@@ -102,10 +105,11 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
       setLineOnComputer(true)
       return
     }
-    // WeChat has no web chat link: copy the ID as well, in case the app does not open.
+    // WeChat has no web chat link: copy the ID to add us; the box then offers the message itself.
     if (channel === 'wechat') {
       void navigator.clipboard?.writeText(WECHAT_ID).catch(() => undefined)
-      setWechatCopied(true)
+      window.dispatchEvent(new Event(WECHAT_TAPPED))
+      if (variant === 'bar') document.getElementById('quick-contact-inline')?.scrollIntoView({ block: 'center' })
     }
   }
   const linkProps = (link: ContactLink) => ({
@@ -114,6 +118,17 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
     'aria-disabled': !ready,
     ...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {}),
   })
+
+  useEffect(() => {
+    if (variant === 'bar') return
+    const show = () => setWechatStep((step) => step ?? 'id')
+    window.addEventListener(WECHAT_TAPPED, show)
+    return () => window.removeEventListener(WECHAT_TAPPED, show)
+  }, [variant])
+  const copyMessage = () => {
+    void navigator.clipboard?.writeText(message).catch(() => undefined)
+    setWechatStep('message')
+  }
 
   if (variant === 'bar') {
     // Until the buyer questions are answered, the bar takes visitors to the contact box that asks them.
@@ -148,7 +163,11 @@ export function QuickContact({ listingId, listingTitle, listingUrl, variant = 'c
         {/* Half-width buttons show just the app name, so "WhatsAppで相談" does not wrap onto two lines on phones. */}
         {secondary.map((link) => <a key={link.channel} {...linkProps(link)} aria-label={link.label} className={`${button} ${OUTLINE_TONE}`}><ChannelIcon channel={link.channel as MessagingChannel} />{CHANNEL_NAME[link.channel as MessagingChannel]}</a>)}
       </div>
-      {wechatCopied && <p className="rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{text.wechatCopied}</p>}
+      {wechatStep && <div className="rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status" data-testid="wechat-steps">
+        <p>{text.wechatCopied}</p>
+        <button type="button" onClick={copyMessage} className="mt-2 inline-flex min-h-10 w-full items-center justify-center rounded-lg border border-[#b9d3ae] bg-white px-3 font-semibold text-[#2f5a27] hover:bg-[#f4f9f1]">{text.wechatMessage}</button>
+        {wechatStep === 'message' && <p className="mt-1 font-semibold">{text.wechatMessageCopied}</p>}
+      </div>}
       {lineOnComputer && <p className="rounded-lg bg-[#edf3e7] px-3 py-2 text-xs leading-5 text-[#3f5f39]" role="status">{lineDesktopNote(locale)}</p>}
       {[email].map((link) => <a key={link.channel} {...linkProps(link)} className={`${button} ${OUTLINE_TONE}`}><Mail aria-hidden="true" className="h-4 w-4" />{link.label}</a>)}
     </div>
