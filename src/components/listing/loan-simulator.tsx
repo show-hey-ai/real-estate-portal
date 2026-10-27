@@ -5,6 +5,14 @@ import { useLocale } from 'next-intl'
 import { Calculator } from 'lucide-react'
 import { estimateLoan, monthlyCashflow } from '@/lib/loan'
 import { formatYenWords } from '@/lib/yen-words'
+import { PhoneFoldButton } from './phone-fold'
+
+const FOLD = {
+  ja: { more: '内訳と注意書きを見る', less: '内訳を閉じる' },
+  en: { more: 'Show the breakdown and notes', less: 'Hide the breakdown' },
+  'zh-TW': { more: '查看明細與說明', less: '收起明細' },
+  'zh-CN': { more: '查看明细与说明', less: '收起明细' },
+} as const
 
 const copy = {
   ja: { fees: '管理費等（月額）', totalOut: '毎月の支払い合計', rent: '賃料収入（現在の賃料）', cashflow: '月々の収支（賃料−返済−管理費等）', title: '月々の返済シミュレーション（ローンを使う場合）', down: '頭金', rate: '金利（年）', years: '返済期間', yearsUnit: '年', monthly: '月々の返済額', loan: '借入額', interest: '利息の合計', price: '物件価格', note: '元利均等返済の概算です。返済額に諸費用・税金・管理費は含みません（管理費等と賃料は物件情報の金額を別に表示）。月々の収支は固定資産税・賃貸管理費・空室を考慮していません。融資の可否や金利は金融機関の審査で決まります。外国籍の方も、日本の在留資格（ビザ）がある場合や日本法人で借りる場合は利用できることがあります。' },
@@ -23,12 +31,16 @@ interface LoanSimulatorProps {
   monthlyRent?: number | null
   /** Conditions chosen elsewhere (the purchase simulator); the sliders are then hidden. */
   conditions?: { downPaymentRate: number; annualRatePercent: number; years: number }
+  /** Listing page on phones: the breakdown and notes wait behind a button under the monthly payment. */
+  foldOnPhones?: boolean
 }
 
-export function LoanSimulator({ price, monthlyFees = null, monthlyRent = null, conditions }: LoanSimulatorProps) {
+export function LoanSimulator({ price, monthlyFees = null, monthlyRent = null, conditions, foldOnPhones = false }: LoanSimulatorProps) {
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const id = useId()
+  const [open, setOpen] = useState(false)
+  const folded = foldOnPhones && !open ? 'max-lg:hidden' : ''
   const [ownDownPaymentRate, setDownPaymentRate] = useState(DEFAULTS.downPaymentRate)
   const [ownAnnualRatePercent, setAnnualRatePercent] = useState(DEFAULTS.annualRatePercent)
   const [ownYears, setYears] = useState(DEFAULTS.years)
@@ -72,14 +84,17 @@ export function LoanSimulator({ price, monthlyFees = null, monthlyRent = null, c
             {cashflow !== null && <div className="flex justify-between gap-2"><dt className="text-[#536274]">{text.cashflow}</dt><dd className={`shrink-0 whitespace-nowrap font-semibold tabular-nums ${cashflow >= 0 ? 'text-[#3f5f39]' : 'text-[#b42318]'}`}>{cashflow >= 0 ? '+' : '−'}{exact(Math.abs(cashflow))}</dd></div>}
           </> : null}
         </dl>}
-        <div className="mt-4 flex h-3 overflow-hidden rounded-full bg-[#e6edf4]" aria-hidden="true">
-          {segments.map((segment) => <div key={segment.label} className={segment.tone} style={{ width: `${total ? (segment.value / total) * 100 : 0}%` }} />)}
+        <div id={`${id}-breakdown`} className={folded}>
+          <div className="mt-4 flex h-3 overflow-hidden rounded-full bg-[#e6edf4]" aria-hidden="true">
+            {segments.map((segment) => <div key={segment.label} className={segment.tone} style={{ width: `${total ? (segment.value / total) * 100 : 0}%` }} />)}
+          </div>
+          <dl className="mt-3 space-y-1.5 text-sm">
+            {segments.map((segment) => <div key={segment.label} className="flex items-center justify-between gap-2"><dt className="flex items-center gap-2 text-[#536274]"><span aria-hidden="true" className={`h-2.5 w-2.5 rounded-sm ${segment.tone}`} />{segment.label}</dt><dd className="font-semibold tabular-nums">{yen(segment.value)}</dd></div>)}
+          </dl>
         </div>
-        <dl className="mt-3 space-y-1.5 text-sm">
-          {segments.map((segment) => <div key={segment.label} className="flex items-center justify-between gap-2"><dt className="flex items-center gap-2 text-[#536274]"><span aria-hidden="true" className={`h-2.5 w-2.5 rounded-sm ${segment.tone}`} />{segment.label}</dt><dd className="font-semibold tabular-nums">{yen(segment.value)}</dd></div>)}
-        </dl>
       </div>
     </div>
-    <p className="mt-4 text-xs leading-5 text-[#536274]">{text.note}</p>
+    <p id={`${id}-note`} className={`mt-4 text-xs leading-5 text-[#536274] ${folded}`}>{text.note}</p>
+    {foldOnPhones && <PhoneFoldButton open={open} onToggle={() => setOpen((value) => !value)} controls={`${id}-breakdown ${id}-note`} {...(FOLD[locale as keyof typeof FOLD] ?? FOLD.en)} />}
   </section>
 }

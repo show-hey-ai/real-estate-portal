@@ -5,6 +5,7 @@ import { UnitPriceChart } from '@/components/listing/unit-price-chart'
 import { compareUnitPrice, type UnitPriceSource } from '@/lib/unit-price'
 import { LoanSimulator } from '@/components/listing/loan-simulator'
 import { InitialCostSimulator } from '@/components/listing/initial-cost-simulator'
+import { PhoneClampedText } from '@/components/listing/phone-fold'
 import { OverseasBuyingLink } from '@/components/overseas/overseas-buying-link'
 import { ConversionCheckLink } from '@/components/listing/conversion-check-link'
 import { isConversionCandidate } from '@/lib/conversion-check'
@@ -383,8 +384,9 @@ export default async function ListingPage({ params }: ListingPageProps) {
               { label: (unitPriceCopy[locale] ?? unitPriceCopy.en).average(wardLabel(listing.city, locale), unitPrice.count), value: unitPrice.average, href: wardSlug ? `/areas/${wardSlug}` : undefined },
             ]} />}
 
-            {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} monthlyFees={monthly.fees} monthlyRent={letRent} />}
-            {formattedListing.price && Number(formattedListing.price) > 0 && <InitialCostSimulator price={Number(formattedListing.price)} />}
+            {/* Phones keep the monthly payment and the cash needed in view; the long breakdowns open on a tap. */}
+            {formattedListing.price && Number(formattedListing.price) > 0 && <LoanSimulator price={Number(formattedListing.price)} monthlyFees={monthly.fees} monthlyRent={letRent} foldOnPhones />}
+            {formattedListing.price && Number(formattedListing.price) > 0 && <InitialCostSimulator price={Number(formattedListing.price)} foldOnPhones />}
             {formattedListing.price && Number(formattedListing.price) > 0 && <Link href={simulatorHref({ price: Number(formattedListing.price), fees: monthly.fees, rent: letRent })} className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#cfd9e3] bg-white px-4 text-sm font-semibold text-[#274d7d] hover:bg-[#f2f6fa]" data-testid="listing-simulator-link"><Calculator aria-hidden="true" className="h-4 w-4" />{getSimulatorCopy(locale).fromListing} →</Link>}
             <OverseasBuyingLink locale={locale} />
 
@@ -401,11 +403,7 @@ export default async function ListingPage({ params }: ListingPageProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {description && (
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                      {description}
-                    </p>
-                  )}
+                  {description && <div><PhoneClampedText text={description} locale={locale} className="text-muted-foreground leading-relaxed whitespace-pre-wrap" /></div>}
                   {features.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {(() => {
@@ -452,7 +450,8 @@ export default async function ListingPage({ params }: ListingPageProps) {
       <ListingViewTracker listing={{ id: formattedListing.id, title: buildListingHeading(formattedListing, locale), price: formattedListing.price ? formatPrice(formattedListing.price, locale) : '', image: getPrimaryListingImage(formattedListing), imageCaption: pickCoverImage(formattedListing.media)?.caption ?? null }} />
       {related.length > 0 && <section className="mt-12 border-t border-[#e5eaf0] pt-8" aria-labelledby="related-title" data-testid="related-listings">
         <h2 id="related-title" className="text-xl font-semibold">{relatedTitle[locale] ?? relatedTitle.en}</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ListingCard key={item.id} listing={withCardFacts(item, locale)} userId={userId} />)}</div>
+        {/* Phones swipe through the cards in one row (the next card peeks in) instead of three screens of stacked cards. */}
+        <div className="-mx-4 mt-5 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3" data-testid="related-listings-row">{related.map((item) => <div key={item.id} className="w-[82%] shrink-0 snap-start sm:w-auto [&>*]:h-full"><ListingCard listing={withCardFacts(item, locale)} userId={userId} /></div>)}</div>
       </section>}
       {formattedListing.city && <div className="mt-12" data-testid="listing-page-alert"><ListingAlertForm ward={formattedListing.city} type={typeSlugFor(formattedListing.propertyType) ?? undefined} scopeLabel={[wardLabel(formattedListing.city, locale), translatePropertyType(formattedListing.propertyType || null, locale)].filter(Boolean).join(locale === 'en' ? ', ' : '・')} /></div>}
       <RecentlyViewed excludeId={formattedListing.id} />

@@ -8,6 +8,14 @@ import { DEPOSIT_RATE, LOAN_FEE_RATE, estimateInitialCosts, type OtherCostKey, t
 import { formatYenWords } from '@/lib/yen-words'
 import { useFxRates } from '@/components/fx/fx-rates-context'
 import { approxBandLabel, formatApproxPrice } from '@/lib/fx'
+import { PhoneFoldButton } from './phone-fold'
+
+const FOLD = {
+  ja: { more: '費用の内訳と支払い時期を見る', less: '内訳を閉じる' },
+  en: { more: 'Show each cost and when you pay', less: 'Hide the breakdown' },
+  'zh-TW': { more: '查看費用明細與付款時間', less: '收起明細' },
+  'zh-CN': { more: '查看费用明细与付款时间', less: '收起明细' },
+} as const
 
 const pct = (rate: number) => `${Math.round(rate * 1000) / 10}%`
 
@@ -60,12 +68,16 @@ interface InitialCostSimulatorProps {
   showGuideLink?: boolean
   /** Conditions chosen elsewhere (the purchase simulator); the controls are then hidden. */
   conditions?: { useLoan: boolean; downPaymentRate: number }
+  /** Listing page on phones: each cost, the payment timing and the notes wait behind a button under the total. */
+  foldOnPhones?: boolean
 }
 
-export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGuideLink = true, conditions }: InitialCostSimulatorProps) {
+export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGuideLink = true, conditions, foldOnPhones = false }: InitialCostSimulatorProps) {
   const locale = useLocale()
   const text = copy[locale as keyof typeof copy] ?? copy.en
   const id = useId()
+  const [open, setOpen] = useState(false)
+  const folded = foldOnPhones && !open ? 'max-lg:hidden' : ''
   const [typedPrice, setTypedPrice] = useState(defaultPrice / text.unitValue)
   const [ownUseLoan, setUseLoan] = useState(true)
   const [ownDownPaymentRate, setDownPaymentRate] = useState(DEFAULT_DOWN_PAYMENT_RATE)
@@ -117,22 +129,25 @@ export function InitialCostSimulator({ price, defaultPrice = 50_000_000, showGui
         <p className="text-xs font-semibold text-[#4a6789]">{text.cashNeeded}</p>
         <p className="mt-1 text-2xl font-bold tabular-nums text-[#1b293a] md:text-3xl" aria-live="polite">{range(costs.cashNeeded)}</p>
         {localNeeded && <p className="mt-1 text-sm font-semibold tabular-nums text-[#3d4a5a]" data-testid="cost-local-currency">{localNeeded}</p>}
-        <div className="mt-4 flex h-3 overflow-hidden rounded-full bg-[#e6edf4]" aria-hidden="true">
-          {segments.map((segment) => <div key={segment.label} className={segment.tone} style={{ width: `${total ? (segment.value / total) * 100 : 0}%` }} />)}
-        </div>
-        <dl className="mt-3 space-y-1.5 text-sm">
-          {segments.map((segment) => <div key={segment.label} className="flex items-start justify-between gap-3"><dt className="flex items-start gap-2 text-[#536274]"><span aria-hidden="true" className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-sm ${segment.tone}`} />{segment.label}</dt><dd className="shrink-0 font-semibold tabular-nums">{segment.display}</dd></div>)}
-        </dl>
-        <div className="mt-4 border-t border-[#dbe2e9] pt-3">
-          <p className="text-xs font-semibold text-[#4a6789]">{text.timing}</p>
-          <dl className="mt-2 space-y-1.5 text-sm">
-            <div className="flex items-start justify-between gap-3"><dt className="text-[#536274]">{text.atContract}</dt><dd className="shrink-0 text-right font-semibold tabular-nums">{yen(costs.atContract)}{localAtContract && <span className="block text-xs font-normal text-[#536274]">{localAtContract}</span>}</dd></div>
-            <div className="flex items-start justify-between gap-3"><dt className="text-[#536274]">{text.atSettlement}</dt><dd className="shrink-0 font-semibold tabular-nums">{range(costs.atSettlement)}</dd></div>
+        <div id={`${id}-breakdown`} className={folded}>
+          <div className="mt-4 flex h-3 overflow-hidden rounded-full bg-[#e6edf4]" aria-hidden="true">
+            {segments.map((segment) => <div key={segment.label} className={segment.tone} style={{ width: `${total ? (segment.value / total) * 100 : 0}%` }} />)}
+          </div>
+          <dl className="mt-3 space-y-1.5 text-sm">
+            {segments.map((segment) => <div key={segment.label} className="flex items-start justify-between gap-3"><dt className="flex items-start gap-2 text-[#536274]"><span aria-hidden="true" className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-sm ${segment.tone}`} />{segment.label}</dt><dd className="shrink-0 font-semibold tabular-nums">{segment.display}</dd></div>)}
           </dl>
+          <div className="mt-4 border-t border-[#dbe2e9] pt-3">
+            <p className="text-xs font-semibold text-[#4a6789]">{text.timing}</p>
+            <dl className="mt-2 space-y-1.5 text-sm">
+              <div className="flex items-start justify-between gap-3"><dt className="text-[#536274]">{text.atContract}</dt><dd className="shrink-0 text-right font-semibold tabular-nums">{yen(costs.atContract)}{localAtContract && <span className="block text-xs font-normal text-[#536274]">{localAtContract}</span>}</dd></div>
+              <div className="flex items-start justify-between gap-3"><dt className="text-[#536274]">{text.atSettlement}</dt><dd className="shrink-0 font-semibold tabular-nums">{range(costs.atSettlement)}</dd></div>
+            </dl>
+          </div>
         </div>
       </div>
     </div>
-    <p className="mt-4 text-xs leading-5 text-[#536274]">{text.note}{costs.lowPriceRule && ` ${text.lowPrice}`}</p>
+    <p id={`${id}-note`} className={`mt-4 text-xs leading-5 text-[#536274] ${folded}`}>{text.note}{costs.lowPriceRule && ` ${text.lowPrice}`}</p>
+    {foldOnPhones && <PhoneFoldButton open={open} onToggle={() => setOpen((value) => !value)} controls={`${id}-breakdown ${id}-note`} {...(FOLD[locale as keyof typeof FOLD] ?? FOLD.en)} />}
     {showGuideLink && <Link href="/buying-guide" className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-[#274d7d] hover:underline">{text.guide} →</Link>}
   </section>
 }
