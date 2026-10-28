@@ -1,7 +1,24 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { listingFactsHash, makeImportReceipt, publicationIssues, sourcePrices, translationIssues } from '../src/lib/autonomy/publication'
-import { isPageIndexable } from '../src/lib/autonomy/page-verification'
+import { PAGE_MAX_BYTES, SITEMAP_MAX_BYTES, isPageIndexable, readBodyWithin } from '../src/lib/autonomy/page-verification'
+
+const streamOf = (bytes: number, chunk = 64 * 1024) => new ReadableStream<Uint8Array>({
+  start(controller) {
+    for (let sent = 0; sent < bytes; sent += chunk) controller.enqueue(new TextEncoder().encode('x'.repeat(Math.min(chunk, bytes - sent))))
+    controller.close()
+  },
+})
+
+test('page checks read a body only up to its limit; a sitemap may be as large as Google accepts', async () => {
+  const page = await readBodyWithin(streamOf(1_000), PAGE_MAX_BYTES)
+  assert.deepEqual([page.withinLimit, page.text.length], [true, 1_000])
+  assert.equal((await readBodyWithin(streamOf(PAGE_MAX_BYTES + 1), PAGE_MAX_BYTES)).withinLimit, false)
+  // The portal sitemap passed 2 MB on 2026-10-25 (2,556 URLs); Google accepts 50 MB uncompressed.
+  assert.equal((await readBodyWithin(streamOf(2_908_485), SITEMAP_MAX_BYTES)).withinLimit, true)
+  assert.equal(SITEMAP_MAX_BYTES, 50 * 1024 * 1024)
+  assert.deepEqual(await readBodyWithin(null, PAGE_MAX_BYTES), { text: '', withinLimit: false })
+})
 
 test('public release verification rejects indexing exclusions in headers and reordered robot metadata', () => {
   const published = '<main data-public-listing="example">Public property</main>'

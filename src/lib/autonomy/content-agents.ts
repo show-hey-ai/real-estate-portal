@@ -10,6 +10,7 @@ import { AUTONOMY_VERSION, PORTAL_VENTURE_ID } from './policy'
 import { withLiveLease } from './lease'
 import { json, writeRecord } from './store'
 import { checkPage } from './agents'
+import { SITEMAP_MAX_BYTES } from './page-verification'
 import { checkArticleImage } from './article-image-verification'
 import { renewResearchReviews } from './research-review'
 
@@ -64,7 +65,7 @@ export async function rollbackArticle(job: AutonomyJob) {
 
 export async function seo(job: AutonomyJob) {
   const checks = await Promise.all([
-    checkPage('/sitemap.xml', (body) => body.includes('<urlset') && body.includes('/listings')),
+    checkPage('/sitemap.xml', (body) => body.includes('<urlset') && body.includes('/listings'), false, SITEMAP_MAX_BYTES),
     checkPage('/robots.txt', (body) => body.includes('Sitemap:') && body.includes('/sitemap.xml')),
     checkPage('/', (body) => body.includes('rel="canonical"') && body.includes('name="description"')),
     checkPage('/listings', (body) => body.includes('rel="canonical"') && body.includes('name="description"')),

@@ -10,6 +10,7 @@ import { prisma } from '../src/lib/db'
 import { getPublicListingScope } from '../src/lib/public-listing-scope'
 import { PORTAL_VENTURE_ID } from '../src/lib/autonomy/policy'
 import { funnelLines } from '../src/lib/contact-funnel'
+import { getExternalAnalyticsWhere } from '../src/lib/site-analytics-data'
 
 const GOAL = 500
 const HOUR = 3600_000
@@ -64,8 +65,10 @@ async function jobLines(now: Date): Promise<string[]> {
 }
 
 async function visitLines(now: Date): Promise<string[]> {
+  // Same audience as the admin analytics: the owner's and test visitors are left out.
+  const audience = await getExternalAnalyticsWhere()
   const rows = await prisma.siteVisitEvent.findMany({
-    where: { occurredAt: { gte: new Date(now.getTime() - 30 * 24 * HOUR) } },
+    where: { ...audience, occurredAt: { gte: new Date(now.getTime() - 30 * 24 * HOUR) } },
     select: { visitorId: true, pageType: true, referrerHost: true, occurredAt: true },
   })
   return funnelLines(rows, now)

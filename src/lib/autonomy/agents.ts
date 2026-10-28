@@ -11,7 +11,7 @@ import { firstPublicationDate, publicationIssues } from './publication'
 import { PORTAL_VENTURE_ID, AUTONOMY_VERSION } from './policy'
 import { enqueueJob, getPolicy, json, writeRecord } from './store'
 import { withLiveLease } from './lease'
-import { isPageIndexable } from './page-verification'
+import { PAGE_MAX_BYTES, isPageIndexable, readBodyWithin } from './page-verification'
 import { validUntilAfterCheck } from '../freshness'
 
 const receiptSchema = z.object({
@@ -46,24 +46,13 @@ export async function observe(job: AutonomyJob) {
   return { ...metrics, buyerFunnel, buyerMatching }
 }
 
-export async function checkPage(path: string, bodyCheck?: (body: string) => boolean, requireIndexable = false) {
+export async function checkPage(path: string, bodyCheck?: (body: string) => boolean, requireIndexable = false, maxBytes = PAGE_MAX_BYTES) {
   const url = new URL(path, getSiteUrl())
   const response = await fetch(url, { cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(8000), headers: { 'User-Agent': 'Ziyou-Autonomy-Health/1.0' } })
   let contentValid = true
   if (bodyCheck && response.ok) {
-    const reader = response.body?.getReader()
-    if (!reader) return { url: url.href, status: response.status, ok: false }
-    const chunks: Uint8Array[] = []
-    let size = 0
-    while (size <= 2_000_000) {
-      const next = await reader.read()
-      if (next.done) break
-      chunks.push(next.value)
-      size += next.value.length
-    }
-    await reader.cancel()
-    const body = Buffer.concat(chunks).toString('utf8')
-    contentValid = size <= 2_000_000 && bodyCheck(body) && (!requireIndexable || isPageIndexable(body, response.headers.get('x-robots-tag')))
+    const { text: body, withinLimit } = await readBodyWithin(response.body, maxBytes)
+    contentValid = withinLimit && bodyCheck(body) && (!requireIndexable || isPageIndexable(body, response.headers.get('x-robots-tag')))
   } else await response.body?.cancel()
   return { url: url.href, status: response.status, ok: response.ok && contentValid }
 }
