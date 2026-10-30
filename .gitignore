@@ -55,3 +55,4 @@ tmp-split/
 # Local document and image deliverables (kept outside deployments)
 /output/
 .eslintcache*
+.claude/settings.local.json

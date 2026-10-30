@@ -10,6 +10,8 @@
     "transit:sync": "npx tsx scripts/sync-transit-master.ts",
     "reins:download": "npx tsx scripts/reins-download.ts",
     "reins:auto": "npx tsx scripts/reins-auto.ts",
+    "reins:session": "tsx scripts/reins-session.ts",
+    "reins:relogin": "tsx scripts/reins-session.ts --relogin",
     "maisoku": "npx tsx scripts/process-openai-vision.ts",
     "maisoku:all": "npx tsx scripts/process-openai-vision.ts --all",
     "hospitality:fix": "npx tsx scripts/fix-hospitality-candidates.ts",
@@ -27,7 +29,8 @@
     "draft:reviewed": "tsx scripts/draft-reviewed.ts",
     "quality:report": "node --import tsx scripts/quality-report.ts",
     "ops:uptime": "node --import tsx scripts/uptime-check.ts",
-    "ops:backup": "node --import tsx scripts/db-backup.ts"
+    "ops:backup": "node --import tsx scripts/db-backup.ts",
+    "notify:owner": "tsx scripts/notify-operator.ts"
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.77",
