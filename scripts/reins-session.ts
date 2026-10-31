@@ -16,7 +16,7 @@
  * The browser closes on SIGTERM/SIGINT or after --max-minutes.
  */
 import { chromium, type Page } from 'playwright'
-import { mkdirSync } from 'node:fs'
+import { appendFileSync, mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const ARGS = process.argv.slice(2)
@@ -28,6 +28,9 @@ function argValue(name: string, fallback: string) {
 const PORT = Number(argValue('--port', '9223'))
 const PROFILE = resolve(
   argValue('--profile', `${process.env.HOME}/Library/Application Support/Ziyou Portal/autonomy/claude-operator/chromium-profile`),
+)
+const DOWNLOAD_DIR = resolve(
+  argValue('--downloads', `${process.env.HOME}/Library/Application Support/Ziyou Portal/autonomy/claude-operator/downloads/reins`),
 )
 const MAX_MINUTES = Number(argValue('--max-minutes', '170'))
 const HEADLESS = ARGS.includes('--headless') || process.env.REINS_HEADLESS === 'true'
@@ -87,6 +90,27 @@ async function main() {
     locale: 'ja-JP',
     timezoneId: 'Asia/Tokyo',
   })
+  // Downloads belong to this Playwright client (the MCP only attaches over CDP and never sees them),
+  // so save every download here and record the actual path for the operator.
+  mkdirSync(DOWNLOAD_DIR, { recursive: true, mode: 0o700 })
+  const watchPage = (target: Page) => {
+    target.on('download', (download) => {
+      void (async () => {
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-')
+        const file = resolve(DOWNLOAD_DIR, `${stamp}-${download.suggestedFilename()}`)
+        try {
+          await download.saveAs(file)
+          const line = JSON.stringify({ savedAt: new Date().toISOString(), file, suggested: download.suggestedFilename(), url: download.url() })
+          appendFileSync(resolve(DOWNLOAD_DIR, 'downloads.jsonl'), `${line}\n`, { mode: 0o600 })
+          log(`ダウンロード保存: ${file}`)
+        } catch (error) {
+          log(`ダウンロード保存失敗: ${error instanceof Error ? error.message : String(error)}`)
+        }
+      })()
+    })
+  }
+  context.pages().forEach(watchPage)
+  context.on('page', watchPage)
   const page = context.pages()[0] ?? (await context.newPage())
   let loginState: 'ok' | 'skipped' | 'failed' = 'skipped'
   if (DO_LOGIN) {
