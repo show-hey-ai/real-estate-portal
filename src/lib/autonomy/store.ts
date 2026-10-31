@@ -25,7 +25,9 @@ export async function scheduleJobs(now = new Date()) {
   for (const [kind, priority] of [['observe', 100], ['health', 90], ['strategy', 10]] as const) {
     await enqueueJob(kind, scheduleKey(kind, now, policy.intervalMinutes), {}, priority)
   }
-  if (policy.allowReinsIntake) await enqueueJob('reins_intake', scheduleKey('reins_intake', now, policy.reinsIntervalHours * 60), {}, 40)
+  // No scheduled REINS download: since 2026-10-31 the Claude Code operator does acquisition, and a
+  // second login with the same REINS ID could end its session. Desktop scripts still queue their own
+  // reins_intake jobs (with a payload), so allowReinsIntake keeps gating those.
   if (policy.allowSeo) await enqueueJob('seo', scheduleKey('seo', now, 1440), {}, 30)
   if (policy.allowArticles) await enqueueJob('generate_article', scheduleKey('generate_article', now, 1440), {}, 25)
   const failedVerifications = await prisma.autonomyJob.findMany({ where: { ventureId: PORTAL_VENTURE_ID, kind: 'verify_publication', status: 'failed' }, take: 100 })
