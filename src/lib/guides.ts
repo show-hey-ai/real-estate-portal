@@ -29,6 +29,7 @@ const guideUiCopy = {
     backToGuides: 'ガイド一覧へ戻る',
     ctaButton: '物件一覧を見る',
     relatedGuides: 'あわせて読みたいガイド',
+    askEarly: { title: '読みながら質問できます', note: '登録不要。LINE・WhatsApp・WeChat・メールで、日本語・英語・中国語で答えます。', hospitalityNote: '登録不要。購入前に、その建物で旅館業や民泊の許可が取れそうかを一緒に確認します。', button: '相談する' },
   },
   en: {
     navLabel: 'Guides',
@@ -58,6 +59,7 @@ const guideUiCopy = {
     backToGuides: 'Back to guides',
     ctaButton: 'See listings',
     relatedGuides: 'Related guides',
+    askEarly: { title: 'Questions while you read?', note: 'No sign-up. Message us on WhatsApp, LINE, WeChat or email, in English, Japanese or Chinese.', hospitalityNote: 'No sign-up. Before you buy, we check with you whether the building could get a ryokan or minpaku license.', button: 'Ask us' },
   },
   'zh-TW': {
     navLabel: '指南',
@@ -87,6 +89,7 @@ const guideUiCopy = {
     backToGuides: '返回指南列表',
     ctaButton: '查看物件',
     relatedGuides: '延伸閱讀',
+    askEarly: { title: '邊讀邊問', note: '免註冊。可透過 LINE、WeChat、WhatsApp 或電子郵件，以中文、日文、英文詢問。', hospitalityNote: '免註冊。購買前，我們會和您一起確認該建物是否可能取得旅館業或民宿許可。', button: '立即諮詢' },
   },
   'zh-CN': {
     navLabel: '指南',
@@ -116,6 +119,7 @@ const guideUiCopy = {
     backToGuides: '返回指南列表',
     ctaButton: '查看房源',
     relatedGuides: '延伸阅读',
+    askEarly: { title: '边读边问', note: '免注册。可通过微信、WhatsApp、LINE 或邮件，用中文、日语、英语咨询。', hospitalityNote: '免注册。购买前，我们会和您一起确认该建筑是否可能取得旅馆业或民宿许可。', button: '立即咨询' },
   },
 } as const satisfies Record<
   Locale,
@@ -140,6 +144,7 @@ const guideUiCopy = {
     backToGuides: string
     ctaButton: string
     relatedGuides: string
+    askEarly: { title: string; note: string; hospitalityNote: string; button: string }
   }
 >
 

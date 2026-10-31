@@ -9,6 +9,7 @@ import {
   CalendarDays,
   ChevronRight,
   Clock3,
+  MessageCircle,
 } from 'lucide-react'
 import { JsonLd } from '@/components/common/json-ld'
 import { AskUs } from '@/components/common/ask-us'
@@ -238,6 +239,16 @@ export default async function GuideDetailPage({
             </CardContent>
           </Card>
 
+          {/* Most search visitors read one guide and leave; the contact block sits ~70% down a long page. */}
+          <a href="#ask" className="mt-4 flex items-center gap-3 rounded-xl border border-[#dbe2e9] bg-[#f8fafc] p-4 transition-shadow hover:shadow-md" data-testid="guide-ask-early">
+            <MessageCircle aria-hidden="true" className="h-5 w-5 shrink-0 text-primary" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-[#1b293a]">{guideCopy.askEarly.title}</span>
+              <span className="mt-0.5 block text-xs leading-5 text-[#536274]">{article.tags.includes('hospitality') ? guideCopy.askEarly.hospitalityNote : guideCopy.askEarly.note}</span>
+            </span>
+            <span className="shrink-0 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground">{guideCopy.askEarly.button}</span>
+          </a>
+
           <div className="mt-10 space-y-10">
             {article.sections.map((section) => (
               <section key={section.id} id={section.id} className="scroll-mt-4 md:scroll-mt-44 space-y-4">
@@ -302,7 +313,9 @@ export default async function GuideDetailPage({
             </CardContent>
           </Card>
 
-          <AskUs topic={article.title} pageUrl={absoluteUrl(localizedPath(`/guides/${slug}`, locale))} />
+          <div id="ask" className="scroll-mt-4 md:scroll-mt-44">
+            <AskUs topic={article.title} pageUrl={absoluteUrl(localizedPath(`/guides/${slug}`, locale))} />
+          </div>
 
           {relatedArticles.length > 0 && (
             <section className="mt-12">
