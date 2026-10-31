@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { adFieldPermits, classifyImages, dealStatusBlocks, parseReinsDetail, reinsDate } from '../src/lib/reins-detail'
+import { adFieldPermits, classifyImages, dealStatusBlocks, parseReinsDetail, reinsDate, sourceFieldText } from '../src/lib/reins-detail'
 
 const ariaSnapshot = [
   '- generic: 物件番号',
@@ -91,4 +91,46 @@ test('REINS dates in the Reiwa era or western form', () => {
   assert.equal(reinsDate('2026/10/05'), '2026-10-05')
   assert.equal(reinsDate('不明'), null)
   assert.equal(reinsDate(null), null)
+})
+
+test('the import helper reads the same field values from a Playwright snapshot and a macOS dump', () => {
+  const aria = [
+    '- heading "基本情報" [level=2] [ref=f1e1]',
+    '- generic [ref=f1e2]: 物件番号',
+    '- generic [ref=f1e3]: "100141283576"',
+    '- heading "建物" [level=2] [ref=f1e4]',
+    '- generic [ref=f1e5]: 専有面積',
+    '- generic [ref=f1e6]: 71.71㎡',
+    '- generic [ref=f1e7]: 所在地名１',
+    '- generic [ref=f1e8]: 中野区',
+    '- generic [ref=f1e9]: 築年月',
+    '- generic [ref=f1e10]: 2007年（平成19年） 4月',
+    '- heading "価格" [level=2] [ref=f1e11]',
+    '- generic [ref=f1e12]: 価格',
+    '- generic [ref=f1e13]: 11,800万円',
+  ].join('\n')
+  const dump = [
+    '1 AXWebArea REINS IP',
+    '\t2 heading 基本情報, Value: 2',
+    '\t\t3 text 基本情報',
+    '\t\t4 text 物件番号',
+    '\t\t5 text 100141283576',
+    '\t\t6 text 専有面積',
+    '\t\t7 text 71.71㎡',
+    '\t\t8 text 所在地名１',
+    '\t\t9 text 中野区',
+    '\t\t10 text 築年月',
+    '\t\t11 text 2007年（平成19年） 4月',
+    '\t12 heading 価格, Value: 2',
+    '\t\t13 text 価格',
+    '\t\t14 text 価格',
+    '\t\t15 text 11,800万円',
+  ].join('\n')
+  const norm = (value: string) => value.normalize('NFKC').replace(/\s+/g, '')
+  for (const label of ['物件番号', '専有面積', '所在地名１', '築年月', '価格']) {
+    assert.equal(norm(sourceFieldText(aria, label)), norm(sourceFieldText(dump, label)), label)
+  }
+  assert.equal(sourceFieldText(dump, '所在地名１'), '中野区')
+  assert.equal(norm(sourceFieldText(aria, '価格')), '11,800万円')
+  assert.equal(sourceFieldText(aria, '現況'), '')
 })

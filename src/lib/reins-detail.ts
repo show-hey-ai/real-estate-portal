@@ -110,6 +110,36 @@ function fieldValue(nodes: readonly PageNode[], label: string): string | null {
   return null
 }
 
+const ARIA_SNAPSHOT = /^\s*-\s+(?:generic|heading|text|paragraph|cell|link)\b/mu
+
+/**
+ * The text after a label exactly as the desktop import helper compares it (築年月・専有面積・所在地名… ),
+ * from either saved format: a Playwright ARIA snapshot (Claude, 2026-10-31〜) or a macOS
+ * accessibility dump (Codex). Dumps keep the helper's original reading unchanged; ARIA values are
+ * NFKC-normalised, so callers compare both sides normalised. '' when the label is absent.
+ */
+export function sourceFieldText(snapshot: string, label: string): string {
+  const aria = ARIA_SNAPSHOT.test(snapshot)
+  const wanted = aria ? clean(label) : label
+  const texts = aria
+    ? pageNodes(snapshot).filter((node) => node.kind === 'text').map((node) => node.value)
+    : snapshot.split('\n').flatMap((line) => {
+        const match = line.match(/^\s*\d+ text (.*)$/u)
+        return match ? [match[1]] : []
+      })
+  for (let index = 0; index < texts.length; index++) {
+    const text = texts[index]
+    if (text.startsWith(`${wanted} `)) return text.slice(wanted.length + 1).trim()
+    const next = texts[index + 1]
+    if (text === wanted && next) {
+      // A heading can repeat its label as text; only a value-shaped next text is a price.
+      if (wanted === '価格' && !/^[\d,.]+(?:万円|億円|円)$/u.test(next.normalize('NFKC').replace(/\s+/g, ''))) continue
+      return next.startsWith(`${wanted} `) ? next.slice(wanted.length + 1).trim() : next
+    }
+  }
+  return ''
+}
+
 export function parseReinsDetail(text: string): ReinsDetail {
   // Links (the broker's name, e-mail addresses) are not needed for these facts.
   const nodes = pageNodes(text).filter((node) => node.kind !== 'link')
