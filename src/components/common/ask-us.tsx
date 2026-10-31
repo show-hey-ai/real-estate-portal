@@ -14,6 +14,7 @@ import {
 import { BuyerProfileFields, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
 import { ChoiceChips } from '@/components/contact/choice-chips'
 import { getProfileCopy, isProfileComplete, profileText } from '@/lib/buyer-profile'
+import { isAutomatedBrowser } from '@/lib/site-analytics'
 
 const copy = {
   ja: { briefTitle: '条件を選んで送るだけ（登録不要）', briefNote: 'タップで条件を選び、LINE・WhatsApp・WeChat・メールで送ってください。サイトに載っていない物件も含めて探してご連絡します。', areaLabel: 'エリア（いくつでも）', areas: ['都心（千代田・中央・港）', '城南（品川・目黒・大田・世田谷）', '城西（新宿・渋谷・中野・杉並・練馬）', '城北（文京・豊島・北・板橋）', '城東（台東・墨田・江東・荒川・足立・葛飾・江戸川）', 'こだわらない'], timingLabel: '購入時期', timings: ['すぐにでも', '1年以内', 'まだ未定'], briefHeading: { areas: 'エリア：', timing: '時期：' }, briefMessage: '購入条件を相談したいです。サイトに載っていない物件も含めて、条件に合う物件を探してほしいです。', topicsLabel: 'ご相談の内容（任意・いくつでも）', topics: ['物件探し', '購入の流れ', '費用・税金', 'ローン', '外国籍・海外からの購入', '購入後の賃貸・管理'], budgetLabel: 'ご予算', budgets: ['〜3,000万円', '3,000万〜5,000万円', '5,000万〜1億円', '1億〜3億円', '3億円〜'], typesLabel: '物件の種類（いくつでも）', types: ['区分マンション', '一棟マンション・アパート', '戸建て', '土地'], answersHeading: { topics: '相談内容：', budget: '予算：', types: '種類：' }, unlistedTitle: 'ここに載っていない物件も探せます', unlistedNote: '公開前の物件や他社が扱う物件も含めて、条件に合う物件を探してご連絡します。登録は不要です。', unlistedMessage: (topic: string) => `サイトに載っていない物件も含めて、条件に合う物件を探してほしいです。\n条件：${topic}`, title: '購入の相談は登録なしで', note: '物件探し、購入の流れ、費用のことなど、LINE・WhatsApp・WeChat・メールで直接ご相談いただけます。日本語・英語・中国語で対応します。', whatsapp: 'WhatsAppで相談', line: 'LINEで相談', wechat: 'WeChatで相談', email: 'メールで相談', wechatCopied: `WeChat ID「${WECHAT_ID}」をコピーしました。開かない場合は、友だち追加の検索に貼り付けてください。`, message: (topic: string) => `東京の不動産購入について相談したいです。\n（見ていたページ：${topic}）` },
@@ -32,6 +33,7 @@ const OUTLINE_TONE = 'border border-[#cfd9e3] bg-white text-[#274d7d] hover:bg-[
 const BUTTON = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 text-sm font-semibold transition-colors'
 
 export function recordClick(channel: ContactChannel, locale: string) {
+  if (isAutomatedBrowser()) return
   const payload = JSON.stringify({ locale, search: window.location.search, channel, path: window.location.pathname })
   if (navigator.sendBeacon) navigator.sendBeacon('/api/analytics/contact-click', new Blob([payload], { type: 'application/json' }))
   else void fetch('/api/analytics/contact-click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true })

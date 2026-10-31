@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { ANALYTICS_VISITOR_COOKIE } from '@/lib/site-analytics'
+import { ANALYTICS_VISITOR_COOKIE, isAutomatedBrowser } from '@/lib/site-analytics'
 
 function readCookie(name: string) {
   const cookie = document.cookie
@@ -57,7 +57,7 @@ export function PublicPageviewTracker() {
   const lastTrackedRef = useRef<string>('')
 
   useEffect(() => {
-    if (!pathname) return
+    if (!pathname || isAutomatedBrowser()) return
 
     const queryString = searchParams.toString()
     const signature = `${pathname}?${queryString}`
@@ -74,7 +74,7 @@ export function PublicPageviewTracker() {
   }, [pathname, searchParams])
 
   useEffect(() => {
-    if (!pathname) return
+    if (!pathname || isAutomatedBrowser()) return
     const startedAt = Date.now()
     const onUse = (event: Event) => {
       if (event.type === 'scroll' && Date.now() - startedAt < SCROLL_GRACE_MS) return

@@ -12,6 +12,14 @@ export function isAutomatedAnalyticsAgent(userAgent: string | null) {
   return !!userAgent && /bot\b|bot\/|crawler|spider|HeadlessChrome|Playwright|Lighthouse|InspectionTool|PageSpeed|Ziyou-Autonomy/i.test(userAgent)
 }
 
+/**
+ * A browser driven by automation (Playwright, Puppeteer, Selenium, scraping services) whose
+ * User-Agent looks like an ordinary Chrome. Browsers set navigator.webdriver for these.
+ */
+export function isAutomatedBrowser(): boolean {
+  return typeof navigator !== 'undefined' && navigator.webdriver === true
+}
+
 export type DeviceType = 'mobile' | 'tablet' | 'desktop'
 
 /** Phone, tablet or computer, from the User-Agent; null when there is none. */

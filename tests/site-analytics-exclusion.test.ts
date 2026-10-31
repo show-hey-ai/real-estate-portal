@@ -92,3 +92,16 @@ test('all metrics exclude every page of a verified browser, preserve customers a
     await assert.rejects(db.query(`INSERT INTO site_analytics_exclusions ("visitorId",reason) VALUES ('buyer-browser','administrator')`))
   } finally { await db.close() }
 })
+
+test('a browser that reports itself as automated is not measured', async () => {
+  const { isAutomatedBrowser } = await import('../src/lib/site-analytics')
+  const original = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
+  try {
+    Object.defineProperty(globalThis, 'navigator', { value: { webdriver: true }, configurable: true })
+    assert.equal(isAutomatedBrowser(), true)
+    Object.defineProperty(globalThis, 'navigator', { value: { webdriver: false }, configurable: true })
+    assert.equal(isAutomatedBrowser(), false)
+  } finally {
+    if (original) Object.defineProperty(globalThis, 'navigator', original)
+  }
+})

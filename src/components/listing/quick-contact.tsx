@@ -13,6 +13,7 @@ import {
 import { BuyerProfileSteps, useBuyerProfile } from '@/components/contact/buyer-profile-fields'
 import { ChoiceChips } from '@/components/contact/choice-chips'
 import { getProfileCopy, isProfileComplete, profileText } from '@/lib/buyer-profile'
+import { isAutomatedBrowser } from '@/lib/site-analytics'
 
 type Intent = 'question' | 'photos' | 'documents' | 'viewing' | 'similar'
 
@@ -58,6 +59,7 @@ interface ContactLink {
 }
 
 function recordClick(listingId: string, channel: ContactChannel, locale: string) {
+  if (isAutomatedBrowser()) return
   const payload = JSON.stringify({ locale, search: window.location.search, listingId, channel })
   if (navigator.sendBeacon) navigator.sendBeacon('/api/analytics/contact-click', new Blob([payload], { type: 'application/json' }))
   else void fetch('/api/analytics/contact-click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true })
