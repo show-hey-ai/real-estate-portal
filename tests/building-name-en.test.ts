@@ -6,6 +6,8 @@ test('the English name is read from a "Name: " opening', () => {
   assert.equal(extractBuildingNameEn('City Terrace Yoyogi Koen: 42.10 m² 1LDK on the 4th floor.'), 'City Terrace Yoyogi Koen')
   assert.equal(extractBuildingNameEn('FL Residence Ikebukuro I: a 1K unit'), 'FL Residence Ikebukuro I')
   assert.equal(extractBuildingNameEn('Shibuya Co-op: 63.08 m²'), 'Shibuya Co-op')
+  assert.equal(extractBuildingNameEn('High Town Ikegami No.2: a 3LDK unit'), 'High Town Ikegami No.2')
+  assert.equal(extractBuildingNameEn('Sun Heights Kamiikedai. A 60 m² unit: vacant.'), null)
 })
 
 test('names inside older sentence patterns are found too', () => {

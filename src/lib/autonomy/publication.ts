@@ -5,6 +5,7 @@ import { isPublicPropertyType } from '../market-category'
 import { PORTAL_VENTURE_ID } from './policy'
 import { verifiedSourceId } from './source-identity'
 import { hasExplicitPortalPermission } from '../ad-publication-policy'
+import { getPublicListingScope } from '../public-listing-scope'
 
 type Facts = Record<string, unknown>
 export type ImportReceipt = {
@@ -149,6 +150,14 @@ export function publicationIssues(facts: Facts, receipt: ImportReceipt, now = ne
   if (!['descriptionJa', 'descriptionEn', 'descriptionZhTw', 'descriptionZhCn'].every((field) => typeof facts[field] === 'string' && String(facts[field]).trim().length > 0)) issues.push('One or more language descriptions are missing.')
   issues.push(...translationIssues(facts))
   return issues
+}
+
+/**
+ * Another listing at the same private address that is on the site now. One whose visibility has
+ * run out does not count, so a unit re-registered on REINS under a new number can replace it.
+ */
+export function sameAddressPublicWhere(listing: { id: string; addressPrivate: string | null }, now = new Date()) {
+  return { ...getPublicListingScope(now), id: { not: listing.id }, addressPrivate: listing.addressPrivate }
 }
 
 /** A listing re-published after a re-check keeps the date it first went public. */

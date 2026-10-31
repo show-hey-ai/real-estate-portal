@@ -34,7 +34,8 @@ const EN_DESCRIPTIVE = /^(?:a|an|the|this|condominium|whole|house|land|detached|
 // Named buildings never carry access notes, floor numbers, sizes or a trailing "in <ward>".
 const EN_NOT_A_NAME = /\b(?:station|exit|floor|minutes?|walk|chome)\b|\d+\s?m²|,| in [A-Z][a-z]+$| (?:condominium|apartment|unit)$/iu
 const EN_PATTERNS = [
-  /^([^:.]{2,60}): /u,
+  // A period inside a name ("No.2") is fine; one followed by a space ends a sentence.
+  /^((?:[^:.]|\.(?=\S)){2,60}): /u,
   /^A condominium unit in ([^,.]{2,60}),/u,
   /^([^,.]{2,60}) is a /u,
   /^(The [^,.:]{2,60})\. /u,

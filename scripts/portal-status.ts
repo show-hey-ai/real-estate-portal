@@ -50,18 +50,32 @@ async function listingLines(now: Date): Promise<string[]> {
 }
 
 async function jobLines(now: Date): Promise<string[]> {
-  const [open, failed, policy, renewal] = await Promise.all([
+  const [open, failed, policy, renewal, blockedAudits] = await Promise.all([
     prisma.autonomyJob.groupBy({ by: ['kind', 'status'], where: { ventureId: PORTAL_VENTURE_ID, status: { in: ['pending', 'running'] } }, _count: true }),
     prisma.autonomyJob.count({ where: { ventureId: PORTAL_VENTURE_ID, status: 'failed', updatedAt: { gte: new Date(now.getTime() - 24 * HOUR) } } }),
     prisma.autonomyPolicy.findUnique({ where: { id: PORTAL_VENTURE_ID }, select: { enabled: true, allowPublication: true, monthlyBudgetYen: true, lastHeartbeatAt: true } }),
     prisma.autonomyRecord.findFirst({ where: { ventureId: PORTAL_VENTURE_ID, recordType: 'freshness' }, orderBy: { createdAt: 'desc' }, select: { createdAt: true, title: true } }),
+    prisma.autonomyJob.findMany({ where: { ventureId: PORTAL_VENTURE_ID, kind: 'publication_audit', status: 'blocked', updatedAt: { gte: new Date(now.getTime() - 24 * HOUR) } }, select: { payload: true, result: true }, orderBy: { updatedAt: 'desc' } }),
   ])
   const openText = open.map((row) => `${row.kind}:${row.status}=${row._count}`).join(' ') || 'none'
   return [
     `jobs open ${openText}; failed last 24h ${failed}`,
     `policy enabled=${policy?.enabled} publication=${policy?.allowPublication} budgetYen=${policy?.monthlyBudgetYen} worker heartbeat ${jst(policy?.lastHeartbeatAt)} JST`,
     `last light renewal ${jst(renewal?.createdAt)} JST ${renewal?.title ?? ''}`.trim(),
+    ...await blockedAuditLines(blockedAudits),
   ]
+}
+
+// A saved draft whose publication check stopped, with the reason, so the operator need not query jobs.
+async function blockedAuditLines(jobs: { payload: unknown; result: unknown }[]): Promise<string[]> {
+  if (!jobs.length) return []
+  const ids = jobs.map((job) => String((job.payload as { listingId?: string } | null)?.listingId ?? ''))
+  const listings = await prisma.listing.findMany({ where: { id: { in: ids } }, select: { id: true, sourcePropertyId: true, status: true } })
+  return jobs.map((job, index) => {
+    const listing = listings.find((row) => row.id === ids[index])
+    const result = (job.result ?? {}) as { reason?: string; issues?: string[] }
+    return `audit blocked ${listing?.sourcePropertyId ?? ids[index]} (${listing?.status ?? 'missing'}): ${result.reason ?? result.issues?.join(' ') ?? 'no reason recorded'}`
+  })
 }
 
 async function visitLines(now: Date): Promise<string[]> {

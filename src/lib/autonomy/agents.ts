@@ -7,7 +7,7 @@ import { getExternalAnalyticsWhere } from '../site-analytics-data'
 import { getOpenAI } from '../openai'
 import { getSiteUrl } from '../site-config'
 import { getPublicListingScope } from '../public-listing-scope'
-import { firstPublicationDate, publicationIssues } from './publication'
+import { firstPublicationDate, publicationIssues, sameAddressPublicWhere } from './publication'
 import { PORTAL_VENTURE_ID, AUTONOMY_VERSION } from './policy'
 import { enqueueJob, getPolicy, json, writeRecord } from './store'
 import { withLiveLease } from './lease'
@@ -121,8 +121,8 @@ export async function publicationAudit(job: AutonomyJob) {
   const listing = await prisma.listing.findUnique({ where: { id: input.listingId }, include: { media: { where: { isAdopted: true } } } })
   if (!listing) return { blocked: true, reason: 'Source listing no longer exists.' }
   if (!['DRAFT', 'REVIEWED'].includes(listing.status)) return { blocked: true, reason: 'Listing is no longer a publishable draft.' }
-  const conflicting = await prisma.listing.findFirst({ where: { id: { not: listing.id }, addressPrivate: listing.addressPrivate, status: 'PUBLISHED' }, select: { id: true } })
-  if (conflicting) return { blocked: true, reason: 'An existing public listing at this private address requires a verified stable source identity; duplicate release prevented.' }
+  const conflicting = await prisma.listing.findFirst({ where: sameAddressPublicWhere(listing), select: { sourcePropertyId: true } })
+  if (conflicting) return { blocked: true, reason: `An existing public listing at this private address (REINS ${conflicting.sourcePropertyId ?? 'unknown'}) requires a verified stable source identity; duplicate release prevented.` }
   const issues = publicationIssues(listing as unknown as Record<string, unknown>, input.receipt)
   if (issues.length) {
     await writeRecord(job, 'quality', 'Candidate publication checks', { listingId: listing.id, passed: false, issues }, [input.receipt.sourceHash], 'verified')

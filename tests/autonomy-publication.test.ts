@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { listingFactsHash, makeImportReceipt, publicationIssues, sourcePrices, translationIssues } from '../src/lib/autonomy/publication'
+import { listingFactsHash, makeImportReceipt, publicationIssues, sameAddressPublicWhere, sourcePrices, translationIssues } from '../src/lib/autonomy/publication'
 import { PAGE_MAX_BYTES, SITEMAP_MAX_BYTES, isPageIndexable, readBodyWithin } from '../src/lib/autonomy/page-verification'
 
 const streamOf = (bytes: number, chunk = 64 * 1024) => new ReadableStream<Uint8Array>({
@@ -165,4 +165,14 @@ test('REINS accessibility headings and metadata labels are not address restricti
   const detailed = { ...facts, addressPublic: facts.addressPrivate }
   const proof = makeImportReceipt(detailed, { ...receipt, evidence: [...receipt.evidence, { field_name: 'source_text', raw_text: '- generic: 部屋番号\n- generic: 角部屋\n- generic: その他所在地表示\n- heading: 図面', confidence: 0.99 }] }, now)
   assert.deepEqual(publicationIssues(detailed, proof, now), [])
+})
+
+test('only a listing that is still on the site blocks another release at the same private address', () => {
+  const now = new Date('2026-11-01T10:00:00Z')
+  const where = sameAddressPublicWhere({ id: 'new', addressPrivate: '江戸川区清新町2丁目3-17' }, now) as Record<string, unknown>
+  assert.deepEqual(where.id, { not: 'new' })
+  assert.equal(where.addressPrivate, '江戸川区清新町2丁目3-17')
+  assert.equal(where.status, 'PUBLISHED')
+  // A listing whose visibility ran out (an old REINS number re-registered under a new one) no longer blocks.
+  assert.deepEqual((where.AND as unknown[]).at(-1), { OR: [{ autonomyValidUntil: null }, { autonomyValidUntil: { gt: now } }] })
 })
